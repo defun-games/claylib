@@ -11,7 +11,6 @@
 
 (defun make-circle (x y radius color &key (filled t))
   (make-instance 'circle
-                 :x x :y y
                  :pos (make-vector2 x y)
                  :radius radius
                  :color color
