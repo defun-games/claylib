@@ -1,0 +1,50 @@
+--- lib/raylib.h.orig	2022-04-17 14:16:38.713481522 +0000
++++ lib/raylib.h	2022-04-29 09:01:45.242677090 +0000
+@@ -203,10 +203,10 @@
+     float y;                // Vector y component
+     float z;                // Vector z component
+     float w;                // Vector w component
+-} Vector4;
++} Quaternion;
+ 
+ // Quaternion, 4 components (Vector4 alias)
+-typedef Vector4 Quaternion;
++typedef Quaternion Vector4;
+ 
+ // Matrix, 4x4 components, column major, OpenGL style, right handed
+ typedef struct Matrix {
+@@ -248,10 +248,10 @@
+     int height;             // Texture base height
+     int mipmaps;            // Mipmap levels, 1 by default
+     int format;             // Data format (PixelFormat type)
+-} Texture;
++} Texture2D;
+ 
+ // Texture2D, same as Texture
+-typedef Texture Texture2D;
++typedef Texture2D Texture;
+ 
+ // TextureCubemap, same as Texture
+ typedef Texture TextureCubemap;
+@@ -261,10 +261,10 @@
+     unsigned int id;        // OpenGL framebuffer object id
+     Texture texture;        // Color buffer attachment texture
+     Texture depth;          // Depth buffer attachment texture
+-} RenderTexture;
++} RenderTexture2D;
+ 
+ // RenderTexture2D, same as RenderTexture
+-typedef RenderTexture RenderTexture2D;
++typedef RenderTexture2D RenderTexture;
+ 
+ // NPatchInfo, n-patch layout info
+ typedef struct NPatchInfo {
+@@ -396,6 +396,8 @@
+     Transform **framePoses; // Poses array by frame
+ } ModelAnimation;
+ 
++typedef Transform* TransformPtr;
++
+ // Ray, ray for raycasting
+ typedef struct Ray {
+     Vector3 position;       // Ray position (origin)

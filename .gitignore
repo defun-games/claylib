@@ -1,0 +1,5 @@
+/#package.lisp#
+*~
+.*.swp
+examples/*.fasl
+lib-patched/*
