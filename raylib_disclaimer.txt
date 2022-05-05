@@ -1,0 +1,1 @@
+In accordance with Raylib's license: claylib uses slightly modified versions of Raylib header files. The exact changes are detailed in the patch files under wrap/patches.
