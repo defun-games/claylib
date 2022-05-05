@@ -97,14 +97,4 @@
                    (:file "24-quat-conversion")
                    (:file "25-window-flags")
                    (:file "26-split-screen")
-                   (:file "27-smooth-pixelperfect")))
-                 (:module "textures"
-                  :components
-                  ((:file "01-drawing")))
-                 (:module "models"
-                  :components
-                  ((:file "01-animation")
-                   (:file "02-billboard")))
-                 (:module "shaders"
-                  :components
-                  ((:file "01-model-shader")))))))
+                   (:file "27-smooth-pixelperfect")))))))
