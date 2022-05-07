@@ -97,4 +97,5 @@
                    (:file "24-quat-conversion")
                    (:file "25-window-flags")
                    (:file "26-split-screen")
-                   (:file "27-smooth-pixelperfect")))))))
+                   (:file "27-smooth-pixelperfect")
+                   (:file "28-custom-frame-control")))))))
