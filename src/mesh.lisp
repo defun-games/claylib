@@ -50,27 +50,16 @@
 (default-free rl-mesh)
 (default-free-c claylib/ll:mesh unload-mesh)
 
-(defun gen-mesh-cylinder (radius height slices
-                          &key (mesh (make-instance 'rl-mesh)))
-  "Generate a mesh cylinder. Allocates a new RL-MESH unless you pass one."
-  (check-type radius number)
-  (check-type height number)
-  (check-type slices integer)
-  (check-type mesh rl-mesh)
-  (claylib/ll:gen-mesh-cylinder (c-struct mesh)
-                                (coerce radius 'float)
-                                (coerce height 'float)
-                                slices)
-  mesh)
+(defun-pt gen-mesh-cylinder claylib/ll:gen-mesh-cylinder
+  ((mesh rl-mesh nil (make-instance 'rl-mesh))
+   (radius number float)
+   (height number float)
+   (slices integer))
+  "Generate a mesh cylinder. Allocates a new RL-MESH unless you pass one.")
 
-(defun gen-mesh-cube (width height length
-                      &key (mesh (make-instance 'rl-mesh)))
-  "Generate a mesh rectangular prism, a.k.a. 'cube.' Allocates a new RL-MESH unless you pass one."
-  (check-type width number)
-  (check-type height number)
-  (check-type length number)
-  (claylib/ll:gen-mesh-cube (c-struct mesh)
-                            (coerce width 'float)
-                            (coerce height 'float)
-                            (coerce length 'float))
-  mesh)
+(defun-pt gen-mesh-cube claylib/ll:gen-mesh-cube
+  ((mesh rl-mesh nil (make-instance 'rl-mesh))
+   (width number float)
+   (height number float)
+   (length number float))
+  "Generate a mesh rectangular prism, a.k.a. 'cube.' Allocates a new RL-MESH unless you pass one.")

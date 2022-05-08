@@ -80,18 +80,10 @@
 (defun update-camera (camera)
   (claylib/ll:update-camera (c-struct camera)))
 
-(defun get-world-to-screen-3d (position camera
-                               &key (width *screen-width*) (height *screen-height*)
-                                 (vec (make-vector2 0 0)))
-  "Get world-to-screen transform of a 3D camera. Allocates a new VECTOR2 unless you pass one."
-  (check-type position rl-vector3)
-  (check-type camera camera-3d)
-  (check-type width number)
-  (check-type height number)
-  (check-type vec rl-vector2)
-  (claylib/ll:get-world-to-screen-ex (c-struct vec)
-                                     (c-struct position)
-                                     (c-struct camera)
-                                     width
-                                     height)
-  vec)
+(defun-pt get-world-to-screen-3d claylib/ll:get-world-to-screen-ex
+  ((vec rl-vector2 nil (make-vector2 0 0))
+   (position rl-vector3)
+   (camera camera-3d)
+   (width integer nil *screen-width*)
+   (height integer nil *screen-height*))
+  "Get world-to-screen transform of a 3D camera. Allocates a new VECTOR2 unless you pass one.")

@@ -203,3 +203,32 @@ are coerced to floats. For something more complex, try DEFINITIALIZER."
         (slot (gensym)))
     `(defmethod slot-unbound (,class ,obj (,slot (eql ',slot-name)))
        (setf (slot-value ,obj ,slot) ,value))))
+
+(defmacro defun-pt (name c-fn args-list &optional docstring)
+  `(defun ,name ,(remove nil `(,@(mapcar #'(lambda (arg)
+                                             (unless (fourth arg)
+                                               (car arg)))
+                                  args-list)
+                               &key ,@(mapcar #'(lambda (arg)
+                                                  (when (fourth arg)
+                                                    `(,(car arg) ,(fourth arg))))
+                                              args-list)))
+     ,docstring
+     ,@(mapcar #'(lambda (arg)
+                   `(check-type ,(car arg) ,(cadr arg)))
+               args-list)
+     (,c-fn ,@(mapcar #'(lambda (arg)
+                          (cond
+                            ((third arg) `(coerce ,(car arg) ',(third arg)))
+                            ((and (subtypep (cadr arg) 'standard-object)
+                                  (member-if #'(lambda (slot)
+                                                 (eql (closer-mop:slot-definition-name slot)
+                                                      '%c-struct))
+                                             (handler-case
+                                                 (closer-mop:class-slots (find-class (cadr arg)))
+                                               (error () (closer-mop:class-direct-slots
+                                                          (find-class (cadr arg)))))))
+                             `(c-struct ,(car arg)))
+                            (t (car arg))))
+                      args-list))
+     ,(caar args-list)))
