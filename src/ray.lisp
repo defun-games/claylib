@@ -53,13 +53,8 @@
 (defmethod draw-object ((obj ray))
   (claylib/ll:draw-ray (c-struct obj) (c-struct (color obj))))
 
-(defun get-mouse-ray (mouse-pos camera &optional ray)
-  "Gets a mouse ray for the passed mouse position and camera. Allocates a new RAY unless you pass one."
-  (check-type mouse-pos rl-vector2)
-  (check-type camera camera-3d)
-  (check-type ray (or null ray))
-  (let ((ray (or ray (make-ray 0 0 0 0 0 0 +black+))))
-    (claylib/ll:get-mouse-ray (c-struct ray)
-                              (c-struct mouse-pos)
-                              (c-struct camera))
-    ray))
+(defun-pt get-mouse-ray claylib/ll:get-mouse-ray
+  ((ray ray nil (make-ray 0 0 0 0 0 0 +black+))
+   (mouse-pos rl-vector2)
+   (camera camera-3d))
+  "Gets a mouse ray for the passed mouse position and camera. Allocates a new RAY unless you pass one.")

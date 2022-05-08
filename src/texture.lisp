@@ -24,23 +24,15 @@
 (default-free rl-image)
 (default-free-c claylib/ll:image unload-image)
 
-(defun gen-image-checked (width height checks-x checks-y color1 color2
-                          &key (image (make-instance 'rl-image)))
-  "Generate a checkerboard image. Allocates a new RL-IMAGE unless you pass one."
-  (check-type width integer)
-  (check-type height integer)
-  (check-type checks-x integer)
-  (check-type checks-y integer)
-  (check-type color1 rl-color)
-  (check-type color2 rl-color)
-  (claylib/ll:gen-image-checked (c-struct image)
-                                width
-                                height
-                                checks-x
-                                checks-y
-                                (c-struct color1)
-                                (c-struct color2))
-  image)
+(defun-pt gen-image-checked claylib/ll:gen-image-checked
+  ((image rl-image nil (make-instance 'rl-image))
+   (width integer)
+   (height integer)
+   (checks-x integer)
+   (checks-y integer)
+   (color1 rl-color)
+   (color2 rl-color))
+  "Generate a checkerboard image. Allocates a new RL-IMAGE unless you pass one.")
 
 
 
@@ -123,12 +115,10 @@
                                (rot obj)
                                (c-struct (tint obj))))
 
-(defun load-texture-from-image (image &key (texture (make-instance 'rl-texture)))
-  "Load a texture from a passed-in image. Allocates a new RL-TEXTURE unless you pass one."
-  (check-type image rl-image)
-  (check-type texture rl-texture)
-  (claylib/ll:load-texture-from-image (c-struct texture) (c-struct image))
-  texture)
+(defun-pt load-texture-from-image claylib/ll:load-texture-from-image
+  ((texture rl-texture nil (make-instance 'rl-texture))
+   (image rl-image))
+  "Load a texture from a passed-in image. Allocates a new RL-TEXTURE unless you pass one.")
 
 
 

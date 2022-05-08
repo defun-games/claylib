@@ -50,12 +50,10 @@
 (default-free rl-model)
 (default-free-c claylib/ll:model unload-model t)
 
-(defun load-model-from-mesh (mesh &key (model (make-instance 'rl-model)))
-  "Load a model from a passed-in mesh. Allocates a new RL-MODEL unless you pass one."
-  (check-type mesh rl-mesh)
-  (check-type model rl-model)
-  (claylib/ll:load-model-from-mesh (c-struct model) (c-struct mesh))
-  model)
+(defun-pt load-model-from-mesh claylib/ll:load-model-from-mesh
+  ((model rl-model nil (make-instance 'rl-model))
+   (mesh rl-mesh))
+  "Load a model from a passed-in mesh. Allocates a new RL-MODEL unless you pass one.")
 
 
 

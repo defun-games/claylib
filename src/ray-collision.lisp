@@ -36,14 +36,9 @@
                  :point point
                  :normal normal))
 
-(defun get-ray-collision-box (ray box &optional rc)
+(defun-pt get-ray-collision-box claylib/ll:get-ray-collision-box
+  ((rc rl-ray-collision nil (make-ray-collision 0 0 0 0 0 0))
+   (ray ray)
+   (box rl-bounding-box))
   "Gets a collision box for the passed ray and bounding box.
-Allocates a new RAY-COLLISION unless you pass one."
-  (check-type ray ray)
-  (check-type box rl-bounding-box)
-  (check-type rc (or null rl-ray-collision))
-  (let ((rc (or rc (make-ray-collision 0 0 0 0 0 0))))
-    (claylib/ll:get-ray-collision-box (c-struct rc)
-                                      (c-struct ray)
-                                      (c-struct box))
-    rc))
+Allocates a new RAY-COLLISION unless you pass one.")

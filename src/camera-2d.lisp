@@ -42,12 +42,10 @@
                  :rot rot
                  :zoom zoom))
 
-(defun get-world-to-screen-2d (vec camera &optional allocate-p)
-  (let ((retval (if allocate-p (make-vector2 0 0) vec)))
-    (claylib/ll:get-world-to-screen2d (c-struct retval) (c-struct vec) (c-struct camera))
-    retval))
+(defun-pt-arg0 get-world-to-screen-2d claylib/ll:get-world-to-screen2d (make-vector2 0 0)
+  ((vec rl-vector2)
+   (camera rl-camera-2d)))
 
-(defun get-screen-to-world-2d (vec camera &optional allocate-p)
-  (let ((retval (if allocate-p (make-vector2 0 0) vec)))
-    (claylib/ll:get-screen-to-world2d (c-struct retval) (c-struct vec) (c-struct camera))
-    retval))
+(defun-pt-arg0 get-screen-to-world-2d claylib/ll:get-screen-to-world2d (make-vector2 0 0)
+  ((vec rl-vector2)
+   (camera rl-camera-2d)))

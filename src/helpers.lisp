@@ -232,3 +232,28 @@ are coerced to floats. For something more complex, try DEFINITIALIZER."
                             (t (car arg))))
                       args-list))
      ,(caar args-list)))
+
+(defmacro defun-pt-arg0 (name c-fn allocate-form args-list &optional docstring)
+  `(defun ,name (,@(mapcar #'car args-list) &optional allocate-p)
+     ,docstring
+     ,@(mapcar #'(lambda (arg)
+                   `(check-type ,(car arg) ,(cadr arg)))
+               args-list)
+     (check-type allocate-p boolean)
+     (let ((retval (if allocate-p ,allocate-form ,(caar args-list))))
+       (,c-fn (c-struct retval)
+              ,@(mapcar #'(lambda (arg)
+                            (cond
+                              ((third arg) `(coerce ,(car arg) ',(third arg)))
+                              ((and (subtypep (cadr arg) 'standard-object)
+                                    (member-if #'(lambda (slot)
+                                                   (eql (closer-mop:slot-definition-name slot)
+                                                        '%c-struct))
+                                               (handler-case
+                                                   (closer-mop:class-slots (find-class (cadr arg)))
+                                                 (error () (closer-mop:class-direct-slots
+                                                            (find-class (cadr arg)))))))
+                               `(c-struct ,(car arg)))
+                              (t (car arg))))
+                        args-list))
+       retval)))
