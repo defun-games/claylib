@@ -57,7 +57,7 @@ independently of the frame rate."
                                                         :color +green+))))))
       (with-scene scene ()
         (do-game-loop (:livesupport t
-                       :vars ((previous-time (get-time))
+                       :vars ((previous-time (get-time) current-time)
                               (current-time 0.0)
                               (update-draw-time 0.0)
                               (wait-time 0.0)
@@ -111,6 +111,4 @@ independently of the frame rate."
                 (claylib/wrap:wait-time (coerce (* wait-time 1000) 'single-float))
                 (setf current-time (get-time))
                 (setf delta-time (- current-time previous-time)))
-              (setf delta-time update-draw-time))
-
-          (setf previous-time current-time))))))
+              (setf delta-time update-draw-time)))))))
