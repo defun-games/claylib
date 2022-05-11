@@ -49,21 +49,21 @@
                                                        :size 30
                                                        :color +gray+))))))
       (with-scene scene ()
-        (do-game-loop (:livesupport t
-                       :vars ((pause nil)
-                              (frames-counter 0)))
-          (when (is-key-pressed-p +key-space+)
-            (setf pause (not pause)))
+        (with-scene-objects (ball) scene
+          (do-game-loop (:livesupport t
+                         :vars ((pause nil)
+                                (frames-counter 0)))
+            (when (is-key-pressed-p +key-space+)
+              (setf pause (not pause)))
 
-          (with-scene-objects (ball) scene
             (if (not pause)
                 (progn
                   (move-ball ball)
                   (bounce-ball ball (get-screen-width) (get-screen-height)))
-                (incf frames-counter)))
+                (incf frames-counter))
 
-          (with-drawing
-            (if (and pause (= 0 (mod (truncate frames-counter 30) 2)))
-                (draw-scene-all scene)
-                (draw-scene-except scene 'text-pause))
-            (draw-fps 10 10)))))))
+            (with-drawing
+              (if (and pause (= 0 (mod (truncate frames-counter 30) 2)))
+                  (draw-scene-all scene)
+                  (draw-scene-except scene 'text-pause))
+              (draw-fps 10 10))))))))
