@@ -63,7 +63,7 @@
                 (incf frames-counter)))
 
           (with-drawing
-            (if (and pause (= 0 (mod (floor frames-counter 30) 2)))
+            (if (and pause (= 0 (mod (truncate frames-counter 30) 2)))
                 (draw-scene-all scene)
                 (draw-scene-except scene 'text-pause))
             (draw-fps 10 10)))))))
