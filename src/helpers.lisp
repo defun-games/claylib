@@ -130,6 +130,15 @@ backing it.'"
        (setf (c-struct (,lisp-slot ,obj)) (,c-writer (c-struct ,obj))))))
 
 (defun rl-class-p (type)
+  "Determine whether a type represents a Raylib 'mirror' class -- these classes begin with 'RL-' and
+always have a direct '%C-STRUCT slot."
+  (member-if #'(lambda (slot)
+                 (eql (closer-mop:slot-definition-name slot) '%c-struct))
+             (closer-mop:class-direct-slots (find-class type))))
+
+(defun rl-subclass-p (type)
+  "Determine whether a type represents a Raylib 'mirror' class or subclass -- these classes begin
+with 'RL-' and always have a direct or inherited '%C-STRUCT slot."
   (let ((class (find-class type)))
     (member-if #'(lambda (slot)
                    (eql (closer-mop:slot-definition-name slot) '%c-struct))
@@ -150,6 +159,14 @@ backing it.'"
                                               type)))))
 
 (defmacro definitializer (type &rest slots)
+  "Define an initialize-instance :after method for a passed type. Each SLOT is expected to have
+the following format:
+
+(ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)
+
+This macro adds type checking, finalizers where needed, and makes sure to use SET-SLOT for structs.
+Note that you may pass NIL as COERCE-TYPE if you only want to use a default value without
+type coercion."
   (let ((obj (gensym))
         (ptr (gensym)))
     `(defmethod initialize-instance :after ((,obj ,type)
@@ -170,9 +187,7 @@ backing it.'"
                                         ,(if coerce-type
                                              `(coerce ,accessor ',coerce-type)
                                              accessor))))))
-       (when (and (member-if #'(lambda (slot)
-                                 (eql (closer-mop:slot-definition-name slot) '%c-struct))
-                             (closer-mop:class-direct-slots (find-class ',type)))
+       (when (and (rl-class-p ',type)
                   (c-struct ,obj))
          ;; TODO: This probably needs a child wrapper check.
          (tg:finalize ,obj
@@ -229,11 +244,15 @@ are coerced to floats. For something more complex, try DEFINITIALIZER."
                   (cond
                     (coerce-type `(coerce ,accessor ',type))
                     ((and (subtypep type 'standard-object)
-                          (rl-class-p type))
+                          (rl-subclass-p type))
                      `(c-struct ,accessor))
                     (t accessor)))))
 
 (defmacro defun-pt (name c-fn docstring &rest args)
+  "Define a 'pass-through' function. These functions are mirrored Raylib functions with minimal
+massaging of arguments. Each ARG is expected to have the following format:
+
+(ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)"
   `(defun ,name ,(remove nil `(,@(mapcar #'(lambda (arg)
                                              (unless (fourth arg)
                                                (car arg)))
@@ -248,6 +267,11 @@ are coerced to floats. For something more complex, try DEFINITIALIZER."
      ,(caar args)))
 
 (defmacro defun-pt-arg0 (name c-fn allocate-form docstring &rest args)
+  "Define a special 'pass-through' function in which the first argument is destructively modified
+unless ALLOCATE-P is T. ALLOCATE-FORM is the form that is evaluated in the latter case. Each ARG is
+expected to have the following format:
+
+(ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)"
   `(defun ,name (,@(mapcar #'car args) &optional allocate-p)
      ,docstring
      ,@(expand-check-types args)
