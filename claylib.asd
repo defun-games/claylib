@@ -101,4 +101,5 @@
                    (:file "28-custom-frame-control")))
                  (:module "shapes"
                   :components
-                  ((:file "02-bouncing-ball")))))))
+                  ((:file "02-bouncing-ball")
+                   (:file "03-colors-palette")))))))
