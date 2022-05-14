@@ -32,7 +32,14 @@
               :reader rot)
    (%thickness :initarg :thickness
                :type (or integer float)
-               :accessor thickness)))
+               :accessor thickness)
+   ;; TODO support custom vertex colors ('EX)
+   (%gradient-style :initarg :gradient-style
+                    :initform nil
+                    :type (or keyword null)
+                    :accessor gradient-style
+                    :documentation
+                    "Whether to draw a gradient horizontally or vertically. Must be :H or :V.")))
 
 (defwriter-float rot rectangle %rotation)
 (defwriter-float thickness rectangle)
@@ -43,10 +50,11 @@
 (default-free rectangle)
 
 (defun make-rectangle (x y width height color
-                       &key (filled t) (rotation 0) (thickness 1)
-                         (origin (make-vector2 0 0)))
-  (make-instance 'rectangle :x x :y y :width width :height height :color color
-                 :filled filled :rot rotation :thickness thickness :origin origin))
+                       &key (color2 nil) (filled t) (rotation 0) (thickness 1)
+                         (origin (make-vector2 0 0)) (gradient-style nil))
+  (make-instance 'rectangle :x x :y y :width width :height height :color color :color2 color2
+                            :filled filled :rot rotation :thickness thickness :origin origin
+                            :gradient-style gradient-style))
 
 (defun make-rectangle-from-vecs (pos size color
                                  &key (filled t) (rotation 0) (thickness 1)
@@ -55,11 +63,23 @@
                  :filled filled :rot rotation :thickness thickness :origin origin))
 
 (defmethod draw-object ((obj rectangle))
-  (if (filled obj)
-      (claylib/ll:draw-rectangle-pro (c-struct obj)
-                                     (c-struct (origin obj))
-                                     (rot obj)
-                                     (c-struct (color obj)))
-      (claylib/ll:draw-rectangle-lines-ex (c-struct obj)
-                                          (thickness obj)
-                                          (c-struct (color obj)))))
+  (cond
+    ((and (filled obj) (color2 obj) (gradient-style obj))
+     (funcall (case (gradient-style obj)
+                (:v #'claylib/ll:draw-rectangle-gradient-v)
+                (:h #'claylib/ll:draw-rectangle-gradient-h))
+              (truncate (x obj))
+              (truncate (y obj))
+              (truncate (width obj))
+              (truncate (height obj))
+              (c-struct (color obj))
+              (c-struct (color2 obj))))
+    ((filled obj)
+     (claylib/ll:draw-rectangle-pro (c-struct obj)
+                                    (c-struct (origin obj))
+                                    (rot obj)
+                                    (c-struct (color obj))))
+    (t
+     (claylib/ll:draw-rectangle-lines-ex (c-struct obj)
+                                         (thickness obj)
+                                         (c-struct (color obj))))))
