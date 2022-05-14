@@ -129,34 +129,36 @@ backing it.'"
            (setf (slot-value ,obj ',(intern (format nil "%~:@a" lisp-slot))) ,value)))
        (setf (c-struct (,lisp-slot ,obj)) (,c-writer (c-struct ,obj))))))
 
-(defun rl-class-p (type)
-  "Determine whether a type represents a Raylib 'mirror' class -- these classes begin with 'RL-' and
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun rl-class-p (type)
+    "Determine whether a type represents a Raylib 'mirror' class -- these classes begin with 'RL-' and
 always have a direct '%C-STRUCT slot."
-  (member-if #'(lambda (slot)
-                 (eql (closer-mop:slot-definition-name slot) '%c-struct))
-             (closer-mop:class-direct-slots (find-class type))))
-
-(defun rl-subclass-p (type)
-  "Determine whether a type represents a Raylib 'mirror' class or subclass -- these classes begin
-with 'RL-' and always have a direct or inherited '%C-STRUCT slot."
-  (let ((class (find-class type)))
     (member-if #'(lambda (slot)
                    (eql (closer-mop:slot-definition-name slot) '%c-struct))
-               (handler-case
-                   (closer-mop:class-slots class)
-                 (error ()
-                   ;; TODO: Kind of a hack but I'm not sure the best place to do this.
-                   (closer-mop:finalize-inheritance class)
-                   (closer-mop:class-slots class))))))
+               (closer-mop:class-direct-slots (find-class type))))
 
-(defun expand-check-types (args &optional allow-null-p)
-  "Expected format per ARG: (ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)"
-  (loop for arg in args
-        collect (destructuring-bind (accessor type &optional coerce-type default-value) arg
-                  (declare (ignore coerce-type default-value))
-                  `(check-type ,accessor ,(if allow-null-p
-                                              `(or ,type null)
-                                              type)))))
+  (defun rl-subclass-p (type)
+    "Determine whether a type represents a Raylib 'mirror' class or subclass -- these classes begin
+with 'RL-' and always have a direct or inherited '%C-STRUCT slot."
+    (let ((class (find-class type)))
+      (member-if #'(lambda (slot)
+                     (eql (closer-mop:slot-definition-name slot) '%c-struct))
+                 (handler-case
+                     (closer-mop:class-slots class)
+                   (error ()
+                     (progn
+                       ;; TODO: Kind of a hack but I'm not sure the best place to do this.
+                       (closer-mop:finalize-inheritance class)
+                       (closer-mop:class-slots class)))))))
+
+  (defun expand-check-types (args &optional allow-null-p)
+    "Expected format per ARG: (ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)"
+    (loop for arg in args
+          collect (destructuring-bind (accessor type &optional coerce-type default-value) arg
+                    (declare (ignore coerce-type default-value))
+                    `(check-type ,accessor ,(if allow-null-p
+                                                `(or ,type null)
+                                                type))))))
 
 (defmacro definitializer (type &rest slots)
   "Define an initialize-instance :after method for a passed type. Each SLOT is expected to have
@@ -224,9 +226,10 @@ are coerced to floats. For something more complex, try DEFINITIALIZER."
         (obj (gensym)))
     `(defmethod free ((,obj ,type))
        (when (eql (,validity-fn ,obj) t)
-         (when (or (and ,window-required-p (is-window-ready-p))
-                   ,(and fn (not window-required-p)))
-           (,fn ,obj))
+         ,(when fn
+            `(when (or (and ,window-required-p (is-window-ready-p))
+                       ,(and fn (not window-required-p)))
+               (,fn ,obj)))
          (autowrap:free ,obj)))))
 
 (defmacro default-slot-value (class slot-name value)
@@ -236,17 +239,18 @@ are coerced to floats. For something more complex, try DEFINITIALIZER."
     `(defmethod slot-unbound (,class ,obj (,slot (eql ',slot-name)))
        (setf (slot-value ,obj ,slot) ,value))))
 
-(defun expand-c-fun-args (args)
-  "Expected format per ARG: (ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)"
-  (loop for arg in args
-        collect (destructuring-bind (accessor type &optional coerce-type default-value) arg
-                  (declare (ignore default-value))
-                  (cond
-                    (coerce-type `(coerce ,accessor ',type))
-                    ((and (subtypep type 'standard-object)
-                          (rl-subclass-p type))
-                     `(c-struct ,accessor))
-                    (t accessor)))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun expand-c-fun-args (args)
+    "Expected format per ARG: (ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)"
+    (loop for arg in args
+          collect (destructuring-bind (accessor type &optional coerce-type default-value) arg
+                    (declare (ignore default-value))
+                    (cond
+                      (coerce-type `(coerce ,accessor ',coerce-type))
+                      ((and (subtypep type 'standard-object)
+                            (rl-subclass-p type))
+                       `(c-struct ,accessor))
+                      (t accessor))))))
 
 (defmacro defun-pt (name c-fn docstring &rest args)
   "Define a 'pass-through' function. These functions are mirrored Raylib functions with minimal

@@ -1,16 +1,17 @@
 (in-package #:claylib)
 
-(defclass rl-camera-2d ()
-  ((%offset :initarg :offset
-            :type rl-vector2
-            :reader offset)
-   (%target :initarg :target
-            :type rl-vector2
-            :reader target)
-   (%c-struct
-    :type claylib/ll:camera2d
-    :initform (autowrap:alloc 'claylib/ll:camera2d)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-camera-2d ()
+    ((%offset :initarg :offset
+              :type rl-vector2
+              :reader offset)
+     (%target :initarg :target
+              :type rl-vector2
+              :reader target)
+     (%c-struct
+      :type claylib/ll:camera2d
+      :initform (autowrap:alloc 'claylib/ll:camera2d)
+      :accessor c-struct))))
 
 (defcreader rot rl-camera-2d rotation camera2d)
 (defcreader zoom rl-camera-2d zoom camera2d)

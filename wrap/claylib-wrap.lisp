@@ -29,6 +29,8 @@
 (autowrap:c-include '(claylib/wrap wrap lib "raymath.h")
                     :release-p t
                     :spec-path '(claylib/wrap wrap spec)
+                    ;; Duplicate definitions from raylib.h
+                    :exclude-definitions ("^Vector2$" "^Vector3$" "^Vector4$" "^Matrix$")
                     ;; Some function names collide with CL
                     :symbol-exceptions (("acos" . "C-ACOS")
                                         ("asin" . "C-ASIN")

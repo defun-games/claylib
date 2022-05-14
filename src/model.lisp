@@ -1,25 +1,26 @@
 (in-package #:claylib)
 
-(defclass rl-model ()
-  ((%transform :initarg :transform
-               :type rl-matrix
-               :reader transform)
-   (%meshes :initarg :meshes
-            ; TODO: type (pointer)
-            :reader meshes)
-   (%materials :initarg :materials
-               ; TODO: type (pointer)
-               :reader materials)
-   (%bones :initarg :bones
-           ; TODO: type (pointer)
-           :reader bones)
-   (%bind-pose :initarg :bind-pose
-               :type rl-transform ; pointer
-               :reader bind-pose)
-   (%c-struct
-    :type claylib/ll:model
-    :initform (autowrap:alloc 'claylib/ll:model)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-model ()
+    ((%transform :initarg :transform
+                 :type rl-matrix
+                 :reader transform)
+     (%meshes :initarg :meshes
+                                        ; TODO: type (pointer)
+              :reader meshes)
+     (%materials :initarg :materials
+                                        ; TODO: type (pointer)
+                 :reader materials)
+     (%bones :initarg :bones
+                                        ; TODO: type (pointer)
+             :reader bones)
+     (%bind-pose :initarg :bind-pose
+                 :type rl-transform ; pointer
+                 :reader bind-pose)
+     (%c-struct
+      :type claylib/ll:model
+      :initform (autowrap:alloc 'claylib/ll:model)
+      :accessor c-struct))))
 
 (defcreader mesh-count rl-model mesh-count model)
 (defcreader material-count rl-model material-count model)

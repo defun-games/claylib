@@ -1,10 +1,11 @@
 (in-package #:claylib)
 
-(defclass rl-color ()
-  ((%c-struct
-    :type claylib/ll:color
-    :initform (autowrap:alloc 'claylib/ll:color)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-color ()
+    ((%c-struct
+      :type claylib/ll:color
+      :initform (autowrap:alloc 'claylib/ll:color)
+      :accessor c-struct))))
 
 (defcreader r rl-color r color)
 (defcreader g rl-color g color)

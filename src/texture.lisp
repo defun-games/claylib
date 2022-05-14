@@ -1,10 +1,11 @@
 (in-package #:claylib)
 
-(defclass rl-image ()
-  ((%c-struct
-    :type claylib/ll:image
-    :initform (autowrap:alloc 'claylib/ll:image)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-image ()
+    ((%c-struct
+      :type claylib/ll:image
+      :initform (autowrap:alloc 'claylib/ll:image)
+      :accessor c-struct))))
 
 (defcreader data rl-image data image) ; pointer
 (defcreader width rl-image width image)

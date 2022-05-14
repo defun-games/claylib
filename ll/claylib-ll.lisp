@@ -44,7 +44,7 @@
 (lisp-bool is-mouse-button-pressed button)
 (lisp-bool is-mouse-button-down button)
 (lisp-bool is-mouse-button-released button)
-(lisp-bool is-mouse-button up button)
+(lisp-bool is-mouse-button-up button)
 
 (lisp-bool is-gesture-detected gesture)
 

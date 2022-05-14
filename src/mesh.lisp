@@ -1,10 +1,11 @@
 (in-package #:claylib)
 
-(defclass rl-mesh ()
-  ((%c-struct
-    :type claylib/ll:mesh
-    :initform (autowrap:alloc 'claylib/ll:mesh)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-mesh ()
+    ((%c-struct
+      :type claylib/ll:mesh
+      :initform (autowrap:alloc 'claylib/ll:mesh)
+      :accessor c-struct))))
 
 (defcreader vertex-count rl-mesh vertex-count mesh)
 (defcreader triangle-count rl-mesh triangle-count mesh)

@@ -1,18 +1,19 @@
 (in-package #:claylib)
 
-(defclass vec () ())
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass vec () ()))
 
 (definitializer vec)
 
 (default-free vec)
 
 
-
-(defclass rl-vector2 (vec)
-  ((%c-struct
-    :type claylib/ll:vector2
-    :initform (autowrap:alloc 'claylib/ll:vector2)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-vector2 (vec)
+    ((%c-struct
+      :type claylib/ll:vector2
+      :initform (autowrap:alloc 'claylib/ll:vector2)
+      :accessor c-struct))))
 
 (defcreader x rl-vector2 x vector2)
 (defcreader y rl-vector2 y vector2)
@@ -46,12 +47,12 @@
   (claylib/ll:vector2-length (c-struct vec)))
 
 
-
-(defclass rl-vector3 (vec)
-  ((%c-struct
-    :type claylib/ll:vector3
-    :initform (autowrap:alloc 'claylib/ll:vector3)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-vector3 (vec)
+    ((%c-struct
+      :type claylib/ll:vector3
+      :initform (autowrap:alloc 'claylib/ll:vector3)
+      :accessor c-struct))))
 
 (defcreader x rl-vector3 x vector3)
 (defcreader y rl-vector3 y vector3)
@@ -69,12 +70,12 @@
   (make-instance 'rl-vector3 :x x :y y :z z))
 
 
-
-(defclass rl-vector4 (vec)
-  ((%c-struct
-    :type claylib/ll:vector4
-    :initform (autowrap:alloc 'claylib/ll:vector4)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-vector4 (vec)
+    ((%c-struct
+      :type claylib/ll:vector4
+      :initform (autowrap:alloc 'claylib/ll:vector4)
+      :accessor c-struct))))
 
 (defcreader x rl-vector4 x vector4)
 (defcreader y rl-vector4 y vector4)

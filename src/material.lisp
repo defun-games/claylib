@@ -35,7 +35,7 @@
 
 (defcwriter value rl-material-map value material-map number float)
 (defcwriter-struct texture rl-material-map texture material-map texture
-  id width height mipmaps format)
+  id width height mipmaps data-format)
 (defcwriter-struct color rl-material-map color material-map color
   r g b a)
 

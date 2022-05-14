@@ -15,7 +15,7 @@
                            (r2 ,(make-rectangle 0 5 5 (- *screen-height* 10) +red+))
                            (r3 ,(make-rectangle (- *screen-width* 5) 5 5 (- *screen-height* 10) +red+))
                            (r4 ,(make-rectangle 0 (- *screen-height* 5) *screen-width* 5 +red+))
-                           (r5 ,(make-rectangle 10 10 250 113 (fade (copy-color +skyblue+) 0.5)))
+                           (r5 ,(make-rectangle 10 10 250 113 (fade +skyblue+ 0.5 t)))
                            (r6 ,(make-rectangle 10 10 250 113 +blue+ :filled nil))
                            (t1 ,(make-text "Free 2d camera controls:"
                                            20 20
