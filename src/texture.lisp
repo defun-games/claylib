@@ -25,14 +25,14 @@
 (default-free-c claylib/ll:image unload-image)
 
 (defun-pt gen-image-checked claylib/ll:gen-image-checked
-  ((image rl-image nil (make-instance 'rl-image))
-   (width integer)
-   (height integer)
-   (checks-x integer)
-   (checks-y integer)
-   (color1 rl-color)
-   (color2 rl-color))
-  "Generate a checkerboard image. Allocates a new RL-IMAGE unless you pass one.")
+  "Generate a checkerboard image. Allocates a new RL-IMAGE unless you pass one."
+  (image rl-image nil (make-instance 'rl-image))
+  (width integer)
+  (height integer)
+  (checks-x integer)
+  (checks-y integer)
+  (color1 rl-color)
+  (color2 rl-color))
 
 
 
@@ -116,9 +116,9 @@
                                (c-struct (tint obj))))
 
 (defun-pt load-texture-from-image claylib/ll:load-texture-from-image
-  ((texture rl-texture nil (make-instance 'rl-texture))
-   (image rl-image))
-  "Load a texture from a passed-in image. Allocates a new RL-TEXTURE unless you pass one.")
+  "Load a texture from a passed-in image. Allocates a new RL-TEXTURE unless you pass one."
+  (texture rl-texture nil (make-instance 'rl-texture))
+  (image rl-image))
 
 
 

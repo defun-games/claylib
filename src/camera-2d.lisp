@@ -43,9 +43,13 @@
                  :zoom zoom))
 
 (defun-pt-arg0 get-world-to-screen-2d claylib/ll:get-world-to-screen2d (make-vector2 0 0)
-  ((vec rl-vector2)
-   (camera rl-camera-2d)))
+  "Get world-to-screen transform, a RL-VECTOR2. Destructively modifies the first arg
+unless ALLOCATE-P is T."
+  (vec rl-vector2)
+  (camera rl-camera-2d))
 
 (defun-pt-arg0 get-screen-to-world-2d claylib/ll:get-screen-to-world2d (make-vector2 0 0)
-  ((vec rl-vector2)
-   (camera rl-camera-2d)))
+  "Get screen-to-world transform, a RL-VECTOR2. Destructively modifies the first arg
+unless ALLOCATE-P is T."
+  (vec rl-vector2)
+  (camera rl-camera-2d))

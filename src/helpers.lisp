@@ -129,6 +129,26 @@ backing it.'"
            (setf (slot-value ,obj ',(intern (format nil "%~:@a" lisp-slot))) ,value)))
        (setf (c-struct (,lisp-slot ,obj)) (,c-writer (c-struct ,obj))))))
 
+(defun rl-class-p (type)
+  (let ((class (find-class type)))
+    (member-if #'(lambda (slot)
+                   (eql (closer-mop:slot-definition-name slot) '%c-struct))
+               (handler-case
+                   (closer-mop:class-slots class)
+                 (error ()
+                   ;; TODO: Kind of a hack but I'm not sure the best place to do this.
+                   (closer-mop:finalize-inheritance class)
+                   (closer-mop:class-slots class))))))
+
+(defun expand-check-types (args &optional allow-null-p)
+  "Expected format per ARG: (ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)"
+  (loop for arg in args
+        collect (destructuring-bind (accessor type &optional coerce-type default-value) arg
+                  (declare (ignore coerce-type default-value))
+                  `(check-type ,accessor ,(if allow-null-p
+                                              `(or ,type null)
+                                              type)))))
+
 (defmacro definitializer (type &rest slots)
   (let ((obj (gensym))
         (ptr (gensym)))
@@ -138,10 +158,7 @@ backing it.'"
                                                                    `(,(car slot) ,(fourth slot))
                                                                    (car slot)))
                                                            slots))
-       ,@(loop for slot in slots
-               collect (destructuring-bind (accessor type &optional coerce-type default-value) slot
-                         (declare (ignore coerce-type default-value))
-                         `(check-type ,accessor (or ,type null))))
+       ,@(expand-check-types slots t)
        ,@(loop for slot in slots
                collect (destructuring-bind (accessor type &optional coerce-type default-value) slot
                          (declare (ignore default-value))
@@ -204,56 +221,38 @@ are coerced to floats. For something more complex, try DEFINITIALIZER."
     `(defmethod slot-unbound (,class ,obj (,slot (eql ',slot-name)))
        (setf (slot-value ,obj ,slot) ,value))))
 
-(defmacro defun-pt (name c-fn args-list &optional docstring)
+(defun expand-c-fun-args (args)
+  "Expected format per ARG: (ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)"
+  (loop for arg in args
+        collect (destructuring-bind (accessor type &optional coerce-type default-value) arg
+                  (declare (ignore default-value))
+                  (cond
+                    (coerce-type `(coerce ,accessor ',type))
+                    ((and (subtypep type 'standard-object)
+                          (rl-class-p type))
+                     `(c-struct ,accessor))
+                    (t accessor)))))
+
+(defmacro defun-pt (name c-fn docstring &rest args)
   `(defun ,name ,(remove nil `(,@(mapcar #'(lambda (arg)
                                              (unless (fourth arg)
                                                (car arg)))
-                                  args-list)
+                                  args)
                                &key ,@(mapcar #'(lambda (arg)
                                                   (when (fourth arg)
                                                     `(,(car arg) ,(fourth arg))))
-                                              args-list)))
+                                              args)))
      ,docstring
-     ,@(mapcar #'(lambda (arg)
-                   `(check-type ,(car arg) ,(cadr arg)))
-               args-list)
-     (,c-fn ,@(mapcar #'(lambda (arg)
-                          (cond
-                            ((third arg) `(coerce ,(car arg) ',(third arg)))
-                            ((and (subtypep (cadr arg) 'standard-object)
-                                  (member-if #'(lambda (slot)
-                                                 (eql (closer-mop:slot-definition-name slot)
-                                                      '%c-struct))
-                                             (handler-case
-                                                 (closer-mop:class-slots (find-class (cadr arg)))
-                                               (error () (closer-mop:class-direct-slots
-                                                          (find-class (cadr arg)))))))
-                             `(c-struct ,(car arg)))
-                            (t (car arg))))
-                      args-list))
-     ,(caar args-list)))
+     ,@(expand-check-types args)
+     (,c-fn ,@(expand-c-fun-args args))
+     ,(caar args)))
 
-(defmacro defun-pt-arg0 (name c-fn allocate-form args-list &optional docstring)
-  `(defun ,name (,@(mapcar #'car args-list) &optional allocate-p)
+(defmacro defun-pt-arg0 (name c-fn allocate-form docstring &rest args)
+  `(defun ,name (,@(mapcar #'car args) &optional allocate-p)
      ,docstring
-     ,@(mapcar #'(lambda (arg)
-                   `(check-type ,(car arg) ,(cadr arg)))
-               args-list)
+     ,@(expand-check-types args)
      (check-type allocate-p boolean)
-     (let ((retval (if allocate-p ,allocate-form ,(caar args-list))))
+     (let ((retval (if allocate-p ,allocate-form ,(caar args))))
        (,c-fn (c-struct retval)
-              ,@(mapcar #'(lambda (arg)
-                            (cond
-                              ((third arg) `(coerce ,(car arg) ',(third arg)))
-                              ((and (subtypep (cadr arg) 'standard-object)
-                                    (member-if #'(lambda (slot)
-                                                   (eql (closer-mop:slot-definition-name slot)
-                                                        '%c-struct))
-                                               (handler-case
-                                                   (closer-mop:class-slots (find-class (cadr arg)))
-                                                 (error () (closer-mop:class-direct-slots
-                                                            (find-class (cadr arg)))))))
-                               `(c-struct ,(car arg)))
-                              (t (car arg))))
-                        args-list))
+              ,@(expand-c-fun-args args))
        retval)))

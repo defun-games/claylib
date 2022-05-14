@@ -28,16 +28,19 @@
   (make-instance 'rl-vector2 :x x :y y))
 
 (defun-pt-arg0 vector2-subtract claylib/ll:vector2-subtract (make-vector2 0 0)
-  ((v1 rl-vector2)
-   (v2 rl-vector2)))
+  "Subtract two RL-VECTOR2s. Destructively modifies the first arg unless ALLOCATE-P is T."
+  (v1 rl-vector2)
+  (v2 rl-vector2))
 
 (defun-pt-arg0 vector2-add claylib/ll:vector2-add (make-vector2 0 0)
-  ((v1 rl-vector2)
-   (v2 rl-vector2)))
+  "Add two RL-VECTOR2s. Destructively modifies the first arg unless ALLOCATE-P is T."
+  (v1 rl-vector2)
+  (v2 rl-vector2))
 
 (defun-pt-arg0 vector2-scale claylib/ll:vector2-scale (make-vector2 0 0)
-  ((vec rl-vector2)
-   (scale number float)))
+  "Scale a RL-VECTOR2. Destructively modifies the first arg unless ALLOCATE-P is T."
+  (vec rl-vector2)
+  (scale number float))
 
 (defun vector2-length (vec)
   (claylib/ll:vector2-length (c-struct vec)))
@@ -92,11 +95,13 @@
   (make-instance 'rl-vector4 :x x :y y :z z :w w))
 
 (defun-pt quaternion-from-euler claylib/ll:quaternion-from-euler
-  ((quat rl-vector4 nil (make-vector4 0 0 0 0))
-   (pitch number float)
-   (yaw number float)
-   (roll number float)))
+  "Calculate a quaternion from PITCH, YAW, and ROLL. Allocates a new RL-VECTOR4 unless you pass one."
+  (quat rl-vector4 nil (make-vector4 0 0 0 0))
+  (pitch number float)
+  (yaw number float)
+  (roll number float))
 
 (defun-pt quaternion-to-euler claylib/ll:quaternion-to-euler
-  ((vec rl-vector3 nil (make-vector3 0 0 0))
-   (quat rl-vector4)))
+  "Convert a quaternion (RL-VECTOR4) to a RL-VECTOR3. Allocates a new RL-VECTOR3 unless you pass one."
+  (vec rl-vector3 nil (make-vector3 0 0 0))
+  (quat rl-vector4))

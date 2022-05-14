@@ -25,10 +25,10 @@
   (make-instance 'rl-color :r r :g g :b b :a a))
 
 (defun-pt-arg0 fade claylib/ll:fade (make-color 0 0 0)
-  ((color rl-color)
-   (alpha number float))
-  "Destructively fade a color in/out to a specified alpha value, unless ALLOCATE-P is non-NIL,
-in which case create a new COLOR object as the return value.")
+  "Destructively fade a color in/out to a specified alpha value, unless ALLOCATE-P is T,
+in which case create a new COLOR object as the return value."
+  (color rl-color)
+  (alpha number float))
 
 (defun copy-color (color)
   (if (typep color 'rl-color)

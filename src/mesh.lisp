@@ -51,15 +51,15 @@
 (default-free-c claylib/ll:mesh unload-mesh)
 
 (defun-pt gen-mesh-cylinder claylib/ll:gen-mesh-cylinder
-  ((mesh rl-mesh nil (make-instance 'rl-mesh))
-   (radius number float)
-   (height number float)
-   (slices integer))
-  "Generate a mesh cylinder. Allocates a new RL-MESH unless you pass one.")
+  "Generate a mesh cylinder. Allocates a new RL-MESH unless you pass one."
+  (mesh rl-mesh nil (make-instance 'rl-mesh))
+  (radius number float)
+  (height number float)
+  (slices integer))
 
 (defun-pt gen-mesh-cube claylib/ll:gen-mesh-cube
-  ((mesh rl-mesh nil (make-instance 'rl-mesh))
-   (width number float)
-   (height number float)
-   (length number float))
-  "Generate a mesh rectangular prism, a.k.a. 'cube.' Allocates a new RL-MESH unless you pass one.")
+  "Generate a mesh rectangular prism, a.k.a. 'cube.' Allocates a new RL-MESH unless you pass one."
+  (mesh rl-mesh nil (make-instance 'rl-mesh))
+  (width number float)
+  (height number float)
+  (length number float))

@@ -37,8 +37,8 @@
                  :normal normal))
 
 (defun-pt get-ray-collision-box claylib/ll:get-ray-collision-box
-  ((rc rl-ray-collision nil (make-ray-collision 0 0 0 0 0 0))
-   (ray ray)
-   (box rl-bounding-box))
   "Gets a collision box for the passed ray and bounding box.
-Allocates a new RAY-COLLISION unless you pass one.")
+Allocates a new RAY-COLLISION unless you pass one."
+  (rc rl-ray-collision nil (make-ray-collision 0 0 0 0 0 0))
+  (ray ray)
+  (box rl-bounding-box))
