@@ -71,10 +71,12 @@
     (draw-object (scene-object scene obj))))
 
 (defun draw-scene-all (scene)
+  "Draw all the objects in the given SCENE."
   (dolist (obj (nreverse (alexandria:hash-table-values (objects scene))))
     (draw-object obj)))
 
 (defun draw-scene-except (scene &rest names)
+  "Draw all the objects in the given SCENE except those specified as one of NAMES."
   (dolist (obj (remove-if (lambda (kv)
                             (member (car kv) names))
                           (nreverse (alexandria:hash-table-alist (objects scene)))))
