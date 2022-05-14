@@ -5,10 +5,7 @@
     (let ((scene
             (make-scene ()
                         `(,@(loop for i = 0 then (1+ i)
-                                  for name = (intern (concatenate
-                                                      'string
-                                                      "line-"
-                                                      (write-to-string i)))
+                                  for name = (gensym "LINE")
                                   until (> i (/ (get-screen-width) 200))
                                   collect `(,name ,(make-rectangle (* 200 i)
                                                     0
