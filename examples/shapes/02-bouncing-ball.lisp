@@ -1,33 +1,33 @@
 (in-package #:claylib/examples)
 
 (defclass ball (circle)
-  ((%speed :initarg :speed
+  ((%velocity :initarg :velocity
            :type rl-vector2
-           :reader speed)))
+           :reader velocity)))
 
 (defun make-ball (x y radius color vx vy &key (filled t))
-  "Make an BALL instance where VX and XY are the x and y components of the BALL's SPEED."
+  "Make an BALL instance where VX and XY are the x and y components of the BALL's VELOCITY."
   (make-instance 'ball
                  :pos (make-vector2 x y)
                  :radius radius
                  :color color
-                 :speed (make-vector2 vx vy)
+                 :velocity (make-vector2 vx vy)
                  :filled filled))
 
 (defun move-ball (ball)
-  "Update BALL position based on its speed."
-  (incf (x ball) (x (speed ball)))
-  (incf (y ball) (y (speed ball))))
+  "Update BALL position based on its velocity."
+  (incf (x ball) (x (velocity ball)))
+  (incf (y ball) (y (velocity ball))))
 
 (defun bounce-ball (ball screen-width screen-height)
-  "Negate the speed of the given BALL to make it bounce off the edges of the screen."
+  "Negate the velocity of the given BALL to make it bounce off the edges of the screen."
   (let ((x (x ball))
         (y (y ball))
         (radius (radius ball)))
     (when (or (>= x (- screen-width radius)) (<= x radius))
-      (setf (x (speed ball)) (- (x (speed ball)))))
+      (setf (x (velocity ball)) (- (x (velocity ball)))))
     (when (or (>= y (- screen-height radius)) (<= y radius))
-      (setf (y (speed ball)) (- (y (speed ball)))))))
+      (setf (y (velocity ball)) (- (y (velocity ball)))))))
 
 (defun example-shapes-02 ()
   (with-window (:title "raylib [shapes] example - bouncing ball")
