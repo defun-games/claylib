@@ -31,6 +31,33 @@ TODO Is there an easier way using CLAYLIB/LL:CHECK-COLLISION-POINT-REC?"
                                       100
                                       100
                                       color)))
+           (black-recs (loop for rect in color-recs
+                             collect (make-rectangle (x rect)
+                                                     (+ (y rect)
+                                                        (height rect)
+                                                        (- 26))
+                                                     (width rect)
+                                                     20
+                                                     +black+)))
+           (outline-recs (loop for rect in color-recs
+                               collect (make-rectangle (x rect)
+                                                       (y rect)
+                                                       (width rect)
+                                                       (height rect)
+                                                       (fade +black+ 0.3 t)
+                                                       :filled nil
+                                                       :thickness 6)))
+           (text-labels (loop for rect in color-recs
+                              for color in colors
+                              for color-name in color-names
+                              collect (make-text color-name
+                                                 (+ (x rect)
+                                                    (width rect)
+                                                    (- (measure-text color-name 10))
+                                                    (- 12))
+                                                 (+ (y rect) (height rect) (- 20))
+                                                 :size 10
+                                                 :color color)))
            (scene (make-scene ()
                               `((text ,(make-text "claylib colors palette"
                                                   28
@@ -59,6 +86,9 @@ TODO Is there an easier way using CLAYLIB/LL:CHECK-COLLISION-POINT-REC?"
           (with-drawing
             (draw-scene-all scene)
             (loop for rect in color-recs
+                  for black-rect in black-recs
+                  for outline-rect in outline-recs
+                  for label in text-labels
                   for i from 0 below (length color-recs)
                   for mouse-over-p = (check-collision-point-rec mouse-point rect)
                   do (when mouse-over-p
@@ -66,25 +96,6 @@ TODO Is there an easier way using CLAYLIB/LL:CHECK-COLLISION-POINT-REC?"
                        (setf (color rect) (fade (color rect) 0.6 t)))
                      (draw-object rect)
                      (when (or (is-key-down-p +key-space+) mouse-over-p)
-                       (draw-object (make-rectangle (x rect)
-                                                    (+ (y rect)
-                                                       (height rect)
-                                                       (- 26))
-                                                    (width rect)
-                                                    20
-                                                    +black+))
-                       (draw-object (make-rectangle (x rect)
-                                                    (y rect)
-                                                    (width rect)
-                                                    (height rect)
-                                                    (fade +black+ 0.3 t)
-                                                    :filled nil
-                                                    :thickness 6))
-                       (draw-object (make-text (nth i color-names)
-                                               (+ (x rect)
-                                                  (width rect)
-                                                  (- (measure-text (nth i color-names) 10))
-                                                  (- 12))
-                                               (+ (y rect) (height rect) (- 20))
-                                               :size 10
-                                               :color (nth i colors)))))))))))
+                       (draw-object black-rect)
+                       (draw-object outline-rect)
+                       (draw-object label)))))))))
