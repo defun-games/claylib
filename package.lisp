@@ -74,7 +74,7 @@
    :text :rectangle :rl-rectangle :circle :cube :grid :rl-vector2 :rl-vector3 :rl-vector4 :rl-color
    :line-2d :rl-camera-3d :camera-3d :rl-camera-2d :plane :rl-ray :ray :rl-ray-collision :rl-bounding-box
    :rl-texture :texture :rl-transform :rl-model :model :rl-mesh :rl-shader :rl-material-map :rl-material
-   :rl-matrix
+   :rl-matrix :triangle
    
    ;; Misc. convenience wrappers
    :with-window :do-game-loop :with-drawing :is-key-pressed-p :is-gesture-detected-p :is-key-down-p
@@ -83,7 +83,7 @@
    :make-camera-3d-from-vecs :make-camera-2d :make-camera-2d-from-vecs :make-color :make-rectangle
    :make-rectangle-from-vecs :make-circle :make-grid :make-cube :make-cube-from-vecs :make-text
    :make-line-2d :with-2d-mode :with-3d-mode :make-plane :make-ray :make-ray-collision :with-texture-mode
-   :with-scissor-mode :make-zero-matrix :is-window-state-p
+   :with-scissor-mode :make-zero-matrix :is-window-state-p :make-triangle :make-triangle-from-vecs
    
    ;; Scenes
    :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
@@ -91,7 +91,7 @@
    
    ;; Generic functions/methods
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
-   :hit :low :high :r :g :b :a :dest :filter :origin :source :tint :radius
+   :hit :low :high :r :g :b :a :dest :filter :origin :source :tint :radius :x3 :y3 :v1 :v2 :v3
 
    ;; Math
    :vector2-subtract :vector2-add :vector2-scale :vector2-length

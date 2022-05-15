@@ -45,6 +45,7 @@
                              (:file "game-object")
                              (:file "shape")
                              (:file "circle")
+                             (:file "triangle")
                              (:file "grid")
                              (:file "matrix")
                              (:file "plane")
