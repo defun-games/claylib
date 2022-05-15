@@ -21,6 +21,7 @@
    :clear-background :begin-drawing :end-drawing :begin-mode2d :end-mode2d :begin-mode3d :end-mode3d
    :begin-texture-mode :end-texture-mode :begin-shader-mode :end-shader-mode :begin-blend-mode
    :end-blend-mode :begin-scissor-mode :end-scissor-mode :begin-vr-stereo-mode :end-vr-stereo-mode
+   :swap-screen-buffer
 
    ;; VR stereo config functions for VR simulator
    :load-vr-stereo-config :unload-vr-stereo-config
@@ -35,7 +36,7 @@
    :get-world-to-screen2d :get-screen-to-world2d
 
    ;; Timing-related functions
-   :set-target-fps :get-fps :get-frame-time :get-time
+   :set-target-fps :get-fps :get-frame-time :get-time :wait-time
 
    ;; Misc. functions
    :get-random-value :set-random-seed :take-screenshot :set-config-flags :trage-log :set-trace-log
