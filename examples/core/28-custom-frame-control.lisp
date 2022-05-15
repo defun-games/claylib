@@ -98,14 +98,14 @@ independently of the frame rate."
           (with-drawing
             (draw-scene-all scene))
 
-          (claylib/wrap:swap-screen-buffer)
+          (claylib/ll:swap-screen-buffer)
 
           (setf current-time (get-time))
           (setf update-draw-time (- current-time previous-time))
 
           (if (> target-fps 0)
               (when (> (setf wait-time (- (/ 1.0 target-fps) update-draw-time)) 0)
-                (claylib/wrap:wait-time (coerce (* wait-time 1000) 'single-float))
+                (claylib/ll:wait-time (coerce (* wait-time 1000) 'single-float))
                 (setf current-time (get-time))
                 (setf delta-time (- current-time previous-time)))
               (setf delta-time update-draw-time)))))))
