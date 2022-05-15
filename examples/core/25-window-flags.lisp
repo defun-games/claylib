@@ -105,7 +105,7 @@
                     (height (scene-object scene 'rect)) (get-screen-height)
                     (text (scene-object scene 'header))
                     (format nil "Screen size: [~d, ~d]" (get-screen-width) (get-screen-height)))
-              (get-mouse-position (pos (scene-object scene 'mouse)))
+              (get-mouse-position :vec (pos (scene-object scene 'mouse)))
               (adjust-text +flag-fullscreen-mode+
                            (scene-object scene 'flag-fullscreen)
                            "[F] FLAG_FULLSCREEN_MODE")

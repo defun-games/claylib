@@ -53,14 +53,14 @@
             (decf (z v1) 2pi))
 
           (quaternion-from-euler (x v1) (y v1) (z v1) :quat q1)
-          (matrix-rotate-zyx v1 m1)
-          (quaternion-to-matrix q1 m2)
+          (matrix-rotate-zyx v1 :matrix m1)
+          (quaternion-to-matrix q1 :matrix m2)
 
-          (quaternion-from-matrix m1 q1)
-          (quaternion-to-matrix q1 m3)
+          (quaternion-from-matrix m1 :quat q1)
+          (quaternion-to-matrix q1 :matrix m3)
 
           (quaternion-to-euler q1 :vec v2)
-          (matrix-rotate-zyx v2 m4)
+          (matrix-rotate-zyx v2 :matrix m4)
 
           (with-drawing
             (with-3d-mode camera

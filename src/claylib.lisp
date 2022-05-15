@@ -15,13 +15,6 @@
 
 
 
-(defun get-mouse-position (&optional vec)
-  "Gets the mouse position. This will allocate a new VECTOR2 by default unless you pass VEC."
-  (check-type vec (or null rl-vector2))
-  (let ((vec (or vec (make-vector2 0 0))))
-    (claylib/ll:get-mouse-position (c-struct vec))
-    vec))
-
 
 
 

@@ -1,11 +1,10 @@
 (in-package #:claylib)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-image ()
-    ((%c-struct
-      :type claylib/ll:image
-      :initform (autowrap:alloc 'claylib/ll:image)
-      :accessor c-struct))))
+(defclass rl-image ()
+  ((%c-struct
+    :type claylib/ll:image
+    :initform (autowrap:alloc 'claylib/ll:image)
+    :accessor c-struct)))
 
 (defcreader data rl-image data image) ; pointer
 (defcreader width rl-image width image)
@@ -24,16 +23,6 @@
 
 (default-free rl-image)
 (default-free-c claylib/ll:image unload-image)
-
-(defun-pt gen-image-checked claylib/ll:gen-image-checked
-  "Generate a checkerboard image. Allocates a new RL-IMAGE unless you pass one."
-  (image rl-image nil (make-instance 'rl-image))
-  (width integer)
-  (height integer)
-  (checks-x integer)
-  (checks-y integer)
-  (color1 rl-color)
-  (color2 rl-color))
 
 
 
@@ -116,11 +105,6 @@
                                (rot obj)
                                (c-struct (tint obj))))
 
-(defun-pt load-texture-from-image claylib/ll:load-texture-from-image
-  "Load a texture from a passed-in image. Allocates a new RL-TEXTURE unless you pass one."
-  (texture rl-texture nil (make-instance 'rl-texture))
-  (image rl-image))
-
 
 
 (defclass rl-render-texture ()
@@ -148,18 +132,3 @@
 
 (default-free rl-render-texture)
 (default-free-c claylib/ll:render-texture unload-render-texture)
-
-(defun load-render-texture (width height &key (rt (make-instance 'rl-render-texture)))
-  (check-type width integer)
-  (check-type height integer)
-  (check-type rt rl-render-texture)
-  (claylib/ll:load-render-texture (c-struct rt) width height)
-  (unless (slot-boundp rt '%texture)
-    (setf (slot-value rt '%texture) (make-instance 'texture)
-          (c-struct (texture rt)) (claylib/ll:render-texture.texture (c-struct rt))))
-  (set-slot :texture rt (texture rt) :free :never)
-  (unless (slot-boundp rt '%depth)
-    (setf (slot-value rt '%depth) (make-instance 'texture)
-          (c-struct (texture rt)) (claylib/ll:render-texture.texture (c-struct rt))))
-  (set-slot :depth rt (make-instance 'texture) :free :never)
-  rt)

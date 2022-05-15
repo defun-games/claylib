@@ -1,17 +1,16 @@
 (in-package #:claylib)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-ray-collision ()
-    ((%point :initarg :point
-             :type rl-vector3
-             :reader point)
-     (%normal :initarg :normal
-              :type rl-vector3
-              :reader normal)
-     (%c-struct
-      :type claylib/ll:ray-collision
-      :initform (autowrap:alloc 'claylib/ll:ray-collision)
-      :accessor c-struct))))
+(defclass rl-ray-collision ()
+  ((%point :initarg :point
+           :type rl-vector3
+           :reader point)
+   (%normal :initarg :normal
+            :type rl-vector3
+            :reader normal)
+   (%c-struct
+    :type claylib/ll:ray-collision
+    :initform (autowrap:alloc 'claylib/ll:ray-collision)
+    :accessor c-struct)))
 
 (defcreader-bool hit rl-ray-collision hit ray-collision)
 (defcreader distance rl-ray-collision distance ray-collision)
@@ -36,10 +35,3 @@
   (make-instance 'rl-ray-collision
                  :point point
                  :normal normal))
-
-(defun-pt get-ray-collision-box claylib/ll:get-ray-collision-box
-  "Gets a collision box for the passed ray and bounding box.
-Allocates a new RAY-COLLISION unless you pass one."
-  (rc rl-ray-collision nil (make-ray-collision 0 0 0 0 0 0))
-  (ray ray)
-  (box rl-bounding-box))

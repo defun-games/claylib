@@ -1,11 +1,10 @@
 (in-package #:claylib)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-mesh ()
-    ((%c-struct
-      :type claylib/ll:mesh
-      :initform (autowrap:alloc 'claylib/ll:mesh)
-      :accessor c-struct))))
+(defclass rl-mesh ()
+  ((%c-struct
+    :type claylib/ll:mesh
+    :initform (autowrap:alloc 'claylib/ll:mesh)
+    :accessor c-struct)))
 
 (defcreader vertex-count rl-mesh vertex-count mesh)
 (defcreader triangle-count rl-mesh triangle-count mesh)
@@ -50,17 +49,3 @@
 
 (default-free rl-mesh)
 (default-free-c claylib/ll:mesh unload-mesh)
-
-(defun-pt gen-mesh-cylinder claylib/ll:gen-mesh-cylinder
-  "Generate a mesh cylinder. Allocates a new RL-MESH unless you pass one."
-  (mesh rl-mesh nil (make-instance 'rl-mesh))
-  (radius number float)
-  (height number float)
-  (slices integer))
-
-(defun-pt gen-mesh-cube claylib/ll:gen-mesh-cube
-  "Generate a mesh rectangular prism, a.k.a. 'cube.' Allocates a new RL-MESH unless you pass one."
-  (mesh rl-mesh nil (make-instance 'rl-mesh))
-  (width number float)
-  (height number float)
-  (length number float))

@@ -1,26 +1,25 @@
 (in-package #:claylib)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-model ()
-    ((%transform :initarg :transform
-                 :type rl-matrix
-                 :reader transform)
-     (%meshes :initarg :meshes
+(defclass rl-model ()
+  ((%transform :initarg :transform
+               :type rl-matrix
+               :reader transform)
+   (%meshes :initarg :meshes
                                         ; TODO: type (pointer)
-              :reader meshes)
-     (%materials :initarg :materials
+            :reader meshes)
+   (%materials :initarg :materials
                                         ; TODO: type (pointer)
-                 :reader materials)
-     (%bones :initarg :bones
+               :reader materials)
+   (%bones :initarg :bones
                                         ; TODO: type (pointer)
-             :reader bones)
-     (%bind-pose :initarg :bind-pose
-                 :type rl-transform ; pointer
-                 :reader bind-pose)
-     (%c-struct
-      :type claylib/ll:model
-      :initform (autowrap:alloc 'claylib/ll:model)
-      :accessor c-struct))))
+           :reader bones)
+   (%bind-pose :initarg :bind-pose
+               :type rl-transform ; pointer
+               :reader bind-pose)
+   (%c-struct
+    :type claylib/ll:model
+    :initform (autowrap:alloc 'claylib/ll:model)
+    :accessor c-struct)))
 
 (defcreader mesh-count rl-model mesh-count model)
 (defcreader material-count rl-model material-count model)
@@ -50,11 +49,6 @@
 
 (default-free rl-model)
 (default-free-c claylib/ll:model unload-model t)
-
-(defun-pt load-model-from-mesh claylib/ll:load-model-from-mesh
-  "Load a model from a passed-in mesh. Allocates a new RL-MODEL unless you pass one."
-  (model rl-model nil (make-instance 'rl-model))
-  (mesh rl-mesh))
 
 
 

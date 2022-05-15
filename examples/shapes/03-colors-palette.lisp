@@ -76,7 +76,7 @@ TODO Is there an easier way using CLAYLIB/LL:CHECK-COLLISION-POINT-REC?"
                                                        :initial-element 0))
                               (mouse-point (make-vector2 0 0))
                               (faded-rect-color nil)))
-          (get-mouse-position mouse-point)
+          (get-mouse-position :vec mouse-point)
 
           ;; restore original color if there was a faded rect
           (when faded-rect-color

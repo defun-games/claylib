@@ -111,4 +111,4 @@
    :+flag-window-unfocused+ :+flag-window-topmost+ :+flag-window-always-run+ :minimize-window
    :restore-window :maximize-window :+flag-window-transparent+ :+flag-fullscreen-mode+
    :+flag-window-highdpi+ :+flag-msaa-4x-hint+ :gen-image-checked :load-texture-from-image
-   :+texture-filter-anisotropic-16x+ :+texture-wrap-clamp+ :get-time))
+   :+texture-filter-anisotropic-16x+ :+texture-wrap-clamp+ :get-time :wait-time :swap-screen-buffer))

@@ -1,17 +1,16 @@
 (in-package #:claylib)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-ray ()
-    ((%position :initarg :pos
-                :type rl-vector3
-                :reader pos)
-     (%direction :initarg :dir
-                 :type rl-vector3
-                 :reader dir)
-     (%c-struct
-      :type claylib/ll:ray
-      :initform (autowrap:alloc 'claylib/ll:ray)
-      :accessor c-struct))))
+(defclass rl-ray ()
+  ((%position :initarg :pos
+              :type rl-vector3
+              :reader pos)
+   (%direction :initarg :dir
+               :type rl-vector3
+               :reader dir)
+   (%c-struct
+    :type claylib/ll:ray
+    :initform (autowrap:alloc 'claylib/ll:ray)
+    :accessor c-struct)))
 
 (defreader x rl-ray x pos)
 (defreader y rl-ray y pos)
@@ -29,11 +28,11 @@
 (default-free-c claylib/ll:ray)
 
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass ray (rl-ray)
-    ((%color :initarg :color
-             :type rl-color
-             :accessor color))))
+
+(defclass ray (rl-ray)
+  ((%color :initarg :color
+           :type rl-color
+           :accessor color)))
 
 (definitializer ray (color rl-color nil))
 
@@ -53,9 +52,3 @@
 
 (defmethod draw-object ((obj ray))
   (claylib/ll:draw-ray (c-struct obj) (c-struct (color obj))))
-
-(defun-pt get-mouse-ray claylib/ll:get-mouse-ray
-  "Gets a mouse ray for the passed mouse position and camera. Allocates a new RAY unless you pass one."
-  (ray ray nil (make-ray 0 0 0 0 0 0 +black+))
-  (mouse-pos rl-vector2)
-  (camera camera-3d))

@@ -1,17 +1,16 @@
 (in-package #:claylib)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-camera-2d ()
-    ((%offset :initarg :offset
-              :type rl-vector2
-              :reader offset)
-     (%target :initarg :target
-              :type rl-vector2
-              :reader target)
-     (%c-struct
-      :type claylib/ll:camera2d
-      :initform (autowrap:alloc 'claylib/ll:camera2d)
-      :accessor c-struct))))
+(defclass rl-camera-2d ()
+  ((%offset :initarg :offset
+            :type rl-vector2
+            :reader offset)
+   (%target :initarg :target
+            :type rl-vector2
+            :reader target)
+   (%c-struct
+    :type claylib/ll:camera2d
+    :initform (autowrap:alloc 'claylib/ll:camera2d)
+    :accessor c-struct)))
 
 (defcreader rot rl-camera-2d rotation camera2d)
 (defcreader zoom rl-camera-2d zoom camera2d)
@@ -42,15 +41,3 @@
                  :target target
                  :rot rot
                  :zoom zoom))
-
-(defun-pt-arg0 get-world-to-screen-2d claylib/ll:get-world-to-screen2d (make-vector2 0 0)
-  "Get world-to-screen transform, a RL-VECTOR2. Destructively modifies the first arg
-unless ALLOCATE-P is T."
-  (vec rl-vector2)
-  (camera rl-camera-2d))
-
-(defun-pt-arg0 get-screen-to-world-2d claylib/ll:get-screen-to-world2d (make-vector2 0 0)
-  "Get screen-to-world transform, a RL-VECTOR2. Destructively modifies the first arg
-unless ALLOCATE-P is T."
-  (vec rl-vector2)
-  (camera rl-camera-2d))

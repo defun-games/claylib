@@ -67,24 +67,3 @@
                  :m4 0 :m5 0 :m6 0 :m7 0
                  :m8 0 :m9 0 :m10 0 :m11 0
                  :m12 0 :m13 0 :m14 0 :m15 0))
-
-(defun matrix-rotate-zyx (ang &optional (matrix (make-zero-matrix)))
-  (check-type ang rl-vector3)
-  (check-type matrix rl-matrix)
-  (claylib/ll:matrix-rotate-zyx (c-struct matrix)
-                                (c-struct ang))
-  matrix)
-
-(defun quaternion-to-matrix (quat &optional (matrix (make-zero-matrix)))
-  (check-type quat rl-vector4)
-  (check-type matrix rl-matrix)
-  (claylib/ll:quaternion-to-matrix (c-struct matrix)
-                                   (c-struct quat))
-  matrix)
-
-(defun quaternion-from-matrix (matrix &optional (quat (make-vector4 0 0 0 0)))
-  (check-type matrix rl-matrix)
-  (check-type quat rl-vector4)
-  (claylib/ll:quaternion-from-matrix (c-struct quat)
-                                     (c-struct matrix))
-  quat)

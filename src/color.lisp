@@ -1,11 +1,10 @@
 (in-package #:claylib)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-color ()
-    ((%c-struct
-      :type claylib/ll:color
-      :initform (autowrap:alloc 'claylib/ll:color)
-      :accessor c-struct))))
+(defclass rl-color ()
+  ((%c-struct
+    :type claylib/ll:color
+    :initform (autowrap:alloc 'claylib/ll:color)
+    :accessor c-struct)))
 
 (defcreader r rl-color r color)
 (defcreader g rl-color g color)
@@ -24,12 +23,6 @@
 
 (defun make-color (r g b &optional (a 255))
   (make-instance 'rl-color :r r :g g :b b :a a))
-
-(defun-pt-arg0 fade claylib/ll:fade (make-color 0 0 0)
-  "Destructively fade a color in/out to a specified alpha value, unless ALLOCATE-P is T,
-in which case create a new COLOR object as the return value."
-  (color rl-color)
-  (alpha number float))
 
 (defun copy-color (color)
   (if (typep color 'rl-color)

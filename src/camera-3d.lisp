@@ -1,20 +1,19 @@
 (in-package #:claylib)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-camera-3d ()
-    ((%position :initarg :pos
-                :type rl-vector3
-                :reader pos)
-     (%target :initarg :target
+(defclass rl-camera-3d ()
+  ((%position :initarg :pos
               :type rl-vector3
-              :reader target)
-     (%up :initarg :up
-          :type rl-vector3
-          :reader up)
-     (%c-struct
-      :type claylib/ll:camera3d
-      :initform (autowrap:alloc 'claylib/ll:camera3d)
-      :accessor c-struct))))
+              :reader pos)
+   (%target :initarg :target
+            :type rl-vector3
+            :reader target)
+   (%up :initarg :up
+        :type rl-vector3
+        :reader up)
+   (%c-struct
+    :type claylib/ll:camera3d
+    :initform (autowrap:alloc 'claylib/ll:camera3d)
+    :accessor c-struct)))
 
 (defreader x rl-camera-3d x pos)
 (defreader y rl-camera-3d y pos)
@@ -39,11 +38,11 @@
 
 
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass camera-3d (rl-camera-3d)
-    ((%mode :initarg :mode
-            :type integer
-            :reader mode))))
+
+(defclass camera-3d (rl-camera-3d)
+  ((%mode :initarg :mode
+          :type integer
+          :reader mode)))
 
 (defmethod (setf mode) ((value integer) (camera camera-3d))
   (claylib/ll:set-camera-mode (c-struct camera) value)
@@ -78,14 +77,3 @@
                  :fovy fovy
                  :projection projection
                  :mode mode))
-
-(defun update-camera (camera)
-  (claylib/ll:update-camera (c-struct camera)))
-
-(defun-pt get-world-to-screen-3d claylib/ll:get-world-to-screen-ex
-  "Get world-to-screen transform of a 3D camera. Allocates a new VECTOR2 unless you pass one."
-  (vec rl-vector2 nil (make-vector2 0 0))
-  (position rl-vector3)
-  (camera camera-3d)
-  (width integer nil *screen-width*)
-  (height integer nil *screen-height*))
