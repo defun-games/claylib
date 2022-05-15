@@ -1,0 +1,11 @@
+--- lib/raygui.h.orig	2022-05-15 16:10:33.857730699 +0000
++++ lib/raygui.h	2022-05-15 16:10:55.817730466 +0000
+@@ -194,6 +194,8 @@
+     #include "raylib.h"
+ #endif
+ 
++#define RAYGUI_IMPLEMENTATION
++
+ // Function specifiers in case library is build/used as a shared library (Windows)
+ // NOTE: Microsoft specifiers to tell compiler that symbols are imported/exported from a .dll
+ #if defined(_WIN32)

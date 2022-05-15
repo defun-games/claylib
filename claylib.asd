@@ -3,14 +3,14 @@
 (asdf:defsystem #:claylib/wrap
   :description "Autowrapped Raylib + bug fixes"
   :author "(defun games ()) <hello@defungames.com>"
-  :license  "TODO"
+  :license  "zlib"
   :version "0.0.1"
   :serial t
   :depends-on (#:cl-autowrap/libffi)
   :components ((:module "wrap"
                 :components
                 ((:module "lib"
-                  :components ((:static-file "raylib.h")
+                  :components ((:static-file "raygui.h")
                                (:static-file "raymath.h")))
                  (:module "spec")
                  (:file "package")
@@ -19,7 +19,7 @@
 (asdf:defsystem #:claylib/ll
   :description "Raylib C semantics with Lispy convenience wrappers"
   :author "(defun games ()) <hello@defungames.com>"
-  :license "TODO"
+  :license "zlib"
   :version "0.0.1"
   :serial t
   :depends-on (#:claylib/wrap #:cl-plus-c)
@@ -31,7 +31,7 @@
 (asdf:defsystem #:claylib
   :description "Lispy game toolkit built on top of Raylib"
   :author "(defun games ()) <hello@defungames.com>"
-  :license "TODO"
+  :license "zlib"
   :version "0.0.1"
   :serial t
   :depends-on (#:claylib/ll #:cl-plus-c #:trivial-garbage #:livesupport #:closer-mop)
@@ -71,7 +71,7 @@
 (asdf:defsystem #:claylib/examples
   :description "Claylib examples, remixed from the original Raylib C versions"
   :author "(defun games ()) <hello@defungames.com>"
-  :license "TODO"
+  :license "zlib"
   :version "0.0.1"
   :serial t
   :depends-on (#:claylib)
