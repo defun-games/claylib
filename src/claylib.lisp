@@ -75,6 +75,13 @@
             :type pathname
             :accessor fspath)))
 
+(defmethod load-asset ((asset shader) &key force-reload)
+  (if (or force-reload (null (ptr asset)))
+      (c-let ((c claylib/ll:shader))
+        (claylib/ll:load-shader c (vspath asset) (fspath asset))
+        (setf (ptr asset) (autowrap:ptr c)))
+      (ptr asset)))
+
 (defmethod free ((asset shader))
   (claylib/ll:unload-shader (c-ref (ptr asset) claylib/ll:shader))
   (setf (ptr asset) nil))
@@ -92,68 +99,21 @@
     :type integer
     :accessor num)))
 
+(defmethod load-asset ((asset model-animation) &key force-reload)
+  (if (or force-reload (null (ptr asset)))
+      (c-let ((c claylib/ll:model-animation)
+              (i :int))
+        (setf c (claylib/ll:load-model-animations (path asset) (i &))
+              (ptr asset) (autowrap:ptr c)
+              (num asset) i))
+      (ptr asset)))
+
 (defmethod free ((asset model-animation))
   (claylib/ll:unload-model-animations (c-ref (ptr asset) claylib/ll:model-animation) (num asset))
   (setf (ptr asset) nil))
 
 (defmethod initialize-instance :after ((anim model-animation) &key load-now)
   (when load-now (load-model-animation anim)))
-
-
-
-
-
-
-
-
-;; TODO: Free old memory when using :force-reload t
-;; TODO: unload-* functions
-
-(defun load-font (obj &key force-reload)
-  (if (or force-reload (null (ptr obj)))
-      (c-let ((c claylib/ll:font))
-        (claylib/ll:load-font-ex c (path obj) (size obj) (chars obj) (glyph-count obj))
-        (setf (ptr obj) (autowrap:ptr c)))
-      (ptr obj)))
-
-(defun load-model (obj &key force-reload)
-  (if (or force-reload (null (ptr obj)))
-      (c-let ((c claylib/ll:model))
-        (claylib/ll:load-model c (path obj))
-        (setf (ptr obj) (autowrap:ptr c)))
-      (ptr obj)))
-
-(defun load-texture (obj &key force-reload)
-  (if (or force-reload (null (ptr obj)))
-      (c-let ((c claylib/ll:texture))
-        (claylib/ll:load-texture c (path obj))
-        (setf (ptr obj) (autowrap:ptr c)))
-      (ptr obj)))
-
-(defun load-shader (obj &key force-reload)
-  (if (or force-reload (null (ptr obj)))
-      (c-let ((c claylib/ll:shader))
-        (claylib/ll:load-shader c (vspath obj) (fspath obj))
-        (setf (ptr obj) (autowrap:ptr c)))
-      (ptr obj)))
-
-(defun load-model-animation (obj &key force-reload)
-  (if (or force-reload (null (ptr obj)))
-      (c-let ((c claylib/ll:model-animation)
-              (i :int))
-        (setf c (claylib/ll:load-model-animations (path obj) (i &))
-              (ptr obj) (autowrap:ptr c)
-              (num obj) i))
-      (ptr obj)))
-
-(defun load-asset (asset &key force-reload)
-  (case (type-of asset)
-    (model (load-model asset :force-reload force-reload))
-    (font (load-font asset :force-reload force-reload))
-    (texture (load-texture asset :force-reload force-reload))
-    (shader (load-shader asset :force-reload force-reload))
-    (model-animation (load-model-animation asset :force-reload force-reload))
-    (t (error "Unknown asset type: ~A" (type-of asset)))))
 
 
 
