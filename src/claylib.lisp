@@ -76,11 +76,11 @@
             :accessor fspath)))
 
 (defmethod load-asset ((asset shader) &key force-reload)
-  (if (or force-reload (null (ptr asset)))
+  (if (or force-reload (null (c-struct asset)))
       (c-let ((c claylib/ll:shader))
         (claylib/ll:load-shader c (vspath asset) (fspath asset))
-        (setf (ptr asset) (autowrap:ptr c)))
-      (ptr asset)))
+        (setf (c-struct asset) (autowrap:ptr c)))
+      (c-struct asset)))
 
 (defmethod free ((asset shader))
   (claylib/ll:unload-shader (c-ref (ptr asset) claylib/ll:shader))
@@ -100,13 +100,13 @@
     :accessor num)))
 
 (defmethod load-asset ((asset model-animation) &key force-reload)
-  (if (or force-reload (null (ptr asset)))
+  (if (or force-reload (null (c-struct asset)))
       (c-let ((c claylib/ll:model-animation)
               (i :int))
         (setf c (claylib/ll:load-model-animations (path asset) (i &))
-              (ptr asset) (autowrap:ptr c)
+              (c-struct asset) (autowrap:ptr c)
               (num asset) i))
-      (ptr asset)))
+      (c-struct asset)))
 
 (defmethod free ((asset model-animation))
   (claylib/ll:unload-model-animations (c-ref (ptr asset) claylib/ll:model-animation) (num asset))
