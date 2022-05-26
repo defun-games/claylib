@@ -79,7 +79,7 @@
   (if (or force-reload (null (c-struct asset)))
       (c-let ((c claylib/ll:shader))
         (claylib/ll:load-shader c (vspath asset) (fspath asset))
-        (setf (c-struct asset) (autowrap:ptr c)))
+        (setf (c-struct asset) c))
       (c-struct asset)))
 
 (defmethod free ((asset shader))
@@ -104,7 +104,7 @@
       (c-let ((c claylib/ll:model-animation)
               (i :int))
         (setf c (claylib/ll:load-model-animations (path asset) (i &))
-              (c-struct asset) (autowrap:ptr c)
+              (c-struct asset) c
               (num asset) i))
       (c-struct asset)))
 

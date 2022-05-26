@@ -124,5 +124,5 @@
   (if (or force-reload (null (c-struct asset)))
       (c-let ((c claylib/ll:font))
         (claylib/ll:load-font-ex c (path asset) (size asset) (chars asset) (glyph-count asset))
-        (setf (c-struct asset) (autowrap:ptr c)))
+        (setf (c-struct asset) c))
       (c-struct asset)))

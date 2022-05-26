@@ -85,7 +85,7 @@ from ASSETS's path and give it a pointer."
   (if (or force-reload (null (c-struct asset)))
       (c-let ((c claylib/ll:texture))
         (claylib/ll:load-texture c (path asset))
-        (setf (c-struct asset) (autowrap:ptr c)))
+        (setf (c-struct asset) c))
       (c-struct asset)))
 
 (defmethod free ((obj texture))
