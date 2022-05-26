@@ -62,6 +62,13 @@
 
 (definitializer model (scale rl-vector3 nil) (tint rl-color nil))
 
+(defmethod load-asset ((asset model) &key force-reload)
+  (if (or force-reload (null (c-struct asset)))
+      (c-let ((c claylib/ll:model))
+        (claylib/ll:load-model c (path asset))
+        (setf (c-struct asset) c))
+      (c-struct asset)))
+
 (defmethod free ((obj model))
   (free (scale obj))
   (call-next-method))

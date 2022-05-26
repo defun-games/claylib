@@ -127,6 +127,11 @@ Allocates a new RAY-COLLISION unless you pass one."
   (ray ray)
   (box rl-bounding-box))
 
+(defun-pt-bool check-collision-point-rec claylib/ll:check-collision-point-rec
+  "Check if POINT is inside RECTANGLE."
+  (point rl-vector2)
+  (rec rl-rectangle))
+
 
 
 ;;; Raymath

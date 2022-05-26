@@ -77,6 +77,17 @@
 
 (defwriter-float rot texture %rotation)
 
+(defmethod load-asset ((asset texture) &key force-reload)
+  "Return a pointer to the texture OBJ.
+
+When the texture has no pointer yet or the caller has requested a FORCE-RELOAD, load the texture
+from ASSETS's path and give it a pointer."
+  (if (or force-reload (null (c-struct asset)))
+      (c-let ((c claylib/ll:texture))
+        (claylib/ll:load-texture c (path asset))
+        (setf (c-struct asset) c))
+      (c-struct asset)))
+
 (defmethod free ((obj texture))
   (when (slot-boundp obj '%source)
     (free (source obj)))

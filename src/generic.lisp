@@ -118,3 +118,9 @@ job, the user may never need to call this directly."))
   (:documentation "Copy the slot values (of object VALUE) to the slots in child object SLOT of parent OBJ.
 Don't use this if SLOT contains an atom or string -- use normal SETF instead. FREE specifies when to
 free VALUE."))
+
+;; TODO: Free old memory when using :force-reload t
+;; TODO: unload-asset methods
+(defgeneric load-asset (asset &key force-reload)
+  (:documentation "Return a pointer to ASSET.
+Force a reload & free old memory when FORCE-RELOAD is T."))

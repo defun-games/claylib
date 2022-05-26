@@ -1,16 +1,5 @@
 (in-package #:claylib/examples)
 
-(defun check-collision-point-rec (point rectangle)
-  "Check if POINT is inside RECTANGLE.
-TODO Is there an easier way using CLAYLIB/LL:CHECK-COLLISION-POINT-REC?"
-  (let ((width (width rectangle))
-        (height (height rectangle))
-        (x (x rectangle))
-        (y (y rectangle)))
-    (and
-     (< x (x point) (+ x width))
-     (< y (y point) (+ y height)))))
-
 (defun example-shapes-03 ()
   (with-window (:title "raylib [shapes] example - Colors pallete")
     (let* ((colors (list +darkgray+ +maroon+ +orange+ +darkgreen+ +darkblue+ +darkpurple+

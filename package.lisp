@@ -26,10 +26,10 @@
    :get-mouse-position :get-mouse-ray :get-ray-collision-box :load-render-texture :with-texture-mode
    :draw-grid :draw-text :draw-rectangle :draw-circle :draw-cube :update-camera :gen-mesh-cylinder
    :with-window :load-font :load-model-from-mesh :gen-mesh-cube :gen-image-checked :load-texture-from-image
-   :fade)
+   :fade :check-collision-point-rec)
 
 
-  
+
   (:export
 
    ;; Colors
@@ -92,6 +92,7 @@
    ;; Generic functions/methods
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
    :hit :low :high :r :g :b :a :dest :filter :origin :source :tint :radius :x3 :y3 :v1 :v2 :v3
+   :load-asset
 
    ;; Math
    :vector2-subtract :vector2-add :vector2-scale :vector2-length
@@ -111,4 +112,5 @@
    :+flag-window-unfocused+ :+flag-window-topmost+ :+flag-window-always-run+ :minimize-window
    :restore-window :maximize-window :+flag-window-transparent+ :+flag-fullscreen-mode+
    :+flag-window-highdpi+ :+flag-msaa-4x-hint+ :gen-image-checked :load-texture-from-image
-   :+texture-filter-anisotropic-16x+ :+texture-wrap-clamp+ :get-time :wait-time :swap-screen-buffer))
+   :+texture-filter-anisotropic-16x+ :+texture-wrap-clamp+ :get-time :wait-time :swap-screen-buffer
+   :check-collision-point-rec))

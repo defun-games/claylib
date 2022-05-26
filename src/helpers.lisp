@@ -270,6 +270,25 @@ massaging of arguments. Each ARG is expected to have the following format:
      (,c-fn ,@(expand-c-fun-args args))
      ,(caar args)))
 
+(defmacro defun-pt-bool (name c-fn docstring &rest args)
+  "Define a special 'pass-through' function for which the return value is a boolean value. Each ARG
+is expected to have the following format:
+
+(ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)"
+  `(defun ,name ,(remove nil `(,@(mapcar #'(lambda (arg)
+                                             (unless (fourth arg)
+                                               (car arg)))
+                                  args)
+                               &key ,@(mapcar #'(lambda (arg)
+                                                  (when (fourth arg)
+                                                    `(,(car arg) ,(fourth arg))))
+                                              args)))
+     ,docstring
+     ,@(expand-check-types args)
+     (if (= 0 (,c-fn ,@(expand-c-fun-args args)))
+         nil
+         t)))
+
 (defmacro defun-pt-arg0 (name c-fn allocate-form docstring &rest args)
   "Define a special 'pass-through' function in which the first argument is destructively modified
 unless ALLOCATE-P is T. ALLOCATE-FORM is the form that is evaluated in the latter case. Each ARG is
