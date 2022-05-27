@@ -77,6 +77,20 @@
 
 (defwriter-float rot texture %rotation)
 
+(defun make-texture (texture-asset source dest
+                     &key filter wrap (origin (make-vector2 0 0)) (rot 0.0) (tint +white+))
+  (let ((texture (make-instance 'texture
+                 :filter filter
+                 :wrap wrap
+                 :source source
+                 :dest dest
+                 :origin origin
+                 :rot rot
+                 :tint tint)))
+    (setf (c-struct texture)
+          (c-asset (load-asset texture-asset)))
+    texture))
+
 (defmethod free ((obj texture))
   (when (slot-boundp obj '%source)
     (free (source obj)))

@@ -50,7 +50,7 @@
     (tg:cancel-finalization asset))
   (when (or force-reload (null (c-asset asset)))
     (c-let ((c claylib/ll:texture))
-      (claylib/ll:load-texture c (path asset))
+      (claylib/ll:load-texture c (namestring (path asset)))
       (setf (c-asset asset) c)
       (tg:finalize asset
                    (let ((ptr (autowrap:ptr (c-asset asset))))
