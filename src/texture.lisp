@@ -52,7 +52,7 @@
 
 
 
-(defclass texture (rl-texture game-asset)
+(defclass texture (rl-texture)
   ((%filter :initarg :filter
             :type integer
             :reader filter)
