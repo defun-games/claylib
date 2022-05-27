@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-28
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-28)
 
-(defun example-core-28 ()
+(defun main ()
   (with-window (:title "raylib [core] example - custom frame control")
     (let ((scene
             (make-scene ()

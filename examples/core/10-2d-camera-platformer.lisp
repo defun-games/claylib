@@ -1,4 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-10
+  (:use :cl :claylib)
+  (:import-from :alexandria
+                :circular-list)
+  (:export :main))
+(in-package #:claylib/examples/core-10)
 
 (defclass player (rectangle)
   ((%speed :initarg :spd
@@ -13,14 +19,14 @@
                 :type boolean
                 :accessor blocking-p)))
 
-(defclass example-core-10-camera (rl-camera-2d)
-  ((%mode :initform (alexandria:circular-list :center
+(defclass camera (rl-camera-2d)
+  ((%mode :initform (circular-list :center
                                               :center-inside-map
                                               :center-smooth-follow
                                               :even-out-on-landing
                                               :player-bounds-push))
    (%mode-desc :initform
-               (alexandria:circular-list "Follow player center"
+               (circular-list "Follow player center"
                                          "Follow player center, but clamp to map edges"
                                          "Follow player center; smoothed"
                                          "Follow player center horizontally; update player center vertically after landing"
@@ -35,10 +41,10 @@
                      :type float
                      :accessor even-out-target)))
 
-(defmethod mode ((camera example-core-10-camera))
+(defmethod mode ((camera camera))
   (car (slot-value camera '%mode)))
 
-(defmethod mode-desc ((camera example-core-10-camera))
+(defmethod mode-desc ((camera camera))
   (car (slot-value camera '%mode-desc)))
 
 (defun next-mode (camera)
@@ -170,7 +176,7 @@
                  :blocking-p blocking-p
                  :color color))
 
-(defun example-core-10 ()
+(defun main ()
   (with-window (:title "raylib [core] example - 2d camera")
     (let* ((scene
              (make-scene ()
@@ -206,7 +212,7 @@
                             (make-env-item 300 200 400 10 t +gray+)
                             (make-env-item 250 300 100 10 t +gray+)
                             (make-env-item 650 300 100 10 t +gray+)))
-           (camera (make-instance 'example-core-10-camera
+           (camera (make-instance 'camera
                                   :target (make-vector2 (+ (x (scene-object scene 'player)) 20)
                                                         (+ (y (scene-object scene 'player)) 40))
                                   :offset (make-vector2 (/ *screen-width* 2.0)

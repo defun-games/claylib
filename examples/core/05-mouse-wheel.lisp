@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-5
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-5)
 
-(defun example-core-05 ()
+(defun main ()
   (with-window (:title "raylib [core] example - input mouse wheel")
     (let ((scene
             (make-scene ()

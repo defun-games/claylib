@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-1
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-1)
 
-(defun example-core-01 ()
+(defun main ()
   (with-window (:title "raylib [core] example - basic window")
     (let ((scene (make-scene ()
                              `((text ,(make-text "Congrats! You created your first window!"
@@ -12,4 +16,3 @@
         (do-game-loop (:livesupport t)
           (with-drawing
             (draw-scene-all scene)))))))
-

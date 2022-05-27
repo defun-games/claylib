@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/shapes-1
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/shapes-1)
 
-(defun example-shapes-01 ()
+(defun main ()
   (with-window (:title "raylib [shapes] example - Draw basic shapes 2d (rectangle, circle, line...)")
     (let ((scene (make-scene ()
                              `((text-title ,(make-text "some basic shapes available on raylib"

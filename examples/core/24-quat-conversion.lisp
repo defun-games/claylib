@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-24
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-24)
 
-(defun example-core-24 ()
+(defun main ()
   (with-window (:title "raylib [core] example - quat conversions")
     (let ((camera (make-camera-3d 0 10 10
                                   0 0 0
