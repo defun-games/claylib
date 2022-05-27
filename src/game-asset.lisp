@@ -4,11 +4,12 @@
   ((%path :initarg :path
           :type pathname
           :accessor path)
-   (%c-asset :initform nil
-             :accessor c-asset)))
+   (%c-asset
+    :accessor c-asset)))
 
 (defmethod free ((asset game-asset))
-  (when (and (c-asset asset)
+  (when (and (slot-boundp asset '%c-asset)
+             (c-asset asset)
              (autowrap:valid-p (c-asset asset)))
     (free (c-asset asset)))
   (setf (slot-value asset '%c-asset) nil)
@@ -21,7 +22,8 @@
 
 
 
-(defclass image-asset (game-asset) ())
+(defclass image-asset (game-asset)
+  ((%c-asset :type claylib/ll:image)))
 
 (defmethod load-asset ((asset image-asset) &key force-reload)
   (when (and force-reload (c-asset asset))
@@ -38,7 +40,8 @@
 
 
 
-(defclass texture-asset (game-asset) ())
+(defclass texture-asset (game-asset)
+  ((%c-asset :type claylib/ll:texture)))
 
 (defmethod load-asset ((asset texture-asset) &key force-reload)
   (when (and force-reload (c-asset asset))
@@ -55,7 +58,8 @@
 
 
 
-(defclass model-asset (game-asset) ())
+(defclass model-asset (game-asset)
+  ((%c-asset :type claylib/ll:model)))
 
 (defmethod load-asset ((asset model-asset) &key force-reload)
   (when (and force-reload (c-asset asset))
@@ -74,11 +78,15 @@
 
 (defclass shader-asset (game-asset)
   ((%vspath :initarg :vspath
-            :type pathname
+            :type (or pathname null)
             :accessor vspath)
    (%fspath :initarg :fspath
-            :type pathname
-            :accessor fspath)))
+            :type (or pathname null)
+            :accessor fspath)
+   (%c-asset :type claylib/ll:shader)))
+
+(default-slot-value shader-asset %vspath nil)
+(default-slot-value shader-asset %fspath nil)
 
 (defmethod load-asset ((asset shader-asset) &key force-reload)
   (when (and force-reload (c-asset asset))
@@ -104,7 +112,8 @@
                 :accessor chars)
    (%glyph-count :initarg :glyph-count
                  :type integer
-                 :accessor glyph-count)))
+                 :accessor glyph-count)
+   (%c-asset :type claylib/ll:font)))
 
 (default-slot-value font-asset %font-size 10)
 (default-slot-value font-asset %font-chars 0)
@@ -132,7 +141,8 @@
 (defclass animation-asset (game-asset)
   ((%num 
     :type integer
-    :accessor num)))
+    :accessor num)
+   (%c-asset :type claylib/ll:model-animation)))
 
 (defmethod load-asset ((asset animation-asset) &key force-reload)
   (when (and force-reload (c-asset asset))
