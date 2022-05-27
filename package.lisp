@@ -85,7 +85,8 @@
    :make-rectangle-from-vecs :make-circle :make-grid :make-cube :make-cube-from-vecs :make-text
    :make-line-2d :with-2d-mode :with-3d-mode :make-plane :make-ray :make-ray-collision :with-texture-mode
    :with-scissor-mode :make-zero-matrix :is-window-state-p :make-triangle :make-triangle-from-vecs
-   
+   :make-texture
+
    ;; Scenes
    :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
    :make-scene :objects :draw-scene-regex :with-scene

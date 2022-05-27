@@ -106,4 +106,7 @@
                   :components
                   ((:file "01-basic-shapes")
                    (:file "02-bouncing-ball")
-                   (:file "03-colors-palette")))))))
+                   (:file "03-colors-palette")))
+                 (:module "textures"
+                  :components
+                  ((:file "01-logo-raylib")))))))
