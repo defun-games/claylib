@@ -8,7 +8,7 @@
                                      (truncate (- (get-screen-height) image-size) 2)
                                      image-size
                                      image-size +red+))
-           (tex (make-instance 'claylib::texture-asset
+           (tex (make-instance 'texture-asset
                                :path "/home/me/claylib/examples/textures/resources/raylib_logo.png"))
            (scene (make-scene `((texture ,tex))
                               `((texture ,(make-instance 'texture

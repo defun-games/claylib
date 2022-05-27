@@ -74,7 +74,8 @@
    :text :rectangle :rl-rectangle :circle :cube :grid :rl-vector2 :rl-vector3 :rl-vector4 :rl-color
    :line-2d :rl-camera-3d :camera-3d :rl-camera-2d :plane :rl-ray :ray :rl-ray-collision :rl-bounding-box
    :rl-texture :texture :rl-transform :rl-model :model :rl-mesh :rl-shader :rl-material-map :rl-material
-   :rl-matrix :triangle
+   :rl-matrix :triangle :image-asset :texture-asset :model-asset :shader-asset :font-asset
+   :animation-asset
    
    ;; Misc. convenience wrappers
    :with-window :do-game-loop :with-drawing :is-key-pressed-p :is-gesture-detected-p :is-key-down-p
