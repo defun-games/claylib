@@ -119,8 +119,6 @@ job, the user may never need to call this directly."))
 Don't use this if SLOT contains an atom or string -- use normal SETF instead. FREE specifies when to
 free VALUE."))
 
-;; TODO: Free old memory when using :force-reload t
-;; TODO: unload-asset methods
 (defgeneric load-asset (asset &key force-reload)
-  (:documentation "Return a pointer to ASSET.
+  (:documentation "Load a game-asset's backing C object from a file.
 Force a reload & free old memory when FORCE-RELOAD is T."))

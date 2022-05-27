@@ -42,6 +42,7 @@
                              (:file "vec")
                              (:file "color")
                              (:file "bounding-box")
+                             (:file "game-asset")
                              (:file "game-object")
                              (:file "shape")
                              (:file "circle")
