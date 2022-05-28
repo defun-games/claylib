@@ -1,6 +1,11 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-9
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-9)
 
-(defun example-core-09 ()
+
+(defun main ()
   (with-window (:title "raylib [core] example - 2d camera")
     (let* ((camera (make-camera-2d (/ *screen-width* 2.0)
                                    (/ *screen-height* 2.0)

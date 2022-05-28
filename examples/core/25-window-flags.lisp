@@ -1,4 +1,8 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-25
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-25)
 
 (defclass ball (circle)
   ((%speed :initarg :speed
@@ -20,7 +24,7 @@
       (setf (text obj) (format nil "~A: off" text)
             (color obj) +maroon+)))
 
-(defun example-core-25 ()
+(defun main ()
   (with-window (:title "raylib [core] example - window flags")
     (let ((scene (make-scene ()
                              `((ball ,(make-instance 'ball
@@ -60,7 +64,7 @@
             (toggle-fullscreen))
           (toggle-flag +key-r+ +flag-window-resizable+)
           (toggle-flag +key-d+ +flag-window-undecorated+)
-          
+
           (when (is-key-pressed-p +key-h+)
             (unless (is-window-state-p +flag-window-hidden+)
               (set-window-state +flag-window-hidden+))

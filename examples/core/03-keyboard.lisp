@@ -1,4 +1,8 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-3
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-3)
 
 (defmacro reposition (coord ball crsr delta)
   "Repositions X coordinate if the specified cursor key is pressed."
@@ -15,7 +19,7 @@
   (reposition y ball +key-up+    -2.0)
   (reposition y ball +key-down+  +2.0))
 
-(defun example-core-03 ()
+(defun main ()
   (with-window (:title "raylib [core] example - keyboard input")
     (let ((scene (make-scene () `((text ,(make-text "Move the ball with arrow keys"
                                                     10 10

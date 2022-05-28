@@ -1,4 +1,8 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/shapes-2
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/shapes-2)
 
 (defclass ball (circle)
   ((%speed :initarg :speed
@@ -30,7 +34,7 @@ components of the BALL's SPEED."
     (when (or (>= y (- screen-height radius)) (<= y radius))
       (setf (y (spd ball)) (- (y (spd ball)))))))
 
-(defun example-shapes-02 ()
+(defun main ()
   (with-window (:title "raylib [shapes] example - bouncing ball")
     (let ((scene (make-scene ()
                              `((ball ,(make-ball (/ (get-screen-width) 2.0)

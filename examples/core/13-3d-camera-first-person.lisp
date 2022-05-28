@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-13
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-13)
 
-(defun example-core-13 ()
+(defun main ()
   (with-window (:title "raylib [core] example - 3d camera first person")
     (let ((camera (make-camera-3d 4 2 4
                                   0 1.8 0

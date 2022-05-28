@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-27
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-27)
 
-(defun example-core-27 ()
+(defun main ()
   (with-window (:title "raylib [core] example - smooth pixel-perfect camera")
     (let* ((virtual-screen-width 160)
            (virtual-screen-height 90)

@@ -1,4 +1,8 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-17
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-17)
 
 (defun clamp-vector2 (vec min max &optional allocate-p)
   (let ((vec (if allocate-p (make-vector2 (x vec) (y vec)) vec)))
@@ -13,7 +17,7 @@
                               (get-random-value 50 150)
                               (get-random-value 10 100))))
 
-(defun example-core-17 ()
+(defun main ()
   (with-window (:title "raylib [core] example - window scale letterbox"
                 :flags `(,+flag-window-resizable+ ,+flag-vsync-hint+)
                 :min-size (320 240))

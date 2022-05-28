@@ -1,4 +1,8 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-2
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-2)
 
 (defun next-screen ()
    "Is user indicating we can move to the next stage?"
@@ -9,7 +13,7 @@
 (defun make-screen (color)
   (make-rectangle 0 0 *screen-width* *screen-height* color))
 
-(defun example-core-02 ()
+(defun main ()
   (with-window (:title "raylib [core] example - basic screen manager")
     (let ((logo (make-scene () `((paint ,(make-screen *claylib-background*))
                                  (text ,(make-text "LOGO SCREEN" 20 20
