@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-21
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-21)
 
-(defun example-core-21 ()
+(defun main ()
   (with-window (:title "raylib [core] example - storage save/load values")
     (let ((score 0)
           (hiscore 0)

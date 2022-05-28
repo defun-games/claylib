@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/shapes-3
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/shapes-3)
 
-(defun example-shapes-03 ()
+(defun main ()
   (with-window (:title "raylib [shapes] example - Colors pallete")
     (let* ((colors (list +darkgray+ +maroon+ +orange+ +darkgreen+ +darkblue+ +darkpurple+
                          +darkbrown+ +gray+ +red+ +gold+ +lime+ +blue+ +violet+ +brown+ +lightgray+

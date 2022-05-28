@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-26
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-26)
 
-(defun example-core-26 ()
+(defun main ()
   (with-window (:title "raylib [core] example - split screen")
     (let* ((texture-grid (make-instance 'texture
                                         :filter +texture-filter-anisotropic-16x+
@@ -82,7 +86,7 @@
 
           (setf (pos (scene-object scene 'player1)) (pos camera-player1)
                 (pos (scene-object scene 'player2)) (pos camera-player2))
-          
+
           (let ((*claylib-background* +skyblue+))
             (with-texture-mode screen-player1
               (with-3d-mode camera-player1
