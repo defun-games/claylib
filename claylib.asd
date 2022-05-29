@@ -51,6 +51,7 @@
                              (:file "plane")
                              (:file "line")
                              (:file "rectangle")
+                             (:file "polygon")
                              (:file "camera-2d")
                              (:file "camera-3d")
                              (:file "ray")
