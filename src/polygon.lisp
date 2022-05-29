@@ -6,13 +6,13 @@
            :accessor sides)
    (%radius :initarg :radius
             :type (or integer float)
-            :accessor radius)
+            :reader radius)
    (%rotation :initarg :rot
               :type (or integer float)
-              :accessor rot)
+              :reader rot)
    (%thickness :initarg :thickness
                :type (or integer float)
-               :accessor thickness)))
+               :reader thickness)))
 
 (defwriter-float radius polygon)
 (defwriter-float rot polygon %rotation)
