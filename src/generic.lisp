@@ -114,6 +114,12 @@ job, the user may never need to call this directly."))
 (defgeneric (setf radius) (value circle)
   (:documentation "Set the radius of a circle or sphere."))
 
+(defgeneric size (obj)
+  (:documentation "Get the size value or vector of some object."))
+
+(defgeneric (setf size) (value obj)
+  (:documentation "Set the size value or vector of some object."))
+
 (defgeneric set-slot (slot obj value &key free)
   (:documentation "Copy the slot values (of object VALUE) to the slots in child object SLOT of parent OBJ.
 Don't use this if SLOT contains an atom or string -- use normal SETF instead. FREE specifies when to

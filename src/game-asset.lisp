@@ -27,6 +27,12 @@
 (defclass image-asset (game-asset)
   ((%asset :type (or rl-image null))))
 
+(defreader data image-asset data asset)
+(defreader width image-asset width asset)
+(defreader height image-asset height asset)
+(defreader mipmaps image-asset mipmaps asset)
+(defreader data-format image-asset data-format asset)
+
 (defmethod load-asset ((asset image-asset) &key force-reload)
   (cond
     ((null (asset asset))
@@ -42,6 +48,12 @@
 (defclass texture-asset (game-asset)
   ((%asset :type (or rl-texture null))))
 
+(defreader id texture-asset id asset)
+(defreader width texture-asset width asset)
+(defreader height texture-asset height asset)
+(defreader mipmaps texture-asset mipmaps asset)
+(defreader data-format texture-asset data-format asset)
+
 (defmethod load-asset ((asset texture-asset) &key force-reload)
   (cond
     ((null (asset asset))
@@ -56,6 +68,16 @@
 
 (defclass model-asset (game-asset)
   ((%asset :type (or rl-model null))))
+
+(defreader mesh-count model-asset mesh-count asset)
+(defreader material-count model-asset material-count asset)
+(defreader mesh-material model-asset mesh-material asset)
+(defreader bone-count model-asset bone-count asset)
+(defreader transform model-asset transform asset)
+(defreader meshes model-asset meshes asset)
+(defreader materials model-asset materials asset)
+(defreader bones model-asset bones asset)
+(defreader bind-pose model-asset bind-pose asset)
 
 (defmethod load-asset ((asset model-asset) &key force-reload)
   (cond
@@ -77,6 +99,9 @@
             :type (or pathname null)
             :accessor fspath)
    (%asset :type (or rl-shader null))))
+
+(defreader id shader-asset id asset)
+(defreader locs shader-asset locs asset)
 
 (default-slot-value shader-asset %vspath nil)
 (default-slot-value shader-asset %fspath nil)
@@ -100,14 +125,29 @@
 (defclass font-asset (game-asset)
   ((%font-size :initarg :size
                :type integer
-               :accessor size)
+               :writer (setf size))
    (%font-chars :initarg :chars
                 :type integer
                 :accessor chars)
    (%glyph-count :initarg :glyph-count
                  :type integer
-                 :accessor glyph-count)
+                 :writer (setf glyph-count))
    (%asset :type (or rl-font null))))
+
+(defmethod size ((obj font-asset))
+  (if (asset obj)
+      (size (asset obj))
+      (slot-value obj '%font-size)))
+
+(defmethod glyph-count ((obj font-asset))
+  (if (asset obj)
+      (glyph-count (asset obj))
+      (slot-value obj '%glyph-count)))
+
+(defreader glyph-padding font-asset glyph-padding asset)
+(defreader texture font-asset texture asset)
+(defreader recs font-asset recs asset)
+(defreader glyphs font-asset glyphs asset)
 
 (default-slot-value font-asset %font-size 10)
 (default-slot-value font-asset %font-chars 0)
@@ -140,6 +180,11 @@
     :type integer
     :accessor num)
    (%asset :type (or rl-model-animation null))))
+
+(defreader bone-count animation-asset bone-count asset)
+(defreader frame-count animation-asset frame-count asset)
+(defreader bones animation-asset bones asset)
+(defreader frame-poses animation-asset frame-poses asset)
 
 (defmethod load-asset ((asset animation-asset) &key force-reload)
   (cond

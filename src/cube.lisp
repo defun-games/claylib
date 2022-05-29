@@ -46,7 +46,7 @@
   (when (next-method-p)
     (call-next-method)))
 
-(defmethod slot-unbound (cube obj (slot (eql '%source)))
+(defmethod slot-unbound (_ (obj cube) (slot (eql '%source)))
   (setf (slot-value obj slot) (make-instance 'rl-rectangle
                                              :x 0 :y 0
                                              :width (width (texture obj))

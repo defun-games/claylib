@@ -56,6 +56,7 @@
                              (:file "camera-3d")
                              (:file "ray")
                              (:file "ray-collision")
+                             (:file "image")
                              (:file "texture")
                              (:file "text")
                              (:file "cube")
