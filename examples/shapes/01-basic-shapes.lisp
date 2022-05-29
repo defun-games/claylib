@@ -58,7 +58,19 @@
                                                                (+ (* (get-screen-width) 3/4) 20)
                                                                230
                                                                +darkblue+
-                                                               :filled nil))))))
+                                                               :filled nil))
+                               (polygon ,(make-polygon (* (get-screen-width) 3/4)
+                                                       320
+                                                       6
+                                                       80
+                                                       +brown+))
+                               (polygon-lines ,(make-polygon (* (get-screen-width) 3/4)
+                                                             320
+                                                             6
+                                                             80
+                                                             +beige+
+                                                             :filled nil
+                                                             :thickness 6))))))
       (with-scene scene ()
         (do-game-loop (:livesupport t)
           (with-drawing
