@@ -43,7 +43,34 @@
                                                             80
                                                             60
                                                             +orange+
-                                                            :filled nil))))))
+                                                            :filled nil))
+                               (triangle ,(make-triangle (* (get-screen-width) 3/4)
+                                                         80
+                                                         (- (* (get-screen-width) 3/4) 60)
+                                                         150
+                                                         (+ (* (get-screen-width) 3/4) 60)
+                                                         150
+                                                         +violet+))
+                               (triangle-lines ,(make-triangle (* (get-screen-width) 3/4)
+                                                               160
+                                                               (- (* (get-screen-width) 3/4) 20)
+                                                               230
+                                                               (+ (* (get-screen-width) 3/4) 20)
+                                                               230
+                                                               +darkblue+
+                                                               :filled nil))
+                               (polygon ,(make-polygon (* (get-screen-width) 3/4)
+                                                       320
+                                                       6
+                                                       80
+                                                       +brown+))
+                               (polygon-lines ,(make-polygon (* (get-screen-width) 3/4)
+                                                             320
+                                                             6
+                                                             80
+                                                             +beige+
+                                                             :filled nil
+                                                             :thickness 6))))))
       (with-scene scene ()
         (do-game-loop (:livesupport t)
           (with-drawing
