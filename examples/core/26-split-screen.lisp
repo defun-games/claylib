@@ -6,9 +6,9 @@
 
 (defun main ()
   (with-window (:title "raylib [core] example - split screen")
-    (let* ((texture-grid (make-instance 'texture
-                                        :filter +texture-filter-anisotropic-16x+
-                                        :wrap +texture-wrap-clamp+))
+    (let* ((texture-grid (make-empty-texture
+                          :filter +texture-filter-anisotropic-16x+
+                          :wrap +texture-wrap-clamp+))
            (camera-player1 (make-camera-3d 0 1 -3
                                            0 1 0
                                            0 1 0))
