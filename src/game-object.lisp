@@ -2,7 +2,10 @@
 
 (defclass game-object ()
   ((%position :initarg :pos
-              :accessor pos)))
+              :accessor pos)
+   (%assets :initarg :assets
+            :type list
+            :accessor assets)))
 
 
 

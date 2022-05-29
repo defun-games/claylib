@@ -1,31 +1,5 @@
 (in-package #:claylib)
 
-(defclass rl-image ()
-  ((%c-struct
-    :type claylib/ll:image
-    :initform (autowrap:alloc 'claylib/ll:image)
-    :accessor c-struct)))
-
-(defcreader data rl-image data image) ; pointer
-(defcreader width rl-image width image)
-(defcreader height rl-image height image)
-(defcreader mipmaps rl-image mipmaps image)
-(defcreader data-format rl-image format image)
-
-(defcwriter data rl-image data image) ; pointer
-(defcwriter width rl-image width image integer)
-(defcwriter height rl-image height image integer)
-(defcwriter mipmaps rl-image mipmaps image integer)
-(defcwriter data-format rl-image format image integer)
-
-(definitializer rl-image
-    (width integer) (height integer) (mipmaps integer) (data-format integer))
-
-(default-free rl-image)
-(default-free-c claylib/ll:image unload-image)
-
-
-
 (defclass rl-texture ()
   ((%c-struct
     :type claylib/ll:texture
@@ -48,11 +22,11 @@
     (id integer) (width integer) (height integer) (mipmaps integer) (data-format integer))
 
 (default-free rl-texture)
-(default-free-c claylib/ll:texture unload-texture)
+(default-free-c claylib/ll:texture unload-texture t)
 
 
 
-(defclass texture (rl-texture)
+(defclass tex ()
   ((%filter :initarg :filter
             :type integer
             :reader filter)
@@ -75,7 +49,29 @@
           :type rl-color
           :accessor tint)))
 
-(defwriter-float rot texture %rotation)
+(defwriter-float rot text %rotation)
+
+
+
+(defclass texture-object (2d-object tex) ())
+
+
+
+(defclass texture (rl-texture tex) ())
+
+(defun make-texture (texture-asset x y
+                     &rest args &key width height filter wrap origin rot tint source)
+  (declare (ignore filter wrap origin rot tint source))
+  (load-asset texture-asset)
+  (apply #'make-instance 'texture
+         :dest (make-instance 'rl-rectangle
+                              :x x
+                              :y y
+                              :width (or width (claylib/ll:texture.width
+                                                (c-asset texture-asset)))
+                              :height (or height (claylib/ll:texture.height
+                                                  (c-asset texture-asset))))
+         args))
 
 (defun make-texture (texture-asset source dest
                      &key filter wrap (origin (make-vector2 0 0)) (rot 0.0) (tint +white+))
