@@ -26,7 +26,7 @@
    :get-mouse-position :get-mouse-ray :get-ray-collision-box :load-render-texture :with-texture-mode
    :draw-grid :draw-text :draw-rectangle :draw-circle :draw-cube :update-camera :gen-mesh-cylinder
    :with-window :load-font :load-model-from-mesh :gen-mesh-cube :gen-image-checked :load-texture-from-image
-   :fade :check-collision-point-rec)
+   :fade :check-collision-point-rec :clear-background)
 
 
 
@@ -115,4 +115,4 @@
    :restore-window :maximize-window :+flag-window-transparent+ :+flag-fullscreen-mode+
    :+flag-window-highdpi+ :+flag-msaa-4x-hint+ :gen-image-checked :load-texture-from-image
    :+texture-filter-anisotropic-16x+ :+texture-wrap-clamp+ :get-time :wait-time :swap-screen-buffer
-   :check-collision-point-rec))
+   :check-collision-point-rec :clear-background))

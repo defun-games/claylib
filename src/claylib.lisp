@@ -25,10 +25,17 @@
      ,@body
      (end-mode3d)))
 
-(defmacro with-texture-mode (texture &body body)
+(defun clear-background (&key (color *claylib-background*))
+  "Set background to COLOR or *CLAYLIB-BACKGROUND* by default."
+  (claylib/ll:clear-background (c-struct color)))
+
+(defmacro with-texture-mode ((render-texture &key (clear *claylib-background*)) &body body)
+  "Execute BODY while drawing to the given RENDER-TEXTURE. CLEAR is the RL-COLOR to set the initial
+background of the render texture, or NIL to skip clearing."
   `(progn
-     (begin-texture-mode (c-struct ,texture))
-     (clear-background (c-struct *claylib-background*))
+     (begin-texture-mode (c-struct ,render-texture))
+     (when ,clear
+       (clear-background :color ,clear))
      ,@body
      (end-texture-mode)))
 
