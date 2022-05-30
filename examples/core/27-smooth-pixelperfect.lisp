@@ -69,7 +69,7 @@
                 (rot (scene-object scene 'rec2)) (- rotation)
                 (rot (scene-object scene 'rec3)) (+ rotation 45.0))
 
-          (with-texture-mode target
+          (with-texture-mode (target)
             (with-2d-mode world-space-camera
               (draw-scene-regex scene "^REC[0-9]")))
 
