@@ -33,7 +33,7 @@
                                                             +lime+
                                                             :filled nil))
                                 (red-outline ,(make-rectangle 0 0
-                                                              0 0
+                                                              (/ scarfy-width 6) scarfy-height
                                                               +red+
                                                               :filled nil))
                                 (frame-speed-text ,(make-text "FRAME SPEED: "
@@ -75,8 +75,6 @@
         (with-scene-objects (red-outline fps-text scarfy-frame) scene
             (setf (x red-outline) (+ 15 (x (source scarfy-frame)))
                   (y red-outline) (+ 40 (y (source scarfy-frame)))
-                  (width red-outline) (width (source scarfy-frame)) ; FIXME unnecessary SETFs each time
-                  (height red-outline) (height (source scarfy-frame)) ; here too
                   (text fps-text) (format nil "~2,'0d FPS" frames-speed)))
 
         (with-drawing
