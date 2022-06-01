@@ -49,6 +49,18 @@ unless ALLOCATE-P is T."
 
 ;;; Textures
 
+;; Image loading functions
+
+(defun-pt load-image-from-texture claylib/ll:load-image-from-texture
+  "Load an image from the given TEXTURE. Allocates a new RL-IMAGE unless you pass one."
+  (image rl-image nil (make-instance 'rl-image))
+  (texture rl-texture nil))
+
+(defun-pt export-image claylib/ll:export-image
+  "Export image data to FILENAME."
+  (image rl-image nil)
+  (filename string))
+
 ;; Image generation functions
 
 (defun-pt gen-image-checked claylib/ll:gen-image-checked
@@ -60,6 +72,16 @@ unless ALLOCATE-P is T."
   (checks-y integer)
   (color1 rl-color)
   (color2 rl-color))
+
+;; Image manipulation functions
+
+(defun-pt image-flip-vertical claylib/ll:image-flip-vertical
+  "Flip IMAGE vertically."
+  (image rl-image nil))
+
+(defun-pt image-flip-horizontal claylib/ll:image-flip-horizontal
+  "Flip IMAGE horizontally."
+  (image rl-image nil))
 
 ;; Texture loading functions
 
