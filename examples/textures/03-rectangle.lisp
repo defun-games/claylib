@@ -13,6 +13,12 @@
                                              :load-now t))
            (scarfy-width (width scarfy-asset))
            (scarfy-height (height scarfy-asset))
+           (max-frame-speed 15)
+           (fps-recs (loop for i below max-frame-speed
+                           collect (make-rectangle (+ 250 (* 21 i)) 205
+                                                   20 20
+                                                   +maroon+
+                                                   :filled nil)))
            (scene (make-scene ()
                               `((scarfy-full ,(make-texture scarfy-asset
                                                             15 40
@@ -24,8 +30,8 @@
                                                                       (/ scarfy-width 6)
                                                                       scarfy-height
                                                                       +black+)
-                                                             ;; :width (/ scarfy-width 6)
-                                                             ;; :height scarfy-height
+                                                             :width (/ scarfy-width 6)
+                                                             :height scarfy-height
                                                              :tint +white+))
                                 (lime-outline ,(make-rectangle 15 40
                                                             scarfy-width
@@ -70,12 +76,21 @@
             (incf frames-speed)
             (when (is-key-pressed-p +key-left+)
               (decf frames-speed)))
-        (setf frames-speed (min 15 (max 1 frames-speed)))
+        (setf frames-speed (min max-frame-speed (max 1 frames-speed)))
 
         (with-scene-objects (red-outline fps-text scarfy-frame) scene
             (setf (x red-outline) (+ 15 (x (source scarfy-frame)))
                   (y red-outline) (+ 40 (y (source scarfy-frame)))
                   (text fps-text) (format nil "~2,'0d FPS" frames-speed)))
 
+
         (with-drawing
+        (loop for rec in fps-recs
+              for i below max-frame-speed
+              do (if (< i frames-speed)
+                     (setf (color rec) +red+
+                           (filled rec) t)
+                     (setf (color rec) +maroon+
+                           (filled rec) nil))
+              do (draw-object rec))
           (draw-scene-all scene))))))
