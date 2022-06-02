@@ -87,20 +87,19 @@
           (setf (pos (scene-object scene 'player1)) (pos camera-player1)
                 (pos (scene-object scene 'player2)) (pos camera-player2))
 
-          (let ((*claylib-background* +skyblue+))
-            (with-texture-mode (screen-player1)
-              (with-3d-mode camera-player1
-                (draw-scene scene 'ground)
-                (draw-scene-regex scene "^TREE")
-                (draw-scene scene 'player1))
-              (draw-scene scene 'text-player1))
+          (with-texture-mode (screen-player1 :clear +skyblue+)
+            (with-3d-mode camera-player1
+              (draw-scene scene 'ground)
+              (draw-scene-regex scene "^TREE")
+              (draw-scene scene 'player1))
+            (draw-scene scene 'text-player1))
 
-            (with-texture-mode (screen-player2)
-              (with-3d-mode camera-player2
-                (draw-scene scene 'ground)
-                (draw-scene-regex scene "^TREE")
-                (draw-scene scene 'player2))
-              (draw-scene scene 'text-player2)))
+          (with-texture-mode (screen-player2 :clear +skyblue+)
+            (with-3d-mode camera-player2
+              (draw-scene scene 'ground)
+              (draw-scene-regex scene "^TREE")
+              (draw-scene scene 'player2))
+            (draw-scene scene 'text-player2))
 
           (let ((*claylib-background* +black+))
             (with-drawing

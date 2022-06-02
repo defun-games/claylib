@@ -32,6 +32,12 @@
                   (claylib/ll:color.b color)
                   (claylib/ll:color.a color))))
 
+;; TODO: This is required due to WITH-TEXTURE-MODE/CLEAR-BACKGROUND
+;; but feels kind of hackish and I'd rather not need it.
+(defmethod make-load-form ((obj rl-color) &optional environment)
+  (declare (ignore environment))
+  `(make-color ,(r obj) ,(g obj) ,(b obj) ,(a obj)))
+
 (defvar +lightgray+ (copy-color claylib/ll:+lightgray+))
 (defvar +gray+ (copy-color claylib/ll:+gray+))
 (defvar +darkgray+ (copy-color claylib/ll:+darkgray+))

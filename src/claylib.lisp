@@ -34,8 +34,8 @@
 background of the render texture, or NIL to skip clearing."
   `(progn
      (begin-texture-mode (c-struct ,render-texture))
-     (when ,clear
-       (clear-background :color ,clear))
+     ,(when clear
+       `(clear-background :color ,clear))
      ,@body
      (end-texture-mode)))
 
