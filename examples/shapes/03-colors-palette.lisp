@@ -12,6 +12,8 @@
            (color-names '("DARKGRAY" "MAROON" "ORANGE" "DARKGREEN" "DARKBLUE" "DARKPURPLE"
                           "DARKBROWN" "GRAY" "RED" "GOLD" "LIME" "BLUE" "VIOLET" "BROWN" "LIGHTGRAY"
                           "PINK" "YELLOW" "GREEN" "SKYBLUE" "PURPLE" "BEIGE"))
+           (faded-colors (loop for color in colors
+                               collect (fade color 0.6 t)))
            (color-recs (loop for color in colors
                              for i = 0 then (1+ i)
                              collect (make-rectangle
@@ -24,11 +26,9 @@
                                       100
                                       100
                                       color)))
-           (black-recs (loop for rect in color-recs
+           (label-recs (loop for rect in color-recs
                              collect (make-rectangle (x rect)
-                                                     (+ (y rect)
-                                                        (height rect)
-                                                        (- 26))
+                                                     (+ (y rect) (height rect) -26)
                                                      (width rect)
                                                      20
                                                      +black+)))
@@ -52,7 +52,11 @@
                                                  :size 10
                                                  :color color)))
            (scene (make-scene ()
-                              ((text (make-text "claylib colors palette"
+                              ((color-recs color-recs)
+                               (label-recs label-recs)
+                               (outline-recs outline-recs)
+                               (text-labels text-labels)
+                               (text (make-text "claylib colors palette"
                                                 28
                                                 42
                                                 :size 20
@@ -64,31 +68,24 @@
                                                       :color +gray+))))))
       (with-scene scene ()
         (do-game-loop (:livesupport t
-                       :vars ((color-state (make-array (length colors)
-                                                       :element-type 'bit
-                                                       :initial-element 0))
-                              (mouse-point (make-vector2 0 0))
+                       :vars ((mouse-point (make-vector2 0 0))
                               (faded-rect-color nil)))
           (get-mouse-position :vec mouse-point)
 
-          ;; restore original color if there was a faded rect
-          (when faded-rect-color
-            (setf (color (car faded-rect-color)) (cdr faded-rect-color)
-                  faded-rect-color nil))
-
-          (with-drawing
-            (draw-scene-all scene)
-            (loop for rect in color-recs
-                  for black-rect in black-recs
-                  for outline-rect in outline-recs
-                  for label in text-labels
-                  for i from 0 below (length color-recs)
-                  for mouse-over-p = (check-collision-point-rec mouse-point rect)
-                  do (when mouse-over-p
-                       (setf faded-rect-color `(,rect . ,(color rect))) ; remember fade
-                       (setf (color rect) (fade (color rect) 0.6 t)))
-                     (draw-object rect)
-                     (when (or (is-key-down-p +key-space+) mouse-over-p)
-                       (draw-object black-rect)
-                       (draw-object outline-rect)
-                       (draw-object label)))))))))
+          (with-scene-objects (color-recs label-recs outline-recs text-labels text text-space) scene
+            (with-drawing
+              (draw-object text)
+              (draw-object text-space)
+              (loop for rect in color-recs
+                    for color in colors
+                    for faded-color in faded-colors
+                    for label-rect in label-recs
+                    for outline-rect in outline-recs
+                    for label in text-labels
+                    for i below (length color-recs)
+                    for mouse-over-p = (check-collision-point-rec mouse-point rect)
+                    do (setf (color rect)
+                             (if mouse-over-p faded-color color))
+                       (draw-object rect)
+                       (when (or (is-key-down-p +key-space+) mouse-over-p)
+                         (mapc #'draw-object (list label-rect outline-rect label)))))))))))
