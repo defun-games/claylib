@@ -64,6 +64,13 @@
      (claylib/ll:load-texture (c-asset asset) (namestring (path asset)))))
   asset)
 
+(defun make-texture-asset (path &key (load-now nil))
+  "Make a texture asset from a PATH. This does not load the texture unless LOAD-NOW is non-nil."
+  (let ((asset (make-instance 'texture-asset
+                              :path path)))
+    (when load-now (load-asset asset))
+    asset))
+
 
 
 (defclass model-asset (game-asset)

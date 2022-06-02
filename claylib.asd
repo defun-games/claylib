@@ -110,4 +110,6 @@
                    (:file "03-colors-palette")))
                  (:module "textures"
                   :components
-                  ((:file "01-logo-raylib")))))))
+                  ((:file "01-logo-raylib")
+                   (:file "02-mouse-painting")
+                   (:file "03-rectangle")))))))

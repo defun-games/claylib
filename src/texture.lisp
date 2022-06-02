@@ -124,9 +124,11 @@
 
 (defun make-texture (texture-asset x y
                      &rest args &key width height filter wrap origin rot tint source)
+  "Make a texture object ready for drawing. Loads TEXTURE-ASSET when not already loaded."
   (declare (ignore filter wrap origin rot tint source))
   (load-asset texture-asset)
   (apply #'make-instance 'texture-object
+         :allow-other-keys t
          :asset texture-asset
          :dest (make-instance 'rl-rectangle
                               :x x

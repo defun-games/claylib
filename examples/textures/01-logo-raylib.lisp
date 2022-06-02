@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/textures-1
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/textures-1)
 
-(defun example-textures-01 ()
+(defun main ()
   (with-window (:title "raylib [textures] example - texture loading and drawing")
     (let* ((image-size 256)
            (texture-asset (make-instance 'texture-asset
