@@ -113,13 +113,13 @@
                   (list brush eraser eraser-outline)))
 
           ;; Paint circle into render texture
-          (when (or (claylib/ll:is-mouse-button-down-p +mouse-button-left+)
-                    (= (claylib/ll:get-gesture-detected) +gesture-drag+))
+          (when (or (is-mouse-button-down-p +mouse-button-left+)
+                    (= (get-gesture-detected) +gesture-drag+))
             (with-texture-mode (target :clear nil)
               (when (> (y mouse-pos) 50)
                 (draw-object brush))))
 
-          (if (claylib/ll:is-mouse-button-down-p +mouse-button-right+)
+          (if (is-mouse-button-down-p +mouse-button-right+)
               (progn
                 (unless mouse-was-pressed
                   (setf swath-selected-prev swath-selected
@@ -131,7 +131,7 @@
                   (when (> (y mouse-pos) 50)
                     (draw-object eraser))))
 
-              (when (and (claylib/ll:is-mouse-button-released-p +mouse-button-right+)
+              (when (and (is-mouse-button-released-p +mouse-button-right+)
                          mouse-was-pressed)
                 (setf swath-selected swath-selected-prev
                       mouse-was-pressed nil)))
@@ -148,7 +148,7 @@
 
             ;; Image saving logic
             (when (or (and btn-save-mouse-hover
-                           (claylib/ll:is-mouse-button-released-p +mouse-button-left+))
+                           (is-mouse-button-released-p +mouse-button-left+))
                       (is-key-pressed-p +key-s+))
               (let ((image (load-image-from-texture (texture target))))
                 (export-image (image-flip-vertical image) "my_amazing_texture_painting.png")
@@ -164,7 +164,7 @@
 
               ;; Draw drawing circle for reference
               (when (> (y mouse-pos) 50)
-                (if (claylib/ll:is-mouse-button-down-p +mouse-button-right+)
+                (if (is-mouse-button-down-p +mouse-button-right+)
                     (draw-object eraser-outline)
                     (draw-object brush)))
 

@@ -84,13 +84,13 @@
                   (text fps-text) (format nil "~2,'0d FPS" frames-speed)))
 
         (with-drawing
-        (loop for rec in fps-recs
-              for i below max-frame-speed
-              do (if (< i frames-speed)
-                     (setf (color rec) +red+
-                           (filled rec) t)
-                     (setf (color rec) +maroon+
-                           (filled rec) nil))
-              do (draw-object rec))
-
+          (loop for rec in fps-recs
+                for i below max-frame-speed
+                do (if (< i frames-speed)
+                       (setf (color rec) +red+
+                             (filled rec) t)
+                       (setf (color rec) +maroon+
+                             (filled rec) nil))
+                do (draw-object rec))
+          
           (draw-scene-all scene))))))
