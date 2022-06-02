@@ -112,4 +112,5 @@
                   :components
                   ((:file "01-logo-raylib")
                    (:file "02-mouse-painting")
-                   (:file "03-rectangle")))))))
+                   (:file "03-rectangle")
+                   (:file "04-srcrec-dstrec")))))))

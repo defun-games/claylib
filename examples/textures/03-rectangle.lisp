@@ -83,7 +83,6 @@
                   (y red-outline) (+ 40 (y (source scarfy-frame)))
                   (text fps-text) (format nil "~2,'0d FPS" frames-speed)))
 
-
         (with-drawing
         (loop for rec in fps-recs
               for i below max-frame-speed
@@ -93,4 +92,5 @@
                      (setf (color rec) +maroon+
                            (filled rec) nil))
               do (draw-object rec))
+
           (draw-scene-all scene))))))
