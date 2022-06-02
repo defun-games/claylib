@@ -107,7 +107,7 @@ and see the screen scaling!"
                                 (- (get-screen-height) (* game-screen-height scale)))
                     (width dest) (* game-screen-width scale)
                     (height dest) (* game-screen-height scale)))
-            (with-texture-mode target
+            (with-texture-mode (target)
               (draw-scene-regex scene "^RECT")
               (draw-scene-regex scene "^TEXT"))
             (let ((*claylib-background* +black+))

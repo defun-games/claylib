@@ -114,13 +114,17 @@ job, the user may never need to call this directly."))
 (defgeneric (setf radius) (value circle)
   (:documentation "Set the radius of a circle or sphere."))
 
+(defgeneric size (obj)
+  (:documentation "Get the size value or vector of some object."))
+
+(defgeneric (setf size) (value obj)
+  (:documentation "Set the size value or vector of some object."))
+
 (defgeneric set-slot (slot obj value &key free)
   (:documentation "Copy the slot values (of object VALUE) to the slots in child object SLOT of parent OBJ.
 Don't use this if SLOT contains an atom or string -- use normal SETF instead. FREE specifies when to
 free VALUE."))
 
-;; TODO: Free old memory when using :force-reload t
-;; TODO: unload-asset methods
 (defgeneric load-asset (asset &key force-reload)
-  (:documentation "Return a pointer to ASSET.
+  (:documentation "Load a game-asset's backing C object from a file.
 Force a reload & free old memory when FORCE-RELOAD is T."))

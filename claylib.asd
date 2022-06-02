@@ -42,6 +42,7 @@
                              (:file "vec")
                              (:file "color")
                              (:file "bounding-box")
+                             (:file "game-asset")
                              (:file "game-object")
                              (:file "shape")
                              (:file "circle")
@@ -56,6 +57,7 @@
                              (:file "camera-3d")
                              (:file "ray")
                              (:file "ray-collision")
+                             (:file "image")
                              (:file "texture")
                              (:file "text")
                              (:file "cube")
@@ -106,4 +108,10 @@
                   :components
                   ((:file "01-basic-shapes")
                    (:file "02-bouncing-ball")
-                   (:file "03-colors-palette")))))))
+                   (:file "03-colors-palette")))
+                 (:module "textures"
+                  :components
+                  ((:file "01-logo-raylib")
+                   (:file "02-mouse-painting")
+                   (:file "03-rectangle")
+                   (:file "04-srcrec-dstrec")))))))

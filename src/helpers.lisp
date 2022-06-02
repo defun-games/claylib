@@ -236,7 +236,9 @@ are coerced to floats. For something more complex, try DEFINITIALIZER."
   "Define a SLOT-UNBOUND method as a lazy fallback default slot value."
   (let ((obj (gensym))
         (slot (gensym)))
-    `(defmethod slot-unbound (,class ,obj (,slot (eql ',slot-name)))
+    `(defmethod slot-unbound (_
+                              (,obj ,class)
+                              (,slot (eql ',slot-name)))
        (setf (slot-value ,obj ,slot) ,value))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)

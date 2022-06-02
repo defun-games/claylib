@@ -6,9 +6,9 @@
 
 (defun main ()
   (with-window (:title "raylib [core] example - split screen")
-    (let* ((texture-grid (make-instance 'texture
-                                        :filter +texture-filter-anisotropic-16x+
-                                        :wrap +texture-wrap-clamp+))
+    (let* ((texture-grid (make-empty-texture
+                          :filter +texture-filter-anisotropic-16x+
+                          :wrap +texture-wrap-clamp+))
            (camera-player1 (make-camera-3d 0 1 -3
                                            0 1 0
                                            0 1 0))
@@ -87,20 +87,19 @@
           (setf (pos (scene-object scene 'player1)) (pos camera-player1)
                 (pos (scene-object scene 'player2)) (pos camera-player2))
 
-          (let ((*claylib-background* +skyblue+))
-            (with-texture-mode screen-player1
-              (with-3d-mode camera-player1
-                (draw-scene scene 'ground)
-                (draw-scene-regex scene "^TREE")
-                (draw-scene scene 'player1))
-              (draw-scene scene 'text-player1))
+          (with-texture-mode (screen-player1 :clear +skyblue+)
+            (with-3d-mode camera-player1
+              (draw-scene scene 'ground)
+              (draw-scene-regex scene "^TREE")
+              (draw-scene scene 'player1))
+            (draw-scene scene 'text-player1))
 
-            (with-texture-mode screen-player2
-              (with-3d-mode camera-player2
-                (draw-scene scene 'ground)
-                (draw-scene-regex scene "^TREE")
-                (draw-scene scene 'player2))
-              (draw-scene scene 'text-player2)))
+          (with-texture-mode (screen-player2 :clear +skyblue+)
+            (with-3d-mode camera-player2
+              (draw-scene scene 'ground)
+              (draw-scene-regex scene "^TREE")
+              (draw-scene scene 'player2))
+            (draw-scene scene 'text-player2))
 
           (let ((*claylib-background* +black+))
             (with-drawing

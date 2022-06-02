@@ -26,7 +26,8 @@
    :get-mouse-position :get-mouse-ray :get-ray-collision-box :load-render-texture :with-texture-mode
    :draw-grid :draw-text :draw-rectangle :draw-circle :draw-cube :update-camera :gen-mesh-cylinder
    :with-window :load-font :load-model-from-mesh :gen-mesh-cube :gen-image-checked :load-texture-from-image
-   :fade :check-collision-point-rec)
+   :fade :check-collision-point-rec :clear-background :export-image :load-image-from-texture
+   :image-flip-vertical)
 
 
 
@@ -74,17 +75,19 @@
    :text :rectangle :rl-rectangle :circle :cube :grid :rl-vector2 :rl-vector3 :rl-vector4 :rl-color
    :line-2d :rl-camera-3d :camera-3d :rl-camera-2d :plane :rl-ray :ray :rl-ray-collision :rl-bounding-box
    :rl-texture :texture :rl-transform :rl-model :model :rl-mesh :rl-shader :rl-material-map :rl-material
-   :rl-matrix :triangle
+   :rl-matrix :triangle :image-asset :texture-asset :model-asset :shader-asset :font-asset
+   :animation-asset
    
    ;; Misc. convenience wrappers
    :with-window :do-game-loop :with-drawing :is-key-pressed-p :is-gesture-detected-p :is-key-down-p
    :with-scene-objects :is-mouse-button-pressed-p :is-key-pressed-p
-   :is-mouse-button-pressed-p :make-vector2 :make-vector3 :make-vector4 :make-camera-3d
+   :is-mouse-button-down-p :make-vector2 :make-vector3 :make-vector4 :make-camera-3d
    :make-camera-3d-from-vecs :make-camera-2d :make-camera-2d-from-vecs :make-color :make-rectangle
    :make-rectangle-from-vecs :make-circle :make-grid :make-cube :make-cube-from-vecs :make-text
    :make-line-2d :with-2d-mode :with-3d-mode :make-plane :make-ray :make-ray-collision :with-texture-mode
    :with-scissor-mode :make-zero-matrix :is-window-state-p :make-triangle :make-triangle-from-vecs
-   :make-polygon
+   :make-texture :make-texture-from-rec :make-empty-texture :make-texture-asset :get-gesture-detected
+   :is-mouse-button-released-p :make-polygon
 
    ;; Scenes
    :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
@@ -93,7 +96,7 @@
    ;; Generic functions/methods
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
    :hit :low :high :r :g :b :a :dest :filter :origin :source :tint :radius :x3 :y3 :v1 :v2 :v3
-   :load-asset
+   :load-asset :filled
 
    ;; Math
    :vector2-subtract :vector2-add :vector2-scale :vector2-length
@@ -114,4 +117,5 @@
    :restore-window :maximize-window :+flag-window-transparent+ :+flag-fullscreen-mode+
    :+flag-window-highdpi+ :+flag-msaa-4x-hint+ :gen-image-checked :load-texture-from-image
    :+texture-filter-anisotropic-16x+ :+texture-wrap-clamp+ :get-time :wait-time :swap-screen-buffer
-   :check-collision-point-rec))
+   :check-collision-point-rec :clear-background :export-image :load-image-from-texture
+   :image-flip-vertical))
