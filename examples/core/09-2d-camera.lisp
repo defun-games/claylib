@@ -13,36 +13,36 @@
                                    300))
            (scene
              (make-scene ()
-                         `((ground ,(make-rectangle -6000 320 13000 8000 +darkgray+))
-                           (player ,(make-rectangle 400 280 40 40 +red+))
-                           (title ,(make-text "SCREEN AREA" 640 10 :size 20 :color +red+))
-                           (r1 ,(make-rectangle 0 0 *screen-width* 5 +red+))
-                           (r2 ,(make-rectangle 0 5 5 (- *screen-height* 10) +red+))
-                           (r3 ,(make-rectangle (- *screen-width* 5) 5 5 (- *screen-height* 10) +red+))
-                           (r4 ,(make-rectangle 0 (- *screen-height* 5) *screen-width* 5 +red+))
-                           (r5 ,(make-rectangle 10 10 250 113 (fade +skyblue+ 0.5 t)))
-                           (r6 ,(make-rectangle 10 10 250 113 +blue+ :filled nil))
-                           (t1 ,(make-text "Free 2d camera controls:"
-                                           20 20
-                                           :size 10 :color +black+))
-                           (t2 ,(make-text "- Right/Left to move Offset"
-                                           40 40
-                                           :size 10 :color +darkgray+))
-                           (t3 ,(make-text "- Mouse Wheel to Zoom in-out"
-                                           40 60
-                                           :size 10 :color +darkgray+))
-                           (t4 ,(make-text "- A / S to Rotate"
-                                           40 80
-                                           :size 10 :color +darkgray+))
-                           (t5 ,(make-text "- R to reset Zoom and Rotation"
-                                           40 100
-                                           :size 10 :color +darkgray+))
-                           (vline ,(make-line-2d (x (target camera)) (* *screen-height* -10)
-                                                 (x (target camera)) (* *screen-height* 10)
-                                                 +green+))
-                           (hline ,(make-line-2d (* *screen-width* -10) (y (target camera))
-                                                 (* *screen-width* 10) (y (target camera))
-                                                 +green+))))))
+                         ((ground (make-rectangle -6000 320 13000 8000 +darkgray+))
+                          (player (make-rectangle 400 280 40 40 +red+))
+                          (title (make-text "SCREEN AREA" 640 10 :size 20 :color +red+))
+                          (r1 (make-rectangle 0 0 *screen-width* 5 +red+))
+                          (r2 (make-rectangle 0 5 5 (- *screen-height* 10) +red+))
+                          (r3 (make-rectangle (- *screen-width* 5) 5 5 (- *screen-height* 10) +red+))
+                          (r4 (make-rectangle 0 (- *screen-height* 5) *screen-width* 5 +red+))
+                          (r5 (make-rectangle 10 10 250 113 (fade +skyblue+ 0.5 t)))
+                          (r6 (make-rectangle 10 10 250 113 +blue+ :filled nil))
+                          (t1 (make-text "Free 2d camera controls:"
+                                         20 20
+                                         :size 10 :color +black+))
+                          (t2 (make-text "- Right/Left to move Offset"
+                                         40 40
+                                         :size 10 :color +darkgray+))
+                          (t3 (make-text "- Mouse Wheel to Zoom in-out"
+                                         40 60
+                                         :size 10 :color +darkgray+))
+                          (t4 (make-text "- A / S to Rotate"
+                                         40 80
+                                         :size 10 :color +darkgray+))
+                          (t5 (make-text "- R to reset Zoom and Rotation"
+                                         40 100
+                                         :size 10 :color +darkgray+))
+                          (vline (make-line-2d (x (target camera)) (* *screen-height* -10)
+                                               (x (target camera)) (* *screen-height* 10)
+                                               +green+))
+                          (hline (make-line-2d (* *screen-width* -10) (y (target camera))
+                                               (* *screen-width* 10) (y (target camera))
+                                               +green+))))))
       (loop with spacing = 0
             repeat 100
             do (let ((w (get-random-value 50 200))

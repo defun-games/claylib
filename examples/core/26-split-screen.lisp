@@ -24,21 +24,21 @@
                                              :width (/ (get-screen-width) 2)
                                              :height (- (get-screen-height))))
            (scene (make-scene ()
-                              `((ground ,(make-plane 0 0 0 50 50 +beige+))
-                                (player1 ,(make-cube 0 1 -3
-                                                     1 1 1
-                                                     +red+))
-                                (player2 ,(make-cube -3 -3 0
-                                                     1 1 1
-                                                     +blue+))
-                                (text-player1 ,(make-text "PLAYER1 W/S to move"
-                                                          10 10
-                                                          :size 20 :color +red+))
-                                (text-player2 ,(make-text "PLAYER2 UP/DOWN to move"
-                                                          10 10
-                                                          :size 20 :color +blue+))
-                                (texture-player1 ,(texture screen-player1))
-                                (texture-player2 ,(texture screen-player2))))))
+                              ((ground (make-plane 0 0 0 50 50 +beige+))
+                               (player1 (make-cube 0 1 -3
+                                                   1 1 1
+                                                   +red+))
+                               (player2 (make-cube -3 -3 0
+                                                   1 1 1
+                                                   +blue+))
+                               (text-player1 (make-text "PLAYER1 W/S to move"
+                                                        10 10
+                                                        :size 20 :color +red+))
+                               (text-player2 (make-text "PLAYER2 UP/DOWN to move"
+                                                        10 10
+                                                        :size 20 :color +blue+))
+                               (texture-player1 (texture screen-player1))
+                               (texture-player2 (texture screen-player2))))))
       (load-texture-from-image (gen-image-checked 256 256
                                                   32 32
                                                   +darkgray+ +white+)

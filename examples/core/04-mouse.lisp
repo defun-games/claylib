@@ -16,8 +16,8 @@
 (defun main ()
   (with-window (:title "raylib [core] example - mouse input")
     (let ((scene (make-scene ()
-                             `((text ,(make-text "" 10 10 :size 20 :color +darkgray+))
-                               (ball ,(make-circle -100 -100 40 +darkblue+))))))
+                             ((text (make-text "" 10 10 :size 20 :color +darkgray+))
+                              (ball (make-circle -100 -100 40 +darkblue+))))))
       (with-scene scene ()
         (do-game-loop (:livesupport t
                        :vars ((color +darkblue+)))

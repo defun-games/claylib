@@ -100,13 +100,17 @@
                (setf (gethash (car object) (objects ,sym)) (cadr object)))
              ,sym)))))
 
-(defun make-scene (assets objects)
-  (let ((scene (make-instance 'game-scene)))
-    (dolist (asset assets)
-      (setf (gethash (car asset) (assets scene)) (cadr asset)))
-    (dolist (object objects)
-      (setf (gethash (car object) (objects scene)) (cadr object)))
-    scene))
+(defmacro make-scene (assets objects)
+  (let ((scene (gensym)))
+    `(let ((,scene (make-instance 'game-scene)))
+       (let* (,@assets ,@objects)
+         (declare (ignorable ,@(mapcar #'car (append assets objects))))
+         (progn
+           ,@(loop for (binding val) in assets
+                   collect `(setf (gethash ',binding (assets ,scene)) ,val))
+           ,@(loop for (binding val) in objects
+                   collect `(setf (gethash ',binding (objects ,scene)) ,val))))
+       ,scene)))
 
 (defun scene-object (scene object)
   (gethash object (objects scene)))

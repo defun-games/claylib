@@ -13,27 +13,27 @@
                                   :projection +camera-perspective+
                                   :mode +camera-first-person+))
           (scene (make-scene ()
-                             `((ground ,(make-plane 0 0 0 32 32 +lightgray+))
-                               (blue ,(make-cube -16 2.5 0
-                                                 1 5 32
-                                                 +blue+))
-                               (green ,(make-cube 16 2.5 0
-                                                  1 5 32
-                                                  +lime+))
-                               (yellow ,(make-cube 0 2.5 16
-                                                   32 5 1
-                                                   +gold+))
-                               (rect ,(make-rectangle 10 10 220 70 (fade +skyblue+ 0.5 t)))
-                               (rect-border ,(make-rectangle 10 10 220 70 +blue+ :filled nil))
-                               (text1 ,(make-text "First person camera default controls:"
-                                                  20 20
-                                                  :size 10 :color +black+))
-                               (text2 ,(make-text "- Move with keys: W, A, S, D"
-                                                  40 40
-                                                  :size 10 :color +darkgray+))
-                               (text3 ,(make-text "- Mouse move to look around"
-                                                  40 60
-                                                  :size 10 :color +darkgray+))))))
+                             ((ground (make-plane 0 0 0 32 32 +lightgray+))
+                              (blue (make-cube -16 2.5 0
+                                               1 5 32
+                                               +blue+))
+                              (green (make-cube 16 2.5 0
+                                                1 5 32
+                                                +lime+))
+                              (yellow (make-cube 0 2.5 16
+                                                 32 5 1
+                                                 +gold+))
+                              (rect (make-rectangle 10 10 220 70 (fade +skyblue+ 0.5 t)))
+                              (rect-border (make-rectangle 10 10 220 70 +blue+ :filled nil))
+                              (text1 (make-text "First person camera default controls:"
+                                                20 20
+                                                :size 10 :color +black+))
+                              (text2 (make-text "- Move with keys: W, A, S, D"
+                                                40 40
+                                                :size 10 :color +darkgray+))
+                              (text3 (make-text "- Mouse move to look around"
+                                                40 60
+                                                :size 10 :color +darkgray+))))))
       (dotimes (i 20)
         (let* ((h (get-random-value 1 12))
                (pos (make-vector3 (get-random-value -15 15)

@@ -52,16 +52,16 @@
                                                  :size 10
                                                  :color color)))
            (scene (make-scene ()
-                              `((text ,(make-text "claylib colors palette"
-                                                  28
-                                                  42
-                                                  :size 20
-                                                  :color +black+))
-                                (text-space ,(make-text "press SPACE to see all colors"
-                                                        (- (get-screen-width) 180)
-                                                        (- (get-screen-height) 40)
-                                                        :size 10
-                                                        :color +gray+))))))
+                              ((text (make-text "claylib colors palette"
+                                                28
+                                                42
+                                                :size 20
+                                                :color +black+))
+                               (text-space (make-text "press SPACE to see all colors"
+                                                      (- (get-screen-width) 180)
+                                                      (- (get-screen-height) 40)
+                                                      :size 10
+                                                      :color +gray+))))))
       (with-scene scene ()
         (do-game-loop (:livesupport t
                        :vars ((color-state (make-array (length colors)

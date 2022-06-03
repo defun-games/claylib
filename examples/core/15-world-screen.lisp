@@ -14,28 +14,28 @@
                                    :projection +camera-perspective+
                                    :mode +camera-free+))
            (scene (make-scene ()
-                              `((cube ,(make-cube 0 0 0
-                                                  2 2 2
-                                                  +red+))
-                                (outline ,(make-cube 0 0 0
-                                                     2 2 2
-                                                     +maroon+
-                                                     :filled nil))
-                                (grid ,(make-grid 10 1.0))
-                                (text1 ,(make-text "Enemy: 100 / 100"
-                                                   (- half-text)
-                                                   0
-                                                   :size 20
-                                                   :color +black+))
-                                (text2 ,(make-text "Text is always on top of the cube"
-                                                   (/ (- *screen-width*
-                                                         (measure-text
-                                                          "Text is always on top of the cube"
-                                                          20))
-                                                      2.0)
-                                                   25
-                                                   :size 20
-                                                   :color +gray+)))))
+                              ((cube (make-cube 0 0 0
+                                                2 2 2
+                                                +red+))
+                               (outline (make-cube 0 0 0
+                                                   2 2 2
+                                                   +maroon+
+                                                   :filled nil))
+                               (grid (make-grid 10 1.0))
+                               (text1 (make-text "Enemy: 100 / 100"
+                                                 (- half-text)
+                                                 0
+                                                 :size 20
+                                                 :color +black+))
+                               (text2 (make-text "Text is always on top of the cube"
+                                                 (/ (- *screen-width*
+                                                       (measure-text
+                                                        "Text is always on top of the cube"
+                                                        20))
+                                                    2.0)
+                                                 25
+                                                 :size 20
+                                                 :color +gray+)))))
            (invec (make-vector3 0 2.5 0))
            (outvec (make-vector2 0 0)))
       (with-scene scene ()

@@ -42,23 +42,23 @@
 
            (scene (make-scene
                    ()
-                   `((top-panel ,(make-rectangle 0 0
-                                                 screen-width 50
-                                                 +raywhite+))
-                     (top-panel-line ,(make-line-2d 0 50 screen-width 50 +lightgray+))
-                     (white-swath-outline ,(make-rectangle 10 10 30 30 +lightgray+ :filled nil))
-                     (btn-save-rec ,(make-rectangle 750 10 40 30 +black+ :filled nil))
-                     (btn-save-msg ,(make-text "SAVE!" 755 20 :size 10 :color +black+))
-                     (save-rec1 ,(make-rectangle 0 0
-                                                 screen-width screen-height
-                                                 (fade +raywhite+ 0.8 t)))
-                     (save-rec2 ,(make-rectangle 0 150
-                                                 screen-width 80
-                                                 +black+))
-                     (save-text ,(make-text "IMAGE SAVED: my_amazing_texture_painting.png"
-                                            150 180
-                                            :size 20
-                                            :color +raywhite+))))))
+                   ((top-panel (make-rectangle 0 0
+                                               screen-width 50
+                                               +raywhite+))
+                    (top-panel-line (make-line-2d 0 50 screen-width 50 +lightgray+))
+                    (white-swath-outline (make-rectangle 10 10 30 30 +lightgray+ :filled nil))
+                    (btn-save-rec (make-rectangle 750 10 40 30 +black+ :filled nil))
+                    (btn-save-msg (make-text "SAVE!" 755 20 :size 10 :color +black+))
+                    (save-rec1 (make-rectangle 0 0
+                                               screen-width screen-height
+                                               (fade +raywhite+ 0.8 t)))
+                    (save-rec2 (make-rectangle 0 150
+                                               screen-width 80
+                                               +black+))
+                    (save-text (make-text "IMAGE SAVED: my_amazing_texture_painting.png"
+                                          150 180
+                                          :size 20
+                                          :color +raywhite+))))))
       (with-scene scene ()
         ;; Clear render texture before entering the game loop
         (with-texture-mode (target))

@@ -21,13 +21,13 @@
 
 (defun main ()
   (with-window (:title "raylib [core] example - keyboard input")
-    (let ((scene (make-scene () `((text ,(make-text "Move the ball with arrow keys"
-                                                    10 10
-                                                    :size 20 :color +darkgray+))
-                                  (ball ,(make-circle (/ *screen-width* 2.0)
-                                                      (/ *screen-height* 2.0)
-                                                      50.0
-                                                      +maroon+))))))
+    (let ((scene (make-scene () ((text (make-text "Move the ball with arrow keys"
+                                                  10 10
+                                                  :size 20 :color +darkgray+))
+                                 (ball (make-circle (/ *screen-width* 2.0)
+                                                    (/ *screen-height* 2.0)
+                                                    50.0
+                                                    +maroon+))))))
       (with-scene scene ()
         (do-game-loop (:livesupport t)
           (move-ball (scene-object scene 'ball))

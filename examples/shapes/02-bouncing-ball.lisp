@@ -37,22 +37,22 @@ components of the BALL's SPEED."
 (defun main ()
   (with-window (:title "raylib [shapes] example - bouncing ball")
     (let ((scene (make-scene ()
-                             `((ball ,(make-ball (/ (get-screen-width) 2.0)
-                                                 (/ (get-screen-height) 2.0)
-                                                 20
-                                                 +maroon+
-                                                 5
-                                                 4))
-                               (text ,(make-text "PRESS SPACE to PAUSE BALL MOVEMENT"
-                                                 10
-                                                 (- (get-screen-height) 25)
-                                                 :size 20
-                                                 :color +lightgray+))
-                               (text-pause ,(make-text "PAUSED"
-                                                       350
-                                                       200
-                                                       :size 30
-                                                       :color +gray+))))))
+                             ((ball (make-ball (/ (get-screen-width) 2.0)
+                                               (/ (get-screen-height) 2.0)
+                                               20
+                                               +maroon+
+                                               5
+                                               4))
+                              (text (make-text "PRESS SPACE to PAUSE BALL MOVEMENT"
+                                               10
+                                               (- (get-screen-height) 25)
+                                               :size 20
+                                               :color +lightgray+))
+                              (text-pause (make-text "PAUSED"
+                                                     350
+                                                     200
+                                                     :size 30
+                                                     :color +gray+))))))
       (with-scene scene ()
         (with-scene-objects (ball) scene
           (do-game-loop (:livesupport t

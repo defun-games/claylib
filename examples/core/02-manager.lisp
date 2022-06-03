@@ -15,29 +15,29 @@
 
 (defun main ()
   (with-window (:title "raylib [core] example - basic screen manager")
-    (let ((logo (make-scene () `((paint ,(make-screen *claylib-background*))
-                                 (text ,(make-text "LOGO SCREEN" 20 20
-                                                   :size 40 :color +lightgray+))
-                                 (subtext ,(make-text "WAIT for 2 SECONDS..." 290 220
-                                                      :size 20 :color +gray+)))))
-          (title (make-scene () `((paint ,(make-screen +green+))
-                                  (text ,(make-text "TITLE SCREEN" 20 20
-                                                    :size 40 :color +darkgreen+))
-                                  (subtext ,(make-text "PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN"
-                                                       120 220
-                                                       :size 20 :color +darkgreen+)))))
-          (gameplay (make-scene () `((paint ,(make-screen +purple+))
-                                     (text ,(make-text "GAMEPLAY SCREEN" 20 20
-                                                       :size 40 :color +maroon+))
-                                     (subtext ,(make-text "PRESS ENTER or TAP to JUMP to ENDING SCREEN"
-                                                          130 220
-                                                          :size 20 :color +maroon+)))))
-          (ending (make-scene () `((paint ,(make-screen +blue+))
-                                   (text ,(make-text "ENDING SCREEN" 20 20
-                                                     :size 40 :color +darkblue+))
-                                   (subtext ,(make-text "PRESS ENTER or TAP to RETURN to TITLE SCREEN"
-                                                        120 220
-                                                        :size 20 :color +darkblue+))))))
+    (let ((logo (make-scene () ((paint (make-screen *claylib-background*))
+                                (text (make-text "LOGO SCREEN" 20 20
+                                                 :size 40 :color +lightgray+))
+                                (subtext (make-text "WAIT for 2 SECONDS..." 290 220
+                                                    :size 20 :color +gray+)))))
+          (title (make-scene () ((paint (make-screen +green+))
+                                 (text (make-text "TITLE SCREEN" 20 20
+                                                  :size 40 :color +darkgreen+))
+                                 (subtext (make-text "PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN"
+                                                     120 220
+                                                     :size 20 :color +darkgreen+)))))
+          (gameplay (make-scene () ((paint (make-screen +purple+))
+                                    (text (make-text "GAMEPLAY SCREEN" 20 20
+                                                     :size 40 :color +maroon+))
+                                    (subtext (make-text "PRESS ENTER or TAP to JUMP to ENDING SCREEN"
+                                                        130 220
+                                                        :size 20 :color +maroon+)))))
+          (ending (make-scene () ((paint (make-screen +blue+))
+                                  (text (make-text "ENDING SCREEN" 20 20
+                                                   :size 40 :color +darkblue+))
+                                  (subtext (make-text "PRESS ENTER or TAP to RETURN to TITLE SCREEN"
+                                                      120 220
+                                                      :size 20 :color +darkblue+))))))
       (do-game-loop (:livesupport t
                      :vars ((screens `(:logo ,@(alexandria:circular-list :title :gameplay :ending)))
                             (frame-count 0)))

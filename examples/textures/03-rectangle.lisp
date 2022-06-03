@@ -20,45 +20,45 @@
                                                    +maroon+
                                                    :filled nil)))
            (scene (make-scene ()
-                              `((scarfy-full ,(make-texture scarfy-asset
-                                                            15 40
-                                                            :tint +white+))
-                                (scarfy-frame ,(make-texture scarfy-asset
-                                                             350 280
-                                                             :source (make-rectangle
-                                                                      0 0
-                                                                      (/ scarfy-width 6)
-                                                                      scarfy-height
-                                                                      +black+)
-                                                             :width (/ scarfy-width 6)
-                                                             :height scarfy-height
-                                                             :tint +white+))
-                                (lime-outline ,(make-rectangle 15 40
-                                                            scarfy-width
-                                                            scarfy-height
-                                                            +lime+
+                              ((scarfy-full (make-texture scarfy-asset
+                                                          15 40
+                                                          :tint +white+))
+                               (scarfy-frame (make-texture scarfy-asset
+                                                           350 280
+                                                           :source (make-rectangle
+                                                                    0 0
+                                                                    (/ scarfy-width 6)
+                                                                    scarfy-height
+                                                                    +black+)
+                                                           :width (/ scarfy-width 6)
+                                                           :height scarfy-height
+                                                           :tint +white+))
+                               (lime-outline (make-rectangle 15 40
+                                                             scarfy-width
+                                                             scarfy-height
+                                                             +lime+
+                                                             :filled nil))
+                               (red-outline (make-rectangle 0 0
+                                                            (/ scarfy-width 6) scarfy-height
+                                                            +red+
                                                             :filled nil))
-                                (red-outline ,(make-rectangle 0 0
-                                                              (/ scarfy-width 6) scarfy-height
-                                                              +red+
-                                                              :filled nil))
-                                (frame-speed-text ,(make-text "FRAME SPEED: "
-                                                              165 210
-                                                              :size 10
-                                                              :color +darkgray+))
-                                (fps-text ,(make-text "00 FPS"
-                                                      575 210
-                                                      :size 10
-                                                      :color +darkgray+))
-                                (hint-text ,(make-text "PRESS RIGHT/LEFT KEYS to CHANGE SPEED!"
-                                                       290 240
-                                                       :size 10
-                                                       :color +darkgray+))
-                                (copyright-text ,(make-text "(c) Scarfy sprite by Eiden Marsal"
-                                                            (- (get-screen-width) 200)
-                                                            (- (get-screen-height) 20)
+                               (frame-speed-text (make-text "FRAME SPEED: "
+                                                            165 210
                                                             :size 10
-                                                            :color +gray+))))))
+                                                            :color +darkgray+))
+                               (fps-text (make-text "00 FPS"
+                                                    575 210
+                                                    :size 10
+                                                    :color +darkgray+))
+                               (hint-text (make-text "PRESS RIGHT/LEFT KEYS to CHANGE SPEED!"
+                                                     290 240
+                                                     :size 10
+                                                     :color +darkgray+))
+                               (copyright-text (make-text "(c) Scarfy sprite by Eiden Marsal"
+                                                          (- (get-screen-width) 200)
+                                                          (- (get-screen-height) 20)
+                                                          :size 10
+                                                          :color +gray+))))))
       (do-game-loop (:livesupport t
                      :vars ((current-frame 0)
                             (frames-counter 0)

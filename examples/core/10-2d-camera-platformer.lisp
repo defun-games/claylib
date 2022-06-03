@@ -180,33 +180,33 @@
   (with-window (:title "raylib [core] example - 2d camera")
     (let* ((scene
              (make-scene ()
-                         `((player ,(make-instance 'player
-                                                   :x 380
-                                                   :y 240
-                                                   :spd 0
-                                                   :can-jump-p nil
-                                                   :width 40
-                                                   :height 40
-                                                   :color +red+))
-                           (t1 ,(make-text "Controls:" 20 20 :size 10 :color +black+))
-                           (t2 ,(make-text "- Right/Left to move"
-                                           40 40
-                                           :size 10 :color +darkgray+))
-                           (t3 ,(make-text "- Space to jump"
-                                           40 60
-                                           :size 10 :color +darkgray+))
-                           (t4 ,(make-text "- Mouse Wheel to Zoom in-out, R to reset zoom"
-                                           40 80
-                                           :size 10 :color +darkgray+))
-                           (t5 ,(make-text "- C to change camera mode"
-                                           40 100
-                                           :size 10 :color +darkgray+))
-                           (t6 ,(make-text "Current camera mode:"
-                                           20 120
-                                           :size 10 :color +black+))
-                           (t7 ,(make-text "Follow player center"
-                                           40 140
-                                           :size 10 :color +darkgray+)))))
+                         ((player (make-instance 'player
+                                                 :x 380
+                                                 :y 240
+                                                 :spd 0
+                                                 :can-jump-p nil
+                                                 :width 40
+                                                 :height 40
+                                                 :color +red+))
+                          (t1 (make-text "Controls:" 20 20 :size 10 :color +black+))
+                          (t2 (make-text "- Right/Left to move"
+                                         40 40
+                                         :size 10 :color +darkgray+))
+                          (t3 (make-text "- Space to jump"
+                                         40 60
+                                         :size 10 :color +darkgray+))
+                          (t4 (make-text "- Mouse Wheel to Zoom in-out, R to reset zoom"
+                                         40 80
+                                         :size 10 :color +darkgray+))
+                          (t5 (make-text "- C to change camera mode"
+                                         40 100
+                                         :size 10 :color +darkgray+))
+                          (t6 (make-text "Current camera mode:"
+                                         20 120
+                                         :size 10 :color +black+))
+                          (t7 (make-text "Follow player center"
+                                         40 140
+                                         :size 10 :color +darkgray+)))))
            (env-items (list (make-env-item 0 0 1000 400 nil +lightgray+)
                             (make-env-item 0 400 1000 200 t +gray+)
                             (make-env-item 300 200 400 10 t +gray+)
