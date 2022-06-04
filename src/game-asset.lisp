@@ -196,7 +196,7 @@
 
 
 (defclass animation-asset (game-asset)
-  ((%num 
+  ((%num
     :type integer
     :accessor num)
    (%asset :type (or rl-model-animation null))))
