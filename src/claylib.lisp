@@ -74,3 +74,9 @@ background of the render texture, or NIL to skip clearing."
      (collect-garbage)
      (when (is-window-ready-p)
        (close-window))))
+
+(defmethod draw-object ((obj list))
+  (mapc #'draw-object obj))
+
+(defmethod free ((obj list))
+  (mapc #'free obj))

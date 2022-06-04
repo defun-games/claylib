@@ -14,11 +14,6 @@
            (scarfy-width (width scarfy-asset))
            (scarfy-height (height scarfy-asset))
            (max-frame-speed 15)
-           (fps-recs (loop for i below max-frame-speed
-                           collect (make-rectangle (+ 250 (* 21 i)) 205
-                                                   20 20
-                                                   +maroon+
-                                                   :filled nil)))
            (scene (make-scene ()
                               ((scarfy-full (make-texture scarfy-asset
                                                           15 40
@@ -42,6 +37,10 @@
                                                             (/ scarfy-width 6) scarfy-height
                                                             +red+
                                                             :filled nil))
+                               (red-outline (make-rectangle 0 0
+                                                            (/ scarfy-width 6) scarfy-height
+                                                            +red+
+                                                            :filled nil))
                                (frame-speed-text (make-text "FRAME SPEED: "
                                                             165 210
                                                             :size 10
@@ -50,6 +49,11 @@
                                                     575 210
                                                     :size 10
                                                     :color +darkgray+))
+                               (fps-recs (loop for i below max-frame-speed
+                                               collect (make-rectangle (+ 250 (* 21 i)) 205
+                                                                       20 20
+                                                                       +maroon+
+                                                                       :filled nil)))
                                (hint-text (make-text "PRESS RIGHT/LEFT KEYS to CHANGE SPEED!"
                                                      290 240
                                                      :size 10
@@ -59,38 +63,37 @@
                                                           (- (get-screen-height) 20)
                                                           :size 10
                                                           :color +gray+))))))
-      (do-game-loop (:livesupport t
-                     :vars ((current-frame 0)
-                            (frames-counter 0)
-                            (frames-speed 8)))
-        (incf frames-counter)
+      (with-scene scene ()
+        (do-game-loop (:livesupport t
+                       :vars ((current-frame 0)
+                              (frames-counter 0)
+                              (frames-speed 8)))
+          (incf frames-counter)
 
-        (when (>= frames-counter (truncate 60 frames-speed))
-          (setf frames-counter 0)
-          (when (> (incf current-frame) 5)
-            (setf current-frame 0))
-          (setf (x (source (scene-object scene 'scarfy-frame)))
-                (* current-frame (/ scarfy-width 6))))
+          (when (>= frames-counter (truncate 60 frames-speed))
+            (setf frames-counter 0)
+            (when (> (incf current-frame) 5)
+              (setf current-frame 0))
+            (setf (x (source (scene-object scene 'scarfy-frame)))
+                  (* current-frame (/ scarfy-width 6))))
 
-        (if (is-key-pressed-p +key-right+)
-            (incf frames-speed)
-            (when (is-key-pressed-p +key-left+)
-              (decf frames-speed)))
-        (setf frames-speed (min max-frame-speed (max 1 frames-speed)))
+          (if (is-key-pressed-p +key-right+)
+              (incf frames-speed)
+              (when (is-key-pressed-p +key-left+)
+                (decf frames-speed)))
+          (setf frames-speed (min max-frame-speed (max 1 frames-speed)))
 
-        (with-scene-objects (red-outline fps-text scarfy-frame) scene
+          (with-scene-objects (red-outline fps-text scarfy-frame fps-recs) scene
             (setf (x red-outline) (+ 15 (x (source scarfy-frame)))
                   (y red-outline) (+ 40 (y (source scarfy-frame)))
-                  (text fps-text) (format nil "~2,'0d FPS" frames-speed)))
+                  (text fps-text) (format nil "~2,'0d FPS" frames-speed))
+            (loop for rec in fps-recs
+                  for i below max-frame-speed
+                  do (if (< i frames-speed)
+                         (setf (color rec) +red+
+                               (filled rec) t)
+                         (setf (color rec) +maroon+
+                               (filled rec) nil))))
 
-        (with-drawing
-          (loop for rec in fps-recs
-                for i below max-frame-speed
-                do (if (< i frames-speed)
-                       (setf (color rec) +red+
-                             (filled rec) t)
-                       (setf (color rec) +maroon+
-                             (filled rec) nil))
-                do (draw-object rec))
-          
-          (draw-scene-all scene))))))
+          (with-drawing
+            (draw-scene-all scene)))))))
