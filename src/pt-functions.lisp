@@ -80,6 +80,12 @@ unless ALLOCATE-P is T."
   (image rl-image nil)
   (crop rl-rectangle nil))
 
+(defun-pt image-resize claylib/ll:image-resize
+  "Resize image (Bicubic scaling algorithm)."
+  (image rl-image nil)
+  (new-width integer)
+  (new-height integer))
+
 (defun-pt image-flip-vertical claylib/ll:image-flip-vertical
   "Flip IMAGE vertically."
   (image rl-image nil))
