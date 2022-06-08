@@ -114,6 +114,18 @@ unless ALLOCATE-P is T."
                                 (c-struct (color circle)))
   image)
 
+(defun image-draw-rectangle (image rect)
+  "Draw rectangle within an image."
+  (check-type image rl-image)
+  (check-type rect rectangle)
+  (claylib/ll:image-draw-rectangle (c-struct image)
+                                   (truncate (x rect))
+                                   (truncate (y rect))
+                                   (truncate (width rect))
+                                   (truncate (height rect))
+                                   (c-struct (color rect)))
+  image)
+
 (defun-pt image-draw claylib/ll:image-draw
   "Draw a source image within a destination image (tint applied to source)"
   (dst rl-image nil)
