@@ -43,6 +43,12 @@
      (claylib/ll:load-image (c-asset asset) (namestring (path asset)))))
   asset)
 
+(defun make-image-asset (path &key (load-now nil))
+  (let ((asset (make-instance 'image-asset
+                              :path path)))
+    (when load-now (load-asset asset))
+    asset))
+
 
 
 (defclass texture-asset (game-asset)
