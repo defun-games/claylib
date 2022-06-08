@@ -49,6 +49,13 @@
     (when load-now (load-asset asset))
     asset))
 
+(defmethod copy-asset-to-object ((asset image-asset))
+  (load-asset asset)
+  (let* ((image (make-instance 'rl-image))
+         (ptr (autowrap:ptr (c-struct image))))
+    (claylib/ll:image-copy ptr (c-asset asset))
+    image))
+
 
 
 (defclass texture-asset (game-asset)

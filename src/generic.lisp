@@ -128,3 +128,6 @@ free VALUE."))
 (defgeneric load-asset (asset &key force-reload)
   (:documentation "Load a game-asset's backing C object from a file.
 Force a reload & free old memory when FORCE-RELOAD is T."))
+
+(defgeneric copy-asset-to-object (asset)
+  (:documentation "Return a copy of the object in the given ASSET's %ASSET slot."))
