@@ -134,6 +134,21 @@ unless ALLOCATE-P is T."
   (dst-rec rl-rectangle nil)
   (tint rl-color))
 
+(defun image-draw-text-ex (image text &optional (tint +white+))
+  "Draw TEXT using its %FONT on an image. If %FONT is nil do nothing."
+  (check-type image rl-image)
+  (check-type text text)
+  (check-type tint rl-color)
+  (when (font text)
+    (claylib/ll:image-draw-text-ex (c-struct image)
+                                   (c-struct (font text))
+                                   (text text)
+                                   (c-struct (pos text))
+                                   (size text)
+                                   (spacing text)
+                                   (c-struct tint)))
+  image)
+
 ;; Texture loading functions
 
 (defun-pt load-texture-from-image claylib/ll:load-texture-from-image
