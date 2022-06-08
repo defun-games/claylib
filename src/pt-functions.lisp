@@ -96,6 +96,13 @@ unless ALLOCATE-P is T."
 
 ;; Image drawing functions
 
+(defun-pt image-draw-pixel claylib/ll:image-draw-pixel
+  "Draw pixel within an image."
+  (image rl-image nil)
+  (x integer)
+  (y integer)
+  (color rl-color))
+
 (defun-pt image-draw claylib/ll:image-draw
   "Draw a source image within a destination image (tint applied to source)"
   (dst rl-image nil)

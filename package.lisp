@@ -27,7 +27,8 @@
    :draw-grid :draw-text :draw-rectangle :draw-circle :draw-cube :update-camera :gen-mesh-cylinder
    :with-window :load-font :load-model-from-mesh :gen-mesh-cube :gen-image-checked :load-texture-from-image
    :fade :check-collision-point-rec :clear-background :export-image :load-image-from-texture
-   :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw)
+   :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw
+   :image-draw-pixel)
 
 
 
@@ -119,4 +120,4 @@
    :+texture-filter-anisotropic-16x+ :+texture-wrap-clamp+ :get-time :wait-time :swap-screen-buffer
    :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw
-   :copy-asset-to-object))
+   :image-draw-pixel :copy-asset-to-object))
