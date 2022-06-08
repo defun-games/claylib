@@ -75,6 +75,11 @@ unless ALLOCATE-P is T."
 
 ;; Image manipulation functions
 
+(defun-pt image-crop claylib/ll:image-crop
+  "Crop an image to a defined rectangle."
+  (image rl-image nil)
+  (crop rl-rectangle nil))
+
 (defun-pt image-flip-vertical claylib/ll:image-flip-vertical
   "Flip IMAGE vertically."
   (image rl-image nil))
