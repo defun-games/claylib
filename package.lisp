@@ -2,14 +2,14 @@
 (defpackage #:claylib
   (:use #:cl #:plus-c #:claylib/ll)
   (:shadow
-   
+
    ;;; Shadowed symbols
    ;;; Most of these are shadowed because we "override" them with lispier versions.
 
    ;; Structs
    :model :texture :shader :model-animation :font :rectangle :color :ray :ray-collision :matrix
    :vector2 :vector3 :vector4 :bounding-box
-   
+
    ;; Colors
    :+lightgray+ :+gray+ :+darkgray+ :+yellow+ :+gold+ :+orange+ :+pink+ :+red+ :+maroon+
    :+green+ :+lime+ :+darkgreen+ :+skyblue+ :+blue+ :+darkblue+ :+purple+ :+violet+ :+darkpurple+
@@ -18,7 +18,7 @@
    ;; Math
    :quaternion-from-euler :quaternion-to-euler :vector2-subtract :vector2-add :vector2-scale :vector2-length
    :matrix-rotate-zyx :quaternion-to-matrix :quaternion-from-matrix
-   
+
    ;; Globals
    :*claylib-background*
 
@@ -71,14 +71,14 @@
    :+camera-perspective+ :get-world-to-screen-2d :get-screen-to-world-2d :+camera-third-person+
    :+camera-orthographic+ :+camera-custom+ :+camera-free+ :+camera-orbital+ :+camera-first-person+
    :update-camera :get-world-to-screen-3d
-   
+
    ;; Types
    :text :rectangle :rl-rectangle :circle :cube :grid :rl-vector2 :rl-vector3 :rl-vector4 :rl-color
    :line-2d :rl-camera-3d :camera-3d :rl-camera-2d :plane :rl-ray :ray :rl-ray-collision :rl-bounding-box
    :rl-texture :texture :rl-transform :rl-model :model :rl-mesh :rl-shader :rl-material-map :rl-material
    :rl-matrix :triangle :image-asset :texture-asset :model-asset :shader-asset :font-asset
    :animation-asset
-   
+
    ;; Misc. convenience wrappers
    :with-window :do-game-loop :with-drawing :is-key-pressed-p :is-gesture-detected-p :is-key-down-p
    :with-scene-objects :is-mouse-button-pressed-p :is-key-pressed-p
@@ -93,22 +93,25 @@
    ;; Scenes
    :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
    :make-scene :objects :draw-scene-regex :with-scene
-   
+
    ;; Generic functions/methods
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
    :hit :low :high :r :g :b :a :dest :filter :origin :source :tint :radius :x3 :y3 :v1 :v2 :v3
    :load-asset :filled
 
+   ;; Type-specific accessors
+   :font :size :spacing :asset
+
    ;; Math
    :vector2-subtract :vector2-add :vector2-scale :vector2-length
    :quaternion-from-euler :matrix-rotate-zyx :quaternion-to-matrix :quaternion-from-matrix
    :quaternion-to-euler
-   
+
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps* :+claylib-directory+
 
    ;; Misc
-   :draw-fps :get-random-value :get-frame-time :measure-text :get-mouse-ray :get-ray-collision-box 
+   :draw-fps :get-random-value :get-frame-time :measure-text :get-mouse-ray :get-ray-collision-box
    :+flag-window-resizable+ :+flag-vsync-hint+ :load-render-texture :+texture-filter-bilinear+
    :get-screen-width :get-screen-height :set-random-seed  :save-storage-value :load-storage-value
    :gen-mesh-cylinder :set-slot :load-model-from-mesh :close-window :gen-mesh-cube
