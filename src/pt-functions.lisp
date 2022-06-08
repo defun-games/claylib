@@ -94,6 +94,16 @@ unless ALLOCATE-P is T."
   "Flip IMAGE horizontally."
   (image rl-image nil))
 
+;; Image drawing functions
+
+(defun-pt image-draw claylib/ll:image-draw
+  "Draw a source image within a destination image (tint applied to source)"
+  (dst rl-image nil)
+  (src rl-image nil)
+  (src-rec rl-rectangle nil)
+  (dst-rec rl-rectangle nil)
+  (tint rl-color))
+
 ;; Texture loading functions
 
 (defun-pt load-texture-from-image claylib/ll:load-texture-from-image
