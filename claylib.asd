@@ -34,7 +34,8 @@
   :license "TODO"
   :version "0.0.1"
   :serial t
-  :depends-on (#:claylib/ll #:cl-plus-c #:trivial-garbage #:livesupport #:closer-mop)
+  :depends-on (#:claylib/ll #:cl-plus-c #:trivial-garbage #:livesupport #:closer-mop
+               #:eager-future2)
   :components ((:file "package")
                (:module "src"
                 :components ((:file "generic")
