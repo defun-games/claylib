@@ -51,9 +51,8 @@
 
 (defmethod copy-asset-to-object ((asset image-asset))
   (load-asset asset)
-  (let* ((image (make-instance 'rl-image))
-         (ptr (autowrap:ptr (c-struct image))))
-    (claylib/ll:image-copy ptr (c-asset asset))
+  (let* ((image (make-instance 'rl-image)))
+    (claylib/ll:image-copy (c-struct image) (c-asset asset))
     image))
 
 
