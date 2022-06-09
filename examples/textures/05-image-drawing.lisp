@@ -38,7 +38,7 @@
                                                               :tint +white+))
                                  (title (make-text "PARROTS & CAT"
                                                    300 230
-                                                   :font (asset font-asset)
+                                                   :font (asset (load-asset font-asset))
                                                    :spacing -2)))
                             ;; Process with image manipulation functions
                             (image-crop cat-image cat-crop)
