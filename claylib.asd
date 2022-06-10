@@ -48,6 +48,7 @@
                              (:file "shape")
                              (:file "circle")
                              (:file "triangle")
+                             (:file "pixel")
                              (:file "grid")
                              (:file "matrix")
                              (:file "plane")

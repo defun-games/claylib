@@ -77,7 +77,7 @@
    :line-2d :rl-camera-3d :camera-3d :rl-camera-2d :plane :rl-ray :ray :rl-ray-collision :rl-bounding-box
    :rl-texture :texture :rl-transform :rl-model :model :rl-mesh :rl-shader :rl-material-map :rl-material
    :rl-matrix :triangle :image-asset :texture-asset :model-asset :shader-asset :font-asset
-   :animation-asset
+   :animation-asset :pixel
 
    ;; Misc. convenience wrappers
    :with-window :do-game-loop :with-drawing :is-key-pressed-p :is-gesture-detected-p :is-key-down-p
@@ -88,7 +88,7 @@
    :make-line-2d :with-2d-mode :with-3d-mode :make-plane :make-ray :make-ray-collision :with-texture-mode
    :with-scissor-mode :make-zero-matrix :is-window-state-p :make-triangle :make-triangle-from-vecs
    :make-texture :make-texture-from-rec :make-empty-texture :make-texture-asset :get-gesture-detected
-   :is-mouse-button-released-p :make-polygon :make-font :make-image-asset
+   :is-mouse-button-released-p :make-polygon :make-font :make-image-asset :make-pixel
 
    ;; Scenes
    :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
