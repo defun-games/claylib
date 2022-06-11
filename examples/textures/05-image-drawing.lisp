@@ -59,7 +59,8 @@
                              (title (make-text "PARROTS & CAT"
                                                300 230
                                                :font (asset font-asset)
-                                               :spacing -2)))
+                                               :spacing -2
+                                               :color +white+)))
                         ;; Process with image manipulation functions
                         (image-crop cat-image cat-crop)
                         (image-flip-horizontal cat-image)
