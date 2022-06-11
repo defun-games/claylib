@@ -131,3 +131,6 @@ Force a reload & free old memory when FORCE-RELOAD is T."))
 
 (defgeneric copy-asset-to-object (asset)
   (:documentation "Return a copy of the object in the given ASSET's %ASSET slot."))
+
+(defgeneric image-draw (image obj)
+  (:documentation "Draw an object OBJ onto the the rl-image IMAGE."))

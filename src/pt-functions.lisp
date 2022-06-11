@@ -75,79 +75,31 @@ unless ALLOCATE-P is T."
 
 ;; Image manipulation functions
 
-(defun-pt image-crop claylib/ll:image-crop
+(defun image-crop (image crop)
   "Crop an image to a defined rectangle."
-  (image rl-image nil)
-  (crop rl-rectangle nil))
+  (check-type image (or rl-image image))
+  (check-type crop rl-rectangle)
+  (claylib/ll:image-crop (c-struct image) (c-struct crop)))
 
-(defun-pt image-resize claylib/ll:image-resize
-  "Resize image (Bicubic scaling algorithm)."
-  (image rl-image nil)
-  (new-width integer)
-  (new-height integer))
+(defun image-resize (image new-width new-height &key (nn nil))
+  "Resize image using the Bicubic scaling algorithm, or Nearest-Neighbor when NN is T."
+  (check-type image (or rl-image image))
+  (check-type new-width integer)
+  (check-type new-height integer)
+  (funcall (if nn
+               #'claylib/ll:image-resize-nn
+               #'claylib/ll:image-resize)
+           (c-struct image) new-width new-height))
 
-(defun-pt image-flip-vertical claylib/ll:image-flip-vertical
+(defun image-flip-vertical (image)
   "Flip IMAGE vertically."
-  (image rl-image nil))
+  (check-type image (or rl-image image))
+  (claylib/ll:image-flip-vertical (c-struct image)))
 
-(defun-pt image-flip-horizontal claylib/ll:image-flip-horizontal
+(defun image-flip-horizontal (image)
   "Flip IMAGE horizontally."
-  (image rl-image nil))
-
-;; Image drawing functions
-
-(defun-pt image-draw-pixel claylib/ll:image-draw-pixel
-  "Draw pixel within an image."
-  (image rl-image nil)
-  (x integer)
-  (y integer)
-  (color rl-color))
-
-(defun image-draw-circle (image circle)
-  "Draw circle within an image."
-  (check-type image rl-image)
-  (check-type circle circle)
-  (claylib/ll:image-draw-circle (c-struct image)
-                                (truncate (x circle))
-                                (truncate (y circle))
-                                (truncate (radius circle))
-                                (c-struct (color circle)))
-  image)
-
-(defun image-draw-rectangle (image rect)
-  "Draw rectangle within an image."
-  (check-type image rl-image)
-  (check-type rect rectangle)
-  (claylib/ll:image-draw-rectangle (c-struct image)
-                                   (truncate (x rect))
-                                   (truncate (y rect))
-                                   (truncate (width rect))
-                                   (truncate (height rect))
-                                   (c-struct (color rect)))
-  image)
-
-(defun-pt image-draw claylib/ll:image-draw
-  "Draw a source image within a destination image (tint applied to source)"
-  (dst rl-image nil)
-  (src rl-image nil)
-  (src-rec rl-rectangle nil)
-  (dst-rec rl-rectangle nil)
-  (tint rl-color))
-
-(defun image-draw-text-ex (image text &optional (tint +white+))
-  "Draw TEXT using its %FONT on an image. If %FONT is nil do nothing."
-  (check-type image rl-image)
-  (check-type text text)
-  (check-type tint rl-color)
-  (when (font text)
-    (claylib/ll:image-draw-text-ex (c-struct image)
-                                   (c-struct (font text))
-                                   (text text)
-                                   (c-struct (pos text))
-                                   (size text)
-                                   (spacing text)
-                                   (c-struct tint)))
-  image)
+  (check-type image (or rl-image image))
+  (claylib/ll:image-flip-horizontal (c-struct image)))
 
 ;; Texture loading functions
 

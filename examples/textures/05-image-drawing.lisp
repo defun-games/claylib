@@ -30,26 +30,23 @@
 
 (defun draw-shapes (image)
   "Draw some shapes on the IMAGE."
-  (image-draw-pixel image 10 10 +raywhite+)
-  (image-draw-circle image (make-circle 10 10 5 +raywhite+))
-  (image-draw-rectangle image (make-rectangle 5 20 10 10 +raywhite+)))
-
-(defun draw-image-on-image (src-image dest-image)
-  "Superimpose the DEST-IMAGE onto the SRC-IMAGE."
-  (let ((draw-source (make-rectangle 0 0
-                                     (width src-image) (height src-image)
-                                     +white+))
-        (draw-dest (make-rectangle 30 40
-                                   (* 1.5 (width src-image)) (* 1.5 (height src-image))
-                                   +white+)))
-    (image-draw dest-image src-image draw-source draw-dest +white+)))
-
+  (image-draw image (make-pixel 10 10 +raywhite+))
+  (image-draw image (make-circle 10 10 5 +raywhite+))
+  (image-draw image (make-rectangle 5 20 10 10 +raywhite+)))
 
 (defparameter *scene*
   (make-scene ((cat-asset (car *assets*))
                (parrots-asset (cadr *assets*))
                (font-asset (caddr *assets*)))
-              ((image (let* ((cat-image (copy-asset-to-object cat-asset))
+              ((image (let* ((draw-source (make-rectangle 0 0
+                                                          (width cat-asset)
+                                                          (height cat-asset)
+                                                          +white+))
+                             (draw-dest (make-rectangle 30 40
+                                                        (* 1.5 (width cat-asset))
+                                                        (* 1.5 (height cat-asset))
+                                                        +white+))
+                             (cat-image (make-image cat-asset draw-source draw-dest :copy-asset t))
                              (parrots-image (copy-asset-to-object parrots-asset))
                              (cat-crop (make-rectangle 100 10 280 380 +white+))
                              (parrot-crop (make-rectangle 0 50
@@ -67,14 +64,16 @@
                         (image-crop cat-image cat-crop)
                         (image-flip-horizontal cat-image)
                         (image-resize cat-image 150 200)
-                        (draw-image-on-image cat-image parrots-image)
+                        ;; FIXME neither this ↑ or this ↓ resize seems to work, confusingly
+                        ;; (claylib/ll:image-resize (claylib::c-struct cat-image) 150 200)
+                        (image-draw parrots-image cat-image)
                         (image-crop parrots-image parrot-crop)
 
                         ;; Draw on the image with a few image draw methods
                         (draw-shapes parrots-image)
 
                         ;; Draw over image using custom font
-                        (image-draw-text-ex parrots-image title)
+                        (image-draw parrots-image title)
 
                         (load-texture-from-image parrots-image
                                                  :texture texture)

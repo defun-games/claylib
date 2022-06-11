@@ -8,7 +8,7 @@
 
    ;; Structs
    :model :texture :shader :model-animation :font :rectangle :color :ray :ray-collision :matrix
-   :vector2 :vector3 :vector4 :bounding-box
+   :vector2 :vector3 :vector4 :bounding-box :image
 
    ;; Colors
    :+lightgray+ :+gray+ :+darkgray+ :+yellow+ :+gold+ :+orange+ :+pink+ :+red+ :+maroon+
@@ -27,8 +27,7 @@
    :draw-grid :draw-text :draw-rectangle :draw-circle :draw-cube :update-camera :gen-mesh-cylinder
    :with-window :load-font :load-model-from-mesh :gen-mesh-cube :gen-image-checked :load-texture-from-image
    :fade :check-collision-point-rec :clear-background :export-image :load-image-from-texture
-   :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw
-   :image-draw-pixel :image-draw-circle :image-draw-rectangle :image-draw-text-ex)
+   :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw)
 
 
 
@@ -77,7 +76,7 @@
    :line-2d :rl-camera-3d :camera-3d :rl-camera-2d :plane :rl-ray :ray :rl-ray-collision :rl-bounding-box
    :rl-texture :texture :rl-transform :rl-model :model :rl-mesh :rl-shader :rl-material-map :rl-material
    :rl-matrix :triangle :image-asset :texture-asset :model-asset :shader-asset :font-asset
-   :animation-asset :pixel
+   :animation-asset :pixel :image
 
    ;; Misc. convenience wrappers
    :with-window :do-game-loop :with-drawing :is-key-pressed-p :is-gesture-detected-p :is-key-down-p
@@ -88,7 +87,7 @@
    :make-line-2d :with-2d-mode :with-3d-mode :make-plane :make-ray :make-ray-collision :with-texture-mode
    :with-scissor-mode :make-zero-matrix :is-window-state-p :make-triangle :make-triangle-from-vecs
    :make-texture :make-texture-from-rec :make-empty-texture :make-texture-asset :get-gesture-detected
-   :is-mouse-button-released-p :make-polygon :make-font :make-image-asset :make-pixel
+   :is-mouse-button-released-p :make-polygon :make-font :make-image-asset :make-pixel :make-image
 
    ;; Scenes
    :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
@@ -123,5 +122,4 @@
    :+texture-filter-anisotropic-16x+ :+texture-wrap-clamp+ :get-time :wait-time :swap-screen-buffer
    :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw
-   :image-draw-pixel :image-draw-circle :image-draw-rectangle :image-draw-text-ex
    :copy-asset-to-object))
