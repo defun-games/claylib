@@ -38,15 +38,10 @@
   (make-scene ((cat-asset (car *assets*))
                (parrots-asset (cadr *assets*))
                (font-asset (caddr *assets*)))
-              ((image (let* ((draw-source (make-rectangle 0 0
-                                                          (width cat-asset)
-                                                          (height cat-asset)
-                                                          +white+))
-                             (draw-dest (make-rectangle 30 40
-                                                        (* 1.5 (width cat-asset))
-                                                        (* 1.5 (height cat-asset))
-                                                        +white+))
-                             (cat-image (make-image cat-asset draw-source draw-dest :copy-asset t))
+              ((image (let* ((cat-image (make-image cat-asset
+                                                    (make-rectangle 0 0 150 200 +white+)
+                                                    (make-rectangle 30 40 225 300 +white+)
+                                                    :copy-asset t))
                              (parrots-image (copy-asset-to-object parrots-asset))
                              (cat-crop (make-rectangle 100 10 280 380 +white+))
                              (parrot-crop (make-rectangle 0 50
@@ -65,8 +60,6 @@
                         (image-crop cat-image cat-crop)
                         (image-flip-horizontal cat-image)
                         (image-resize cat-image 150 200)
-                        ;; FIXME neither this ↑ or this ↓ resize seems to work, confusingly
-                        ;; (claylib/ll:image-resize (claylib::c-struct cat-image) 150 200)
                         (image-draw parrots-image cat-image)
                         (image-crop parrots-image parrot-crop)
 
