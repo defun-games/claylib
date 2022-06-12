@@ -31,19 +31,19 @@
                                                           virtual-screen-height)
                                                   10 40
                                                   :size 20 :color +darkgreen+))))))
-      (let ((tex (scene-object scene 'tex)))
-        (setf (source tex) (make-instance 'rl-rectangle
-                                          :x 0 :y 0
-                                          :width (width tex)
-                                          :height (- (height tex)))
-              (dest tex) (make-instance 'rl-rectangle
-                                        :x (- virtual-ratio)
-                                        :y (- virtual-ratio)
-                                        :width (+ (get-screen-width) (* virtual-ratio 2))
-                                        :height (+ (get-screen-height) (* virtual-ratio 2)))
-              (tint tex) +white+))
 
       (with-scene scene ()
+        (let ((tex (scene-object scene 'tex)))
+          (setf (source tex) (make-instance 'rl-rectangle
+                                            :x 0 :y 0
+                                            :width (width tex)
+                                            :height (- (height tex)))
+                (dest tex) (make-instance 'rl-rectangle
+                                          :x (- virtual-ratio)
+                                          :y (- virtual-ratio)
+                                          :width (+ (get-screen-width) (* virtual-ratio 2))
+                                          :height (+ (get-screen-height) (* virtual-ratio 2)))
+                (tint tex) +white+))
         (do-game-loop (:livesupport t
                        :vars ((rotation 0.0)))
           (incf rotation (* 60.0 (get-frame-time)))

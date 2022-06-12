@@ -213,8 +213,7 @@
                             (make-env-item 250 300 100 10 t +gray+)
                             (make-env-item 650 300 100 10 t +gray+)))
            (camera (make-instance 'camera
-                                  :target (make-vector2 (+ (x (scene-object scene 'player)) 20)
-                                                        (+ (y (scene-object scene 'player)) 40))
+                                  :target (make-vector2 400 280)
                                   :offset (make-vector2 (/ *screen-width* 2.0)
                                                         (/ *screen-height* 2.0))
                                   :rot 0.0

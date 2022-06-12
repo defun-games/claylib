@@ -38,17 +38,21 @@
                                   (subtext (make-text "PRESS ENTER or TAP to RETURN to TITLE SCREEN"
                                                       120 220
                                                       :size 20 :color +darkblue+))))))
-      (do-game-loop (:livesupport t
-                     :vars ((screens `(:logo ,@(alexandria:circular-list :title :gameplay :ending)))
-                            (frame-count 0)))
-        (incf frame-count)
-        (when (or (and (next-screen) (not (eql (car screens) :logo)))
-                  (and (eql (car screens) :logo) (> frame-count (* 2 *target-fps*))))
-          (setf screens (cdr screens)))
-        (with-drawing
-          (case (car screens)
-            (:logo (draw-scene-all logo))
-            (:title (draw-scene-all title))
-            (:gameplay (draw-scene-all gameplay))
-            (:ending (draw-scene-all ending)))))
-      (mapcar #'unload-scene-all (list logo title gameplay ending)))))
+      ;; TODO: This nesting was a quick fix. Not the ideal way of doing scenes!
+      (with-scene logo ()
+        (with-scene title ()
+          (with-scene gameplay ()
+            (with-scene ending ()
+              (do-game-loop (:livesupport t
+                             :vars ((screens `(:logo ,@(alexandria:circular-list :title :gameplay :ending)))
+                                    (frame-count 0)))
+                (incf frame-count)
+                (when (or (and (next-screen) (not (eql (car screens) :logo)))
+                          (and (eql (car screens) :logo) (> frame-count (* 2 *target-fps*))))
+                  (setf screens (cdr screens)))
+                (with-drawing
+                  (case (car screens)
+                    (:logo (draw-scene-all logo))
+                    (:title (draw-scene-all title))
+                    (:gameplay (draw-scene-all gameplay))
+                    (:ending (draw-scene-all ending))))))))))))

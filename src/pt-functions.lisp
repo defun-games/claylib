@@ -94,12 +94,14 @@ unless ALLOCATE-P is T."
 (defun image-flip-vertical (image)
   "Flip IMAGE vertically."
   (check-type image (or rl-image image))
-  (claylib/ll:image-flip-vertical (c-struct image)))
+  (claylib/ll:image-flip-vertical (c-struct image))
+  image)
 
 (defun image-flip-horizontal (image)
   "Flip IMAGE horizontally."
   (check-type image (or rl-image image))
-  (claylib/ll:image-flip-horizontal (c-struct image)))
+  (claylib/ll:image-flip-horizontal (c-struct image))
+  image)
 
 ;; Texture loading functions
 

@@ -52,10 +52,10 @@
                                                  :size 10
                                                  :color color)))
            (scene (make-scene ()
-                              ((color-recs color-recs)
-                               (label-recs label-recs)
-                               (outline-recs outline-recs)
-                               (text-labels text-labels)
+                              ((crecs color-recs)
+                               (lrecs label-recs)
+                               (orecs outline-recs)
+                               (tlabels text-labels)
                                (text (make-text "claylib colors palette"
                                                 28
                                                 42
@@ -72,17 +72,17 @@
                               (faded-rect-color nil)))
           (get-mouse-position :vec mouse-point)
 
-          (with-scene-objects (color-recs label-recs outline-recs text-labels text text-space) scene
+          (with-scene-objects (crecs lrecs orecs tlabels text text-space) scene
             (with-drawing
               (draw-object text)
               (draw-object text-space)
-              (loop for rect in color-recs
+              (loop for rect in crecs
                     for color in colors
                     for faded-color in faded-colors
-                    for label-rect in label-recs
-                    for outline-rect in outline-recs
-                    for label in text-labels
-                    for i below (length color-recs)
+                    for label-rect in lrecs
+                    for outline-rect in orecs
+                    for label in tlabels
+                    for i below (length crecs)
                     for mouse-over-p = (check-collision-point-rec mouse-point rect)
                     do (setf (color rect)
                              (if mouse-over-p faded-color color))

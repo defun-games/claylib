@@ -43,18 +43,6 @@
                                                   32 32
                                                   +darkgray+ +white+)
                                :texture texture-grid)
-      (let ((tex1 (scene-object scene 'texture-player1))
-            (tex2 (scene-object scene 'texture-player2)))
-        (setf (source tex1) split-screen-rect
-              (source tex2) split-screen-rect
-              (dest tex1) (make-instance 'rl-rectangle
-                                         :x 0 :y 0
-                                         :width (width tex1) :height (height tex1))
-              (dest tex2) (make-instance 'rl-rectangle
-                                         :x (/ (get-screen-width) 2.0) :y 0
-                                         :width (width tex2) :height (height tex2))
-              (tint tex1) +white+
-              (tint tex2) +white+))
       (loop for x from -20 to 20 by 4
             do (loop for z from -20 to 20 by 4
                      do (setf (gethash (gensym "TREE") (objects scene))
@@ -68,6 +56,18 @@
                                          +brown+
                                          :texture texture-grid))))
       (with-scene scene ()
+        (let ((tex1 (scene-object scene 'texture-player1))
+              (tex2 (scene-object scene 'texture-player2)))
+          (setf (source tex1) split-screen-rect
+                (source tex2) split-screen-rect
+                (dest tex1) (make-instance 'rl-rectangle
+                                           :x 0 :y 0
+                                           :width (width tex1) :height (height tex1))
+                (dest tex2) (make-instance 'rl-rectangle
+                                           :x (/ (get-screen-width) 2.0) :y 0
+                                           :width (width tex2) :height (height tex2))
+                (tint tex1) +white+
+                (tint tex2) +white+))
         (do-game-loop (:livesupport t)
           (let ((offset-this-frame (* 10.0 (get-frame-time))))
             (when (is-key-down-p +key-w+)
