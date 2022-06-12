@@ -35,3 +35,10 @@
                                     (truncate (y obj))
                                     (radius obj)
                                     (c-struct (color obj))))))
+
+(defmethod image-draw (image (obj circle))
+  (claylib/ll:image-draw-circle (c-struct image)
+                                (truncate (x obj))
+                                (truncate (y obj))
+                                (truncate (radius obj))
+                                (c-struct (color obj))))

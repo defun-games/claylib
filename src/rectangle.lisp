@@ -83,3 +83,11 @@
      (claylib/ll:draw-rectangle-lines-ex (c-struct obj)
                                          (thickness obj)
                                          (c-struct (color obj))))))
+
+(defmethod image-draw (image (obj rectangle))
+  (claylib/ll:image-draw-rectangle (c-struct image)
+                                   (truncate (x obj))
+                                   (truncate (y obj))
+                                   (truncate (width obj))
+                                   (truncate (height obj))
+                                   (c-struct (color obj))))

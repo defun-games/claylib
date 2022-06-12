@@ -75,13 +75,31 @@ unless ALLOCATE-P is T."
 
 ;; Image manipulation functions
 
-(defun-pt image-flip-vertical claylib/ll:image-flip-vertical
-  "Flip IMAGE vertically."
-  (image rl-image nil))
+(defun image-crop (image crop)
+  "Crop an image to a defined rectangle."
+  (check-type image (or rl-image image))
+  (check-type crop rl-rectangle)
+  (claylib/ll:image-crop (c-struct image) (c-struct crop)))
 
-(defun-pt image-flip-horizontal claylib/ll:image-flip-horizontal
+(defun image-resize (image new-width new-height &key (nn nil))
+  "Resize image using the Bicubic scaling algorithm, or Nearest-Neighbor when NN is T."
+  (check-type image (or rl-image image))
+  (check-type new-width integer)
+  (check-type new-height integer)
+  (funcall (if nn
+               #'claylib/ll:image-resize-nn
+               #'claylib/ll:image-resize)
+           (c-struct image) new-width new-height))
+
+(defun image-flip-vertical (image)
+  "Flip IMAGE vertically."
+  (check-type image (or rl-image image))
+  (claylib/ll:image-flip-vertical (c-struct image)))
+
+(defun image-flip-horizontal (image)
   "Flip IMAGE horizontally."
-  (image rl-image nil))
+  (check-type image (or rl-image image))
+  (claylib/ll:image-flip-horizontal (c-struct image)))
 
 ;; Texture loading functions
 

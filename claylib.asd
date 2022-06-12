@@ -34,7 +34,8 @@
   :license "TODO"
   :version "0.0.1"
   :serial t
-  :depends-on (#:claylib/ll #:cl-plus-c #:trivial-garbage #:livesupport #:closer-mop)
+  :depends-on (#:claylib/ll #:cl-plus-c #:trivial-garbage #:livesupport #:closer-mop
+               #:eager-future2)
   :components ((:file "package")
                (:module "src"
                 :components ((:file "generic")
@@ -47,6 +48,7 @@
                              (:file "shape")
                              (:file "circle")
                              (:file "triangle")
+                             (:file "pixel")
                              (:file "grid")
                              (:file "matrix")
                              (:file "plane")
@@ -114,4 +116,5 @@
                   ((:file "01-logo-raylib")
                    (:file "02-mouse-painting")
                    (:file "03-rectangle")
-                   (:file "04-srcrec-dstrec")))))))
+                   (:file "04-srcrec-dstrec")
+                   (:file "05-image-drawing")))))))

@@ -42,3 +42,12 @@
                            (size obj)
                            (spacing obj)
                            (c-struct (color obj))))
+
+(defmethod image-draw (image (obj text))
+  (claylib/ll:image-draw-text-ex (c-struct image)
+                                 (c-struct (font obj))
+                                 (text obj)
+                                 (c-struct (pos obj))
+                                 (size obj)
+                                 (spacing obj)
+                                 (c-struct (color obj))))

@@ -43,6 +43,18 @@
      (claylib/ll:load-image (c-asset asset) (namestring (path asset)))))
   asset)
 
+(defun make-image-asset (path &key (load-now nil))
+  (let ((asset (make-instance 'image-asset
+                              :path path)))
+    (when load-now (load-asset asset))
+    asset))
+
+(defmethod copy-asset-to-object ((asset image-asset))
+  (load-asset asset)
+  (let* ((image (make-instance 'rl-image)))
+    (claylib/ll:image-copy (c-struct image) (c-asset asset))
+    image))
+
 
 
 (defclass texture-asset (game-asset)
@@ -183,7 +195,7 @@
 
 
 (defclass animation-asset (game-asset)
-  ((%num 
+  ((%num
     :type integer
     :accessor num)
    (%asset :type (or rl-model-animation null))))
