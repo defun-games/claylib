@@ -1,23 +1,27 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-21
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-21)
 
-(defun example-core-21 ()
+(defun main ()
   (with-window (:title "raylib [core] example - storage save/load values")
     (let ((score 0)
           (hiscore 0)
           (frames-counter 0)
           (scene (make-scene ()
-                             `((text1 ,(make-text "SCORE: 0" 280 130 :size 40 :color +maroon+))
-                               (text2 ,(make-text "HI-SCORE: 0" 210 200 :size 50 :color +black+))
-                               (text3 ,(make-text "frames: 0" 10 10 :size 20 :color +lime+))
-                               (text4 ,(make-text "Press R to generate random numbers"
-                                                  220 40
-                                                  :size 20 :color +lightgray+))
-                               (text5 ,(make-text "Press ENTER to SAVE values"
-                                                  250 310
-                                                  :size 20 :color +lightgray+))
-                               (text6 ,(make-text "Press SPACE to LOAD values"
-                                                  252 350
-                                                  :size 20 :color +lightgray+))))))
+                             ((text1 (make-text "SCORE: 0" 280 130 :size 40 :color +maroon+))
+                              (text2 (make-text "HI-SCORE: 0" 210 200 :size 50 :color +black+))
+                              (text3 (make-text "frames: 0" 10 10 :size 20 :color +lime+))
+                              (text4 (make-text "Press R to generate random numbers"
+                                                220 40
+                                                :size 20 :color +lightgray+))
+                              (text5 (make-text "Press ENTER to SAVE values"
+                                                250 310
+                                                :size 20 :color +lightgray+))
+                              (text6 (make-text "Press SPACE to LOAD values"
+                                                252 350
+                                                :size 20 :color +lightgray+))))))
       (with-scene scene ()
         (do-game-loop (:livesupport t)
           (when (is-key-pressed-p +key-r+)

@@ -1,4 +1,8 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-25
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-25)
 
 (defclass ball (circle)
   ((%speed :initarg :speed
@@ -20,39 +24,39 @@
       (setf (text obj) (format nil "~A: off" text)
             (color obj) +maroon+)))
 
-(defun example-core-25 ()
+(defun main ()
   (with-window (:title "raylib [core] example - window flags")
     (let ((scene (make-scene ()
-                             `((ball ,(make-instance 'ball
-                                                     :pos (make-vector2 (/ (get-screen-width) 2.0)
-                                                                        (/ (get-screen-height) 2.0))
-                                                     :radius 20
-                                                     :color +maroon+
-                                                     :speed (make-vector2 5 4)))
-                               (mouse ,(make-circle 0 0 10 +darkblue+))
-                               (rect ,(make-rectangle 0 0
-                                                      (get-screen-width) (get-screen-height)
-                                                      +raywhite+ :filled nil :thickness 4))
-                               (header ,(make-text "" 10 40 :size 10 :color +green+))
-                               (subheader1 ,(make-text "Following flags can be set after window creation:"
-                                                       10 60
-                                                       :size 10 :color +gray+))
-                               (subheader2 ,(make-text "Following flags can only be set before window creation:"
-                                                       10 300
-                                                       :size 10 :color +gray+))
-                               (flag-fullscreen ,(make-text "" 10 80 :size 10))
-                               (flag-resizable ,(make-text "" 10 100 :size 10))
-                               (flag-undecorated ,(make-text "" 10 120 :size 10))
-                               (flag-hidden ,(make-text "" 10 140 :size 10))
-                               (flag-minimized ,(make-text "" 10 160 :size 10))
-                               (flag-maximized ,(make-text "" 10 180 :size 10))
-                               (flag-unfocused ,(make-text "" 10 200 :size 10))
-                               (flag-topmost ,(make-text "" 10 220 :size 10))
-                               (flag-always-run ,(make-text "" 10 240 :size 10))
-                               (flag-vsync-hint ,(make-text "" 10 260 :size 10))
-                               (flag-highdpi ,(make-text "" 10 320 :size 10))
-                               (flag-transparent ,(make-text "" 10 340 :size 10))
-                               (flag-msaa-4x-hint ,(make-text "" 10 360 :size 10))))))
+                             ((ball (make-instance 'ball
+                                                   :pos (make-vector2 (/ (get-screen-width) 2.0)
+                                                                      (/ (get-screen-height) 2.0))
+                                                   :radius 20
+                                                   :color +maroon+
+                                                   :speed (make-vector2 5 4)))
+                              (mouse (make-circle 0 0 10 +darkblue+))
+                              (rect (make-rectangle 0 0
+                                                    (get-screen-width) (get-screen-height)
+                                                    +raywhite+ :filled nil :thickness 4))
+                              (header (make-text "" 10 40 :size 10 :color +green+))
+                              (subheader1 (make-text "Following flags can be set after window creation:"
+                                                     10 60
+                                                     :size 10 :color +gray+))
+                              (subheader2 (make-text "Following flags can only be set before window creation:"
+                                                     10 300
+                                                     :size 10 :color +gray+))
+                              (flag-fullscreen (make-text "" 10 80 :size 10))
+                              (flag-resizable (make-text "" 10 100 :size 10))
+                              (flag-undecorated (make-text "" 10 120 :size 10))
+                              (flag-hidden (make-text "" 10 140 :size 10))
+                              (flag-minimized (make-text "" 10 160 :size 10))
+                              (flag-maximized (make-text "" 10 180 :size 10))
+                              (flag-unfocused (make-text "" 10 200 :size 10))
+                              (flag-topmost (make-text "" 10 220 :size 10))
+                              (flag-always-run (make-text "" 10 240 :size 10))
+                              (flag-vsync-hint (make-text "" 10 260 :size 10))
+                              (flag-highdpi (make-text "" 10 320 :size 10))
+                              (flag-transparent (make-text "" 10 340 :size 10))
+                              (flag-msaa-4x-hint (make-text "" 10 360 :size 10))))))
       (with-scene scene ()
         (do-game-loop (:livesupport t
                        :vars ((frames-counter 0)))
@@ -60,7 +64,7 @@
             (toggle-fullscreen))
           (toggle-flag +key-r+ +flag-window-resizable+)
           (toggle-flag +key-d+ +flag-window-undecorated+)
-          
+
           (when (is-key-pressed-p +key-h+)
             (unless (is-window-state-p +flag-window-hidden+)
               (set-window-state +flag-window-hidden+))

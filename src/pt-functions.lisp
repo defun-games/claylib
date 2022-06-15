@@ -49,6 +49,18 @@ unless ALLOCATE-P is T."
 
 ;;; Textures
 
+;; Image loading functions
+
+(defun-pt load-image-from-texture claylib/ll:load-image-from-texture
+  "Load an image from the given TEXTURE. Allocates a new RL-IMAGE unless you pass one."
+  (image rl-image nil (make-instance 'rl-image))
+  (texture rl-texture nil))
+
+(defun-pt export-image claylib/ll:export-image
+  "Export image data to FILENAME."
+  (image rl-image nil)
+  (filename string))
+
 ;; Image generation functions
 
 (defun-pt gen-image-checked claylib/ll:gen-image-checked
@@ -60,6 +72,36 @@ unless ALLOCATE-P is T."
   (checks-y integer)
   (color1 rl-color)
   (color2 rl-color))
+
+;; Image manipulation functions
+
+(defun image-crop (image crop)
+  "Crop an image to a defined rectangle."
+  (check-type image (or rl-image image))
+  (check-type crop rl-rectangle)
+  (claylib/ll:image-crop (c-struct image) (c-struct crop)))
+
+(defun image-resize (image new-width new-height &key (nn nil))
+  "Resize image using the Bicubic scaling algorithm, or Nearest-Neighbor when NN is T."
+  (check-type image (or rl-image image))
+  (check-type new-width integer)
+  (check-type new-height integer)
+  (funcall (if nn
+               #'claylib/ll:image-resize-nn
+               #'claylib/ll:image-resize)
+           (c-struct image) new-width new-height))
+
+(defun image-flip-vertical (image)
+  "Flip IMAGE vertically."
+  (check-type image (or rl-image image))
+  (claylib/ll:image-flip-vertical (c-struct image))
+  image)
+
+(defun image-flip-horizontal (image)
+  "Flip IMAGE horizontally."
+  (check-type image (or rl-image image))
+  (claylib/ll:image-flip-horizontal (c-struct image))
+  image)
 
 ;; Texture loading functions
 
@@ -126,6 +168,11 @@ Allocates a new RAY-COLLISION unless you pass one."
   (rc rl-ray-collision nil (make-ray-collision 0 0 0 0 0 0))
   (ray ray)
   (box rl-bounding-box))
+
+(defun-pt-bool check-collision-point-rec claylib/ll:check-collision-point-rec
+  "Check if POINT is inside RECTANGLE."
+  (point rl-vector2)
+  (rec rl-rectangle))
 
 
 

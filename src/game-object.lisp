@@ -18,7 +18,8 @@
 (definitializer 2d-object (pos rl-vector2 nil))
 
 (defmethod free ((obj 2d-object))
-  (free (pos obj))
+  (when (slot-boundp obj '%position)
+    (free (pos obj)))
   (setf (pos obj) nil)
   (when (next-method-p)
     (call-next-method)))

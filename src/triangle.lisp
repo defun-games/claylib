@@ -26,7 +26,7 @@
 (defwriter y3 triangle y v3 number)
 
 (definitializer triangle
-    (v1 rl-vector2) (v2 rl-vector2) (v3 rl-vector2))
+    (v1 rl-vector2 nil) (v2 rl-vector2 nil) (v3 rl-vector2 nil))
 
 (defmethod free ((obj triangle))
   (mapcar #'free (list (v1 obj)

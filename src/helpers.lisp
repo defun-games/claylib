@@ -236,7 +236,9 @@ are coerced to floats. For something more complex, try DEFINITIALIZER."
   "Define a SLOT-UNBOUND method as a lazy fallback default slot value."
   (let ((obj (gensym))
         (slot (gensym)))
-    `(defmethod slot-unbound (,class ,obj (,slot (eql ',slot-name)))
+    `(defmethod slot-unbound (_
+                              (,obj ,class)
+                              (,slot (eql ',slot-name)))
        (setf (slot-value ,obj ,slot) ,value))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -269,6 +271,25 @@ massaging of arguments. Each ARG is expected to have the following format:
      ,@(expand-check-types args)
      (,c-fn ,@(expand-c-fun-args args))
      ,(caar args)))
+
+(defmacro defun-pt-bool (name c-fn docstring &rest args)
+  "Define a special 'pass-through' function for which the return value is a boolean value. Each ARG
+is expected to have the following format:
+
+(ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)"
+  `(defun ,name ,(remove nil `(,@(mapcar #'(lambda (arg)
+                                             (unless (fourth arg)
+                                               (car arg)))
+                                  args)
+                               &key ,@(mapcar #'(lambda (arg)
+                                                  (when (fourth arg)
+                                                    `(,(car arg) ,(fourth arg))))
+                                              args)))
+     ,docstring
+     ,@(expand-check-types args)
+     (if (= 0 (,c-fn ,@(expand-c-fun-args args)))
+         nil
+         t)))
 
 (defmacro defun-pt-arg0 (name c-fn allocate-form docstring &rest args)
   "Define a special 'pass-through' function in which the first argument is destructively modified

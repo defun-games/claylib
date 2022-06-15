@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-14
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-14)
 
-(defun example-core-14 ()
+(defun main ()
   (with-window (:title "raylib [core] example - 3d picking")
     (let ((camera (make-camera-3d 10 10 10
                                   0 0 0
@@ -9,29 +13,29 @@
                                   :projection +camera-perspective+
                                   :mode +camera-free+))
           (scene (make-scene ()
-                             `((cube ,(make-cube 0 1 0
-                                                 2 2 2
-                                                 +gray+))
-                               (outline ,(make-cube 0 1 0
-                                                    2 2 2
-                                                    +darkgray+
+                             ((cube (make-cube 0 1 0
+                                               2 2 2
+                                               +gray+))
+                              (outline (make-cube 0 1 0
+                                                  2 2 2
+                                                  +darkgray+
+                                                  :filled nil))
+                              (indicator (make-cube 0 1 0
+                                                    2.2 2.2 2.2
+                                                    +green+
                                                     :filled nil))
-                               (indicator ,(make-cube 0 1 0
-                                                      2.2 2.2 2.2
-                                                      +green+
-                                                      :filled nil))
-                               (ray ,(make-ray 0 0 0 0 0 0 +maroon+))
-                               (grid ,(make-grid 10 1.0))
-                               (text1 ,(make-text "Try selecting the box with the mouse!"
-                                                  240 10
-                                                  :size 20 :color +darkgray+))
-                               (text2 ,(make-text "BOX SELECTED"
-                                                  (/ (- *screen-width*
-                                                        (measure-text "BOX SELECTED" 30))
-                                                     2.0)
-                                                  (* *screen-height* 0.1)
-                                                  :size 30
-                                                  :color +green+)))))
+                              (ray (make-ray 0 0 0 0 0 0 +maroon+))
+                              (grid (make-grid 10 1.0))
+                              (text1 (make-text "Try selecting the box with the mouse!"
+                                                240 10
+                                                :size 20 :color +darkgray+))
+                              (text2 (make-text "BOX SELECTED"
+                                                (/ (- *screen-width*
+                                                      (measure-text "BOX SELECTED" 30))
+                                                   2.0)
+                                                (* *screen-height* 0.1)
+                                                :size 30
+                                                :color +green+)))))
           (collision (make-ray-collision 0 0 0 0 0 0))
           (mouse-pos (make-vector2 0 0))
           (bbox (make-instance 'rl-bounding-box :low (make-vector3 0 0 0)

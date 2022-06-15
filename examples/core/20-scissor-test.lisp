@@ -1,21 +1,25 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-20
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-20)
 
-(defun example-core-20 ()
+(defun main ()
   (with-window (:title "raylib [core] example - scissor test")
     (let ((scissor-area (make-instance 'rl-rectangle :x 0 :y 0 :width 300 :height 300))
           (scissor-mode t)
           (scene (make-scene ()
-                             `((rect ,(make-rectangle 0 0
-                                                      (get-screen-width) (get-screen-height)
-                                                      +red+))
-                               (outline ,(make-rectangle 0 0 300 300 +black+
-                                                         :filled nil :thickness 1))
-                               (text1 ,(make-text "Move the mouse around to reveal this text!"
-                                                  190 200
-                                                  :size 20 :color +lightgray+))
-                               (text2 ,(make-text "Press S to toggle scissor test"
-                                                  10 10
-                                                  :size 20 :color +black+))))))
+                             ((rect (make-rectangle 0 0
+                                                    (get-screen-width) (get-screen-height)
+                                                    +red+))
+                              (outline (make-rectangle 0 0 300 300 +black+
+                                                       :filled nil :thickness 1))
+                              (text1 (make-text "Move the mouse around to reveal this text!"
+                                                190 200
+                                                :size 20 :color +lightgray+))
+                              (text2 (make-text "Press S to toggle scissor test"
+                                                10 10
+                                                :size 20 :color +black+))))))
       (with-scene scene ()
         (do-game-loop (:livesupport t)
           (when (is-key-pressed-p +key-s+) (setf scissor-mode (not scissor-mode)))

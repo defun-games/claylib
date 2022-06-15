@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-27
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-27)
 
-(defun example-core-27 ()
+(defun main ()
   (with-window (:title "raylib [core] example - smooth pixel-perfect camera")
     (let* ((virtual-screen-width 160)
            (virtual-screen-height 90)
@@ -10,36 +14,36 @@
            (target (load-render-texture virtual-screen-width virtual-screen-height))
            (origin (make-vector2 0 0))
            (scene (make-scene ()
-                              `((rec1 ,(make-rectangle 70 35 20 20 +black+
-                                                       :origin origin))
-                                (rec2 ,(make-rectangle 90 55 30 10 +red+
-                                                       :origin origin))
-                                (rec3 ,(make-rectangle 80 65 15 25 +blue+
-                                                       :origin origin))
-                                (tex ,(texture target))
-                                (text1 ,(make-text (format nil "Screen resolution: ~dx~d"
-                                                           (get-screen-width)
-                                                           (get-screen-height))
-                                                   10 10
-                                                   :size 20 :color +darkblue+))
-                                (text2 ,(make-text (format nil "World resolution: ~dx~d"
-                                                           virtual-screen-width
-                                                           virtual-screen-height)
-                                                   10 40
-                                                   :size 20 :color +darkgreen+))))))
-      (let ((tex (scene-object scene 'tex)))
-        (setf (source tex) (make-instance 'rl-rectangle
-                                          :x 0 :y 0
-                                          :width (width tex)
-                                          :height (- (height tex)))
-              (dest tex) (make-instance 'rl-rectangle
-                                        :x (- virtual-ratio)
-                                        :y (- virtual-ratio)
-                                        :width (+ (get-screen-width) (* virtual-ratio 2))
-                                        :height (+ (get-screen-height) (* virtual-ratio 2)))
-              (tint tex) +white+))
+                              ((rec1 (make-rectangle 70 35 20 20 +black+
+                                                     :origin origin))
+                               (rec2 (make-rectangle 90 55 30 10 +red+
+                                                     :origin origin))
+                               (rec3 (make-rectangle 80 65 15 25 +blue+
+                                                     :origin origin))
+                               (tex (texture target))
+                               (text1 (make-text (format nil "Screen resolution: ~dx~d"
+                                                         (get-screen-width)
+                                                         (get-screen-height))
+                                                 10 10
+                                                 :size 20 :color +darkblue+))
+                                (text2 (make-text (format nil "World resolution: ~dx~d"
+                                                          virtual-screen-width
+                                                          virtual-screen-height)
+                                                  10 40
+                                                  :size 20 :color +darkgreen+))))))
 
       (with-scene scene ()
+        (let ((tex (scene-object scene 'tex)))
+          (setf (source tex) (make-instance 'rl-rectangle
+                                            :x 0 :y 0
+                                            :width (width tex)
+                                            :height (- (height tex)))
+                (dest tex) (make-instance 'rl-rectangle
+                                          :x (- virtual-ratio)
+                                          :y (- virtual-ratio)
+                                          :width (+ (get-screen-width) (* virtual-ratio 2))
+                                          :height (+ (get-screen-height) (* virtual-ratio 2)))
+                (tint tex) +white+))
         (do-game-loop (:livesupport t
                        :vars ((rotation 0.0)))
           (incf rotation (* 60.0 (get-frame-time)))
@@ -65,7 +69,7 @@
                 (rot (scene-object scene 'rec2)) (- rotation)
                 (rot (scene-object scene 'rec3)) (+ rotation 45.0))
 
-          (with-texture-mode target
+          (with-texture-mode (target)
             (with-2d-mode world-space-camera
               (draw-scene-regex scene "^REC[0-9]")))
 

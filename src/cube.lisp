@@ -20,6 +20,8 @@
 (defwriter len cube z size number)
 
 (defmethod (setf texture) :before ((tex rl-texture) (obj cube))
+  ;; Handle the case where a default source was set, and now the texture is changing.
+  ;; We want to reset the source to match the new texture.
   (when (and (slot-boundp obj '%source)
              (source obj)
              (= (x (source obj)) 0)
@@ -44,7 +46,7 @@
   (when (next-method-p)
     (call-next-method)))
 
-(defmethod slot-unbound (cube obj (slot (eql '%source)))
+(defmethod slot-unbound (_ (obj cube) (slot (eql '%source)))
   (setf (slot-value obj slot) (make-instance 'rl-rectangle
                                              :x 0 :y 0
                                              :width (width (texture obj))

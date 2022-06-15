@@ -1,6 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-24
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-24)
 
-(defun example-core-24 ()
+(defun main ()
   (with-window (:title "raylib [core] example - quat conversions")
     (let ((camera (make-camera-3d 0 10 10
                                   0 0 0
@@ -18,20 +22,20 @@
           (pos4 (make-vector3 0 0 -1))
           (2pi (coerce (* pi 2) 'single-float))
           (scene (make-scene ()
-                             `((model ,(make-instance 'model
-                                                      :scale (make-vector3 1 1 1)
-                                                      :tint +red+))
-                               (grid ,(make-grid 10 1.0))
-                               (text1 ,(make-text "" 20 20 :size 20))
-                               (text2 ,(make-text "" 20 40 :size 20))
-                               (text3 ,(make-text "" 20 60 :size 20))
-                               (text4 ,(make-text "" 200 20 :size 20))
-                               (text5 ,(make-text "" 200 40 :size 20))
-                               (text6 ,(make-text "" 200 60 :size 20))))))
-      ;; TODO: Certain GEN-MESH-* functions, including GEN-MESH-CYLINDER, are currently broken.
-      (load-model-from-mesh (gen-mesh-cube 0.2 0.4 0.8)
-                            :model (scene-object scene 'model))
+                             ((model (make-instance 'model
+                                                    :scale (make-vector3 1 1 1)
+                                                    :tint +red+))
+                              (grid (make-grid 10 1.0))
+                              (text1 (make-text "" 20 20 :size 20))
+                              (text2 (make-text "" 20 40 :size 20))
+                              (text3 (make-text "" 20 60 :size 20))
+                              (text4 (make-text "" 200 20 :size 20))
+                              (text5 (make-text "" 200 40 :size 20))
+                              (text6 (make-text "" 200 60 :size 20))))))
       (with-scene scene ()
+        ;; TODO: Certain GEN-MESH-* functions, including GEN-MESH-CYLINDER, are currently broken.
+        (load-model-from-mesh (gen-mesh-cube 0.2 0.4 0.8)
+                              :model (scene-object scene 'model))
         (do-game-loop (:livesupport t)
           (when (< (x v2) 0)
             (incf (x v2) 2pi))

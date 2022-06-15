@@ -1,4 +1,10 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-10
+  (:use :cl :claylib)
+  (:import-from :alexandria
+                :circular-list)
+  (:export :main))
+(in-package #:claylib/examples/core-10)
 
 (defclass player (rectangle)
   ((%speed :initarg :spd
@@ -13,14 +19,14 @@
                 :type boolean
                 :accessor blocking-p)))
 
-(defclass example-core-10-camera (rl-camera-2d)
-  ((%mode :initform (alexandria:circular-list :center
+(defclass camera (rl-camera-2d)
+  ((%mode :initform (circular-list :center
                                               :center-inside-map
                                               :center-smooth-follow
                                               :even-out-on-landing
                                               :player-bounds-push))
    (%mode-desc :initform
-               (alexandria:circular-list "Follow player center"
+               (circular-list "Follow player center"
                                          "Follow player center, but clamp to map edges"
                                          "Follow player center; smoothed"
                                          "Follow player center horizontally; update player center vertically after landing"
@@ -35,10 +41,10 @@
                      :type float
                      :accessor even-out-target)))
 
-(defmethod mode ((camera example-core-10-camera))
+(defmethod mode ((camera camera))
   (car (slot-value camera '%mode)))
 
-(defmethod mode-desc ((camera example-core-10-camera))
+(defmethod mode-desc ((camera camera))
   (car (slot-value camera '%mode-desc)))
 
 (defun next-mode (camera)
@@ -170,45 +176,44 @@
                  :blocking-p blocking-p
                  :color color))
 
-(defun example-core-10 ()
+(defun main ()
   (with-window (:title "raylib [core] example - 2d camera")
     (let* ((scene
              (make-scene ()
-                         `((player ,(make-instance 'player
-                                                   :x 380
-                                                   :y 240
-                                                   :spd 0
-                                                   :can-jump-p nil
-                                                   :width 40
-                                                   :height 40
-                                                   :color +red+))
-                           (t1 ,(make-text "Controls:" 20 20 :size 10 :color +black+))
-                           (t2 ,(make-text "- Right/Left to move"
-                                           40 40
-                                           :size 10 :color +darkgray+))
-                           (t3 ,(make-text "- Space to jump"
-                                           40 60
-                                           :size 10 :color +darkgray+))
-                           (t4 ,(make-text "- Mouse Wheel to Zoom in-out, R to reset zoom"
-                                           40 80
-                                           :size 10 :color +darkgray+))
-                           (t5 ,(make-text "- C to change camera mode"
-                                           40 100
-                                           :size 10 :color +darkgray+))
-                           (t6 ,(make-text "Current camera mode:"
-                                           20 120
-                                           :size 10 :color +black+))
-                           (t7 ,(make-text "Follow player center"
-                                           40 140
-                                           :size 10 :color +darkgray+)))))
+                         ((player (make-instance 'player
+                                                 :x 380
+                                                 :y 240
+                                                 :spd 0
+                                                 :can-jump-p nil
+                                                 :width 40
+                                                 :height 40
+                                                 :color +red+))
+                          (t1 (make-text "Controls:" 20 20 :size 10 :color +black+))
+                          (t2 (make-text "- Right/Left to move"
+                                         40 40
+                                         :size 10 :color +darkgray+))
+                          (t3 (make-text "- Space to jump"
+                                         40 60
+                                         :size 10 :color +darkgray+))
+                          (t4 (make-text "- Mouse Wheel to Zoom in-out, R to reset zoom"
+                                         40 80
+                                         :size 10 :color +darkgray+))
+                          (t5 (make-text "- C to change camera mode"
+                                         40 100
+                                         :size 10 :color +darkgray+))
+                          (t6 (make-text "Current camera mode:"
+                                         20 120
+                                         :size 10 :color +black+))
+                          (t7 (make-text "Follow player center"
+                                         40 140
+                                         :size 10 :color +darkgray+)))))
            (env-items (list (make-env-item 0 0 1000 400 nil +lightgray+)
                             (make-env-item 0 400 1000 200 t +gray+)
                             (make-env-item 300 200 400 10 t +gray+)
                             (make-env-item 250 300 100 10 t +gray+)
                             (make-env-item 650 300 100 10 t +gray+)))
-           (camera (make-instance 'example-core-10-camera
-                                  :target (make-vector2 (+ (x (scene-object scene 'player)) 20)
-                                                        (+ (y (scene-object scene 'player)) 40))
+           (camera (make-instance 'camera
+                                  :target (make-vector2 400 280)
                                   :offset (make-vector2 (/ *screen-width* 2.0)
                                                         (/ *screen-height* 2.0))
                                   :rot 0.0

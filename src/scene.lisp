@@ -100,13 +100,19 @@
                (setf (gethash (car object) (objects ,sym)) (cadr object)))
              ,sym)))))
 
-(defun make-scene (assets objects)
-  (let ((scene (make-instance 'game-scene)))
-    (dolist (asset assets)
-      (setf (gethash (car asset) (assets scene)) (cadr asset)))
-    (dolist (object objects)
-      (setf (gethash (car object) (objects scene)) (cadr object)))
-    scene))
+(defmacro make-scene (assets objects)
+  (let ((scene (gensym))
+        (objects (loop for (binding val) in objects
+                       collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy)))))
+    `(let ((,scene (make-instance 'game-scene)))
+       (let* (,@assets ,@objects)
+         (declare (ignorable ,@(mapcar #'car (append assets objects))))
+         (progn
+           ,@(loop for (binding val) in assets
+                   collect `(setf (gethash ',binding (assets ,scene)) ,val))
+           ,@(loop for (binding val) in objects
+                   collect `(setf (gethash ',binding (objects ,scene)) ,val))))
+       ,scene)))
 
 (defun scene-object (scene object)
   (gethash object (objects scene)))
@@ -122,6 +128,11 @@
 (defmacro with-scene (scene (&key (free :now)) &body body)
   `(progn
      (load-scene-all ,scene)
+     (maphash (lambda (binding val)
+                "Yield the values of the objects hash table and set them to the yielded values"
+                (when (typep val 'eager-future2:future)
+                  (setf (gethash binding (objects ,scene)) (eager-future2:yield val))))
+      (objects ,scene))
      ,@body
      ,(case free
         (:now `(progn

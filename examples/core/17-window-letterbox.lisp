@@ -1,4 +1,8 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-17
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-17)
 
 (defun clamp-vector2 (vec min max &optional allocate-p)
   (let ((vec (if allocate-p (make-vector2 (x vec) (y vec)) vec)))
@@ -13,7 +17,7 @@
                               (get-random-value 50 150)
                               (get-random-value 10 100))))
 
-(defun example-core-17 ()
+(defun main ()
   (with-window (:title "raylib [core] example - window scale letterbox"
                 :flags `(,+flag-window-resizable+ ,+flag-vsync-hint+)
                 :min-size (320 240))
@@ -24,23 +28,23 @@
            (v2min (make-vector2 0 0))
            (v2max (make-vector2 game-screen-width game-screen-height))
            (scene (make-scene ()
-                              `((text1 ,(make-text "If executed inside a window,
+                              ((text1 (make-text "If executed inside a window,
 you can resize the window,
 and see the screen scaling!"
-                                                   10 25
-                                                   :size 20 :color +white+))
-                                (text2 ,(make-text "" 350 25 :size 20 :color +green+))
-                                (text3 ,(make-text "" 350 55 :size 20 :color +yellow+))
-                                (rect0 ,(make-colored-rect game-screen-width game-screen-height 0))
-                                (rect1 ,(make-colored-rect game-screen-width game-screen-height 1))
-                                (rect2 ,(make-colored-rect game-screen-width game-screen-height 2))
-                                (rect3 ,(make-colored-rect game-screen-width game-screen-height 3))
-                                (rect4 ,(make-colored-rect game-screen-width game-screen-height 4))
-                                (rect5 ,(make-colored-rect game-screen-width game-screen-height 5))
-                                (rect6 ,(make-colored-rect game-screen-width game-screen-height 6))
-                                (rect7 ,(make-colored-rect game-screen-width game-screen-height 7))
-                                (rect8 ,(make-colored-rect game-screen-width game-screen-height 8))
-                                (rect9 ,(make-colored-rect game-screen-width game-screen-height 9))))))
+                                                 10 25
+                                                 :size 20 :color +white+))
+                               (text2 (make-text "" 350 25 :size 20 :color +green+))
+                               (text3 (make-text "" 350 55 :size 20 :color +yellow+))
+                               (rect0 (make-colored-rect game-screen-width game-screen-height 0))
+                               (rect1 (make-colored-rect game-screen-width game-screen-height 1))
+                               (rect2 (make-colored-rect game-screen-width game-screen-height 2))
+                               (rect3 (make-colored-rect game-screen-width game-screen-height 3))
+                               (rect4 (make-colored-rect game-screen-width game-screen-height 4))
+                               (rect5 (make-colored-rect game-screen-width game-screen-height 5))
+                               (rect6 (make-colored-rect game-screen-width game-screen-height 6))
+                               (rect7 (make-colored-rect game-screen-width game-screen-height 7))
+                               (rect8 (make-colored-rect game-screen-width game-screen-height 8))
+                               (rect9 (make-colored-rect game-screen-width game-screen-height 9))))))
       (setf (filter (texture target)) +texture-filter-bilinear+
             (source (texture target))
             (make-instance 'rl-rectangle
@@ -103,7 +107,7 @@ and see the screen scaling!"
                                 (- (get-screen-height) (* game-screen-height scale)))
                     (width dest) (* game-screen-width scale)
                     (height dest) (* game-screen-height scale)))
-            (with-texture-mode target
+            (with-texture-mode (target)
               (draw-scene-regex scene "^RECT")
               (draw-scene-regex scene "^TEXT"))
             (let ((*claylib-background* +black+))

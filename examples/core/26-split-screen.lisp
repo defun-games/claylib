@@ -1,10 +1,14 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-26
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-26)
 
-(defun example-core-26 ()
+(defun main ()
   (with-window (:title "raylib [core] example - split screen")
-    (let* ((texture-grid (make-instance 'texture
-                                        :filter +texture-filter-anisotropic-16x+
-                                        :wrap +texture-wrap-clamp+))
+    (let* ((texture-grid (make-empty-texture
+                          :filter +texture-filter-anisotropic-16x+
+                          :wrap +texture-wrap-clamp+))
            (camera-player1 (make-camera-3d 0 1 -3
                                            0 1 0
                                            0 1 0))
@@ -20,37 +24,25 @@
                                              :width (/ (get-screen-width) 2)
                                              :height (- (get-screen-height))))
            (scene (make-scene ()
-                              `((ground ,(make-plane 0 0 0 50 50 +beige+))
-                                (player1 ,(make-cube 0 1 -3
-                                                     1 1 1
-                                                     +red+))
-                                (player2 ,(make-cube -3 -3 0
-                                                     1 1 1
-                                                     +blue+))
-                                (text-player1 ,(make-text "PLAYER1 W/S to move"
-                                                          10 10
-                                                          :size 20 :color +red+))
-                                (text-player2 ,(make-text "PLAYER2 UP/DOWN to move"
-                                                          10 10
-                                                          :size 20 :color +blue+))
-                                (texture-player1 ,(texture screen-player1))
-                                (texture-player2 ,(texture screen-player2))))))
+                              ((ground (make-plane 0 0 0 50 50 +beige+))
+                               (player1 (make-cube 0 1 -3
+                                                   1 1 1
+                                                   +red+))
+                               (player2 (make-cube -3 -3 0
+                                                   1 1 1
+                                                   +blue+))
+                               (text-player1 (make-text "PLAYER1 W/S to move"
+                                                        10 10
+                                                        :size 20 :color +red+))
+                               (text-player2 (make-text "PLAYER2 UP/DOWN to move"
+                                                        10 10
+                                                        :size 20 :color +blue+))
+                               (texture-player1 (texture screen-player1))
+                               (texture-player2 (texture screen-player2))))))
       (load-texture-from-image (gen-image-checked 256 256
                                                   32 32
                                                   +darkgray+ +white+)
                                :texture texture-grid)
-      (let ((tex1 (scene-object scene 'texture-player1))
-            (tex2 (scene-object scene 'texture-player2)))
-        (setf (source tex1) split-screen-rect
-              (source tex2) split-screen-rect
-              (dest tex1) (make-instance 'rl-rectangle
-                                         :x 0 :y 0
-                                         :width (width tex1) :height (height tex1))
-              (dest tex2) (make-instance 'rl-rectangle
-                                         :x (/ (get-screen-width) 2.0) :y 0
-                                         :width (width tex2) :height (height tex2))
-              (tint tex1) +white+
-              (tint tex2) +white+))
       (loop for x from -20 to 20 by 4
             do (loop for z from -20 to 20 by 4
                      do (setf (gethash (gensym "TREE") (objects scene))
@@ -64,6 +56,18 @@
                                          +brown+
                                          :texture texture-grid))))
       (with-scene scene ()
+        (let ((tex1 (scene-object scene 'texture-player1))
+              (tex2 (scene-object scene 'texture-player2)))
+          (setf (source tex1) split-screen-rect
+                (source tex2) split-screen-rect
+                (dest tex1) (make-instance 'rl-rectangle
+                                           :x 0 :y 0
+                                           :width (width tex1) :height (height tex1))
+                (dest tex2) (make-instance 'rl-rectangle
+                                           :x (/ (get-screen-width) 2.0) :y 0
+                                           :width (width tex2) :height (height tex2))
+                (tint tex1) +white+
+                (tint tex2) +white+))
         (do-game-loop (:livesupport t)
           (let ((offset-this-frame (* 10.0 (get-frame-time))))
             (when (is-key-down-p +key-w+)
@@ -82,21 +86,20 @@
 
           (setf (pos (scene-object scene 'player1)) (pos camera-player1)
                 (pos (scene-object scene 'player2)) (pos camera-player2))
-          
-          (let ((*claylib-background* +skyblue+))
-            (with-texture-mode screen-player1
-              (with-3d-mode camera-player1
-                (draw-scene scene 'ground)
-                (draw-scene-regex scene "^TREE")
-                (draw-scene scene 'player1))
-              (draw-scene scene 'text-player1))
 
-            (with-texture-mode screen-player2
-              (with-3d-mode camera-player2
-                (draw-scene scene 'ground)
-                (draw-scene-regex scene "^TREE")
-                (draw-scene scene 'player2))
-              (draw-scene scene 'text-player2)))
+          (with-texture-mode (screen-player1 :clear +skyblue+)
+            (with-3d-mode camera-player1
+              (draw-scene scene 'ground)
+              (draw-scene-regex scene "^TREE")
+              (draw-scene scene 'player1))
+            (draw-scene scene 'text-player1))
+
+          (with-texture-mode (screen-player2 :clear +skyblue+)
+            (with-3d-mode camera-player2
+              (draw-scene scene 'ground)
+              (draw-scene-regex scene "^TREE")
+              (draw-scene scene 'player2))
+            (draw-scene scene 'text-player2))
 
           (let ((*claylib-background* +black+))
             (with-drawing

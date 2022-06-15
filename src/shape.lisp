@@ -20,6 +20,7 @@
   ((%color2 :initarg :color2
             :initform nil
             :type (or rl-color null)
-            :accessor color2)))
+            :accessor color2
+            :documentation "The 2nd color to use for a shape drawn with a gradient.")))
 
 (defclass 3d-shape (shape 3d-object) ())

@@ -1,57 +1,60 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-28
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-28)
 
-(defun example-core-28 ()
+(defun main ()
   (with-window (:title "raylib [core] example - custom frame control")
     (let ((scene
             (make-scene ()
-                        `(,@(loop for i = 0 then (1+ i)
-                                  for name = (gensym "LINE")
-                                  until (> i (/ (get-screen-width) 200))
-                                  collect `(,name ,(make-rectangle (* 200 i)
-                                                    0
-                                                    1
-                                                    (get-screen-height)
-                                                    +skyblue+)))
-                          (ball ,(make-circle 0
-                                              (- (/ (get-screen-height) 2) 25)
-                                              50
-                                              +red+))
-                          (text-timer ,(make-text "0"
-                                                  30
-                                                  (- (/ (get-screen-height) 2) 100)
-                                                  :size 20
-                                                  :color +maroon+))
-                          (text-pos-x ,(make-text "10"
-                                                  -40
-                                                  (+ (/ (get-screen-height) 2) 40)
-                                                  :size 20
-                                                  :color +black+))
-                          (text-info ,(make-text "Circle is moving at a constant 200 pixels/sec,
+                        ((ball (make-circle 0
+                                            (- (/ (get-screen-height) 2) 25)
+                                            50
+                                            +red+))
+                         (text-timer (make-text "0"
+                                                30
+                                                (- (/ (get-screen-height) 2) 100)
+                                                :size 20
+                                                :color +maroon+))
+                         (text-pos-x (make-text "10"
+                                                -40
+                                                (+ (/ (get-screen-height) 2) 40)
+                                                :size 20
+                                                :color +black+))
+                         (text-info (make-text "Circle is moving at a constant 200 pixels/sec,
 independently of the frame rate."
-                                                 10
-                                                 10
-                                                 :size 20
-                                                 :color +darkgray+))
-                          (text-space ,(make-text "PRESS SPACE to PAUSE MOVEMENT"
-                                                  10
-                                                  (- (get-screen-height) 60)
-                                                  :size 20
-                                                  :color +gray+))
-                          (text-change-fps ,(make-text "PRESS UP | DOWN to CHANGE TARGET FPS"
-                                                       10
-                                                       (- (get-screen-height) 30)
-                                                       :size 20
-                                                       :color +gray+))
-                          (text-target-fps ,(make-text "TARGET FPS:"
-                                                       (- (get-screen-width) 220)
-                                                       10
-                                                       :size 20
-                                                       :color +lime+))
-                          (text-current-fps ,(make-text "CURRENT FPS:"
-                                                        (- (get-screen-width) 220)
-                                                        40
-                                                        :size 20
-                                                        :color +green+))))))
+                                               10
+                                               10
+                                               :size 20
+                                               :color +darkgray+))
+                         (text-space (make-text "PRESS SPACE to PAUSE MOVEMENT"
+                                                10
+                                                (- (get-screen-height) 60)
+                                                :size 20
+                                                :color +gray+))
+                         (text-change-fps (make-text "PRESS UP | DOWN to CHANGE TARGET FPS"
+                                                     10
+                                                     (- (get-screen-height) 30)
+                                                     :size 20
+                                                     :color +gray+))
+                         (text-target-fps (make-text "TARGET FPS:"
+                                                     (- (get-screen-width) 220)
+                                                     10
+                                                     :size 20
+                                                     :color +lime+))
+                         (text-current-fps (make-text "CURRENT FPS:"
+                                                      (- (get-screen-width) 220)
+                                                      40
+                                                      :size 20
+                                                      :color +green+))))))
+      (loop for i = 0 then (1+ i)
+            for name = (gensym "LINE")
+            until (> i (/ (get-screen-width) 200))
+            do (setf (gethash name (objects scene))
+                     (make-rectangle (* 200 i) 0
+                                     1 (get-screen-height)
+                                     +skyblue+)))
       (with-scene scene ()
         (do-game-loop (:livesupport t
                        :vars ((previous-time (get-time) current-time)

@@ -1,4 +1,9 @@
-(in-package #:claylib/examples)
+(in-package #:cl-user)
+(defpackage claylib/examples/core-4
+  (:use :cl :claylib)
+  (:export :main))
+(in-package #:claylib/examples/core-4)
+
 
 (defun colorize (clr)
   "Determines current color based on mouse actions."
@@ -8,11 +13,11 @@
     ((is-mouse-button-pressed-p +mouse-button-middle+)  +lime+)
     (t clr)))
 
-(defun example-core-04 ()
+(defun main ()
   (with-window (:title "raylib [core] example - mouse input")
     (let ((scene (make-scene ()
-                             `((text ,(make-text "" 10 10 :size 20 :color +darkgray+))
-                               (ball ,(make-circle -100 -100 40 +darkblue+))))))
+                             ((text (make-text "" 10 10 :size 20 :color +darkgray+))
+                              (ball (make-circle -100 -100 40 +darkblue+))))))
       (with-scene scene ()
         (do-game-loop (:livesupport t
                        :vars ((color +darkblue+)))
