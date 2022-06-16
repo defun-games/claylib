@@ -21,7 +21,7 @@
                 :flags `(,+flag-window-undecorated+))
     (let* ((mouse-pos (make-vector2 0 0))
            (window-pos (make-vector2 500 200))
-           (pan-offset (make-vector2 500 200))
+           (pan-offset (make-vector2 0 0))
            (drag-window nil)
            (exit-window nil)
            (exit-window-rec (make-instance 'rl-rectangle
