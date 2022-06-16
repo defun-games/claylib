@@ -22,6 +22,9 @@
    ;; Globals
    :*claylib-background*
 
+   ;; Raygui
+   :gui-window-box
+   
    ;; Misc.
    :get-mouse-position :get-mouse-ray :get-ray-collision-box :load-render-texture :with-texture-mode
    :draw-grid :draw-text :draw-rectangle :draw-circle :draw-cube :update-camera :gen-mesh-cylinder
@@ -109,6 +112,9 @@
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps* :+claylib-directory+
 
+   ;; Raygui
+   :gui-window-box
+   
    ;; Misc
    :draw-fps :get-random-value :get-frame-time :measure-text :get-mouse-ray :get-ray-collision-box
    :+flag-window-resizable+ :+flag-vsync-hint+ :load-render-texture :+texture-filter-bilinear+
@@ -122,4 +128,4 @@
    :+texture-filter-anisotropic-16x+ :+texture-wrap-clamp+ :get-time :wait-time :swap-screen-buffer
    :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw
-   :copy-asset-to-object))
+   :copy-asset-to-object :set-window-position))

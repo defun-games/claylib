@@ -434,6 +434,11 @@
    :matrix-look-at :matrix-multiply :matrix-normalize :matrix-ortho :matrix-perspective :matrix-rotate
    :matrix-rotate-x :matrix-rotate-xyz :matrix-rotate-y :matrix-rotate-z :matrix-scale :matrix-subtract
    :matrix-to-float-v :matrix-trace :matrix-translate :matrix-transpose
+
+   ;;; Raygui
+
+   ;; Misc.
+   :gui-window-box
    
    ;;; claylib/ll extras
    

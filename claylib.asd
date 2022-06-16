@@ -71,7 +71,8 @@
                              (:file "model")
                              (:file "claylib")
                              (:file "scene")
-                             (:file "pt-functions")))))
+                             (:file "pt-functions")
+                             (:file "gui")))))
 
 (asdf:defsystem #:claylib/examples
   :description "Claylib examples, remixed from the original Raylib C versions"
