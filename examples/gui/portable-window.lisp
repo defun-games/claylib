@@ -21,7 +21,7 @@
                 :flags `(,+flag-window-undecorated+))
     (let* ((mouse-pos (make-vector2 0 0))
            (window-pos (make-vector2 500 200))
-           (pan-offset window-pos)
+           (pan-offset (make-vector2 500 200))
            (drag-window nil)
            (exit-window nil)
            (exit-window-rec (make-instance 'rl-rectangle
@@ -42,7 +42,8 @@
           (when (and (is-mouse-button-pressed-p +mouse-button-left+)
                      (check-collision-point-rec mouse-pos collision-rec))
             (setf drag-window t
-                  pan-offset mouse-pos))
+                  (x pan-offset) (x mouse-pos)
+                  (y pan-offset) (y mouse-pos)))
           (when drag-window
             (incf (x window-pos) (- (x mouse-pos) (x pan-offset)))
             (incf (y window-pos) (- (y mouse-pos) (y pan-offset)))
