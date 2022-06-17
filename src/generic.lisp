@@ -134,3 +134,9 @@ Force a reload & free old memory when FORCE-RELOAD is T."))
 
 (defgeneric image-draw (image obj)
   (:documentation "Draw an object OBJ onto the the rl-image IMAGE."))
+
+(defgeneric setup-scene (scene)
+  (:documentation "Load a SCENE's assets and initialize its objects."))
+
+(defgeneric tear-down-scene (scene)
+  (:documentation "Free a SCENE's assets and objects."))

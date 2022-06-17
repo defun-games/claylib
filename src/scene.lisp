@@ -8,7 +8,13 @@
    (%game-assets :initarg :assets
                  :type hash-table
                  :initform (make-hash-table :test #'equalp)
-                 :accessor assets)))
+                 :accessor assets)
+   (%active :initarg :active
+            :type boolean
+            :accessor active)
+   (%free :initarg :free
+          :type keyword
+          :accessor free)))
 
 (defun load-scene (scene &rest names)
   (dolist (asset names)
@@ -100,11 +106,13 @@
                (setf (gethash (car object) (objects ,sym)) (cadr object)))
              ,sym)))))
 
-(defmacro make-scene (assets objects)
+(defmacro make-scene ((&key (active t) (free :now) (gpu t)) assets objects)
   (let ((scene (gensym))
-        (objects (loop for (binding val) in objects
-                       collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy)))))
-    `(let ((,scene (make-instance 'game-scene)))
+        (objects (if gpu
+                     (loop for (binding val) in objects
+                           collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy)))
+                     objects)))
+    `(let ((,scene (make-instance 'game-scene :active ,active :free ,free)))
        (let* (,@assets ,@objects)
          (declare (ignorable ,@(mapcar #'car (append assets objects))))
          (progn
@@ -125,6 +133,7 @@
      ,@body))
 
 
+;; TODO Replaced by do-game-loop enhancements
 (defmacro with-scene (scene (&key (free :now)) &body body)
   `(progn
      (load-scene-all ,scene)
@@ -141,3 +150,32 @@
         (:later `(unload-scene-all-later ,scene))
         (:never nil)
         (t (error ":FREE must be :NOW, :LATER, or :NEVER")))))
+
+(defparameter *scene* nil) ; the current scene in the game loop
+
+;; TODO Perhaps make this generic so users can define :before, :after, :around methods?
+(defun switch-scene (new-scene)
+  "Switch to NEW-SCENE, loading it & unloading the previous scene."
+  (unless (eq new-scene *scene*)
+    (when *scene* (tear-down-scene *scene*))
+    (setf *scene* new-scene)
+    (setup-scene *scene*)))
+
+(defmethod setup-scene ((scene game-scene))
+  "Load a SCENE's assets and initialize its objects."
+  (load-scene-all scene)
+  (maphash (lambda (binding val)
+             "Yield the futures in the objects hash table in place."
+             (when (typep val 'eager-future2:future)
+               (setf (gethash binding (objects scene)) (eager-future2:yield val))))
+           (objects scene)))
+
+(defmethod tear-down-scene ((scene game-scene))
+  "Unload a SCENE according to its %FREE slot."
+  (case (free scene)
+    (:now (progn
+            (unload-scene-all scene)
+            (collect-garbage)))
+    (:later (unload-scene-all-later scene))
+    (:never nil)
+    (t (error "%FREE must be :NOW, :LATER, or :NEVER"))))
