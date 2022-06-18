@@ -159,9 +159,9 @@
   (unless (eq new-scene *scene*)
     (when *scene* (tear-down-scene *scene*))
     (setf *scene* new-scene)
-    (setup-scene *scene*)))
+    (set-up-scene *scene*)))
 
-(defmethod setup-scene ((scene game-scene))
+(defmethod set-up-scene ((scene game-scene))
   "Load a SCENE's assets and initialize its objects."
   (load-scene-all scene)
   (maphash (lambda (binding val)

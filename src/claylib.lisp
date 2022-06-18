@@ -58,7 +58,7 @@ and unloads the previous scene automatically. The current scene is accesible via
      ;; Setup the initial *SCENE* as given by SCENE
      (when ,scene
        (setf *scene* ,scene)
-       (setup-scene *scene*))
+       (set-up-scene *scene*))
      (do ,vars ((or (window-should-close-p) ,end)
                 (tear-down-scene *scene*) ; Tear-down and reset *SCENE*
                 (setf *scene* nil)        ; at the end of the loop
