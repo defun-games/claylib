@@ -7,38 +7,35 @@
 (defun make-screen (color)
   (make-rectangle 0 0 *screen-width* *screen-height* color))
 
-(defparameter *logo* (make-scene () () ((paint (make-screen *claylib-background*))
-                                        (text (make-text "LOGO SCREEN" 20 20
-                                                         :size 40 :color +lightgray+))
-                                        (subtext (make-text "WAIT for 2 SECONDS..." 290 220
-                                                            :size 20 :color +gray+)))))
+(defparameter *logo* (make-scene () ((paint (make-screen *claylib-background*))
+                                     (text (make-text "LOGO SCREEN" 20 20
+                                                      :size 40 :color +lightgray+))
+                                     (subtext (make-text "WAIT for 2 SECONDS..." 290 220
+                                                         :size 20 :color +gray+)))))
 
-(defparameter *title* (make-scene (:free :later)
-                                  ()
-                                  ((paint (make-screen +green+))
-                                   (text (make-text "TITLE SCREEN" 20 20
-                                                    :size 40 :color +darkgreen+))
-                                   (subtext (make-text "PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN"
-                                                       120 220
-                                                       :size 20 :color +darkgreen+)))))
+(defparameter *title* (make-scene () ((paint (make-screen +green+))
+                                      (text (make-text "TITLE SCREEN" 20 20
+                                                       :size 40 :color +darkgreen+))
+                                      (subtext (make-text "PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN"
+                                                          120 220
+                                                          :size 20 :color +darkgreen+)))
+                                  :free :later))
 
-(defparameter *gameplay* (make-scene (:free :later)
-                                     ()
-                                     ((paint (make-screen +purple+))
-                                      (text (make-text "GAMEPLAY SCREEN" 20 20
-                                                       :size 40 :color +maroon+))
-                                      (subtext (make-text "PRESS ENTER or TAP to JUMP to ENDING SCREEN"
-                                                          130 220
-                                                          :size 20 :color +maroon+)))))
+(defparameter *gameplay* (make-scene () ((paint (make-screen +purple+))
+                                         (text (make-text "GAMEPLAY SCREEN" 20 20
+                                                          :size 40 :color +maroon+))
+                                         (subtext (make-text "PRESS ENTER or TAP to JUMP to ENDING SCREEN"
+                                                             130 220
+                                                             :size 20 :color +maroon+)))
+                                     :free :later))
 
-(defparameter *ending* (make-scene (:free :later)
-                                   ()
-                                   ((paint (make-screen +blue+))
-                                    (text (make-text "ENDING SCREEN" 20 20
-                                                     :size 40 :color +darkblue+))
-                                    (subtext (make-text "PRESS ENTER or TAP to RETURN to TITLE SCREEN"
-                                                        120 220
-                                                        :size 20 :color +darkblue+)))))
+(defparameter *ending* (make-scene () ((paint (make-screen +blue+))
+                                       (text (make-text "ENDING SCREEN" 20 20
+                                                        :size 40 :color +darkblue+))
+                                       (subtext (make-text "PRESS ENTER or TAP to RETURN to TITLE SCREEN"
+                                                           120 220
+                                                           :size 20 :color +darkblue+)))
+                                   :free :later))
 
 (defun next-screen ()
   "Is user indicating we can move to the next stage?"

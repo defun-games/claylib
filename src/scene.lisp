@@ -106,7 +106,7 @@
                (setf (gethash (car object) (objects ,sym)) (cadr object)))
              ,sym)))))
 
-(defmacro make-scene ((&key (active t) (free :now) (gpu t)) assets objects)
+(defmacro make-scene (assets objects &key (active t) (free :now) (gpu t))
   (let ((scene (gensym))
         (objects (if gpu
                      (loop for (binding val) in objects
