@@ -170,6 +170,8 @@
                (setf (gethash binding (objects scene)) (eager-future2:yield val))))
            (objects scene)))
 
+(defmethod set-up-scene ((scene null)) ())
+
 (defmethod tear-down-scene ((scene game-scene))
   "Unload a SCENE according to its %FREE slot."
   (case (free scene)
@@ -179,3 +181,5 @@
     (:later (unload-scene-all-later scene))
     (:never nil)
     (t (error "%FREE must be :NOW, :LATER, or :NEVER"))))
+
+(defmethod tear-down-scene ((scene null)) ())
