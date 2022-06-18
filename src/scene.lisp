@@ -151,7 +151,8 @@
         (:never nil)
         (t (error ":FREE must be :NOW, :LATER, or :NEVER")))))
 
-(defparameter *scene* nil) ; the current scene in the game loop
+(defvar *scene* nil
+  "Holds the current scene in a game loop.")
 
 ;; TODO Perhaps make this generic so users can define :before, :after, :around methods?
 (defun switch-scene (new-scene)

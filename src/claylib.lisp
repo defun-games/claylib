@@ -39,7 +39,6 @@ background of the render texture, or NIL to skip clearing."
      ,@body
      (end-texture-mode)))
 
-;; FIXME Problem with this approach: entering a nested do-game-loop will overwrite *SCENE*
 (defmacro do-game-loop ((&key
                            (scene nil)
                            (livesupport nil)
@@ -53,23 +52,20 @@ When given, this will load SCENE, enable LIVESUPPORT during execution of the loo
 bindings in VARS to the loop BODY, stop the loop when END is non-nil, and return RESULT.
 
 To switch scenes in the loop body, use (SWITCH-SCENE MY-NEW-SCENE). SWITCH-SCENE loads the new scene
-and unloads the previous scene automatically. The current scene is accesible via *SCENE*."
+and unloads the previous scene automatically. The current scene is accesible via the special
+variable *SCENE*."
   `(progn
-     ;; Setup the initial *SCENE* as given by SCENE
-     (when ,scene
-       (setf *scene* ,scene)
-       (set-up-scene *scene*))
-     (do ,vars ((or (window-should-close-p) ,end)
-                (tear-down-scene *scene*) ; Tear-down and reset *SCENE*
-                (setf *scene* nil)        ; at the end of the loop
-                ,result)
-       ,@(when livesupport `((declare (notinline))))
-       ;; Execute the loop body with optional livesupport
-       ,(if livesupport
-            `(livesupport:continuable
-               ,@body
-               (livesupport:update-repl-link))
-            `(progn ,@body)))))
+     (let ((*scene* ,scene))
+       (set-up-scene *scene*)
+       (do ,vars ((or (window-should-close-p) ,end)
+                  (tear-down-scene *scene*) ; Tear-down *SCENE* at the end of the loop
+                  ,result)
+         ,@(when livesupport `((declare (notinline))))
+         ,(if livesupport
+              `(livesupport:continuable
+                 ,@body
+                 (livesupport:update-repl-link))
+           `(progn ,@body))))))
 
 (defmacro with-window ((&key
                           (width *screen-width*)
