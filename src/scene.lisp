@@ -106,9 +106,13 @@
                (setf (gethash (car object) (objects ,sym)) (cadr object)))
              ,sym)))))
 
-(defmacro make-scene (assets objects &key (active t) (free :now) (gpu t))
+(defmacro make-scene (assets objects &key (active t) (free :now) (defer-init t))
+  "Make a GAME-SCENE.
+
+DEFER-INIT will defer initialization of the scene's OBJECTS until later (usually in DO-GAME-LOOP).
+This is useful for objects like TEXTURES which require an OpenGL context to be loaded into the GPU."
   (let ((scene (gensym))
-        (objects (if gpu
+        (objects (if defer-init
                      (loop for (binding val) in objects
                            collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy)))
                      objects)))
