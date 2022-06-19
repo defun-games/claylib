@@ -140,3 +140,6 @@ Force a reload & free old memory when FORCE-RELOAD is T."))
 
 (defgeneric tear-down-scene (scene)
   (:documentation "Free a SCENE's assets and objects."))
+
+(defgeneric switch-scene (scene)
+  (:documentation "Switch *SCENE* to SCENE, loading the new & unloading the old scene."))

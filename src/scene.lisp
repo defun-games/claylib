@@ -156,14 +156,13 @@ This is useful for objects like TEXTURES which require an OpenGL context to be l
         (t (error ":FREE must be :NOW, :LATER, or :NEVER")))))
 
 (defvar *scene* nil
-  "Holds the current scene in a game loop.")
+  "Holds the current scene in a particular game loop.
+Note that *SCENE*, as a special variable, is given a dynamic binding for every game loop.")
 
-;; TODO Perhaps make this generic so users can define :before, :after, :around methods?
-(defun switch-scene (new-scene)
-  "Switch to NEW-SCENE, loading it & unloading the previous scene."
-  (unless (eq new-scene *scene*)
+(defmethod switch-scene ((scene game-scene))
+  (unless (eq scene *scene*)
     (when *scene* (tear-down-scene *scene*))
-    (setf *scene* new-scene)
+    (setf *scene* scene)
     (set-up-scene *scene*)))
 
 (defmethod set-up-scene ((scene game-scene))

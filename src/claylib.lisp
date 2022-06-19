@@ -51,9 +51,9 @@ background of the render texture, or NIL to skip clearing."
 When given, this will load SCENE, enable LIVESUPPORT during execution of the loop, expose the
 bindings in VARS to the loop BODY, stop the loop when END is non-nil, and return RESULT.
 
-To switch scenes in the loop body, use (SWITCH-SCENE MY-NEW-SCENE). SWITCH-SCENE loads the new scene
-and unloads the previous scene automatically. The current scene is accesible via the special
-variable *SCENE*."
+The current scene for a given loop is accesible via the special variable *SCENE*. To switch scenes
+inside the loop, use (SWITCH-SCENE MY-NEW-SCENE). SWITCH-SCENE loads the new scene, unloads the
+previous scene, and updates *SCENE* automatically."
   `(progn
      (let ((*scene* ,scene))
        (set-up-scene *scene*)
