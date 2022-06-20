@@ -91,7 +91,7 @@
 
    ;; Scenes
    :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
-   :make-scene :objects :draw-scene-regex :with-scene :switch-scene
+   :make-scene :objects :draw-scene-regex :with-scene :switch-scene :set-up-scene :tear-down-scene
 
    ;; Generic functions/methods
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
