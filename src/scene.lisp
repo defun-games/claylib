@@ -9,9 +9,6 @@
                  :type hash-table
                  :initform (make-hash-table :test #'equalp)
                  :accessor assets)
-   (%active :initarg :active
-            :type boolean
-            :accessor active)
    (%free :initarg :free
           :type keyword
           :accessor free)))
@@ -106,7 +103,7 @@
                (setf (gethash (car object) (objects ,sym)) (cadr object)))
              ,sym)))))
 
-(defmacro make-scene (assets objects &key (active t) (free :now) (defer-init t))
+(defmacro make-scene (assets objects &key (free :now) (defer-init t))
   "Make a GAME-SCENE.
 
 DEFER-INIT will defer initialization of the scene's OBJECTS until later (usually in DO-GAME-LOOP).
@@ -116,7 +113,7 @@ This is useful for objects like TEXTURES which require an OpenGL context to be l
                      (loop for (binding val) in objects
                            collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy)))
                      objects)))
-    `(let ((,scene (make-instance 'game-scene :active ,active :free ,free)))
+    `(let ((,scene (make-instance 'game-scene :free ,free)))
        (let* (,@assets ,@objects)
          (declare (ignorable ,@(mapcar #'car (append assets objects))))
          (progn
