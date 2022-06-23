@@ -252,6 +252,8 @@ are coerced to floats. For something more complex, try DEFINITIALIZER."
                       ((and (subtypep type 'standard-object)
                             (rl-subclass-p type))
                        `(c-struct ,accessor))
+                      ((eql type 'boolean)
+                       `(if ,accessor 1 0))
                       (t accessor))))))
 
 (defmacro defun-pt (name c-fn docstring &rest args)
@@ -290,6 +292,41 @@ is expected to have the following format:
      (if (= 0 (,c-fn ,@(expand-c-fun-args args)))
          nil
          t)))
+
+(defmacro defun-pt-void (name c-fn docstring &rest args)
+  "Define a special 'pass-through' function for which the C function does not return anything. Each
+ARG is expected to have the following format:
+
+(ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)"
+  `(defun ,name ,(remove nil `(,@(mapcar #'(lambda (arg)
+                                             (unless (fourth arg)
+                                               (car arg)))
+                                  args)
+                               &key ,@(mapcar #'(lambda (arg)
+                                                  (when (fourth arg)
+                                                    `(,(car arg) ,(fourth arg))))
+                                              args)))
+     ,docstring
+     ,@(expand-check-types args)
+     (,c-fn ,@(expand-c-fun-args args))
+     nil))
+
+(defmacro defun-pt-num (name c-fn docstring &rest args)
+  "Define a special 'pass-through' function that does not alter the C function's return value. Usually
+appropriate when you are expecting a number (or string). Each ARG is expected to have the following format:
+
+(ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE"
+  `(defun ,name ,(remove nil `(,@(mapcar #'(lambda (arg)
+                                             (unless (fourth arg)
+                                               (car arg)))
+                                  args)
+                               &key ,@(mapcar #'(lambda (arg)
+                                                  (when (fourth arg)
+                                                    `(,(car arg) ,(fourth arg))))
+                                              args)))
+     ,docstring
+     ,@(expand-check-types args)
+     (,c-fn ,@(expand-c-fun-args args))))
 
 (defmacro defun-pt-arg0 (name c-fn allocate-form docstring &rest args)
   "Define a special 'pass-through' function in which the first argument is destructively modified

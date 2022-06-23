@@ -437,8 +437,38 @@
 
    ;;; Raygui
 
-   ;; Misc.
-   :gui-window-box
+   ;; Global gui state control functions
+   :gui-enable :gui-disable :gui-lock :gui-unlock :gui-is-locked-p :gui-fade :gui-set-state :gui-get-state
+
+   ;; Font set/get functions
+   :gui-set-font :gui-get-font
+
+   ;; Style set/get functions
+   :gui-set-style :gui-get-style
+
+   ;; Container/separator controls
+   :gui-window-box :gui-group-box :gui-line :gui-panel :gui-scroll-panel
+
+   ;; Basic controls set
+   :gui-label :gui-button :gui-label-button :gui-toggle :gui-toggle-group :gui-checkbox :gui-combo-box
+   :gui-dropdown-box :gui-spinner :gui-value-box :gui-text-box :gui-text-box-multi :gui-slider
+   :gui-slider-bar :gui-progress-bar :gui-status-bar :gui-dummy-rec :gui-scroll-bar :gui-grid
+
+   ;; Advance controls set
+   :gui-list-view :gui-list-view-ex :gui-message-box :gui-text-input-box :gui-color-picker :gui-color-panel
+   :gui-color-bar-alpha :gui-color-bar-hue
+
+   ;; Styles loading functions
+   :gui-load-style :gui-load-style-default
+
+   ;; Icons functionality
+   :gui-icon-text :gui-draw-icon :gui-get-icons :gui-get-icon-data :gui-set-icon-data :gui-set-icon-pixel
+   :gui-clear-icon-pixel :gui-check-icon-pixel
+
+   ;; Constants
+   :+scrollbar+ :+border-width+ :+arrows-size+ :+slider-padding+ :+arrows-visible+ :+slider-width+
+   :+listview+ :+scrollbar-side+ :+scrollbar-left-side+ :+scrollbar-right-side+ :+scrollbar-width+
+   :+default+
    
    ;;; claylib/ll extras
    

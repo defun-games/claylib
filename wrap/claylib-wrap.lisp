@@ -53,7 +53,9 @@
                                         ("log" . "C-LOG")
                                         ("sqrt" . "C-SQRT")
                                         ("floor" . "C-FLOOR")
-                                        ("round" . "C-ROUND")))
+                                        ("round" . "C-ROUND")
+                                        ;; This one just goofed.
+                                        ("GuiCheckBox" . "GUI-CHECKBOX")))
 
 (autowrap:c-include '(claylib/wrap wrap lib "raymath.h")
                     :release-p t
