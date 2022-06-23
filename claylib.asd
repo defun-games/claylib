@@ -79,7 +79,7 @@
   :license "TODO"
   :version "0.0.1"
   :serial t
-  :depends-on (#:claylib)
+  :depends-on (#:claylib #:alexandria)
   :components ((:module "examples"
                 :components
                 ((:file "package")
