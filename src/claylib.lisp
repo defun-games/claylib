@@ -54,18 +54,17 @@ bindings in VARS to the loop BODY, stop the loop when END is non-nil, and return
 The current scene for a given loop is accesible via the special variable *SCENE*. To switch scenes
 inside the loop, use (SWITCH-SCENE MY-NEW-SCENE). SWITCH-SCENE loads the new scene, unloads the
 previous scene, and updates *SCENE* automatically."
-  `(progn
-     (let ((*scene* ,scene))
-       (set-up-scene *scene*)
-       (do ,vars ((or (window-should-close-p) ,end)
-                  (tear-down-scene *scene*) ; Tear-down *SCENE* at the end of the loop
-                  ,result)
-         ,@(when livesupport `((declare (notinline))))
-         ,(if livesupport
-              `(livesupport:continuable
-                 ,@body
-                 (livesupport:update-repl-link))
-           `(progn ,@body))))))
+  `(let ((*scene* ,scene))
+     (set-up-scene *scene*)
+     (do ,vars ((or (window-should-close-p) ,end)
+                (tear-down-scene *scene*) ; Tear-down *SCENE* at the end of the loop
+                ,result)
+       ,@(when livesupport `((declare (notinline))))
+       ,(if livesupport
+            `(livesupport:continuable
+               ,@body
+               (livesupport:update-repl-link))
+            `(progn ,@body)))))
 
 (defmacro with-window ((&key
                           (width *screen-width*)
