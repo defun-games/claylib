@@ -163,7 +163,6 @@ Note that *SCENE*, as a special variable, is given a dynamic binding for every g
     (set-up-scene *scene*)))
 
 (defmethod set-up-scene ((scene game-scene))
-  "Load a SCENE's assets and initialize its objects."
   (load-scene-all scene)
   (maphash (lambda (binding val)
              "Yield the futures in the objects hash table in place."
@@ -174,7 +173,6 @@ Note that *SCENE*, as a special variable, is given a dynamic binding for every g
 (defmethod set-up-scene ((scene null)) ())
 
 (defmethod tear-down-scene ((scene game-scene))
-  "Unload a SCENE according to its %FREE slot."
   (case (free scene)
     (:now (progn
             (unload-scene-all scene)
