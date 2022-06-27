@@ -134,33 +134,14 @@ This is useful for objects like TEXTURES which require an OpenGL context to be l
      ,@body))
 
 
-;; TODO Replaced by do-game-loop enhancements
-(defmacro with-scene (scene (&key (free :now)) &body body)
+(defmacro with-scenes (scenes &body body)
+  "Execute BODY after loading & initializing SCENES, tearing them down afterwards.
+
+Note: additional scenes can be loaded/freed within the loop using {SET-UP,TEAR-DOWN}-SCENE."
   `(progn
-     (load-scene-all ,scene)
-     (maphash (lambda (binding val)
-                "Yield the values of the objects hash table and set them to the yielded values"
-                (when (typep val 'eager-future2:future)
-                  (setf (gethash binding (objects ,scene)) (eager-future2:yield val))))
-      (objects ,scene))
+     (mapcar #'set-up-scene ,scenes)
      ,@body
-     ,(case free
-        (:now `(progn
-                 (unload-scene-all ,scene)
-                 (collect-garbage)))
-        (:later `(unload-scene-all-later ,scene))
-        (:never nil)
-        (t (error ":FREE must be :NOW, :LATER, or :NEVER")))))
-
-(defvar *scene* nil
-  "Holds the current scene in a particular game loop.
-Note that *SCENE*, as a special variable, is given a dynamic binding for every game loop.")
-
-(defmethod switch-scene ((scene game-scene))
-  (unless (eq scene *scene*)
-    (when *scene* (tear-down-scene *scene*))
-    (setf *scene* scene)
-    (set-up-scene *scene*)))
+     (mapcar #'tear-down-scene ,scenes)))
 
 (defmethod set-up-scene ((scene game-scene))
   (load-scene-all scene)

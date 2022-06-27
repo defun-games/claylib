@@ -40,7 +40,6 @@ background of the render texture, or NIL to skip clearing."
      (end-texture-mode)))
 
 (defmacro do-game-loop ((&key
-                           (scene nil)
                            (livesupport nil)
                            (vars ())
                            (end ())
@@ -48,23 +47,16 @@ background of the render texture, or NIL to skip clearing."
                         &body body)
   "Execute a game loop.
 
-When given, this will load SCENE, enable LIVESUPPORT during execution of the loop, expose the
-bindings in VARS to the loop BODY, stop the loop when END is non-nil, and return RESULT.
-
-The current scene for a given loop is accesible via the special variable *SCENE*. To switch scenes
-inside the loop, use (SWITCH-SCENE MY-NEW-SCENE). SWITCH-SCENE loads the new scene, unloads the
-previous scene, and updates *SCENE* automatically."
-  `(let ((*scene* ,scene))
-     (set-up-scene *scene*)
-     (do ,vars ((or (window-should-close-p) ,end)
-                (tear-down-scene *scene*) ; Tear-down *SCENE* at the end of the loop
-                ,result)
-       ,@(when livesupport `((declare (notinline))))
-       ,(if livesupport
-            `(livesupport:continuable
-               ,@body
-               (livesupport:update-repl-link))
-            `(progn ,@body)))))
+When given, this will enable LIVESUPPORT during execution of the loop, expose the bindings in VARS
+to the loop BODY, stop the loop when END is non-nil, and return RESULT."
+  `(do ,vars ((or (window-should-close-p) ,end)
+              ,result)
+     ,@(when livesupport `((declare (notinline))))
+     ,(if livesupport
+          `(livesupport:continuable
+             ,@body
+             (livesupport:update-repl-link))
+          `(progn ,@body))))
 
 (defmacro with-window ((&key
                           (width *screen-width*)
