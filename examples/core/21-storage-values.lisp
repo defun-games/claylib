@@ -22,7 +22,7 @@
                               (text6 (make-text "Press SPACE to LOAD values"
                                                 252 350
                                                 :size 20 :color +lightgray+))))))
-      (with-scene scene ()
+      (with-scenes scene
         (do-game-loop (:livesupport t)
           (when (is-key-pressed-p +key-r+)
             (setf score (get-random-value 1000 2000)

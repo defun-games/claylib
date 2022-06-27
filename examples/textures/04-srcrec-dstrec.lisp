@@ -42,7 +42,7 @@
                                                           (- (get-screen-height) 20)
                                                           :size 10
                                                           :color +gray+))))))
-      (with-scene scene ()
+      (with-scenes scene
         (do-game-loop (:livesupport t)
           (incf (rot (scene-object scene 'scarfy)))
 

@@ -38,7 +38,7 @@
                                                  :color +gray+)))))
            (invec (make-vector3 0 2.5 0))
            (outvec (make-vector2 0 0)))
-      (with-scene scene ()
+      (with-scenes scene
         (do-game-loop (:livesupport t)
           (update-camera camera)
           (get-world-to-screen-3d invec camera :vec outvec)

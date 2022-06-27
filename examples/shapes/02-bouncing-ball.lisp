@@ -53,7 +53,7 @@ components of the BALL's SPEED."
                                                      200
                                                      :size 30
                                                      :color +gray+))))))
-      (with-scene scene ()
+      (with-scenes scene
         (with-scene-objects (ball) scene
           (do-game-loop (:livesupport t
                          :vars ((pause nil)

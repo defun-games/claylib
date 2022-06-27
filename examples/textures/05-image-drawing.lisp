@@ -84,7 +84,7 @@
 
 (defun main ()
   (with-window (:title "raylib [textures] example - image drawing")
-  (with-scene *scene* ()
+  (with-scenes *scene*
     (do-game-loop (:livesupport t)
       (with-drawing
         (draw-scene-all *scene*))))))

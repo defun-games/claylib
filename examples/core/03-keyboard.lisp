@@ -28,7 +28,7 @@
                                                     (/ *screen-height* 2.0)
                                                     50.0
                                                     +maroon+))))))
-      (with-scene scene ()
+      (with-scenes scene
         (do-game-loop (:livesupport t)
           (move-ball (scene-object scene 'ball))
           (with-drawing

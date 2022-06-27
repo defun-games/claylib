@@ -7,7 +7,7 @@
 (defun main ()
   (with-window (:title "raylib [textures] example - texture loading and drawing")
     (let* ((image-size 256)
-           (scene (make-scene ((texass (make-texture-asset 
+           (scene (make-scene ((texass (make-texture-asset
                                         (asdf:system-relative-pathname
                                          :claylib
                                          "examples/textures/resources/raylib_logo.png"))))
@@ -18,7 +18,7 @@
                                                 360 370
                                                 :size 10
                                                 :color +gray+))))))
-      (with-scene scene ()
+      (with-scenes scene
         (do-game-loop (:livesupport t)
           (with-drawing
             (draw-scene-all scene)))))))

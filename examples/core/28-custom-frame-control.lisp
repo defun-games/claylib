@@ -55,7 +55,7 @@ independently of the frame rate."
                      (make-rectangle (* 200 i) 0
                                      1 (get-screen-height)
                                      +skyblue+)))
-      (with-scene scene ()
+      (with-scenes scene
         (do-game-loop (:livesupport t
                        :vars ((previous-time (get-time) current-time)
                               (current-time 0.0)

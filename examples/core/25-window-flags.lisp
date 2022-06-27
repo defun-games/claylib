@@ -57,7 +57,7 @@
                               (flag-highdpi (make-text "" 10 320 :size 10))
                               (flag-transparent (make-text "" 10 340 :size 10))
                               (flag-msaa-4x-hint (make-text "" 10 360 :size 10))))))
-      (with-scene scene ()
+      (with-scenes scene
         (do-game-loop (:livesupport t
                        :vars ((frames-counter 0)))
           (when (is-key-pressed-p +key-f+)
