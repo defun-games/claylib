@@ -133,11 +133,11 @@ This is useful for objects like TEXTURES which require an OpenGL context to be l
                                        `(,obj (gethash ',obj (objects ,scene)))))
      ,@body))
 
-
 (defmacro with-scenes (scenes &body body)
   "Execute BODY after loading & initializing SCENES, tearing them down afterwards.
 
 Note: additional scenes can be loaded/freed within the loop using {SET-UP,TEAR-DOWN}-SCENE."
+  (unless (listp scenes) (setf scenes `(list ,scenes)))
   `(progn
      (mapcar #'set-up-scene ,scenes)
      ,@body
