@@ -45,14 +45,12 @@
 
 (defun main ()
   (with-window (:title "raylib [core] example - basic screen manager")
-    (do-game-loop (:livesupport t
-                   :scene *logo*
-                   :vars ((scenes `(,*logo* ,@(alexandria:circular-list *title* *gameplay* *ending*)))
-                          (frame-count 0)))
-      (incf frame-count)
-      (when (or (and (next-screen) (not (eql (car scenes) *logo*)))
-                (and (eql (car scenes) *logo*) (> frame-count (* 2 *target-fps*))))
-        (setf scenes (cdr scenes))
-        (switch-scene (car scenes)))
-      (with-drawing (draw-scene-all *scene*)))
-    (mapcar #'unload-scene-all (list *logo* *title* *gameplay* *ending*))))
+    (with-scenes (list *logo* *title* *gameplay* *ending*)
+      (do-game-loop (:livesupport t
+                     :vars ((scenes `(,*logo* ,@(alexandria:circular-list *title* *gameplay* *ending*)))
+                            (frame-count 0)))
+        (incf frame-count)
+        (when (or (and (next-screen) (not (eql (car scenes) *logo*)))
+                  (and (eql (car scenes) *logo*) (> frame-count (* 2 *target-fps*))))
+          (setf scenes (cdr scenes)))
+        (with-drawing (draw-scene-all (car scenes)))))))
