@@ -66,7 +66,7 @@
                                                       (- (get-screen-height) 40)
                                                       :size 10
                                                       :color +gray+))))))
-      (with-scene scene ()
+      (with-scenes scene
         (do-game-loop (:livesupport t
                        :vars ((mouse-point (make-vector2 0 0))
                               (faded-rect-color nil)))

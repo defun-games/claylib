@@ -56,7 +56,7 @@
                                                    (get-random-value 200 240)
                                                    (get-random-value 200 250))))
                  (incf spacing w)))
-      (with-scene scene ()
+      (with-scenes scene
         (do-game-loop (:livesupport t)
           (when (is-key-down-p +key-right+) (incf (x (scene-object scene 'player)) 2))
           (when (is-key-down-p +key-left+) (decf (x (scene-object scene 'player)) 2))

@@ -45,7 +45,12 @@ background of the render texture, or NIL to skip clearing."
                            (end ())
                            (result ()))
                         &body body)
-  `(do ,vars ((or (window-should-close-p) ,end) ,result)
+  "Execute a game loop.
+
+When given, this will enable LIVESUPPORT during execution of the loop, expose the bindings in VARS
+to the loop BODY, stop the loop when END is non-nil, and return RESULT."
+  `(do ,vars ((or (window-should-close-p) ,end)
+              ,result)
      ,@(when livesupport `((declare (notinline))))
      ,(if livesupport
           `(livesupport:continuable

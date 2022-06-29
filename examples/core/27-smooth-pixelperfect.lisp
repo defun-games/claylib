@@ -32,7 +32,7 @@
                                                   10 40
                                                   :size 20 :color +darkgreen+))))))
 
-      (with-scene scene ()
+      (with-scenes scene
         (let ((tex (scene-object scene 'tex)))
           (setf (source tex) (make-instance 'rl-rectangle
                                             :x 0 :y 0

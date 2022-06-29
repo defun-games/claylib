@@ -40,7 +40,7 @@
           (mouse-pos (make-vector2 0 0))
           (bbox (make-instance 'rl-bounding-box :low (make-vector3 0 0 0)
                                                 :high (make-vector3 0 0 0))))
-      (with-scene scene ()
+      (with-scenes scene
         (do-game-loop (:livesupport t)
           (update-camera camera)
           (when (is-mouse-button-pressed-p +mouse-button-left+)

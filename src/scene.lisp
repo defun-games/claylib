@@ -8,7 +8,10 @@
    (%game-assets :initarg :assets
                  :type hash-table
                  :initform (make-hash-table :test #'equalp)
-                 :accessor assets)))
+                 :accessor assets)
+   (%free :initarg :free
+          :type keyword
+          :accessor free)))
 
 (defun load-scene (scene &rest names)
   (dolist (asset names)
@@ -100,11 +103,17 @@
                (setf (gethash (car object) (objects ,sym)) (cadr object)))
              ,sym)))))
 
-(defmacro make-scene (assets objects)
+(defmacro make-scene (assets objects &key (free :now) (defer-init t))
+  "Make a GAME-SCENE.
+
+DEFER-INIT will defer initialization of the scene's OBJECTS until later (usually in DO-GAME-LOOP).
+This is useful for objects like TEXTURES which require an OpenGL context to be loaded into the GPU."
   (let ((scene (gensym))
-        (objects (loop for (binding val) in objects
-                       collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy)))))
-    `(let ((,scene (make-instance 'game-scene)))
+        (objects (if defer-init
+                     (loop for (binding val) in objects
+                           collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy)))
+                     objects)))
+    `(let ((,scene (make-instance 'game-scene :free ,free)))
        (let* (,@assets ,@objects)
          (declare (ignorable ,@(mapcar #'car (append assets objects))))
          (progn
@@ -124,20 +133,33 @@
                                        `(,obj (gethash ',obj (objects ,scene)))))
      ,@body))
 
+(defmacro with-scenes (scenes &body body)
+  "Execute BODY after loading & initializing SCENES, tearing them down afterwards.
 
-(defmacro with-scene (scene (&key (free :now)) &body body)
+Note: additional scenes can be loaded/freed within the loop using {SET-UP,TEAR-DOWN}-SCENE."
+  (unless (listp scenes) (setf scenes `(list ,scenes)))
   `(progn
-     (load-scene-all ,scene)
-     (maphash (lambda (binding val)
-                "Yield the values of the objects hash table and set them to the yielded values"
-                (when (typep val 'eager-future2:future)
-                  (setf (gethash binding (objects ,scene)) (eager-future2:yield val))))
-      (objects ,scene))
+     (mapcar #'set-up-scene ,scenes)
      ,@body
-     ,(case free
-        (:now `(progn
-                 (unload-scene-all ,scene)
-                 (collect-garbage)))
-        (:later `(unload-scene-all-later ,scene))
-        (:never nil)
-        (t (error ":FREE must be :NOW, :LATER, or :NEVER")))))
+     (mapcar #'tear-down-scene ,scenes)))
+
+(defmethod set-up-scene ((scene game-scene))
+  (load-scene-all scene)
+  (maphash (lambda (binding val)
+             "Yield the futures in the objects hash table in place."
+             (when (typep val 'eager-future2:future)
+               (setf (gethash binding (objects scene)) (eager-future2:yield val))))
+           (objects scene)))
+
+(defmethod set-up-scene ((scene null)) ())
+
+(defmethod tear-down-scene ((scene game-scene))
+  (case (free scene)
+    (:now (progn
+            (unload-scene-all scene)
+            (collect-garbage)))
+    (:later (unload-scene-all-later scene))
+    (:never nil)
+    (t (error "%FREE must be :NOW, :LATER, or :NEVER"))))
+
+(defmethod tear-down-scene ((scene null)) ())

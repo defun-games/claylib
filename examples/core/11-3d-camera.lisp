@@ -20,7 +20,7 @@
                                  (text (make-text "Welcome to the third dimension!"
                                                   10 40
                                                   :size 20 :color +darkgray+))))))
-      (with-scene scene ()
+      (with-scenes scene
         (do-game-loop (:livesupport t)
           (with-drawing
             (with-3d-mode camera
