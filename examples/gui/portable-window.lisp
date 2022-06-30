@@ -35,7 +35,7 @@
                                          :width 800
                                          :height 20)))
       (set-window-pos window-pos)
-      (with-scene *scene* ()
+      (with-scenes *scene*
         (do-game-loop (:livesupport t
                        :end exit-window)
           (get-mouse-position :vec mouse-pos)
