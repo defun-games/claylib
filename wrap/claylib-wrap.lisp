@@ -15,7 +15,14 @@
 
 (cffi:use-foreign-library libraylib)
 
-(autowrap:c-include '(claylib/wrap wrap lib "raylib.h")
+(cffi:define-foreign-library libraygui
+  (:unix "libraygui.so")
+  (t (:default "libraygui")))
+
+(cffi:use-foreign-library libraygui)
+
+(autowrap:c-include '(claylib/wrap wrap lib "raygui.h")
+                    :release-p t
                     :spec-path '(claylib/wrap wrap spec)
                     ;; NOTE: We are currently excluding features where autowrap is having difficulties.
                     :exclude-definitions (;; stdarg.h: only needed for TraceLogCallback
@@ -24,12 +31,36 @@
                                           "LIGHTGRAY" "GRAY" "DARKGRAY" "YELLOW" "GOLD" "ORANGE" "PINK"
                                           "RED" "MAROON" "GREEN" "LIME" "DARKGREEN" "SKYBLUE" "BLUE"
                                           "DARKBLUE" "PURPLE" "VIOLET" "DARKPURPLE" "BEIGE" "BROWN"
-                                          "DARKBROWN" "WHITE" "BLACK" "BLANK" "MAGENTA" "RAYWHITE"))
+                                          "DARKBROWN" "WHITE" "BLACK" "BLANK" "MAGENTA" "RAYWHITE")
+                    ;; Some function names collide with CL
+                    :symbol-exceptions (("remove" . "C-REMOVE")
+                                        ("random" . "C-RANDOM")
+                                        ("abort" . "C-ABORT")
+                                        ("abs" . "C-ABS")
+                                        ("acos" . "C-ACOS")
+                                        ("asin" . "C-ASIN")
+                                        ("atan" . "C-ATAN")
+                                        ("cos" . "C-COS")
+                                        ("sin" . "C-SIN")
+                                        ("tan" . "C-TAN")
+                                        ("cosh" . "C-COSH")
+                                        ("sinh" . "C-SINH")
+                                        ("tanh" . "C-TANH")
+                                        ("acosh" . "C-ACOSH")
+                                        ("asinh" . "C-ASINH")
+                                        ("atanh" . "C-ATANH")
+                                        ("exp" . "C-EXP")
+                                        ("log" . "C-LOG")
+                                        ("sqrt" . "C-SQRT")
+                                        ("floor" . "C-FLOOR")
+                                        ("round" . "C-ROUND")
+                                        ;; This one just goofed.
+                                        ("GuiCheckBox" . "GUI-CHECKBOX")))
 
 (autowrap:c-include '(claylib/wrap wrap lib "raymath.h")
                     :release-p t
                     :spec-path '(claylib/wrap wrap spec)
-                    ;; Duplicate definitions from raylib.h
+                    ;; Duplicate definitions from above
                     :exclude-definitions ("^Vector2$" "^Vector3$" "^Vector4$" "^Matrix$")
                     ;; Some function names collide with CL
                     :symbol-exceptions (("acos" . "C-ACOS")

@@ -33,7 +33,7 @@
                               (text5 (make-text "" 200 40 :size 20))
                               (text6 (make-text "" 200 60 :size 20))))))
       (with-scenes scene
-        ;; TODO: Certain GEN-MESH-* functions, including GEN-MESH-CYLINDER, are currently broken.
+        ;; TODO: Certain GEN-MESH-* functions such as GEN-MESH-CYLINDER are currently broken. See #16.
         (load-model-from-mesh (gen-mesh-cube 0.2 0.4 0.8)
                               :model (scene-object scene 'model))
         (do-game-loop (:livesupport t)

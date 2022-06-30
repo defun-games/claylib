@@ -61,6 +61,8 @@
 (lisp-bool is-audio-stream-processed stream)
 (lisp-bool is-audio-stream-playing stream)
 
+(lisp-bool gui-is-locked)
+
 (declaim (inline run-window-p))
 (defun run-window-p ()
   "Returns T if the raylib window status is good and should therefore stay open."
