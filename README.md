@@ -4,11 +4,11 @@ A Common Lisp 2D/3D game toolkit built on top of [Raylib](https://www.raylib.com
 ## Quick Start
 Claylib is not yet in Quicklisp. Load claylib.asd and run `(ql:quickload :claylib/examples)` or similar to load all of the available packages. See the next section for what those packages are and how you might use them.
 
-To see the [examples](/examples) in action, just run e.g. `(claylib/examples/core-1:main)`. Hit Escape to exit. At the time of this writing, most of the core examples are done, as well as a handful of shape and texture examples.
+To see the [examples](/examples) in action, just run e.g. `(claylib/examples/core-1:main)`. Hit Escape to exit. At the time of this writing, most of the core examples are done, as well as a handful of shape and texture examples. GUI examples are very **work-in-progress**.
 
 ## Packages
-This repo contains four separate packages/systems:
-- `claylib/wrap` wraps Raylib and Raymath via [cl-autowrap](https://github.com/rpav/cl-autowrap), along with a few small fixes. There's probably no reason to use it directly.
+This repo contains four separate ASDF systems:
+- `claylib/wrap` wraps Raylib, Raymath, and Raygui via [cl-autowrap](https://github.com/rpav/cl-autowrap), along with a few small fixes. There's probably no reason to use it directly.
 - `claylib/ll` is a thin layer on top of `claylib/wrap` that adds some convenience features but mostly keeps the C semantics. If you have a lot of experience with Raylib in C or you just really like manual memory management, then `claylib/ll` is for you.
 - `claylib` sits atop `claylib/ll` and does a lot of work to try to smooth out and abstract the C semantics away from the user. It's not perfect, nor _can_ it be (more on that later). Its goal is to feel as Lispy as possible, and no Lispier!
 - `claylib/examples` contains a number of -- you guessed it -- examples, remixed from [Raylib's own](https://www.raylib.com/examples.html).
@@ -16,7 +16,7 @@ This repo contains four separate packages/systems:
 ## Current Status
 The project should be considered **beta**. Development is active and API's are subject to change.
 
-`claylib/ll` should be highly usable, as a thin wrapper over Raylib. Only Raylib and Raymath are included, so you will be missing things like 2D physics, but you can always use other libraries for that.
+`claylib/ll` should be highly usable, as a thin wrapper over Raylib and Raymath. Raygui is sparsely tested but probably usable if you know what you're doing; Lispification and examples are in progress.
 
 For `claylib`, you're best off reviewing the examples as a survey of what's done and what's not. 2D support is largely complete; 3D support is a bit more iffy. If any piece is particularly important to you, please file an [issue](https://github.com/defun-games/claylib/issues) and we will prioritize it!
 
@@ -46,11 +46,11 @@ The `with-window` macro initializes a new Raylib window and takes care of freein
 ```
 "Scenes" are a new concept in Claylib that don't really exist in Raylib. Scenes aim to make it easier to create groups of objects and assets, and allocate your memory up front wherever possible. Using scenes well will also maximize REPL interactivity while you develop your game; more on this in the `do-game-loop` section below. `make-scene` takes two lists -- a list of game **assets** and a list of game **objects**.
 
-**Assets** are where you load your models, textures, audio, etc. from files. You'll use these pre-loaded assets later, as components of this scene's game objects, background music, and so on. When defining an asset, you specify a path and can either pass `:load-now t` to load it immediately, or let `with-scene` do it automatically later on. Important note: Modifying an asset will modify all objects composed of that asset! This is usually discouraged.
+**Assets** are where you load your models, textures, audio, etc. from files. You'll use these pre-loaded assets later, as components of this scene's game objects, background music, and so on. When defining an asset, you specify a path and can either pass `:load-now t` to load it immediately, or let `with-scenes` do it automatically later on. Important note: Modifying an asset will modify all objects composed of that asset! This is usually discouraged.
 
 **Objects**, in a nutshell, are things that get drawn on the screen. Technically you can put things in here that can't be drawn, but there probably aren't many reasons to, and it could break your draw loop if you aren't careful. Sometimes you'll want to compose objects from an already defined asset, such as via `make-texture`.
 
-Under the hood, `make-scene` is a macro that includes a `let*` so you can reference previous bindings within the same definition. (This does mean, however, that the assets and objects share a namespace and must all have unique names.) In this case, `scene` will contain two game objects named `text` and `texture`, with the latter being formed from the asset `texass`.
+Under the hood, `make-scene` is a macro that includes a `let*` so you can reference previous bindings within the same definition. (This does mean, however, that the assets and objects share a namespace and must all have unique names.) In this case, `scene` will contain two game objects named `text` and `texture`, with the latter being formed from the asset `texass`. There is also a `:free` keyword you can pass, which is explained below.
 
 ### `make-whatever`
 ```
@@ -73,14 +73,14 @@ As mentioned above, `make-texture-asset` takes a required pathname and a `:load-
 
 `claylib` exports a number of `make-whatever` functions for these game objects, which you are recommended to use where available. Not every class has such a corresponding function yet.
 
-### `with-scene`
+### `with-scenes`
 ```
-(with-scene scene ()
+(with-scenes scene
   ...)
 ```
-The `with-scene` macro loads your scene assets if you passed any, and automatically frees your assets _and_ scene objects after the body returns.
+The `with-scenes` macro loads your scene assets if you passed any, and automatically frees your assets _and_ scene objects after the body returns, by default.
 
-"But wait," you say, "what if I don't want that stuff freed yet?" Well, now you know the purpose of that empty list there in the second argument. You can pass a single keyword argument, `:free`, as one of three values: `:now`, `:later`, or `:never`. The default is to free `:now`, where "now" is whenever you close out the current scene. Freeing `:later` pushes those objects to a `*garbage*` list, to be freed whenever you call `(collect-garbage)` (which may be at the end of the _next_ scene unless you change `:free` again). `:never` puts you in the land of manual memory management, for maximum control and minimum sanity.
+"But wait," you say, "what if I don't want that stuff freed yet?" Well, now you know the purpose of that `:free` argument to `make-scene`. You can pass a single keyword argument, `:free`, as one of three values: `:now`, `:later`, or `:never`. The default is to free `:now`, where "now" is whenever you close out the current scene. Freeing `:later` pushes those objects to a `*garbage*` list, to be freed whenever you call `(collect-garbage)` (which may be at the end of the _next_ scene unless you change `:free` again). `:never` puts you in the land of manual memory management, for maximum control and minimum sanity.
 
 ### `do-game-loop`
 ```
