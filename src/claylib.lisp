@@ -70,6 +70,7 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
      (claylib/ll:init-window ,width ,height ,title)
      (claylib/ll:set-target-fps ,fps)
      (setf +default-font+ (load-font-default))
+     (gui-load-style-default)
      ,(when flags
         `(claylib/ll:set-config-flags (reduce #'+ ,flags)))
      ,(when min-size
