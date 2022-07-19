@@ -37,10 +37,6 @@
                                                             (/ scarfy-width 6) scarfy-height
                                                             +red+
                                                             :filled nil))
-                               (red-outline (make-rectangle 0 0
-                                                            (/ scarfy-width 6) scarfy-height
-                                                            +red+
-                                                            :filled nil))
                                (frame-speed-text (make-text "FRAME SPEED: "
                                                             165 210
                                                             :size 10
@@ -66,9 +62,8 @@
       (with-scenes scene
         (do-game-loop (:livesupport t
                        :vars ((current-frame 0)
-                              (frames-counter 0)
+                              (frames-counter 0 (+ 1 frames-counter))
                               (frames-speed 8)))
-          (incf frames-counter)
 
           (when (>= frames-counter (truncate 60 frames-speed))
             (setf frames-counter 0)
