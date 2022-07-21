@@ -70,8 +70,16 @@
     (free-later (cdr obj))))
 
 (defun draw-scene (scene &rest names)
+  "Draw the objects in SCENE referred to by the symbols in NAMES."
   (dolist (obj names)
     (draw-object (scene-object scene obj))))
+
+(defun draw-objects (&rest objects)
+  "Draw the given OBJECTS.
+
+This is handy when the objects are in scope already, for example via WITH-SCENE-OBJECTS."
+  (dolist (obj objects)
+    (draw-object obj)))
 
 (defun draw-scene-all (scene)
   "Draw all the objects in the given SCENE."

@@ -14,11 +14,6 @@
                   16 16
                   *faded-black*))
 
-(defun draw-objects (&rest objects)
-  "Draw all given OBJECTS."
-  (dolist (obj objects)
-    (draw-object obj)))
-
 (defparameter *scene*
   (make-scene ()
               ((top-side-rec (make-side-rec))
