@@ -113,7 +113,8 @@
                    (:file "02-bouncing-ball")
                    (:file "03-colors-palette")
                    (:file "04-logo-raylib")
-                   (:file "05-logo-raylib-anim")))
+                   (:file "05-logo-raylib-anim")
+                   (:file "06-rectangle-scaling")))
                  (:module "textures"
                   :components
                   ((:file "01-logo-raylib")
