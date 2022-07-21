@@ -37,24 +37,29 @@
    (%end :type rl-vector2)
    (%thickness :initarg :thickness
                :type (or integer float)
-               :reader thickness)))
+               :reader thickness)
+   (%bezier :initarg :bezier
+            :type boolean
+            :accessor bezier)))
 
 (defwriter-float thickness line-2d)
 
-(definitializer-float line-2d thickness)
+(definitializer line-2d
+    (thickness number float) (bezier boolean nil))
 
 (default-slot-value line-2d %thickness 1.0)
+(default-slot-value line-2d %bezier nil)
 
-(defun make-line-2d (x1 y1 x2 y2 color &rest args &key thickness)
-  (declare (ignore thickness))
+(defun make-line-2d (x1 y1 x2 y2 color &rest args &key thickness bezier)
+  (declare (ignore thickness bezier))
   (apply #'make-instance 'line-2d
          :start (make-vector2 x1 y1)
          :end (make-vector2 x2 y2)
          :color color
          args))
 
-(defun make-line-2d-from-vecs (start end color &rest args &key thickness)
-  (declare (ignore thickness))
+(defun make-line-2d-from-vecs (start end color &rest args &key thickness bezier)
+  (declare (ignore thickness bezier))
   (apply #'make-instance 'line-2d
          :start start
          :end end
@@ -62,7 +67,10 @@
          args))
 
 (defmethod draw-object ((obj line-2d))
-  (claylib/ll:draw-line-ex (c-struct (start obj))
-                           (c-struct (end obj))
-                           (thickness obj)
-                           (c-struct (color obj))))
+  (funcall (if (bezier obj)
+               #'claylib/ll:draw-line-bezier
+               #'claylib/ll:draw-line-ex)
+           (c-struct (start obj))
+           (c-struct (end obj))
+           (thickness obj)
+           (c-struct (color obj))))
