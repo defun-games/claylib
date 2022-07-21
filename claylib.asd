@@ -80,7 +80,7 @@
   :license "zlib"
   :version "0.0.1"
   :serial t
-  :depends-on (#:claylib #:alexandria #:str)
+  :depends-on (#:claylib #:alexandria)
   :components ((:module "examples"
                 :components
                 ((:file "package")

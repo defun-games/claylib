@@ -1,6 +1,6 @@
 (in-package #:cl-user)
 (defpackage claylib/examples/shapes-5
-  (:use :cl :claylib :str)
+  (:use :cl :claylib)
   (:export :main))
 (in-package #:claylib/examples/shapes-5)
 
@@ -68,7 +68,7 @@
                           (decf alpha 0.02)
                           (when (<= alpha 0) (setf alpha 0
                                                    state 4)))
-                        (setf (text text) (substring 0 letters-count "raylib"))))
+                        (setf (text text) (subseq "raylib" 0 (min letters-count 6)))))
               ;; Reset and Replay
               (4 (when (is-key-pressed-p +key-r+)
                    (setf frames-counter 0
