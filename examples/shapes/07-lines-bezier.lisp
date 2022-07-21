@@ -14,8 +14,8 @@
                                    :thickness 2
                                    :bezier t)))))
 (defun main ()
-  (claylib/ll:set-config-flags +flag-msaa-4x-hint+)
-  (with-window (:title "raylib [shapes] example - cubic-bezier lines")
+  (with-window (:title "raylib [shapes] example - cubic-bezier lines"
+                :flags (list +flag-msaa-4x-hint+))
     (with-scenes *scene*
       (with-scene-objects (line) *scene*
         (do-game-loop (:livesupport t)
