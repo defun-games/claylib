@@ -114,7 +114,8 @@
                    (:file "03-colors-palette")
                    (:file "04-logo-raylib")
                    (:file "05-logo-raylib-anim")
-                   (:file "06-rectangle-scaling")))
+                   (:file "06-rectangle-scaling")
+                   (:file "07-lines-bezier")))
                  (:module "textures"
                   :components
                   ((:file "01-logo-raylib")
