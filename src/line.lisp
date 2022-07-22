@@ -40,26 +40,36 @@
                :reader thickness)
    (%bezier :initarg :bezier
             :type boolean
-            :accessor bezier)))
+            :accessor bezier)
+   (%control-pt :initarg :control-pt
+                :type vec
+                :accessor control-pt)
+   (%control-pt2 :initarg :control-pt2
+                 :type vec
+                 :accessor control-pt2)))
 
 (defwriter-float thickness line-2d)
 
 (definitializer line-2d
-    (thickness number float) (bezier boolean nil))
+    (thickness number float) (bezier boolean))
 
 (default-slot-value line-2d %thickness 1.0)
 (default-slot-value line-2d %bezier nil)
+(default-slot-value line-2d %control-pt nil)
+(default-slot-value line-2d %control-pt2 nil)
 
-(defun make-line-2d (x1 y1 x2 y2 color &rest args &key thickness bezier)
-  (declare (ignore thickness bezier))
+(defun make-line-2d (x1 y1 x2 y2 color
+                     &rest args &key thickness bezier control-pt control-pt2)
+  (declare (ignore thickness bezier control-pt control-pt2))
   (apply #'make-instance 'line-2d
          :start (make-vector2 x1 y1)
          :end (make-vector2 x2 y2)
          :color color
          args))
 
-(defun make-line-2d-from-vecs (start end color &rest args &key thickness bezier)
-  (declare (ignore thickness bezier))
+(defun make-line-2d-from-vecs (start end color
+                               &rest args &key thickness bezier control-pt control-pt2)
+  (declare (ignore thickness bezier control-pt control-pt2))
   (apply #'make-instance 'line-2d
          :start start
          :end end
@@ -67,10 +77,22 @@
          args))
 
 (defmethod draw-object ((obj line-2d))
-  (funcall (if (bezier obj)
-               #'claylib/ll:draw-line-bezier
-               #'claylib/ll:draw-line-ex)
-           (c-struct (start obj))
-           (c-struct (end obj))
-           (thickness obj)
-           (c-struct (color obj))))
+  (let* ((bezier (bezier obj))
+         (pt (control-pt obj))
+         (pt2 (control-pt2 obj))
+         (fn (cond ((and pt2 pt bezier) #'claylib/ll:draw-line-bezier-cubic)
+                   ((and pt bezier)     #'claylib/ll:draw-line-bezier-quad)
+                   (bezier              #'claylib/ll:draw-line-bezier)
+                   (t                   #'claylib/ll:draw-line-ex)))
+         (args (if pt
+                   (list (c-struct (start obj))
+                         (c-struct (end obj))
+                         (c-struct pt)
+                         (c-struct pt2)
+                         (thickness obj)
+                         (c-struct (color obj)))
+                   (list (c-struct (start obj))
+                         (c-struct (end obj))
+                         (thickness obj)
+                         (c-struct (color obj))))))
+    (apply fn args)))
