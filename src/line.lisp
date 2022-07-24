@@ -37,24 +37,39 @@
    (%end :type rl-vector2)
    (%thickness :initarg :thickness
                :type (or integer float)
-               :reader thickness)))
+               :reader thickness)
+   (%bezier :initarg :bezier
+            :type boolean
+            :accessor bezier)
+   (%control-pt :initarg :control-pt
+                :type vec
+                :accessor control-pt)
+   (%control-pt2 :initarg :control-pt2
+                 :type vec
+                 :accessor control-pt2)))
 
 (defwriter-float thickness line-2d)
 
-(definitializer-float line-2d thickness)
+(definitializer line-2d
+    (thickness number float) (bezier boolean))
 
 (default-slot-value line-2d %thickness 1.0)
+(default-slot-value line-2d %bezier nil)
+(default-slot-value line-2d %control-pt nil)
+(default-slot-value line-2d %control-pt2 nil)
 
-(defun make-line-2d (x1 y1 x2 y2 color &rest args &key thickness)
-  (declare (ignore thickness))
+(defun make-line-2d (x1 y1 x2 y2 color
+                     &rest args &key thickness bezier control-pt control-pt2)
+  (declare (ignore thickness bezier control-pt control-pt2))
   (apply #'make-instance 'line-2d
          :start (make-vector2 x1 y1)
          :end (make-vector2 x2 y2)
          :color color
          args))
 
-(defun make-line-2d-from-vecs (start end color &rest args &key thickness)
-  (declare (ignore thickness))
+(defun make-line-2d-from-vecs (start end color
+                               &rest args &key thickness bezier control-pt control-pt2)
+  (declare (ignore thickness bezier control-pt control-pt2))
   (apply #'make-instance 'line-2d
          :start start
          :end end
@@ -62,7 +77,16 @@
          args))
 
 (defmethod draw-object ((obj line-2d))
-  (claylib/ll:draw-line-ex (c-struct (start obj))
-                           (c-struct (end obj))
-                           (thickness obj)
-                           (c-struct (color obj))))
+  (with-accessors ((bezier bezier) (pt control-pt) (pt2 control-pt2) (thick thickness)) obj
+    (let ((method (cond ((and pt2 pt bezier) 0)
+                        ((and pt bezier)     1)
+                        (bezier              2)
+                        (t                   3)))
+          (start (c-struct (start obj)))
+          (end (c-struct (end obj)))
+          (color (c-struct (color obj))))
+      (case method
+        (0 (claylib/ll:draw-line-bezier-cubic start end (c-struct pt) (c-struct pt2) thick color))
+        (1 (claylib/ll:draw-line-bezier-quad start end (c-struct pt) thick color))
+        (2 (claylib/ll:draw-line-bezier start end thick color))
+        (3 (claylib/ll:draw-line-ex start end thick color))))))
