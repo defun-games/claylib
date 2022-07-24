@@ -13,6 +13,7 @@
                                    +red+
                                    :thickness 2
                                    :bezier t)))))
+
 (defun main ()
   (with-window (:title "raylib [shapes] example - cubic-bezier lines"
                 :flags (list +flag-msaa-4x-hint+))
