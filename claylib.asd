@@ -69,6 +69,7 @@
                              (:file "anim")
                              (:file "mesh")
                              (:file "model")
+                             (:file "billboard")
                              (:file "claylib")
                              (:file "scene")
                              (:file "pt-functions")
@@ -126,4 +127,7 @@
                  (:module "gui"
                   :components
                   ((:file "portable-window")
-                   (:file "scroll-panel")))))))
+                   (:file "scroll-panel")))
+                 (:module "models"
+                  :components
+                  ((:file "02-billboard")))))))
