@@ -127,4 +127,7 @@
                  (:module "gui"
                   :components
                   ((:file "portable-window")
-                   (:file "scroll-panel")))))))
+                   (:file "scroll-panel")))
+                 (:module "models"
+                  :components
+                  ((:file "02-billboard")))))))
