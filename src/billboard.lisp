@@ -14,9 +14,9 @@
    (%source :initarg :source
             :type rl-rectangle
             :accessor source)
-   ;; TODO review: is it reasonable to reuse rot-axis as the "up" vector? It's not that clear but
-   ;; inheriting most behaviour from game-obect is convenient
-   (%rot-axis :documentation "The vector which defines the \"up\" direction for this billboard.")
+   (%rot-axis :initarg :up
+              :accessor up
+              :documentation "The vector which defines the \"up\" direction for this billboard.")
    (%rot-angle :documentation "The counter-clockwise rotation of the billboard (as it appears to the
 camera).")
    (%origin :initarg :origin
@@ -33,13 +33,16 @@ camera).")
 (defwriter y-scale 3d-object x size number)
 (defwriter x-scale 3d-object y size number)
 
+(definitializer billboard
+    (up rl-vector3 nil))
+
 (default-slot-value billboard %origin (make-vector3 0 0 0))
 (default-slot-value billboard %tint +white+)
 (default-slot-value billboard %rot-axis (make-vector3 0 1 0))
 
 (defun make-billboard (texture-asset camera x y z x-scale y-scale source
-                       &rest args &key rot-axis rot-angle origin tint)
-  (declare (ignore rot-axis rot-angle origin tint))
+                       &rest args &key up rot-angle origin tint)
+  (declare (ignore up rot-angle origin tint))
   (load-asset texture-asset)
   (apply #'make-instance 'billboard
          :allow-other-keys t
