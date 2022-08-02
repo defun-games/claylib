@@ -24,7 +24,7 @@
 
 (defun make-simple-rec (x y width height)
   "Make an RL-RECTANGLE for non-drawable uses such as defining a source or dest rectangle."
-  (make-instance 'rl-rectangle :x x :y x :width width :height height))
+  (make-instance 'rl-rectangle :x x :y y :width width :height height))
 
 
 
