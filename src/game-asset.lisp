@@ -108,6 +108,11 @@
      (claylib/ll:load-model (c-asset asset) (namestring (path asset)))))
   asset)
 
+(defun make-model-asset (path &key (load-now nil))
+  (make-instance 'model-asset
+                 :path path
+                 :load-now load-now))
+
 
 
 (defclass shader-asset (game-asset)

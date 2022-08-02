@@ -53,21 +53,40 @@
 
 
 (defclass model (rl-model 3d-object)
-  ((%scale :initarg :scale
+  ((%asset :initarg :asset
+           :type model-asset
+           :accessor asset)
+   (%scale :initarg :scale
            :type rl-vector3
            :accessor scale)
    (%tint :initarg :tint
           :type rl-color
           :accessor tint)))
 
+(defreader c-asset model c-asset asset)
 (definitializer model (scale rl-vector3 nil) (tint rl-color nil))
+
+(default-slot-value model %scale (make-vector3 1 1 1))
+(default-slot-value model %tint +white+)
+(default-slot-value model %rot-angle 0.0)
+(default-slot-value model %rot-axis (make-vector3 0 1 0))
+
+(defun make-model (model-asset x y z
+                   &rest args &key scale tint rot-angle rot-axis)
+  "Make a model ready for drawing. Loads MODEL-ASSET when not already loaded."
+  (declare (ignore scale tint rot-angle rot-axis))
+  (load-asset model-asset)
+  (apply #'make-instance 'model
+         :asset model-asset
+         :pos (make-vector3 x y z)
+         args))
 
 (defmethod free ((obj model))
   (free (scale obj))
   (call-next-method))
 
 (defmethod draw-object ((obj model))
-  (claylib/ll:draw-model-ex (c-struct obj)
+  (claylib/ll:draw-model-ex (c-asset obj)
                             (c-struct (pos obj))
                             (c-struct (rot-axis obj))
                             (rot-angle obj)
