@@ -4,13 +4,9 @@
   (:export :main))
 (in-package #:claylib/examples/models-2)
 
-(defun pathname-from-relative-path (path)
-  "Return a pathname from a path relative to the claylib project root."
-  (asdf:system-relative-pathname :claylib path))
-
 (defparameter *assets*
-  (list (make-texture-asset (pathname-from-relative-path
-                           "examples/models/resources/billboard.png"))))
+  (list (make-texture-asset (claylib/examples:claylib-path
+                             "examples/models/resources/billboard.png"))))
 
 (defparameter *scene*
   (make-scene ((bill-ass (car *assets*)))

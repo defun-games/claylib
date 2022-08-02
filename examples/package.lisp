@@ -1,2 +1,3 @@
 (defpackage #:claylib/examples
-  (:use #:cl #:claylib))
+  (:use #:cl #:claylib)
+  (:export :claylib-path))

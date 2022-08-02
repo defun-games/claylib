@@ -85,6 +85,7 @@
   :components ((:module "examples"
                 :components
                 ((:file "package")
+                 (:file "helpers")
                  (:module "core"
                   :components
                   ((:file "01-window")
