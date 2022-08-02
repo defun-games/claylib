@@ -52,7 +52,7 @@
 
 
 
-(defclass model (rl-model 3d-object)
+(defclass model (3d-object)
   ((%asset :initarg :asset
            :type model-asset
            :accessor asset)
