@@ -22,6 +22,10 @@
 (default-free rl-rectangle)
 (default-free-c claylib/ll:rectangle)
 
+(defun make-simple-rec (x y width height)
+  "Make an RL-RECTANGLE for non-drawable uses such as defining a source or dest rectangle."
+  (make-instance 'rl-rectangle :x x :y x :width width :height height))
+
 
 
 (defclass rectangle (rl-rectangle 2d-shape)
