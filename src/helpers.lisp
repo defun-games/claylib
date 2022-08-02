@@ -17,7 +17,7 @@ Example usage:
 
 (defcreader rot rl-camera-2d rotation camera2d)
 
-'To read the ROT value of a CAMERA-2D, read the ROTATION value of the CAMERA2D struct backing it.'
+'To read the ROT value of an RL-CAMERA-2D, read the ROTATION value of the CAMERA2D struct backing it.'
 If CAMERA2D is a CLOS object, you need DEFREADER."
   (let ((obj (gensym))
         (c-reader (intern (format nil "~:@a.~:@a" c-type c-slot) 'claylib/ll)))
@@ -53,7 +53,7 @@ Example usage:
 
 (defcwriter rot rl-camera-2d rotation camera2d number float)
 
-'To set the ROT value of a CAMERA-2D, set the ROTATION value of the CAMERA2D struct backing it. 
+'To set the ROT value of an RL-CAMERA-2D, set the ROTATION value of the CAMERA2D struct backing it.
 Oh yeah, and make sure it's a float.' If CAMERA2D is a CLOS object, you need DEFWRITER."
   (let ((value (gensym))
         (obj (gensym))
