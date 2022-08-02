@@ -27,11 +27,11 @@ camera).")
           :accessor tint)))
 
 (defreader c-asset billboard c-asset asset)
-(defreader y-scale 3d-object x size)
-(defreader x-scale 3d-object y size)
+(defreader y-scale billboard x size)
+(defreader x-scale billboard y size)
 
-(defwriter y-scale 3d-object x size number)
-(defwriter x-scale 3d-object y size number)
+(defwriter y-scale billboard x size number)
+(defwriter x-scale billboard y size number)
 
 (definitializer billboard
     (up rl-vector3 nil))
