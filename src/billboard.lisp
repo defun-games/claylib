@@ -50,6 +50,12 @@ camera).")
          :source source
          args))
 
+(defmethod free ((obj billboard))
+  (free (size obj))
+  (free (source obj))
+  (free (origin obj))
+  (call-next-method))
+
 (defmethod draw-object ((obj billboard))
   (claylib/ll:draw-billboard-pro (c-struct (camera obj))
                                  (c-asset obj)
