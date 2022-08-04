@@ -29,7 +29,7 @@
    :gui-slider-bar :gui-progress-bar :gui-status-bar :gui-dummy-rec :gui-scroll-bar :gui-grid
    :gui-list-view :gui-list-view-ex :gui-message-box :gui-text-input-box :gui-color-picker :gui-color-panel
    :gui-color-bar-alpha :gui-color-bar-hue :gui-draw-icon :gui-check-icon-pixel
-   
+
    ;; Misc.
    :get-mouse-position :get-mouse-ray :get-ray-collision-box :load-render-texture :with-texture-mode
    :draw-grid :draw-text :draw-rectangle :draw-circle :draw-cube :update-camera :gen-mesh-cylinder
@@ -96,7 +96,7 @@
    :with-scissor-mode :make-zero-matrix :is-window-state-p :make-triangle :make-triangle-from-vecs
    :make-texture :make-texture-from-rec :make-empty-texture :make-texture-asset :get-gesture-detected
    :is-mouse-button-released-p :make-polygon :make-font :make-image-asset :make-pixel :make-image
-   :make-simple-rec
+   :make-simple-rec :make-billboard
 
    ;; Scenes
    :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
@@ -105,7 +105,7 @@
    ;; Generic functions/methods
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
    :hit :low :high :r :g :b :a :dest :filter :origin :source :tint :radius :x3 :y3 :v1 :v2 :v3
-   :load-asset :filled :font :size :spacing :asset :start :end :bezier
+   :load-asset :filled :font :size :spacing :asset :start :end :bezier :up :x-scale :y-scale
 
    ;; Math
    :vector2-subtract :vector2-add :vector2-scale :vector2-length
@@ -114,7 +114,7 @@
 
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps* :+claylib-directory+
-   
+
    ;; Misc
    :draw-fps :get-random-value :get-frame-time :measure-text :get-mouse-ray :get-ray-collision-box
    :+flag-window-resizable+ :+flag-vsync-hint+ :load-render-texture :+texture-filter-bilinear+
@@ -159,7 +159,7 @@
    ;; Icons functionality
    :gui-icon-text :gui-draw-icon :gui-get-icons :gui-get-icon-data :gui-set-icon-data :gui-set-icon-pixel
    :gui-clear-icon-pixel :gui-check-icon-pixel
-   
+
    ;; Constants
    :+scrollbar+ :+border-width+ :+arrows-size+ :+slider-padding+ :+arrows-visible+ :+slider-width+
    :+listview+ :+scrollbar-side+ :+scrollbar-left-side+ :+scrollbar-right-side+ :+scrollbar-width+
