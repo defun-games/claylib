@@ -12,9 +12,7 @@
                                              :load-now t))
            (frame-width (/ (width scarfy-asset) 6))
            (frame-height (height scarfy-asset))
-           (source-rec (make-rectangle 0 0
-                                       frame-width frame-height
-                                       +black+))
+           (source-rec (make-simple-rec 0 0 frame-width frame-height))
            (screen-midpoint (make-vector2 (/ (get-screen-width) 2)
                                           (/ (get-screen-height) 2)))
            (scene (make-scene ()

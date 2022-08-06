@@ -10,13 +10,6 @@
   (make-scene () ((text (make-text "[99.0, -20.0]" 4 4 :size 20 :color +red+))
                   (rec (make-rectangle 119 20 340 340 (fade +red+ 0.1 t))))))
 
-(defun make-simple-rec (x y width height)
-  (make-instance 'rl-rectangle
-                 :x x
-                 :y y
-                 :width width
-                 :height height))
-
 (defun initialize-recs ()
   (setf (gethash 'group-box-1 *recs*) (make-simple-rec 550 170 220 205)
         (gethash 'label1 *recs*) (make-simple-rec 555 195 110 10)

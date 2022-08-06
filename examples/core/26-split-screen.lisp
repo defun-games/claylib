@@ -19,10 +19,9 @@
                                                 (get-screen-height)))
            (screen-player2 (load-render-texture (/ (get-screen-width) 2)
                                                 (get-screen-height)))
-           (split-screen-rect (make-instance 'rl-rectangle
-                                             :x 0 :y 0
-                                             :width (/ (get-screen-width) 2)
-                                             :height (- (get-screen-height))))
+           (split-screen-rect (make-simple-rec 0 0
+                                               (/ (get-screen-width) 2)
+                                               (- (get-screen-height))))
            (scene (make-scene ()
                               ((ground (make-plane 0 0 0 50 50 +beige+))
                                (player1 (make-cube 0 1 -3

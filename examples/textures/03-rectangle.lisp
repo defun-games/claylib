@@ -20,11 +20,10 @@
                                                           :tint +white+))
                                (scarfy-frame (make-texture scarfy-asset
                                                            350 280
-                                                           :source (make-rectangle
+                                                           :source (make-simple-rec
                                                                     0 0
                                                                     (/ scarfy-width 6)
-                                                                    scarfy-height
-                                                                    +black+)
+                                                                    scarfy-height)
                                                            :width (/ scarfy-width 6)
                                                            :height scarfy-height
                                                            :tint +white+))
