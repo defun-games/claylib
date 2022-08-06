@@ -23,9 +23,7 @@
          (y (-  (truncate (get-screen-height) 2)
                 (truncate (height texture) 2)
                 40))
-         (dest (make-rectangle x y
-                               (width texture) (height texture)
-                               +white+)))
+         (dest (make-simple-rec x y (width texture) (height texture))))
     (setf (dest texture) dest)))
 
 (defun draw-shapes (image)
