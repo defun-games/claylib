@@ -90,14 +90,14 @@
             (with-3d-mode camera-player1
               (draw-scene scene 'ground)
               (draw-scene-regex scene "^TREE")
-              (draw-scene scene 'player1))
+              (draw-scene scene 'player2))
             (draw-scene scene 'text-player1))
 
           (with-texture-mode (screen-player2 :clear +skyblue+)
             (with-3d-mode camera-player2
               (draw-scene scene 'ground)
               (draw-scene-regex scene "^TREE")
-              (draw-scene scene 'player2))
+              (draw-scene scene 'player1))
             (draw-scene scene 'text-player2))
 
           (with-drawing (:bgcolor +black+)
