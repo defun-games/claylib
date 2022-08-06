@@ -20,5 +20,5 @@
                                                 :color +gray+))))))
       (with-scenes scene
         (do-game-loop (:livesupport t)
-          (with-drawing
+          (with-drawing ()
             (draw-scene-all scene)))))))

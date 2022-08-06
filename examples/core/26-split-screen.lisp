@@ -100,6 +100,5 @@
               (draw-scene scene 'player2))
             (draw-scene scene 'text-player2))
 
-          (let ((*claylib-background* +black+))
-            (with-drawing
-              (draw-scene scene 'texture-player1 'texture-player2))))))))
+          (with-drawing (:bgcolor +black+)
+            (draw-scene scene 'texture-player1 'texture-player2)))))))

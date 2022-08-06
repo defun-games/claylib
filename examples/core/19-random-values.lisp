@@ -22,5 +22,5 @@
             (setf rand-value (get-random-value -8 5)
                   (text (scene-object scene 'num)) (format nil "~d" rand-value)
                   frames-counter 0))
-          (with-drawing
+          (with-drawing ()
             (draw-scene-all scene)))))))

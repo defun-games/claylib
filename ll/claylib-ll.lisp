@@ -108,11 +108,11 @@
      (end-drawing)))
 
 
-(defmacro with-drawing (&body body)
+(defmacro with-drawing ((&key (bgcolor *claylib-background*)) &body body)
   "Provides a simple Raylib-ready construct for drawing."
   `(progn
      (begin-drawing)
-     (clear-background *claylib-background*)
+     (clear-background ,bgcolor)
      ,@body
      (end-drawing)))
 
@@ -131,11 +131,11 @@
      ,@body
      (end-mode3d)))
 
-(defmacro with-texture-mode (texture &body body)
+(defmacro with-texture-mode ((texture &key (bgcolor *claylib-background*)) &body body)
   "Provides a simple Raylib-ready construct for texture mode."
   `(progn
      (begin-texture-mode ,texture)
-     (clear-background *claylib-background*)
+     (clear-background ,bgcolor)
      ,@body
      (end-texture-mode)))
 

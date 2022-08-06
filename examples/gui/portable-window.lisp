@@ -50,7 +50,7 @@
             (when (is-mouse-button-released-p +mouse-button-left+)
               (setf drag-window nil))
             (set-window-pos window-pos))
-          (with-drawing
+          (with-drawing ()
             (setf exit-window (gui-window-box exit-window-rec "#198# PORTABLE WINDOW")
                   (text (scene-object *scene* 'text)) (format nil
                                                               "Mouse Position: [ ~d, ~d ]"

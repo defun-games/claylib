@@ -110,6 +110,5 @@ and see the screen scaling!"
             (with-texture-mode (target)
               (draw-scene-regex scene "^RECT")
               (draw-scene-regex scene "^TEXT"))
-            (let ((*claylib-background* +black+))
-              (with-drawing
-                (draw-object (texture target))))))))))
+            (with-drawing (:bgcolor +black+)
+              (draw-object (texture target)))))))))

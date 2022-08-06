@@ -27,5 +27,5 @@
                   (text text) (format nil "[~a,~a]" (x ball) (y ball))
                   color (colorize color)
                   (color ball) color)
-            (with-drawing
+            (with-drawing ()
               (draw-scene-all scene))))))))

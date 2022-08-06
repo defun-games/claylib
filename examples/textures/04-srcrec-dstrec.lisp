@@ -44,5 +44,5 @@
         (do-game-loop (:livesupport t)
           (incf (rot (scene-object scene 'scarfy)))
 
-          (with-drawing
+          (with-drawing ()
             (draw-scene-all scene)))))))

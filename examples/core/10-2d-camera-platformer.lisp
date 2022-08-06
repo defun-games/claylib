@@ -223,8 +223,7 @@
       (with-scenes scene
         (do-game-loop (:livesupport t)
           (let ((delta (get-frame-time))
-                (player (scene-object scene 'player))
-                (*claylib-background* +lightgray+))
+                (player (scene-object scene 'player)))
             (update-player player env-items delta)
             (incf (zoom camera) (* (get-mouse-wheel-move) 0.05))
             (cond ((> (zoom camera) 3.0) (setf (zoom camera) 3.0))
@@ -260,7 +259,7 @@
                                                                      *screen-width*
                                                                      *screen-height*)))
             (setf (text (scene-object scene 't7)) (mode-desc camera))
-            (with-drawing
+            (with-drawing (:bgcolor +lightgray+)
               (with-2d-mode camera
                 (draw-scene-regex scene "^ENV-ITEM")
                 (draw-scene scene 'player))

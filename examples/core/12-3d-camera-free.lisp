@@ -47,7 +47,7 @@
             (setf (x (target camera)) 0
                   (y (target camera)) 0
                   (z (target camera)) 0))
-          (with-drawing
+          (with-drawing ()
             (with-3d-mode camera
               (draw-scene scene 'cube 'wires 'grid))
             (draw-scene scene

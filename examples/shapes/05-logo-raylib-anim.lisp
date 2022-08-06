@@ -80,7 +80,7 @@
             (fade *faded-black* alpha)
             (fade *faded-white* alpha)
 
-            (with-drawing
+            (with-drawing ()
               (case state
                 (0 (when (= 0 (mod (truncate frames-counter 15) 2))
                      (draw-object top-side-rec)))

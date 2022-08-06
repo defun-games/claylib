@@ -66,7 +66,7 @@
           (quaternion-to-euler q1 :vec v2)
           (matrix-rotate-zyx v2 :matrix m4)
 
-          (with-drawing
+          (with-drawing ()
             (with-3d-mode camera
               (let ((model (scene-object scene 'model)))
                 (set-slot :transform model m1)

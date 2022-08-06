@@ -37,4 +37,5 @@
           (setf (text (scene-object scene 'text1)) (format nil "SCORE: ~d" score)
                 (text (scene-object scene 'text2)) (format nil "HI-SCORE: ~d" hiscore)
                 (text (scene-object scene 'text3)) (format nil "frames: ~d" frames-counter))
-          (with-drawing (draw-scene-all scene)))))))
+          (with-drawing ()
+            (draw-scene-all scene)))))))

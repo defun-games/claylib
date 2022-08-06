@@ -53,4 +53,5 @@
         (when (or (and (next-screen) (not (eql (car scenes) *logo*)))
                   (and (eql (car scenes) *logo*) (> frame-count (* 2 *target-fps*))))
           (setf scenes (cdr scenes)))
-        (with-drawing (draw-scene-all (car scenes)))))))
+        (with-drawing ()
+          (draw-scene-all (car scenes)))))))

@@ -32,7 +32,7 @@
                   (y outline) (y scissor-area)
                   (width outline) (width scissor-area)
                   (height outline) (height scissor-area)))
-          (with-drawing
+          (with-drawing ()
             (if scissor-mode
                 (with-scissor-mode (truncate (x scissor-area)) (truncate (y scissor-area))
                     (truncate (width scissor-area)) (truncate (height scissor-area))

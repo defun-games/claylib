@@ -31,5 +31,5 @@
       (with-scenes scene
         (do-game-loop (:livesupport t)
           (move-ball (scene-object scene 'ball))
-          (with-drawing
+          (with-drawing ()
             (draw-scene-all scene)))))))

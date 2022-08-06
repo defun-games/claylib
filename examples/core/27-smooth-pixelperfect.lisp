@@ -69,9 +69,8 @@
             (with-2d-mode world-space-camera
               (draw-scene-regex scene "^REC[0-9]")))
 
-          (let ((*claylib-background* +red+))
-            (with-drawing
-              (with-2d-mode screen-space-camera
-                (draw-scene scene 'tex))
-              (draw-scene scene 'text1 'text2)
-              (draw-fps (- (get-screen-width) 95) 10))))))))
+          (with-drawing (:bgcolor +red+)
+            (with-2d-mode screen-space-camera
+              (draw-scene scene 'tex))
+            (draw-scene scene 'text1 'text2)
+            (draw-fps (- (get-screen-width) 95) 10)))))))

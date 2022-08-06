@@ -29,6 +29,14 @@
   "Set background to COLOR or *CLAYLIB-BACKGROUND* by default."
   (claylib/ll:clear-background (c-struct color)))
 
+(defmacro with-drawing ((&key (bgcolor *claylib-background*)) &body body)
+  "Convenience macro around double-buffer drawing."
+  `(progn
+     (begin-drawing)
+     (clear-background :color ,bgcolor)
+     ,@body
+     (end-drawing)))
+
 (defmacro with-texture-mode ((render-texture &key (clear *claylib-background*)) &body body)
   "Execute BODY while drawing to the given RENDER-TEXTURE. CLEAR is the RL-COLOR to set the initial
 background of the render texture, or NIL to skip clearing."

@@ -22,5 +22,5 @@
           (with-scene-objects (box subtext) scene
             (decf (y box) (* (get-mouse-wheel-move) 4))
             (setf (text subtext) (format nil "Box position Y: ~$" (y box))))
-          (with-drawing
+          (with-drawing ()
             (draw-scene-all scene)))))))

@@ -89,5 +89,5 @@
                          (setf (color rec) +maroon+
                                (filled rec) nil))))
 
-          (with-drawing
+          (with-drawing ()
             (draw-scene-all scene)))))))

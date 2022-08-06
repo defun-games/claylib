@@ -73,7 +73,7 @@
           (get-mouse-position :vec mouse-point)
 
           (with-scene-objects (crecs lrecs orecs tlabels text text-space) scene
-            (with-drawing
+            (with-drawing ()
               (draw-object text)
               (draw-object text-space)
               (loop for rect in crecs

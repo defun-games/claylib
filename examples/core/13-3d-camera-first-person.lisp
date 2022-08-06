@@ -50,7 +50,7 @@
       (with-scenes scene
         (do-game-loop (:livesupport t)
           (update-camera camera)
-          (with-drawing
+          (with-drawing ()
             (with-3d-mode camera
               (draw-scene scene 'ground 'blue 'green 'yellow)
               (draw-scene-regex scene "^COLUMN"))

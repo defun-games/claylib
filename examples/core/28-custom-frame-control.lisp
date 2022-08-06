@@ -98,7 +98,7 @@ independently of the frame rate."
 
           ;; Draw
           ;; ---------------------------------
-          (with-drawing
+          (with-drawing ()
             (draw-scene-all scene))
 
           (swap-screen-buffer)

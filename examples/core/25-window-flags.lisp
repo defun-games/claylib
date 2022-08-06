@@ -101,55 +101,54 @@
                       (<= (y ball) (radius ball)))
               (setf (y (spd ball)) (- (y (spd ball))))))
 
-          (let ((*claylib-background* (if (is-window-state-p +flag-window-transparent+)
-                                          +blank+
-                                          +raywhite+)))
-            (with-drawing
-              (setf (width (scene-object scene 'rect)) (get-screen-width)
-                    (height (scene-object scene 'rect)) (get-screen-height)
-                    (text (scene-object scene 'header))
-                    (format nil "Screen size: [~d, ~d]" (get-screen-width) (get-screen-height)))
-              (get-mouse-position :vec (pos (scene-object scene 'mouse)))
-              (adjust-text +flag-fullscreen-mode+
-                           (scene-object scene 'flag-fullscreen)
-                           "[F] FLAG_FULLSCREEN_MODE")
-              (adjust-text +flag-window-resizable+
-                           (scene-object scene 'flag-resizable)
-                           "[R] FLAG_WINDOW_RESIZABLE")
-              (adjust-text +flag-window-undecorated+
-                           (scene-object scene 'flag-undecorated)
-                           "[D] FLAG_WINDOW_UNDECORATED")
-              (adjust-text +flag-window-hidden+
-                           (scene-object scene 'flag-hidden)
-                           "[H] FLAG_WINDOW_HIDDEN")
-              (adjust-text +flag-window-minimized+
-                           (scene-object scene 'flag-minimized)
-                           "[N] FLAG_WINDOW_MINIMIZED")
-              (adjust-text +flag-window-maximized+
-                           (scene-object scene 'flag-maximized)
-                           "[M] FLAG_WINDOW_MAXIMIZED")
-              (adjust-text +flag-window-unfocused+
-                           (scene-object scene 'flag-unfocused)
-                           "[G] FLAG_WINDOW_UNFOCUSED")
-              (adjust-text +flag-window-topmost+
-                           (scene-object scene 'flag-topmost)
-                           "[T] FLAG_WINDOW_TOPMOST")
-              (adjust-text +flag-window-always-run+
-                           (scene-object scene 'flag-always-run)
-                           "[A] FLAG_WINDOW_ALWAYS_RUN")
-              (adjust-text +flag-vsync-hint+
-                           (scene-object scene 'flag-vsync-hint)
-                           "[V] FLAG_VSYNC_HINT")
-              (adjust-text +flag-window-highdpi+
-                           (scene-object scene 'flag-highdpi)
-                           "FLAG_WINDOW_HIGHDPI")
-              (adjust-text +flag-window-transparent+
-                           (scene-object scene 'flag-transparent)
-                           "FLAG_WINDOW_TRANSPARENT")
-              (adjust-text +flag-msaa-4x-hint+
-                           (scene-object scene 'flag-msaa-4x-hint)
-                           "FLAG_MSAA_4X_HINT")
+          (with-drawing (:bgcolor (if (is-window-state-p +flag-window-transparent+)
+                                      +blank+
+                                      +raywhite+))
+            (setf (width (scene-object scene 'rect)) (get-screen-width)
+                  (height (scene-object scene 'rect)) (get-screen-height)
+                  (text (scene-object scene 'header))
+                  (format nil "Screen size: [~d, ~d]" (get-screen-width) (get-screen-height)))
+            (get-mouse-position :vec (pos (scene-object scene 'mouse)))
+            (adjust-text +flag-fullscreen-mode+
+                         (scene-object scene 'flag-fullscreen)
+                         "[F] FLAG_FULLSCREEN_MODE")
+            (adjust-text +flag-window-resizable+
+                         (scene-object scene 'flag-resizable)
+                         "[R] FLAG_WINDOW_RESIZABLE")
+            (adjust-text +flag-window-undecorated+
+                         (scene-object scene 'flag-undecorated)
+                         "[D] FLAG_WINDOW_UNDECORATED")
+            (adjust-text +flag-window-hidden+
+                         (scene-object scene 'flag-hidden)
+                         "[H] FLAG_WINDOW_HIDDEN")
+            (adjust-text +flag-window-minimized+
+                         (scene-object scene 'flag-minimized)
+                         "[N] FLAG_WINDOW_MINIMIZED")
+            (adjust-text +flag-window-maximized+
+                         (scene-object scene 'flag-maximized)
+                         "[M] FLAG_WINDOW_MAXIMIZED")
+            (adjust-text +flag-window-unfocused+
+                         (scene-object scene 'flag-unfocused)
+                         "[G] FLAG_WINDOW_UNFOCUSED")
+            (adjust-text +flag-window-topmost+
+                         (scene-object scene 'flag-topmost)
+                         "[T] FLAG_WINDOW_TOPMOST")
+            (adjust-text +flag-window-always-run+
+                         (scene-object scene 'flag-always-run)
+                         "[A] FLAG_WINDOW_ALWAYS_RUN")
+            (adjust-text +flag-vsync-hint+
+                         (scene-object scene 'flag-vsync-hint)
+                         "[V] FLAG_VSYNC_HINT")
+            (adjust-text +flag-window-highdpi+
+                         (scene-object scene 'flag-highdpi)
+                         "FLAG_WINDOW_HIGHDPI")
+            (adjust-text +flag-window-transparent+
+                         (scene-object scene 'flag-transparent)
+                         "FLAG_WINDOW_TRANSPARENT")
+            (adjust-text +flag-msaa-4x-hint+
+                         (scene-object scene 'flag-msaa-4x-hint)
+                         "FLAG_MSAA_4X_HINT")
 
-              (draw-scene scene 'ball 'rect 'mouse 'header 'subheader1 'subheader2)
-              (draw-fps 10 10)
-              (draw-scene-regex scene "^FLAG-"))))))))
+            (draw-scene scene 'ball 'rect 'mouse 'header 'subheader1 'subheader2)
+            (draw-fps 10 10)
+            (draw-scene-regex scene "^FLAG-")))))))

@@ -158,7 +158,7 @@
               (setf show-save-message nil
                     save-message-counter 0))
 
-            (with-drawing
+            (with-drawing ()
               ;; Draw render texture
               (draw-object (texture target))
 

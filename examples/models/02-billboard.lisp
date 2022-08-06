@@ -29,6 +29,6 @@
       (with-scenes *scene*
         (do-game-loop (:livesupport t)
           (update-camera *cam*)
-          (with-drawing
+          (with-drawing ()
             (with-3d-mode *cam* (draw-scene-all *scene*))
             (draw-fps 10 10)))))))

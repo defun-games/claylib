@@ -22,7 +22,7 @@
                                                   :size 20 :color +darkgray+))))))
       (with-scenes scene
         (do-game-loop (:livesupport t)
-          (with-drawing
+          (with-drawing ()
             (with-3d-mode camera
               (draw-scene-except scene 'text))
             (draw-scene scene 'text)

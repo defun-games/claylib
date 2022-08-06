@@ -59,7 +59,7 @@
                         (z (high bbox)) (+ (z cube) half-l))
                   (get-mouse-ray (get-mouse-position :vec mouse-pos) camera :ray ray)
                   (get-ray-collision-box ray bbox :rc collision))))
-          (with-drawing
+          (with-drawing ()
             (with-3d-mode camera
               (if (hit collision)
                   (progn

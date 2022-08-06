@@ -75,6 +75,6 @@
             (when (is-mouse-button-released-p +mouse-button-left+)
               (setf mouse-scale-mode nil)))
 
-          (with-drawing
+          (with-drawing ()
             (draw-scene-except *scene* 'mark-outline 'mark)
             (when mouse-scale-ready (draw-scene *scene* 'mark-outline 'mark))))))))

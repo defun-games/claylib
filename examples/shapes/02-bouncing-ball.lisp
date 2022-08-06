@@ -67,7 +67,7 @@ components of the BALL's SPEED."
                   (bounce-ball ball (get-screen-width) (get-screen-height)))
                 (incf frames-counter))
 
-            (with-drawing
+            (with-drawing ()
               (if (and pause (= 0 (mod (truncate frames-counter 30) 2)))
                   (draw-scene-all scene)
                   (draw-scene-except scene 'text-pause))

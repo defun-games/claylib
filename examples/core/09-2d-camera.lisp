@@ -75,7 +75,7 @@
           (when (is-key-pressed-p +key-r+)
             (setf (zoom camera) 1.0
                   (rot camera) 0.0))
-          (with-drawing
+          (with-drawing ()
             (with-2d-mode camera
               (draw-scene scene 'ground)
               (draw-scene-regex scene "^BUILDING")

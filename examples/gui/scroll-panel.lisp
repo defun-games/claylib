@@ -87,7 +87,7 @@
       (with-scenes *scene*
         (do-game-loop (:livesupport t)
           ;; TODO: Update logic???
-          (with-drawing
+          (with-drawing ()
             (draw-scene *scene* 'text)
             (gui-scroll-panel panel-rec panel-content-rec panel-scroll :rec view)
             (with-scissor-mode

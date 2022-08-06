@@ -25,4 +25,5 @@
               (when (is-mouse-button-down-p +mouse-button-right+)
                 (setf (end line) (get-mouse-position))))
 
-          (with-drawing (draw-scene-all *scene*)))))))
+          (with-drawing ()
+            (draw-scene-all *scene*)))))))

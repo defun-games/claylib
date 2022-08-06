@@ -93,9 +93,9 @@ As for `:livesupport`: `claylib` uses the excellent [livesupport](https://github
 
 ### `with-drawing`
 ```
-(with-drawing ...)
+(with-drawing () ...)
 ```
-A simple macro that encloses the body in a drawing mode, clearing the `*claylib-background*` color at the beginning. Other similar macros:
+A simple macro that encloses the body in a drawing mode. By default it clears the `*claylib-background*` color at the beginning, or you can pass :bgcolor in the parens to clear a different one. Other similar macros:
 - `with-2d-mode`
 - `with-3d-mode`
 - `with-texture-mode`

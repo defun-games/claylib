@@ -44,7 +44,7 @@
           (get-world-to-screen-3d invec camera :vec outvec)
           (setf (x (scene-object scene 'text1)) (- (x outvec) half-text)
                 (y (scene-object scene 'text1)) (y outvec))
-          (with-drawing
+          (with-drawing ()
             (with-3d-mode camera
               (draw-scene scene 'cube 'outline 'grid))
             (draw-scene scene 'text1 'text2)))))))
