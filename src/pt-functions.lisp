@@ -40,10 +40,37 @@ unless ALLOCATE-P is T."
   "Get the current mouse position as a RL-VECTOR2. Allocates a new RL-VECTOR2 unless you pass one."
   (vec rl-vector2 nil (make-vector2 0 0)))
 
-;; Camera System Functions (Module: rcamera)
+;;; Camera System Functions (Module: rcamera)
 
 (defun update-camera (camera)
   (claylib/ll:update-camera (c-struct camera)))
+
+
+
+;;; Basic Shapes Drawing Functions (Module: shapes)
+
+;; Basic shapes collision detection functions
+
+(defun-pt-bool check-collision-recs claylib/ll:check-collision-recs
+  "Check collision between two rectangles."
+  (rec1 rl-rectangle)
+  (rec2 rl-rectangle))
+
+(defun-pt-bool check-collision-point-rec claylib/ll:check-collision-point-rec
+  "Check if POINT is inside RECTANGLE."
+  (point rl-vector2)
+  (rec rl-rectangle))
+
+(defun get-collision-rec (rec1 rec2 &key (result-rec nil))
+  "Get the collision rectangle for the collision of two rectangles REC1 and REC2.
+
+This returns a newly allocated RECTANGLE unless RESULT-REC is given, in which case set RESULT-REC's
+postion and dimensions to the reflect the result."
+  (check-type rec1 rl-rectangle)
+  (check-type rec2 rl-rectangle)
+  (let ((retval (or result-rec (make-simple-rec 0 0 0 0))))
+    (claylib/ll:get-collision-rec (c-struct retval) (c-struct rec1) (c-struct rec2))
+    retval))
 
 
 
@@ -168,11 +195,6 @@ Allocates a new RAY-COLLISION unless you pass one."
   (rc rl-ray-collision nil (make-ray-collision 0 0 0 0 0 0))
   (ray ray)
   (box rl-bounding-box))
-
-(defun-pt-bool check-collision-point-rec claylib/ll:check-collision-point-rec
-  "Check if POINT is inside RECTANGLE."
-  (point rl-vector2)
-  (rec rl-rectangle))
 
 
 
