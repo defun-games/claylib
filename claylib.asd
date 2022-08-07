@@ -118,7 +118,8 @@
                    (:file "05-logo-raylib-anim")
                    (:file "06-rectangle-scaling")
                    (:file "07-lines-bezier")
-                   (:file "08-collision-area")))
+                   (:file "08-collision-area")
+                   (:file "09-following-eyes")))
                  (:module "textures"
                   :components
                   ((:file "01-logo-raylib")
