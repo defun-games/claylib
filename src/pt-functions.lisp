@@ -61,6 +61,14 @@ unless ALLOCATE-P is T."
   (point rl-vector2)
   (rec rl-rectangle))
 
+(defun check-collision-point-circle (point circle)
+  "Check if POINT is inside CIRCLE."
+  (check-type point rl-vector2)
+  (check-type circle circle)
+  (= 0 (claylib/ll:check-collision-point-circle (c-struct point)
+                                                (c-struct (pos circle))
+                                                (float (radius circle)))))
+
 (defun get-collision-rec (rec1 rec2 &key (result-rec nil))
   "Get the collision rectangle for the collision of two rectangles REC1 and REC2.
 
