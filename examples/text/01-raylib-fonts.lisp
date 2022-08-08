@@ -12,16 +12,16 @@
                                                "examples/text/resources/fonts/" font ".png")))))
 
 (defparameter *scene*
-  (make-scene ((alagard-ass (first *assets*))
-               (pixelplay-ass (second *assets*))
-               (mecha-ass (third *assets*))
-               (setback-ass (fourth *assets*))
-               (romulus-ass (fifth *assets*))
-               (pixantiqua-ass (sixth *assets*))
-               (alpha-beta-ass (seventh *assets*))
+  (make-scene ((alagard-ass       (first *assets*))
+               (pixelplay-ass     (second *assets*))
+               (mecha-ass         (third *assets*))
+               (setback-ass       (fourth *assets*))
+               (romulus-ass       (fifth *assets*))
+               (pixantiqua-ass    (sixth *assets*))
+               (alpha-beta-ass    (seventh *assets*))
                (jupiter-crash-ass (eighth *assets*)))
-              ((fonts (loop for col in (list +maroon+ +orange+ +darkgreen+ +darkblue+
-                                             +darkpurple+ +lime+ +gold+ +red+)
+              ((fonts (loop for col in (list +maroon+ +orange+ +darkgreen+ +darkblue+ +darkpurple+
+                                             +lime+ +gold+ +red+)
                             for ass in (list alagard-ass pixelplay-ass mecha-ass setback-ass
                                              romulus-ass pixantiqua-ass alpha-beta-ass
                                              jupiter-crash-ass)
@@ -33,11 +33,8 @@
                                              "PIXANTIQUA FONT designed by Gerhard Grossmann"
                                              "ALPHA_BETA FONT designed by Brian Kent (AEnigma)"
                                              "JUPITER_CRASH FONT designed by Brian Kent (AEnigma)")
-                            for spacing in (list 2 4 8 4 3 4 4 1)
-                            collect (make-text txt 0 0
-                                               :color col
-                                               :font (asset ass)
-                                               :spacing spacing)))
+                            for spc in (list 2 4 8 4 3 4 4 1)
+                            collect (make-text txt 0 0 :color col :font (asset ass) :spacing spc)))
                (text (make-text "free fonts included with raylib"
                                 250 20
                                 :size 20
@@ -61,8 +58,7 @@
 (defun main ()
   (with-window (:title "raylib [text] example - raylib fonts")
     (with-scenes *scene*
-      (with-scene-objects (fonts) *scene*
-        (arrange-text fonts)
-        (do-game-loop (:livesupport t)
-          (with-drawing ()
-            (draw-scene-all *scene*)))))))
+      (arrange-text (scene-object *scene* 'fonts))
+      (do-game-loop (:livesupport t)
+        (with-drawing ()
+          (draw-scene-all *scene*))))))
