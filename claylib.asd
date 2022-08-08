@@ -133,4 +133,7 @@
                    (:file "scroll-panel")))
                  (:module "models"
                   :components
-                  ((:file "02-billboard")))))))
+                  ((:file "02-billboard")))
+                 (:module "text"
+                  :components
+                  ((:file "01-raylib-fonts")))))))
