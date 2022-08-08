@@ -231,3 +231,9 @@
   (setf (slot-value asset '%asset) nil)
   (when (next-method-p)
     (call-next-method)))
+
+
+
+(defmethod load-asset ((asset list) &key force-reload)
+  (dolist (ass asset)
+    (load-asset ass :force-reload force-reload)))
