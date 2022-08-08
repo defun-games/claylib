@@ -12,19 +12,10 @@
                                                "examples/text/resources/fonts/" font ".png")))))
 
 (defparameter *scene*
-  (make-scene ((alagard-ass       (first *assets*))
-               (pixelplay-ass     (second *assets*))
-               (mecha-ass         (third *assets*))
-               (setback-ass       (fourth *assets*))
-               (romulus-ass       (fifth *assets*))
-               (pixantiqua-ass    (sixth *assets*))
-               (alpha-beta-ass    (seventh *assets*))
-               (jupiter-crash-ass (eighth *assets*)))
+  (make-scene ((assets *assets*))
               ((fonts (loop for col in (list +maroon+ +orange+ +darkgreen+ +darkblue+ +darkpurple+
                                              +lime+ +gold+ +red+)
-                            for ass in (list alagard-ass pixelplay-ass mecha-ass setback-ass
-                                             romulus-ass pixantiqua-ass alpha-beta-ass
-                                             jupiter-crash-ass)
+                            for ass in assets
                             for txt in (list "ALAGARD FONT designed by Hewett Tsoi"
                                              "PIXELPLAY FONT designed by Aleksander Shevchuk"
                                              "MECHA FONT designed by Captain Falcon"
