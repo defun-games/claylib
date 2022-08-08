@@ -36,10 +36,10 @@
   "Set sizes & positions for each text in TEXTS so they are arranged in order on the screen."
   (loop for text in texts
         for i from 0
-        do (setf (size text) (* 2 (size text))
+        do (setf (size text) (* 2 (size (font text)))
                  (x text) (- (/ (get-screen-width) 2)
                              (/ (x (measure-text-ex text)) 2))
-                 (y text) (+ 60 (size text) (* 45 i)))
+                 (y text) (+ 60 (size (font text)) (* 45 i)))
            (incf (y text) (case i
                             (3 8)
                             (4 2)
