@@ -174,17 +174,16 @@ in which case create a new COLOR object as the return value."
 
 ;; Text font info functions
 
-(defun measure-text-ex (text)
-  "Returns an RL-VECTOR2 with the width (x) and height (y) of the TEXT object. This accounts for
-font, size and spacing."
+(defun measure-text-ex (text &key (vector (make-vector2 0 0)))
+  "Returns an RL-VECTOR2 with the width (x) and height (y) of the TEXT object accounting for its
+font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   (check-type text text)
-  (let ((retval (make-vector2 0 0)))
-    (claylib/ll:measure-text-ex (c-struct retval)
-                                (c-struct (font text))
-                                (text text)
-                                (size text)
-                                (spacing text))
-    retval))
+  (claylib/ll:measure-text-ex (c-struct vector)
+                              (c-struct (font text))
+                              (text text)
+                              (size text)
+                              (spacing text))
+  vector)
 
 
 
