@@ -192,6 +192,9 @@
        (load-it (c-asset asset) asset))))
   asset)
 
+(defun make-font-asset (path &key (load-now nil))
+  (make-instance 'font-asset :path path :load-now load-now))
+
 
 
 (defclass animation-asset (game-asset)
@@ -228,3 +231,9 @@
   (setf (slot-value asset '%asset) nil)
   (when (next-method-p)
     (call-next-method)))
+
+
+
+(defmethod load-asset ((asset list) &key force-reload)
+  (dolist (ass asset)
+    (load-asset ass :force-reload force-reload)))

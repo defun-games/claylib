@@ -6,8 +6,7 @@
 
 (defun main ()
   (with-window (:title "raylib [textures] example - texture source and destination rectangles")
-    (let* ((scarfy-asset (make-texture-asset (asdf:system-relative-pathname
-                                              :claylib
+    (let* ((scarfy-asset (make-texture-asset (claylib/examples:claylib-path
                                               "examples/textures/resources/scarfy.png")
                                              :load-now t))
            (frame-width (/ (width scarfy-asset) 6))

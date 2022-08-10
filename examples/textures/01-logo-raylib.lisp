@@ -8,8 +8,7 @@
   (with-window (:title "raylib [textures] example - texture loading and drawing")
     (let* ((image-size 256)
            (scene (make-scene ((texass (make-texture-asset
-                                        (asdf:system-relative-pathname
-                                         :claylib
+                                        (claylib/examples:claylib-path
                                          "examples/textures/resources/raylib_logo.png"))))
                               ((texture (make-texture texass
                                                       (/ (- (get-screen-width) image-size) 2.0)

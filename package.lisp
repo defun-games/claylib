@@ -36,7 +36,7 @@
    :with-window :load-font :load-model-from-mesh :gen-mesh-cube :gen-image-checked :load-texture-from-image
    :fade :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw :with-drawing
-   :check-collision-recs :get-collision-rec :check-collision-point-circle)
+   :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex)
 
 
 
@@ -97,7 +97,7 @@
    :with-scissor-mode :make-zero-matrix :is-window-state-p :make-triangle :make-triangle-from-vecs
    :make-texture :make-texture-from-rec :make-empty-texture :make-texture-asset :get-gesture-detected
    :is-mouse-button-released-p :make-polygon :make-font :make-image-asset :make-pixel :make-image
-   :make-simple-rec :make-billboard
+   :make-simple-rec :make-billboard :make-font-asset
 
    ;; Scenes
    :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
@@ -130,7 +130,7 @@
    :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw
    :copy-asset-to-object :set-window-position :check-collision-recs :get-collision-rec
-   :check-collision-point-circle
+   :check-collision-point-circle :measure-text-ex
 
    ;;; Raygui
 

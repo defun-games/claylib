@@ -5,16 +5,10 @@
 (in-package #:claylib/examples/textures-5)
 
 (defvar *assets*
-  (list (make-image-asset (asdf:system-relative-pathname
-                           :claylib
-                           "examples/textures/resources/cat.png"))
-        (make-image-asset (asdf:system-relative-pathname
-                           :claylib
-                           "examples/textures/resources/parrots.png"))
-        (make-instance 'font-asset
-                       :path (asdf:system-relative-pathname
-                              :claylib
-                              "examples/textures/resources/custom_jupiter_crash.png"))))
+  (list (make-image-asset (claylib/examples:claylib-path "examples/textures/resources/cat.png"))
+        (make-image-asset (claylib/examples:claylib-path "examples/textures/resources/parrots.png"))
+        (make-font-asset (claylib/examples:claylib-path
+                          "examples/textures/resources/custom_jupiter_crash.png"))))
 
 (defun center-texture (texture)
   "Set the TEXTURE's destination rectangle to the center of the screen."
