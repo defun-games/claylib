@@ -169,7 +169,7 @@
 (defreader glyphs font-asset glyphs asset)
 
 (default-slot-value font-asset %font-size 10)
-(default-slot-value font-asset %font-chars 0)
+(default-slot-value font-asset %font-chars (cffi:null-pointer))
 (default-slot-value font-asset %glyph-count 224)
 
 (defmethod load-asset ((asset font-asset) &key force-reload)
