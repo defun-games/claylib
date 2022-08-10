@@ -192,8 +192,9 @@
        (load-it (c-asset asset) asset))))
   asset)
 
-(defun make-font-asset (path &key (load-now nil))
-  (make-instance 'font-asset :path path :load-now load-now))
+(defun make-font-asset (path &rest args &key size chars glyph-count (load-now nil))
+  (declare (ignore size chars glyph-count load-now))
+  (apply #'make-instance 'font-asset :path path args))
 
 
 
