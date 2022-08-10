@@ -21,7 +21,7 @@
                                                :color +white+
                                                :font (asset ass)
                                                :spacing spc
-                                               :size (size (asset ass))))))))
+                                               :size (size ass)))))))
 
 (defun arrange-text (texts)
   "Set sizes & positions for each text in TEXTS so they are arranged in order on the screen."
