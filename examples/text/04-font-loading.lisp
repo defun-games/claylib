@@ -1,8 +1,8 @@
 (in-package #:cl-user)
-(defpackage claylib/examples/text-3
+(defpackage claylib/examples/text-4
   (:use :cl :claylib)
   (:export :main))
-(in-package #:claylib/examples/text-3)
+(in-package #:claylib/examples/text-4)
 
 (defparameter *assets*
   (list (make-font-asset (claylib/examples:claylib-path "examples/text/resources/pixantiqua.fnt"))
