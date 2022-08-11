@@ -42,10 +42,8 @@ opqrstuvwxyz{|}~¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓ
 (defun main ()
   (with-window (:title "raylib [text] example - font loading")
     (with-scenes *scene*
-      (do-game-loop (:livesupport t
-                     :vars ((use-ttf nil)))
-        (setf use-ttf (is-key-down-p +key-space+))
+      (do-game-loop (:livesupport t)
         (with-drawing ()
-          (if use-ttf
+          (if (is-key-down-p +key-space+)
               (draw-scene-except *scene* 'msg-bm 'title-bm)
               (draw-scene-except *scene* 'msg-ttf 'title-ttf)))))))
