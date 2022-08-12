@@ -169,7 +169,7 @@
 (defreader glyphs font-asset glyphs asset)
 
 (default-slot-value font-asset %font-size 10)
-(default-slot-value font-asset %font-chars 0)
+(default-slot-value font-asset %font-chars (cffi:null-pointer))
 (default-slot-value font-asset %glyph-count 224)
 
 (defmethod load-asset ((asset font-asset) &key force-reload)
@@ -192,8 +192,9 @@
        (load-it (c-asset asset) asset))))
   asset)
 
-(defun make-font-asset (path &key (load-now nil))
-  (make-instance 'font-asset :path path :load-now load-now))
+(defun make-font-asset (path &rest args &key size chars glyph-count (load-now nil))
+  (declare (ignore size chars glyph-count load-now))
+  (apply #'make-instance 'font-asset :path path args))
 
 
 
