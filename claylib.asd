@@ -136,4 +136,5 @@
                   ((:file "02-billboard")))
                  (:module "text"
                   :components
-                  ((:file "01-raylib-fonts")))))))
+                  ((:file "01-raylib-fonts")
+                   (:file "02-font-spritefont")))))))
