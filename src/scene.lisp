@@ -75,7 +75,7 @@
     (draw-object (scene-object scene obj))))
 
 (defun draw-objects (&rest objects)
-  "Draw the given OBJECTS.
+  "Draw the given OBJECTS without having to specify a scene.
 
 This is handy when the objects are in scope already, for example via WITH-SCENE-OBJECTS."
   (dolist (obj objects)
@@ -94,6 +94,7 @@ This is handy when the objects are in scope already, for example via WITH-SCENE-
     (draw-object (cdr obj))))
 
 (defun draw-scene-regex (scene regex)
+  "Draw the objects in the SCENE whose name matches the given Perl REGEX."
   (loop for kv in (nreverse (alexandria:hash-table-alist (objects scene)))
         when (cl-ppcre:scan regex (symbol-name (car kv)))
           do (draw-object (cdr kv))))
@@ -114,8 +115,9 @@ This is handy when the objects are in scope already, for example via WITH-SCENE-
 (defmacro make-scene (assets objects &key (free :now) (defer-init t))
   "Make a GAME-SCENE.
 
-DEFER-INIT will defer initialization of the scene's OBJECTS until later (usually in DO-GAME-LOOP).
-This is useful for objects like TEXTURES which require an OpenGL context to be loaded into the GPU."
+DEFER-INIT will defer initialization of the scene's OBJECTS until later (usually via WITH-SCENES or
+SET-UP-SCENE directly). This is useful when your scene contains objects like TEXTURES which require
+an OpenGL context before being loaded into the GPU."
   (let ((scene (gensym))
         (objects (if defer-init
                      (loop for (binding val) in objects
@@ -144,7 +146,7 @@ This is useful for objects like TEXTURES which require an OpenGL context to be l
 (defmacro with-scenes (scenes &body body)
   "Execute BODY after loading & initializing SCENES, tearing them down afterwards.
 
-Note: additional scenes can be loaded/freed within the loop using {SET-UP,TEAR-DOWN}-SCENE."
+Note: additional scenes can be loaded/freed at any point using {SET-UP,TEAR-DOWN}-SCENE."
   (unless (listp scenes) (setf scenes `(list ,scenes)))
   `(progn
      (mapcar #'set-up-scene ,scenes)
