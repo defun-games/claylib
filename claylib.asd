@@ -155,4 +155,7 @@
                    (:file "font-spritefont")
                    (:file "font-loading")
                    (:file "format-text")
-                   (:file "input-box")))))))
+                   (:file "input-box")))
+                 (:module "audio"
+                  :components
+                  ((:file "module-playing")))))))

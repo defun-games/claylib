@@ -129,7 +129,7 @@
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
    :hit :low :high :r :g :b :a :dest :filter :origin :source :tint :radius :x3 :y3 :v1 :v2 :v3
    :load-asset :filled :font :size :spacing :asset :start :end :bezier :up :x-scale :y-scale
-   :frame-count :animations :bones :materials
+   :frame-count :animations :bones :materials :looping
 
    ;; Math
    :vector2-subtract :vector2-add :vector2-scale :vector2-length
