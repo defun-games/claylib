@@ -32,6 +32,11 @@
    :gui-list-view :gui-list-view-ex :gui-message-box :gui-text-input-box :gui-color-picker :gui-color-panel
    :gui-color-bar-alpha :gui-color-bar-hue :gui-draw-icon :gui-check-icon-pixel
 
+   ;; Music management
+   :play-music-stream :is-music-stream-playing-p :update-music-stream :stop-music-stream
+   :pause-music-stream :resume-music-stream :seek-music-stream :set-music-volume :set-music-pitch
+   :get-music-time-length :get-music-time-played
+
    ;; Misc.
    :get-mouse-position :get-mouse-ray :get-ray-collision-box :load-render-texture :with-texture-mode
    :draw-grid :draw-text :draw-rectangle :draw-circle :draw-cube :update-camera :gen-mesh-cylinder
@@ -133,6 +138,12 @@
 
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps* :+claylib-directory+
+
+   ;; Music management
+   :with-audio-device :with-music-stream
+   :play-music-stream :is-music-stream-playing-p :update-music-stream :stop-music-stream
+   :pause-music-stream :resume-music-stream :seek-music-stream :set-music-volume :set-music-pitch
+   :get-music-time-length :get-music-time-played
 
    ;; Misc
    :draw-fps :get-random-value :get-frame-time :measure-text :get-mouse-ray :get-ray-collision-box
