@@ -158,4 +158,5 @@
                    (:file "input-box")))
                  (:module "audio"
                   :components
-                  ((:file "module-playing")))))))
+                  ((:file "module-playing")
+                   (:file "music-stream")))))))
