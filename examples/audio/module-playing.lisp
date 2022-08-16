@@ -54,7 +54,7 @@
                                           (make-circle-wave x y r color velocity))))
                  (timebar-bg   (make-rectangle bar-x bar-y bar-w bar-h +lightgray+))
                  (timebar-fill (make-rectangle bar-x bar-y 0     bar-h +maroon+))
-                 (timebar-line (make-rectangle bar-x bar-y bar-w bar-h +lightgray+ :filled nil))))))
+                 (timebar-line (make-rectangle bar-x bar-y bar-w bar-h +gray+ :filled nil))))))
 
 (defun main ()
   (with-window (:title "raylib [audio] example - module playing (streaming)"
