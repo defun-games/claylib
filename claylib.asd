@@ -80,11 +80,11 @@
                              (:file "mesh")
                              (:file "model")
                              (:file "billboard")
+                             (:file "audio")
                              (:file "claylib")
                              (:file "scene")
                              (:file "pt-functions")
-                             (:file "gui")
-                             (:file "audio")))))
+                             (:file "gui")))))
 
 (asdf:defsystem #:claylib/examples
   :description "Claylib examples, remixed from the original Raylib C versions"
