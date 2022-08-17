@@ -89,3 +89,15 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
 
 (defmethod draw-object ((obj list))
   (mapc #'draw-object obj))
+
+(defmethod free ((obj list))
+  (mapc #'free obj))
+
+(defmacro with-audio-device (&body body)
+  "Initialize audio device & context for use during the execution of BODY, closing them afterwards.
+
+Note: this must occur before loading music streams. e.g. before setting up a Claylib SCENE which
+contains a MUSIC-ASSET (via WITH-SCENES or SET-UP-SCENE)."
+  `(unwind-protect (progn (claylib/ll:init-audio-device)
+                          ,@body)
+     (claylib/ll:close-audio-device)))

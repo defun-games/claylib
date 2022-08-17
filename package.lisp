@@ -33,9 +33,7 @@
    :gui-color-bar-alpha :gui-color-bar-hue :gui-draw-icon :gui-check-icon-pixel
 
    ;; Music management
-   :play-music-stream :is-music-stream-playing-p :update-music-stream :stop-music-stream
-   :pause-music-stream :resume-music-stream :seek-music-stream :set-music-volume :set-music-pitch
-   :get-music-time-length :get-music-time-played
+   :is-music-stream-playing-p :seek-music-stream :get-music-time-length :get-music-time-played
 
    ;; Misc.
    :get-mouse-position :get-mouse-ray :get-ray-collision-box :load-render-texture :with-texture-mode
@@ -119,7 +117,7 @@
    :make-texture :make-texture-from-rec :make-empty-texture :make-texture-asset :get-gesture-detected
    :is-mouse-button-released-p :make-polygon :make-font :make-image-asset :make-pixel :make-image
    :make-simple-rec :make-billboard :make-font-asset :window-should-close-p :make-model-asset
-   :make-model :make-animation-asset :make-sphere :make-sphere-from-vec
+   :make-model :make-animation-asset :make-sphere :make-sphere-from-vec :make-music-asset
 
    ;; Scenes
    :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
@@ -129,7 +127,8 @@
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
    :hit :low :high :r :g :b :a :dest :filter :origin :source :tint :radius :x3 :y3 :v1 :v2 :v3
    :load-asset :filled :font :size :spacing :asset :start :end :bezier :up :x-scale :y-scale
-   :frame-count :animations :bones :materials :looping
+   :frame-count :animations :bones :materials :looping :update :play :stop :pause :resume :pitch
+   :volume
 
    ;; Math
    :vector2-subtract :vector2-add :vector2-scale :vector2-length
@@ -140,10 +139,8 @@
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps* :+claylib-directory+
 
    ;; Music management
-   :with-audio-device :with-music-stream
-   :play-music-stream :is-music-stream-playing-p :update-music-stream :stop-music-stream
-   :pause-music-stream :resume-music-stream :seek-music-stream :set-music-volume :set-music-pitch
-   :get-music-time-length :get-music-time-played
+   :with-audio-device
+   :is-music-stream-playing-p :seek-music-stream :get-music-time-length :get-music-time-played
 
    ;; Misc
    :draw-fps :get-random-value :get-frame-time :measure-text :get-mouse-ray :get-ray-collision-box

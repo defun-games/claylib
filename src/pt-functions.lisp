@@ -315,44 +315,14 @@ Allocates a new RAY-COLLISION unless you pass one."
 
 ;; Music management
 
-(defun-pt-void play-music-stream claylib/ll:play-music-stream
-  "Start MUSIC playing."
-  (music rl-music))
-
 (defun-pt-bool is-music-stream-playing-p claylib/ll:is-music-stream-playing-p
   "Check is MUSIC is playing."
-  (music rl-music))
-
-(defun-pt-void update-music-stream claylib/ll:update-music-stream
-  "Updates buffers for MUSIC streaming."
-  (music rl-music))
-
-(defun-pt-void stop-music-stream claylib/ll:stop-music-stream
-  "Stop MUSIC playing."
-  (music rl-music))
-
-(defun-pt-void pause-music-stream claylib/ll:pause-music-stream
-  "Pause MUSIC playing."
-  (music rl-music))
-
-(defun-pt-void resume-music-stream claylib/ll:resume-music-stream
-  "Resume playing paused MUSIC."
   (music rl-music))
 
 (defun-pt-void seek-music-stream claylib/ll:seek-music-stream
   "Seek MUSIC to a position (in seconds)."
   (music rl-music)
   (position number float))
-
-(defun-pt-void set-music-volume claylib/ll:set-music-volume
-  "Set volume for MUSIC (1.0 is the max level)."
-  (music rl-music)
-  (position number float))
-
-(defun-pt-void set-music-pitch claylib/ll:set-music-pitch
-  "Set pitch for MUSIC (1.0 is the base level)."
-  (music rl-music)
-  (pitch number float))
 
 (defun-pt-num get-music-time-length claylib/ll:get-music-time-length
   "Get MUSIC time length (in seconds)."

@@ -80,7 +80,7 @@
                              (:file "mesh")
                              (:file "model")
                              (:file "billboard")
-                             (:file "audio")
+                             (:file "music")
                              (:file "claylib")
                              (:file "scene")
                              (:file "pt-functions")

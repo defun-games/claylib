@@ -44,7 +44,8 @@
         (bar-y (- (get-screen-height) 32))
         (bar-w (- (get-screen-width) 40))
         (bar-h 12))
-    (make-scene ()
+    (make-scene ((music (make-music-asset (claylib/examples:claylib-path
+                                           "examples/audio/resources/mini1111.xm"))))
                 ((circles (loop for i from 63 downto 0
                                 collect (let* ((r (random-radius))
                                                (x (random-x r))
@@ -60,29 +61,31 @@
   (with-window (:title "raylib [audio] example - module playing (streaming)"
                 :flags (list +flag-msaa-4x-hint+))
     (with-audio-device
-      (with-music-stream music (claylib/examples:claylib-path "examples/audio/resources/mini1111.xm")
-        (play-music-stream music)
-        (setf (looping music) nil)
-        (with-scenes *scene*
+      (with-scenes *scene*
+        ;; FIXME find a better way to refer to the rl-music, without making it a scene object.
+        ;; Perhaps a candidate for "scene parameter" stuff?
+        (let ((music (asset (gethash 'music (claylib::assets *scene*)))))
+          (play music)
+          (setf (looping music) nil)
           (with-scene-objects (circles timebar-fill) *scene*
             (do-game-loop (:livesupport t
                            :vars ((pitch 1.0)
                                   (pause nil)))
-              (update-music-stream music)
+              (update music)
 
               (when (is-key-pressed-p +key-space+)
-                (stop-music-stream music)
-                (play-music-stream music))
+                (stop music)
+                (play music))
 
               (when (is-key-pressed-p +key-p+)
                 (if (setf pause (not pause))
-                    (pause-music-stream music)
-                    (resume-music-stream music)))
+                    (pause music)
+                    (resume music)))
 
               (if (is-key-down-p +key-down+)
                   (decf pitch 0.01)
                   (when (is-key-down-p +key-up+) (incf pitch 0.01)))
-              (set-music-pitch music pitch)
+              (setf (pitch music) pitch)
 
               (setf (width timebar-fill) (* (/ (get-music-time-played music)
                                                (get-music-time-length music))

@@ -145,3 +145,18 @@ referenced by C-STRUCT.
 
 Warning: if NUM is greater than or equal to the number of elements in the C array, you will get
 bogus data."))
+
+(defgeneric update (object)
+  (:documentation "Call the appropriate Raylib 'Update*' function on OBJECT."))
+
+(defgeneric play (audio)
+  (:documentation "Call the appropriate Raylib 'Play*' function on an AUDIO object."))
+
+(defgeneric stop (audio)
+  (:documentation "Call the appropriate Raylib 'Stop*' function on an AUDIO object."))
+
+(defgeneric pause (audio)
+  (:documentation "Call the appropriate Raylib 'Pause*' function on an AUDIO object."))
+
+(defgeneric resume (audio)
+  (:documentation "Call the appropriate Raylib 'Resume*' function on an AUDIO object."))

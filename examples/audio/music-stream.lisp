@@ -5,7 +5,8 @@
 (in-package #:claylib/examples/audio-2)
 
 (defparameter *scene*
-  (make-scene ()
+  (make-scene ((music-ass (make-music-asset (claylib/examples:claylib-path
+                                             "examples/audio/resources/country.mp3"))))
               ((title (make-text "MUSIC SHOULD BE PLAYING!" 255 150 :size 20 :color +lightgray+))
                (timebar-bg (make-rectangle 200 200 400 12 +lightgray+))
                (timebar-fill (make-rectangle 200 200 0 12 +maroon+))
@@ -23,22 +24,22 @@
   (with-window (:title "raylib [audio] example - music playing (streaming)"
                 :fps 30)
     (with-audio-device
-      (with-music-stream music (claylib/examples:claylib-path "examples/audio/resources/country.mp3")
-        (play-music-stream music)
-        (with-scenes *scene*
+      (with-scenes *scene*
+        (let ((music (asset (gethash 'music-ass (claylib::assets *scene*)))))
+          (play music)
           (do-game-loop (:livesupport t
                          :vars ((time-played 0)
                                 (pause nil)))
-            (update-music-stream music)
+            (update music)
 
             (when (is-key-pressed-p +key-space+)
-              (stop-music-stream music)
-              (play-music-stream music))
+              (stop music)
+              (play music))
 
             (when (is-key-pressed-p +key-p+)
               (if (setf pause (not pause))
-                  (pause-music-stream music)
-                  (resume-music-stream music)))
+                  (pause music)
+                  (resume music)))
 
             (setf time-played (min (/ (get-music-time-played music)
                                       (get-music-time-length music))
