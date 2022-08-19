@@ -1,5 +1,10 @@
 ;;;; claylib.asd
 
+#+sbcl
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (sb-int:set-floating-point-modes :traps (remove :invalid
+                                                  (getf (sb-int:get-floating-point-modes) :traps))))
+
 (asdf:defsystem #:claylib/wrap
   :description "Autowrapped Raylib + bug fixes"
   :author "(defun games ()) <hello@defungames.com>"

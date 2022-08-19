@@ -1,6 +1,6 @@
---- lib/raylib.h.orig	2022-04-17 14:16:38.713481522 +0000
-+++ lib/raylib.h	2022-04-29 09:01:45.242677090 +0000
-@@ -203,10 +203,10 @@
+--- lib/raylib.h.orig	2022-08-19 06:35:05.609247664 +0000
++++ lib/raylib.h	2022-08-19 06:50:33.829242019 +0000
+@@ -207,10 +207,10 @@
      float y;                // Vector y component
      float z;                // Vector z component
      float w;                // Vector w component
@@ -13,7 +13,7 @@
  
  // Matrix, 4x4 components, column major, OpenGL style, right handed
  typedef struct Matrix {
-@@ -248,10 +248,10 @@
+@@ -252,10 +252,10 @@
      int height;             // Texture base height
      int mipmaps;            // Mipmap levels, 1 by default
      int format;             // Data format (PixelFormat type)
@@ -26,7 +26,7 @@
  
  // TextureCubemap, same as Texture
  typedef Texture TextureCubemap;
-@@ -261,10 +261,10 @@
+@@ -265,10 +265,10 @@
      unsigned int id;        // OpenGL framebuffer object id
      Texture texture;        // Color buffer attachment texture
      Texture depth;          // Depth buffer attachment texture
@@ -39,7 +39,7 @@
  
  // NPatchInfo, n-patch layout info
  typedef struct NPatchInfo {
-@@ -396,6 +396,8 @@
+@@ -400,6 +400,8 @@
      Transform **framePoses; // Poses array by frame
  } ModelAnimation;
  
