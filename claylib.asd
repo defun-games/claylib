@@ -2,8 +2,7 @@
 
 #+sbcl
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (sb-int:set-floating-point-modes :traps (remove :invalid
-                                                  (getf (sb-int:get-floating-point-modes) :traps))))
+  (sb-int:set-floating-point-modes :traps nil))
 
 (asdf:defsystem #:claylib/wrap
   :description "Autowrapped Raylib + bug fixes"
