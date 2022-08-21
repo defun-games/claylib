@@ -139,4 +139,5 @@
                   ((:file "raylib-fonts")
                    (:file "font-spritefont")
                    (:file "font-loading")
-                   (:file "format-text")))))))
+                   (:file "format-text")
+                   (:file "input-box")))))))
