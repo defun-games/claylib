@@ -138,4 +138,5 @@
                   :components
                   ((:file "raylib-fonts")
                    (:file "font-spritefont")
-                   (:file "font-loading")))))))
+                   (:file "font-loading")
+                   (:file "format-text")))))))
