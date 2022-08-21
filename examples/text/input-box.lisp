@@ -41,35 +41,34 @@
                               (letter-count 0)))
           (setf mouse-on-text-p (check-collision-point-rec (get-mouse-position :vec mouse-pos) box))
 
-          (if mouse-on-text-p
-              (progn
-                (claylib/ll:set-mouse-cursor claylib/ll:+mouse-cursor-ibeam+)
+          (when mouse-on-text-p
+            ;; Handle input
+            (loop for key = (claylib/ll:get-char-pressed) then (claylib/ll:get-char-pressed)
+                  until (<= key 0)
+                  do (when (and (<= 32 key 125) (< letter-count +max-input-chars+))
+                       (append-codepoint txt-input key)
+                       (incf letter-count))
+                  finally (setf text-changed-p t))
+            (when (is-key-pressed-p +key-backspace+)
+              (with-accessors ((txt text)) txt-input
+                (setf letter-count (max 0 (1- letter-count))
+                      txt (subseq txt 0 letter-count)
+                      text-changed-p t)))
 
-                ;; Handle input text
-                (loop for key = (claylib/ll:get-char-pressed) then (claylib/ll:get-char-pressed)
-                      until (<= key 0)
-                      do (when (and (<= 32 key 125) (< letter-count +max-input-chars+))
-                           (append-codepoint txt-input key)
-                           (incf letter-count))
-                      finally (setf text-changed-p t))
+            ;; Update values
+            (claylib/ll:set-mouse-cursor claylib/ll:+mouse-cursor-ibeam+)
+            (setf frames-counter (1+ frames-counter)
+                  (color box-line) +red+)
+            (when text-changed-p
+              (measure-text-ex txt-input :vector txt-input-size)
+              (setf (text txt-chars) (format nil "INPUT CHARS ~d/9" letter-count)
+                    (x cursor) (+ (x txt-input-size) (x box) 8))))
 
-                (when (is-key-pressed-p +key-backspace+)
-                  (with-accessors ((txt text)) txt-input
-                    (setf letter-count (max 0 (1- letter-count))
-                          txt (subseq txt 0 letter-count)
-                          text-changed-p t)))
-
-                ;; Update values
-                (when text-changed-p
-                  (measure-text-ex txt-input :vector txt-input-size)
-                  (setf (text txt-chars) (format nil "INPUT CHARS ~d/9" letter-count)
-                        (x cursor) (+ (x txt-input-size) (x box) 8)))
-                (setf frames-counter (1+ frames-counter)
-                      (color box-line) +red+))
-
-              (progn (claylib/ll:set-mouse-cursor claylib/ll:+mouse-cursor-default+)
-                     (setf frames-conter 0
-                           (color box-line) +darkgray+)))
+          (when (not mouse-on-text-p)
+            ;; Update values
+            (claylib/ll:set-mouse-cursor claylib/ll:+mouse-cursor-default+)
+            (setf frames-conter 0
+                  (color box-line) +darkgray+))
 
           (with-drawing ()
             (draw-scene-except *scene* 'cursor 'txt-del)
