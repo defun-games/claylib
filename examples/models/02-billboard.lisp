@@ -13,8 +13,8 @@
               ((grid (make-grid 10 1))
                (bill (make-billboard bill-ass
                                      *cam*
-                                     0 2 0
-                                     2 20 ; TODO: #39. Why is this still wide instead of tall?
+                                     0 1 0
+                                     2 2
                                      (make-rectangle 0 0
                                                      (width bill-ass) (height bill-ass)
                                                      +white+))))))
