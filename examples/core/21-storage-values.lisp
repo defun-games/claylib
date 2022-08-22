@@ -4,6 +4,21 @@
   (:export :main))
 (in-package #:claylib/examples/core-21)
 
+(defun save-storage-value (position value &optional (filename "storage.data"))
+  "Saves the 32 bit integer VALUE at POSITION (index) in the file named FILENAME."
+  (with-open-file (f filename :direction :output
+                              :element-type '(unsigned-byte 32)
+                              :if-exists :overwrite
+                              :if-does-not-exist :create)
+    (file-position f position)
+    (write-byte value f)))
+
+(defun load-storage-value (position &optional (filename "storage.data"))
+  (with-open-file (f filename :element-type '(unsigned-byte 32)
+                              :if-does-not-exist :create)
+    (file-position f position)
+    (read-byte f nil 0)))
+
 (defun main ()
   (with-window (:title "raylib [core] example - storage save/load values")
     (let ((score 0)
