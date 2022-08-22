@@ -14,7 +14,7 @@
                (bill (make-billboard bill-ass
                                      *cam*
                                      0 2 0
-                                     2 2
+                                     2 20 ; TODO: #39. Why is this still wide instead of tall?
                                      (make-rectangle 0 0
                                                      (width bill-ass) (height bill-ass)
                                                      +white+))))))

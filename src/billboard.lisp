@@ -27,11 +27,11 @@ camera).")
           :accessor tint)))
 
 (defreader c-asset billboard c-asset asset)
-(defreader y-scale billboard x size)
-(defreader x-scale billboard y size)
+(defreader x-scale billboard x size)
+(defreader y-scale billboard y size)
 
-(defwriter y-scale billboard x size number)
-(defwriter x-scale billboard y size number)
+(defwriter x-scale billboard x size number)
+(defwriter y-scale billboard y size number)
 
 (definitializer billboard
     (up rl-vector3 nil))
@@ -49,7 +49,7 @@ camera).")
          :asset texture-asset
          :camera camera
          :pos (make-vector3 x y z)
-         :size (make-vector2 y-scale x-scale)
+         :size (make-vector2 x-scale y-scale)
          :source source
          args))
 

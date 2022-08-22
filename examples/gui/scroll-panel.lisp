@@ -89,11 +89,11 @@
           ;; TODO: Update logic???
           (with-drawing ()
             (draw-scene *scene* 'text)
-            (gui-scroll-panel panel-rec panel-content-rec panel-scroll :rec view)
+            (gui-scroll-panel panel-rec "scroll panel" panel-content-rec panel-scroll :rec view)
             (with-scissor-mode
                 (truncate (x view)) (truncate (y view))
                 (truncate (width view)) (truncate (height view))
-              (gui-grid (scene-object *scene* 'rec) 16.0 3))
+              (gui-grid (scene-object *scene* 'rec) "grid" 16.0 3))
             (when show-content-area
               (draw-scene *scene* 'rec))
             (draw-style-edit-controls)
