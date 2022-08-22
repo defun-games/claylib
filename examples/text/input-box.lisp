@@ -6,9 +6,6 @@
 
 (defconstant +max-input-chars+ 9)
 
-(defun is-any-key-pressed-p ()
-  (<= 32 (claylib/ll:get-key-pressed) 126))
-
 (defun append-codepoint (text-object code)
   "Appends the character given by the codepoint CODE to the TEXT-OBJECT's %TEXT."
   (with-accessors ((txt text)) text-object
@@ -43,7 +40,7 @@
 
           (when mouse-on-text-p
             ;; Handle input
-            (loop for key = (claylib/ll:get-char-pressed) then (claylib/ll:get-char-pressed)
+            (loop for key = (get-char-pressed) then (get-char-pressed)
                   until (<= key 0)
                   do (when (and (<= 32 key 125) (< letter-count +max-input-chars+))
                        (append-codepoint txt-input key)
@@ -56,7 +53,7 @@
                       text-changed-p t)))
 
             ;; Update values
-            (claylib/ll:set-mouse-cursor claylib/ll:+mouse-cursor-ibeam+)
+            (set-mouse-cursor +mouse-cursor-ibeam+)
             (setf frames-counter (1+ frames-counter)
                   (color box-line) +red+)
             (when text-changed-p
@@ -66,7 +63,7 @@
 
           (when (not mouse-on-text-p)
             ;; Update values
-            (claylib/ll:set-mouse-cursor claylib/ll:+mouse-cursor-default+)
+            (set-mouse-cursor +mouse-cursor-default+)
             (setf frames-conter 0
                   (color box-line) +darkgray+))
 
