@@ -73,7 +73,13 @@
    ;; Mouse
    :+mouse-button-left+ :+mouse-button-right+ :+mouse-button-middle+ :+mouse-button-side+
    :+mouse-button-extra+ :+mouse-button-forward+ :+mouse-button-back+ :get-mouse-x :get-mouse-y
-   :get-mouse-wheel-move :get-mouse-position :set-mouse-offset :set-mouse-scale
+   :get-mouse-wheel-move :get-mouse-position :set-mouse-offset :set-mouse-scale :set-mouse-cursor
+
+   ;; Mouse cursor
+   :+mouse-cursor-default+ :+mouse-cursor-arrow+ :+mouse-cursor-ibeam+ :+mouse-cursor-crosshair+
+   :+mouse-cursor-pointing-hand+ :+mouse-cursor-resize-ew+ :+mouse-cursor-resize-ns+
+   :+mouse-cursor-resize-nwse+ :+mouse-cursor-resize-nesw+ :+mouse-cursor-resize-all+
+   :+mouse-cursor-not-allowed+
 
    ;; Camera
    :+camera-perspective+ :get-world-to-screen-2d :get-screen-to-world-2d :+camera-third-person+
@@ -89,7 +95,7 @@
 
    ;; Misc. convenience wrappers
    :with-window :do-game-loop :with-drawing :is-key-pressed-p :is-gesture-detected-p :is-key-down-p
-   :with-scene-objects :is-mouse-button-pressed-p :is-key-pressed-p
+   :with-scene-objects :is-mouse-button-pressed-p :get-key-pressed :get-char-pressed
    :is-mouse-button-down-p :make-vector2 :make-vector3 :make-vector4 :make-camera-3d
    :make-camera-3d-from-vecs :make-camera-2d :make-camera-2d-from-vecs :make-color :make-rectangle
    :make-rectangle-from-vecs :make-circle :make-grid :make-cube :make-cube-from-vecs :make-text
