@@ -23,7 +23,7 @@
               for ctrl-str in '("Score: ~8,'0d"
                                 "HiScore: ~8,'0d"
                                 "Lives: ~2,'0d"
-                                "Elapsed Time: ~2,2f ms")
+                                "Frame Time: ~2,2f ms")
               for var in (list score hiscore lives (* time 1000))
               do (setf (text text) (format nil ctrl-str var)))
         (with-drawing ()
