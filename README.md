@@ -1,10 +1,10 @@
 # claylib
-A Common Lisp 2D/3D game toolkit built on top of [Raylib](https://www.raylib.com/) 4.0.
+A Common Lisp 2D/3D game toolkit built on top of [Raylib](https://www.raylib.com/) 4.2.
 
 ## Quick Start
 Claylib is not yet in Quicklisp. Load claylib.asd and run `(ql:quickload :claylib/examples)` or similar to load all of the available packages. See the next section for what those packages are and how you might use them.
 
-To see the [examples](/examples) in action, just run e.g. `(claylib/examples/core-1:main)`. Hit Escape to exit. At the time of this writing, most of the core examples are done, as well as a handful of shape and texture examples. GUI examples are very **work-in-progress**.
+To see the [examples](/examples) in action, just run e.g. `(claylib/examples/basic-window:main)`. Hit Escape to exit. At the time of this writing, most of the core examples are done, as well as a handful of shape and texture examples. GUI examples are very **work-in-progress**.
 
 ## Packages
 This repo contains four separate ASDF systems:
@@ -21,7 +21,7 @@ The project should be considered **beta**. Development is active and API's are s
 For `claylib`, you're best off reviewing the examples as a survey of what's done and what's not. 2D support is largely complete; 3D support is a bit more iffy. If any piece is particularly important to you, please file an [issue](https://github.com/defun-games/claylib/issues) and we will prioritize it!
 
 ## Using `claylib`
-Walking through the [first texture example](/examples/textures/01-logo-raylib.lisp) will give a "boilerplate" of how you might make a game with `claylib`. (This is certainly not the only way, just _a_ way.)
+Walking through the [first texture example](/examples/textures/logo-raylib.lisp) will give a "boilerplate" of how you might make a game with `claylib`. (This is certainly not the only way, just _a_ way.)
 
 ### `with-window`
 ```

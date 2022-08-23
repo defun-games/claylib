@@ -43,6 +43,7 @@
   "Scroll Panel control. Allocates a new RL-RECTANGLE unless you pass one."
   (rec rl-rectangle nil (make-instance 'rl-rectangle))
   (bounds rl-rectangle)
+  (text string)
   (content rl-rectangle)
   (scroll rl-vector2))
 
@@ -194,6 +195,7 @@
   "Grid control. Allocates a new RL-VECTOR2 unless you pass one."
   (vec rl-vector2 nil (make-vector2 0 0))
   (bounds rl-rectangle)
+  (text string)
   (spacing number float)
   (subdivs integer))
 

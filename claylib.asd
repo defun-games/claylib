@@ -1,5 +1,12 @@
 ;;;; claylib.asd
 
+;; Fix SBCL issue where sometimes C floating-point bugs cause Lisp errors or crashes.
+;; These bugs appear to originate in Raylib, not Claylib. Why they only show up for some
+;; users and not others is currently unknown.
+#+sbcl
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (sb-int:set-floating-point-modes :traps nil))
+
 (asdf:defsystem #:claylib/wrap
   :description "Autowrapped Raylib + bug fixes"
   :author "(defun games ()) <hello@defungames.com>"
@@ -107,8 +114,7 @@
                    (:file "quat-conversion")
                    (:file "window-flags")
                    (:file "split-screen")
-                   (:file "smooth-pixelperfect")
-                   (:file "custom-frame-control")))
+                   (:file "smooth-pixelperfect"))))
                  (:module "shapes"
                   :components
                   ((:file "basic-shapes")
