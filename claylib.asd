@@ -114,7 +114,7 @@
                    (:file "quat-conversion")
                    (:file "window-flags")
                    (:file "split-screen")
-                   (:file "smooth-pixelperfect"))))
+                   (:file "smooth-pixelperfect")))
                  (:module "shapes"
                   :components
                   ((:file "basic-shapes")
