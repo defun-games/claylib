@@ -4,11 +4,27 @@
   (:export :main))
 (in-package #:claylib/examples/core-21)
 
+(defun save-storage-value (position value &optional (filename "storage.data"))
+  "Saves the 32 bit integer VALUE at POSITION (index) in the file named FILENAME."
+  (with-open-file (f filename :direction :output
+                              :element-type '(unsigned-byte 32)
+                              :if-exists :overwrite
+                              :if-does-not-exist :create)
+    (file-position f position)
+    (write-byte value f)))
+
+(defun load-storage-value (position &optional (filename "storage.data"))
+  (with-open-file (f filename :element-type '(unsigned-byte 32)
+                              :if-does-not-exist :create)
+    (file-position f position)
+    (read-byte f nil 0)))
+
 (defun main ()
   (with-window (:title "raylib [core] example - storage save/load values")
     (let ((score 0)
           (hiscore 0)
           (frames-counter 0)
+          (storage-file (claylib/examples:claylib-path "examples/core/storage.data"))
           (scene (make-scene ()
                              ((text1 (make-text "SCORE: 0" 280 130 :size 40 :color +maroon+))
                               (text2 (make-text "HI-SCORE: 0" 210 200 :size 50 :color +black+))
@@ -29,10 +45,10 @@
                   hiscore (get-random-value 2000 4000)))
           (cond
             ((is-key-pressed-p +key-enter+)
-             (save-storage-value 0 score) (save-storage-value 1 hiscore))
+             (save-storage-value 0 score storage-file) (save-storage-value 1 hiscore storage-file))
             ((is-key-pressed-p +key-space+)
-             (setf score (load-storage-value 0)
-                   hiscore (load-storage-value 1))))
+             (setf score (load-storage-value 0 storage-file)
+                   hiscore (load-storage-value 1 storage-file))))
           (incf frames-counter)
           (setf (text (scene-object scene 'text1)) (format nil "SCORE: ~d" score)
                 (text (scene-object scene 'text2)) (format nil "HI-SCORE: ~d" hiscore)
