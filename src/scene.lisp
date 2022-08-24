@@ -183,6 +183,16 @@ assets will be freed automatically. The objects also have their initialization d
                                        `(,obj (gethash ',obj (objects ,scene)))))
      ,@body))
 
+(defun scene-param (scene parameter)
+  (gethash parameter (parameters scene)))
+
+(defmacro with-scene-params (parameters scene &body body)
+  `(symbol-macrolet ,(loop for param in parameters
+                           collect (if (listp param)
+                                       `(,(car param) (gethash ,(cadr param) (parameters ,scene)))
+                                       `(,param (scene-param ,scene ',param))))
+     ,@body))
+
 (defmacro with-scenes (scenes &body body)
   "Execute BODY after loading & initializing SCENES, tearing them down afterwards.
 

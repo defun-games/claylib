@@ -95,20 +95,20 @@
 
    ;; Misc. convenience wrappers
    :with-window :do-game-loop :with-drawing :is-key-pressed-p :is-gesture-detected-p :is-key-down-p
-   :with-scene-objects :is-mouse-button-pressed-p :get-key-pressed :get-char-pressed
-   :is-mouse-button-down-p :make-vector2 :make-vector3 :make-vector4 :make-camera-3d
-   :make-camera-3d-from-vecs :make-camera-2d :make-camera-2d-from-vecs :make-color :make-rectangle
-   :make-rectangle-from-vecs :make-circle :make-grid :make-cube :make-cube-from-vecs :make-text
-   :make-line-2d :with-2d-mode :with-3d-mode :make-plane :make-ray :make-ray-collision :with-texture-mode
-   :with-scissor-mode :make-zero-matrix :is-window-state-p :make-triangle :make-triangle-from-vecs
-   :make-texture :make-texture-from-rec :make-empty-texture :make-texture-asset :get-gesture-detected
+   :is-mouse-button-pressed-p :get-key-pressed :get-char-pressed :is-mouse-button-down-p
+   :make-vector2 :make-vector3 :make-vector4 :make-camera-3d :make-camera-3d-from-vecs
+   :make-camera-2d :make-camera-2d-from-vecs :make-color :make-rectangle :make-rectangle-from-vecs
+   :make-circle :make-grid :make-cube :make-cube-from-vecs :make-text :make-line-2d :with-2d-mode
+   :with-3d-mode :make-plane :make-ray :make-ray-collision :with-texture-mode :with-scissor-mode
+   :make-zero-matrix :is-window-state-p :make-triangle :make-triangle-from-vecs :make-texture
+   :make-texture-from-rec :make-empty-texture :make-texture-asset :get-gesture-detected
    :is-mouse-button-released-p :make-polygon :make-font :make-image-asset :make-pixel :make-image
    :make-simple-rec :make-billboard :make-font-asset
 
    ;; Scenes
-   :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
-   :make-scene :objects :draw-scene-regex :with-scenes :set-up-scene :tear-down-scene :draw-objects
-   :make-scene-pro :parameters :assets
+   :draw-scene-all :scene-object :with-scene-objects :load-scene-all :unload-scene-all :draw-scene
+   :draw-scene-except :make-scene :objects :draw-scene-regex :with-scenes :set-up-scene
+   :tear-down-scene :draw-objects :make-scene-pro :parameters :assets :scene-param :with-scene-params
 
    ;; Generic functions/methods
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
