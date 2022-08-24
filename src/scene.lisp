@@ -9,9 +9,16 @@
                  :type hash-table
                  :initform (make-hash-table :test #'equalp)
                  :accessor assets)
+   (%parameters :initarg :parameters
+                :type hash-table
+                :initform (make-hash-table :test #'equalp)
+                :accessor parameters
+                :documentation "Things which are associated with a scene, are neither drawn nor
+loaded, but still may need to be freed according to the scene's freeing logic.")
    (%free :initarg :free
           :type keyword
-          :accessor free)))
+          :accessor free
+          :documentation "Determines when to free %GAME-ASSETS, %GAME-OBJECTS, & %PARAMETERS.")))
 
 (defun load-scene (scene &rest names)
   (dolist (asset names)
@@ -28,46 +35,38 @@
     (load-asset (cdr asset))))
 
 (defun unload-scene (scene &rest names)
-  (dolist (thing names)
-    (free (gethash thing (assets scene)))
-    (free (gethash thing (objects scene)))))
+  (loop for accessor in (list #'assets #'objects #'parameters)
+        do (dolist (thing names)
+             (free (gethash thing (funcall accessor scene))))))
 
 (defun unload-scene-all (scene)
-  (dolist (asset (alexandria:hash-table-values (assets scene)))
-    (free asset))
-  (dolist (obj (alexandria:hash-table-values (objects scene)))
-    (free obj)))
+  (loop for accessor in (list #'assets #'objects #'parameters)
+        do (dolist (thing (alexandria:hash-table-values (funcall accessor scene)))
+             (free thing))))
 
 (defun unload-scene-except (scene &rest names)
-  (dolist (asset (remove-if (lambda (kv)
-                              (member (car kv) names))
-                            (alexandria:hash-table-alist (assets scene))))
-    (free (cdr asset)))
-  (dolist (obj (remove-if (lambda (kv)
-                            (member (car kv) names))
-                          (alexandria:hash-table-alist (objects scene))))
-    (free (cdr obj))))
+  (loop for accessor in (list #'assets #'objects #'parameters)
+        do (dolist (thing (remove-if (lambda (kv)
+                                       (member (car kv) names))
+                                     (alexandria:hash-table-alist (funcall accessor scene))))
+             (free (cdr thing)))))
 
 (defun unload-scene-later (scene &rest names)
-  (dolist (thing names)
-    (free-later (gethash thing (assets scene)))
-    (free-later (gethash thing (objects scene)))))
+  (loop for accessor in (list #'assets #'objects #'parameters)
+        do (dolist (thing names)
+             (free-later (gethash thing (funcall accessor scene))))))
 
 (defun unload-scene-all-later (scene)
-  (dolist (asset (alexandria:hash-table-values (assets scene)))
-    (free-later asset))
-  (dolist (obj (alexandria:hash-table-values (objects scene)))
-    (free-later obj)))
+  (loop for accessor in (list #'assets #'objects #'parameters)
+        do (dolist (thing (alexandria:hash-table-values (funcall accessor scene)))
+             (free-later thing))))
 
 (defun unload-scene-except-later (scene &rest names)
-  (dolist (asset (remove-if (lambda (kv)
-                              (member (car kv) names))
-                            (alexandria:hash-table-alist (assets scene))))
-    (free-later (cdr asset)))
-  (dolist (obj (remove-if (lambda (kv)
-                            (member (car kv) names))
-                          (alexandria:hash-table-alist (objects scene))))
-    (free-later (cdr obj))))
+  (loop for accessor in (list #'assets #'objects #'parameters)
+        do (dolist (thing (remove-if (lambda (kv)
+                                       (member (car kv) names))
+                                     (alexandria:hash-table-alist (funcall accessor scene))))
+             (free-later (cdr thing)))))
 
 (defun draw-scene (scene &rest names)
   "Draw the objects in SCENE referred to by the symbols in NAMES."
@@ -113,7 +112,10 @@ This is handy when the objects are in scope already, for example via WITH-SCENE-
              ,sym)))))
 
 (defmacro make-scene (assets objects &key (free :now) (defer-init t))
-  "Make a GAME-SCENE.
+  "Make a GAME-SCENE from the given ASSETS and OBJECTS.
+
+FREE (one of :now, :later, or :never) determines when to free the objects and assets in a scene. See
+TEAR-DOWN-SCENE for details.
 
 DEFER-INIT will defer initialization of the scene's OBJECTS until later (usually via WITH-SCENES or
 SET-UP-SCENE directly). This is useful when your scene contains objects like TEXTURES which require
@@ -126,11 +128,49 @@ an OpenGL context before being loaded into the GPU."
     `(let ((,scene (make-instance 'game-scene :free ,free)))
        (let* (,@assets ,@objects)
          (declare (ignorable ,@(mapcar #'car (append assets objects))))
-         (progn
-           ,@(loop for (binding val) in assets
-                   collect `(setf (gethash ',binding (assets ,scene)) ,val))
-           ,@(loop for (binding val) in objects
-                   collect `(setf (gethash ',binding (objects ,scene)) ,val))))
+         ,@(loop for (binding val) in assets
+                 collect `(setf (gethash ',binding (assets ,scene)) ,val))
+         ,@(loop for (binding val) in objects
+                 collect `(setf (gethash ',binding (objects ,scene)) ,val)))
+       ,scene)))
+
+(defmacro make-scene-pro (groups &key (free :now) (defer-init t))
+  "Make a GAME-SCENE from the given GROUPS of assets, objects, or parameters.
+
+GROUPS is a plist whose indicators are the group type (one of :ASSETS, :OBJECTS, or :PARAMETERS) and
+whose values are lists of name-form pairs.
+
+FREE and DEFER-INIT act the same way as in MAKE-SCENE.
+
+For example, here we make a scene with an asset group and an object group. Neither the objects nor
+assets will be freed automatically. The objects also have their initialization deferred by default:
+
+(make-scene-pro (:assets
+                 ((texture-asset (make-texture-asset \"path/to/texture.png\"))
+                  (font-asset    (make-font-asset \"path/to/font.ttf\")))
+                 :objects
+                 ((ball (make-circle 10 10 5 +green+))))
+                :free :never)"
+  (let ((scene (gensym))
+        (objects (if defer-init
+                     (loop for (binding val) in (getf groups :objects)
+                           collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy))
+                             into deferred-objects
+                           finally (setf (getf groups :objects) deferred-objects)
+                                   (return deferred-objects))
+                     (getf groups :objects)))
+        (assets (getf groups :assets))
+        (parameters (getf groups :parameters))
+        (group-contents (reduce #'append (loop for (_ group) on groups by #'cddr collect group))))
+    `(let ((,scene (make-instance 'game-scene :free ,free)))
+       (let* ,group-contents
+         (declare (ignorable ,@(mapcar #'car group-contents)))
+         ,@(loop for (binding val) in parameters
+                 collect `(setf (gethash ',binding (parameters ,scene)) ,val))
+         ,@(loop for (binding val) in assets
+                 collect `(setf (gethash ',binding (assets ,scene)) ,val))
+         ,@(loop for (binding val) in objects
+                 collect `(setf (gethash ',binding (objects ,scene)) ,val)))
        ,scene)))
 
 (defun scene-object (scene object)
