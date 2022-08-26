@@ -152,25 +152,34 @@ assets will be freed automatically. The objects also have their initialization d
                  ((ball (make-circle 10 10 5 +green+))))
                 :free :never)"
   (let ((scene (gensym))
-        (objects (if defer-init
-                     (loop for (binding val) in (getf groups :objects)
-                           collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy))
-                             into deferred-objects
-                           finally (setf (getf groups :objects) deferred-objects)
-                                   (return deferred-objects))
-                     (getf groups :objects)))
-        (assets (getf groups :assets))
-        (parameters (getf groups :parameters))
-        (group-contents (reduce #'append (loop for (_ group) on groups by #'cddr collect group))))
+        (group-info (loop for (group-type bindings) on groups by #'cddr
+                           collect `(,group-type ,(length bindings))))
+        (all-bindings (progn
+                        (if defer-init
+                            (loop for (binding val) in (getf groups :objects)
+                                  collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy))
+                                    into deferred-objects
+                                  finally (setf (getf groups :objects) deferred-objects)
+                                          (return deferred-objects))
+                            (getf groups :objects))
+                        (reduce #'append (loop for (_ group) on groups by #'cddr collect group)))))
     `(let ((,scene (make-instance 'game-scene :free ,free)))
-       (let* ,group-contents
-         (declare (ignorable ,@(mapcar #'car group-contents)))
-         ,@(loop for (binding val) in parameters
-                 collect `(setf (gethash ',binding (parameters ,scene)) ,val))
-         ,@(loop for (binding val) in assets
-                 collect `(setf (gethash ',binding (assets ,scene)) ,val))
-         ,@(loop for (binding val) in objects
-                 collect `(setf (gethash ',binding (objects ,scene)) ,val)))
+       (let* ,all-bindings
+         (declare (ignorable ,@(mapcar #'car all-bindings)))
+         ,@(loop for prev-num-bindings = 0 then num-bindings
+                 for offset = 0 then (+ offset prev-num-bindings)
+                 for (group-type num-bindings) in group-info
+                 collect (loop for i below num-bindings
+                               for (binding val) in (subseq all-bindings offset)
+                               collect (case group-type
+                                         (:assets
+                                          `(setf (gethash ',binding (assets ,scene)) ,val))
+                                         (:objects
+                                          `(setf (gethash ',binding (objects ,scene)) ,val))
+                                         (:parameters
+                                          `(setf (gethash ',binding (parameters ,scene)) ,val))))
+                   into collection
+                 finally (return (reduce #'append collection))))
        ,scene)))
 
 (defun scene-object (scene object)
