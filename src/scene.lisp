@@ -128,10 +128,10 @@ an OpenGL context before being loaded into the GPU."
     `(let ((,scene (make-instance 'game-scene :free ,free)))
        (let* (,@assets ,@objects)
          (declare (ignorable ,@(mapcar #'car (append assets objects))))
-         ,@(loop for (binding val) in assets
-                 collect `(setf (gethash ',binding (assets ,scene)) ,val))
-         ,@(loop for (binding val) in objects
-                 collect `(setf (gethash ',binding (objects ,scene)) ,val)))
+         ,@(loop for (binding _) in assets
+                 collect `(setf (gethash ',binding (assets ,scene)) ,binding))
+         ,@(loop for (binding _) in objects
+                 collect `(setf (gethash ',binding (objects ,scene)) ,binding)))
        ,scene)))
 
 (defmacro make-scene-pro (groups &key (free :now) (defer-init t))
