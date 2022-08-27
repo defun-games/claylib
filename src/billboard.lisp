@@ -47,7 +47,9 @@ camera).")
   (apply #'make-instance 'billboard
          :allow-other-keys t
          :asset texture-asset
-         :camera camera
+         :camera (if (typep camera 'eager-future2:future)
+                     (eager-future2:yield camera)
+                     camera)
          :pos (make-vector3 x y z)
          :size (make-vector2 x-scale y-scale)
          :source source

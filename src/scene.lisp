@@ -153,16 +153,22 @@ assets will be freed automatically. The objects also have their initialization d
                 :free :never)"
   (let ((scene (gensym))
         (group-info (loop for (group-type bindings) on groups by #'cddr
-                           collect `(,group-type ,(length bindings))))
+                          collect `(,group-type ,(length bindings))))
         (all-bindings (progn
-                        (if defer-init
+                        (when defer-init
                             (loop for (binding val) in (getf groups :objects)
                                   collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy))
                                     into deferred-objects
-                                  finally (setf (getf groups :objects) deferred-objects)
-                                          (return deferred-objects))
-                            (getf groups :objects))
-                        (reduce #'append (loop for (_ group) on groups by #'cddr collect group)))))
+                                  finally (setf (getf groups :objects) deferred-objects)))
+                        ;; TODO delete after testing, find a better way to defer params
+                        (when defer-init
+                            (loop for (binding val) in (getf groups :parameters)
+                                  collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy))
+                                    into deferred-objects
+                                  finally (setf (getf groups :parameters) deferred-objects)))
+                        (reduce #'append (loop for (_ group) on groups
+                                                 by #'cddr
+                                               collect group)))))
     `(let ((,scene (make-instance 'game-scene :free ,free)))
        (let* ,all-bindings
          (declare (ignorable ,@(mapcar #'car all-bindings)))
@@ -170,14 +176,14 @@ assets will be freed automatically. The objects also have their initialization d
                  for offset = 0 then (+ offset prev-num-bindings)
                  for (group-type num-bindings) in group-info
                  collect (loop for i below num-bindings
-                               for (binding val) in (subseq all-bindings offset)
+                               for (binding _) in (subseq all-bindings offset)
                                collect (case group-type
                                          (:assets
-                                          `(setf (gethash ',binding (assets ,scene)) ,val))
+                                          `(setf (gethash ',binding (assets ,scene)) ,binding))
                                          (:objects
-                                          `(setf (gethash ',binding (objects ,scene)) ,val))
+                                          `(setf (gethash ',binding (objects ,scene)) ,binding))
                                          (:parameters
-                                          `(setf (gethash ',binding (parameters ,scene)) ,val))))
+                                          `(setf (gethash ',binding (parameters ,scene)) ,binding))))
                    into collection
                  finally (return (reduce #'append collection))))
        ,scene)))
@@ -214,6 +220,12 @@ Note: additional scenes can be loaded/freed at any point using {SET-UP,TEAR-DOWN
 
 (defmethod set-up-scene ((scene game-scene))
   (load-scene-all scene)
+  ;; TODO generalize
+  (maphash (lambda (binding val)
+             "Yield the futures in the parameters hash table in place."
+             (when (typep val 'eager-future2:future)
+               (setf (gethash binding (parameters scene)) (eager-future2:yield val))))
+           (parameters scene))
   (maphash (lambda (binding val)
              "Yield the futures in the objects hash table in place."
              (when (typep val 'eager-future2:future)
