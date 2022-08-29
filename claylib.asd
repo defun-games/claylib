@@ -108,6 +108,7 @@
                    (:file "3d-picking")
                    (:file "world-screen")
                    (:file "window-letterbox")
+                   (:file "window-should-close")
                    (:file "random-values")
                    (:file "scissor-test")
                    (:file "storage-values")
