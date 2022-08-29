@@ -24,7 +24,7 @@
                      :vars ((exit-window-requested nil)
                             (exit-window nil))
                      :end exit-window)
-        (when (or (claylib/ll:window-should-close-p) (is-key-pressed-p +key-escape+))
+        (when (or (window-should-close-p) (is-key-pressed-p +key-escape+))
           (setf exit-window-requested t))
 
         (when exit-window-requested
