@@ -88,7 +88,7 @@
   :license "zlib"
   :version "0.0.1"
   :serial t
-  :depends-on (#:claylib #:alexandria)
+  :depends-on (#:claylib #:alexandria #:bordeaux-threads)
   :components ((:module "examples"
                 :components
                 ((:file "package")
@@ -109,6 +109,7 @@
                    (:file "world-screen")
                    (:file "window-letterbox")
                    (:file "random-values")
+                   (:file "loading-thread")
                    (:file "scissor-test")
                    (:file "storage-values")
                    (:file "quat-conversion")
