@@ -47,11 +47,11 @@ function has been running."
                              (setf (width progress-bar) *data-progress*)
                              (unless (bt:thread-alive-p thread)
                                (setf frames-counter 0
+                                     (color progress-bar) +lime+
                                      state :finished))))
-            (:finished (progn (setf (color progress-bar) +lime+)
-                              (when (is-key-pressed-p +key-enter+)
-                                (setf *data-progress* 0
-                                      state :waiting)))))
+            (:finished (when (is-key-pressed-p +key-enter+)
+                         (setf *data-progress* 0
+                               state :waiting))))
           (with-drawing ()
             (case state
               (:waiting (draw-scene *scene* 'text-start 'border))
