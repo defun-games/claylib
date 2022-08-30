@@ -104,6 +104,15 @@
 
 (defreader c-asset texture-object c-asset asset)
 
+(defreader x texture-object x dest)
+(defreader y texture-object y dest)
+(defreader width texture-object width dest)
+(defreader height texture-object height dest)
+(defwriter x texture-object x dest)
+(defwriter y texture-object y dest)
+(defwriter width texture-object width dest)
+(defwriter height texture-object height dest)
+
 (defmethod (setf texture) :before ((asset texture-asset) (obj texture-object))
   ;; Handle the case where a default source was set, and now the asset is changing.
   ;; We want to reset the source to match the new texture-asset.
