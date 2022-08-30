@@ -72,7 +72,8 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
                           (title "")
                           (fps *target-fps*)
                           (flags ())
-                          (min-size ()))
+                          (min-size ())
+                          exit-key)
                        &body body)
   `(progn
      (claylib/ll:init-window ,width ,height ,title)
@@ -83,6 +84,8 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
         `(claylib/ll:set-config-flags (reduce #'+ ,flags)))
      ,(when min-size
         `(claylib/ll:set-window-min-size ,(car min-size) ,(cadr min-size)))
+     ,(when exit-key
+        `(claylib/ll:set-exit-key ,exit-key))
      ,@body
      (free +default-font+)
      (collect-garbage)
