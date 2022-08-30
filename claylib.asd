@@ -130,6 +130,7 @@
                   :components
                   ((:file "logo-raylib")
                    (:file "mouse-painting")
+                   (:file "background-scrolling")
                    (:file "sprite-anim")
                    (:file "srcrec-dstrec")
                    (:file "image-drawing")))
