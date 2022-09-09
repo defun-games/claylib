@@ -92,13 +92,34 @@
 (defreader bones model-asset bones asset)
 (defreader bind-pose model-asset bind-pose asset)
 
+(defwriter mesh-count model-asset mesh-count asset)
+(defwriter material-count model-asset material-count asset)
+(defwriter mesh-material model-asset mesh-material asset)
+(defwriter bone-count model-asset bone-count asset)
+(defwriter transform model-asset transform asset)
+(defwriter meshes model-asset meshes asset)
+(defwriter materials model-asset materials asset)
+(defwriter bones model-asset bones asset)
+(defwriter bind-pose model-asset bind-pose asset)
+
 (defmethod load-asset ((asset model-asset) &key force-reload)
+  ;; TODO: use this below
+  ;; (flet ((load-it (rl-model path)
+  ;;          "Extract the model data from the file at PATH, then plug it into RL-MODEL's fields."
+  ;;          (let ((model-data (extract-model-data path)))
+  ;;            (setf (mesh-count rl-model) (getf model-data :mesh-count)
+  ;;                  ...))))
+  ;;   ...)
   (cond
     ((null (asset asset))
      (let ((model (make-instance 'rl-model)))
+       ;; TODO: replace following sexp with:
+       ;; (load-it model (path asset))
        (claylib/ll:load-model (c-struct model) (namestring (path asset)))
        (setf (asset asset) model)))
     (force-reload
+     ;; TODO: replace following sexp with:
+     ;; (load-it (c-asset asset) (path asset))
      (claylib/ll:load-model (c-asset asset) (namestring (path asset)))))
   asset)
 

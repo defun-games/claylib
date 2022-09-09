@@ -53,17 +53,12 @@
 
 
 (defclass model (rl-model 3d-object)
-  ((%asset :initarg :asset
-           :type model-asset
-           :accessor asset)
-   (%scale :initarg :scale
+  ((%scale :initarg :scale
            :type rl-vector3
            :accessor scale)
    (%tint :initarg :tint
           :type rl-color
           :accessor tint)))
-
-(defreader c-asset model c-asset asset)
 
 (definitializer model (scale rl-vector3 nil) (tint rl-color nil))
 
@@ -72,22 +67,48 @@
 
 (defun make-model (model-asset x y z
                    &rest args &key scale tint rot-angle rot-axis)
-  "Make a model ready for drawing. Loads MODEL-ASSET when not already loaded."
+  "Make a Claylib model.
+
+Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASSET."
   (declare (ignore scale tint rot-angle rot-axis))
   (load-asset model-asset)
   (apply #'make-instance 'model
-         :asset model-asset
          :pos (make-vector3 x y z)
-         args))
+         args)
+  ;; TODO: Set the rl-model fields to the model-asset data.
+  ;; Either allow this in initargs above or use the cwriters here, e.g.
+  ;;
+  ;; (setf (meshes model) (meshes model-asset)          ; pointer, a proper re-use!
+  ;;       (mesh-count model) (mesh-count model-asset)) ; integer, nothing to see here
+  ;;
+  ;; TODO: initialize fresh transforms and such
+  )
 
 (defmethod free ((obj model))
   (free (scale obj))
   (call-next-method))
 
 (defmethod draw-object ((obj model))
-  (claylib/ll:draw-model-ex (c-asset obj)
+  (claylib/ll:draw-model-ex (c-struct obj)
                             (c-struct (pos obj))
                             (c-struct (rot-axis obj))
                             (rot-angle obj)
                             (c-struct (scale obj))
                             (c-struct (tint obj))))
+
+(defun extract-model-data (path)
+  "Return a plist of the model data of interest in the file at PATH."
+  (let* ((rl-model (make-instance 'rl-model))
+         (c-model (c-struct rl-model)))
+    (claylib/ll:load-model c-model (namestring path))
+    ;; TODO: make copies of the following fields, need copy functions!
+    (list :mesh-count     (mesh-count rl-model)
+          :material-count (material-count rl-model)
+          :meshes         (model.meshes c-model)
+          :materials      (model.materials c-model)
+          :mesh-material  (mesh-material rl-model)
+          :bone-count     (bone-count rl-model)
+          :bones          (model.bones c-model)
+          :bind-pose      (model.bind-pose c-model))
+    ;; TODO: free rl-model
+    ))
