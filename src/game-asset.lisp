@@ -102,6 +102,10 @@
      (claylib/ll:load-model (c-asset asset) (namestring (path asset)))))
   asset)
 
+(defun make-model-asset (path &key (load-now nil))
+  "Make a model asset from a PATH. This does not load the model unless LOAD-NOW is non-nil."
+  (make-instance 'model-asset :path path :load-now load-now))
+
 
 
 (defclass shader-asset (game-asset)
@@ -217,6 +221,10 @@
              (load-model-animations (namestring (path asset)) (i &))
              (num asset) i))))
   asset)
+
+(defun make-animation-asset (path &key (load-now nil))
+  "Make an animation asset from a PATH. This does not load the model unless LOAD-NOW is non-nil."
+  (make-instance 'animation-asset :path path :load-now load-now))
 
 (defmethod free ((asset animation-asset))
   (when (and (asset asset)
