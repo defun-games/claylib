@@ -103,24 +103,29 @@
 (defwriter bind-pose model-asset bind-pose asset)
 
 (defmethod load-asset ((asset model-asset) &key force-reload)
-  ;; TODO: use this below
-  ;; (flet ((load-it (rl-model path)
-  ;;          "Extract the model data from the file at PATH, then plug it into RL-MODEL's fields."
-  ;;          (let ((model-data (extract-model-data path)))
-  ;;            (setf (mesh-count rl-model) (getf model-data :mesh-count)
-  ;;                  ...))))
-  ;;   ...)
-  (cond
-    ((null (asset asset))
-     (let ((model (make-instance 'rl-model)))
-       ;; TODO: replace following sexp with:
-       ;; (load-it model (path asset))
-       (claylib/ll:load-model (c-struct model) (namestring (path asset)))
-       (setf (asset asset) model)))
-    (force-reload
-     ;; TODO: replace following sexp with:
-     ;; (load-it (c-asset asset) (path asset))
-     (claylib/ll:load-model (c-asset asset) (namestring (path asset)))))
+  (flet ((load-it (rl-model path)
+           "Extract the model data from the file at PATH, then plug it into RL-MODEL's fields."
+           (let ((model-data (extract-model-data path)))
+             (set-model (c-struct rl-model)
+                        (getf model-data :transform)
+                        (getf model-data :mesh-count)
+                        (getf model-data :material-count)
+                        (getf model-data :meshes)
+                        (getf model-data :materials)
+                        (getf model-data :mesh-material)
+                        (getf model-data :bone-count)
+                        (getf model-data :bones)
+                        (getf model-data :bind-pose)))))
+    (cond
+      ((null (asset asset))
+       (let ((model (make-instance 'rl-model)))
+         (load-it model (path asset))
+         ;(claylib/ll:load-model (c-struct model) (namestring (path asset)))
+         (setf (asset asset) model)))
+      (force-reload
+       (load-it (c-asset asset) (path asset))
+       ;(claylib/ll:load-model (c-asset asset) (namestring (path asset)))
+       )))
   asset)
 
 (defun make-model-asset (path &key (load-now nil))

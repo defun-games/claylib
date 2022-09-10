@@ -102,7 +102,8 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
          (c-model (c-struct rl-model)))
     (claylib/ll:load-model c-model (namestring path))
     ;; TODO: make copies of the following fields, need copy functions!
-    (list :mesh-count     (mesh-count rl-model)
+    (list :transform      (model.transform c-model)
+          :mesh-count     (mesh-count rl-model)
           :material-count (material-count rl-model)
           :meshes         (model.meshes c-model)
           :materials      (model.materials c-model)

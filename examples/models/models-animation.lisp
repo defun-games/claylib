@@ -21,12 +21,12 @@
                                        0 0 0
                                        0 1 0
                                        :mode +camera-free+))
-               #|
+               
                (model (claylib::make-model model-asset     ; TODO: This form causes a double free on quit
                                   0 0 0
                                   :rot-axis (make-vector3 1 0 0)
                                   :rot-angle -90
-                                  :tint +white+))|#
+                                  :tint +white+))
                (grid (make-grid 10 1))
                (instructions (make-text "PRESS SPACE to PLAY MODEL ANIMATION"
                                         10 10

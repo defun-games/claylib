@@ -475,6 +475,10 @@
    ;; Convenience wrappers
    :close-window-p :run-window-p :with-window :loop-drawing :do-drawing :with-drawing :with-mode2d
    :with-mode3d :set-vector2 :set-vector3 :set-vector4 :with-texture-mode :with-scissor-mode
+   :set-matrix :set-color :set-rectangle :set-image :set-texture :set-render-texture :set-n-patch-info
+   :set-glyph-info :set-font :set-camera3d :set-camera2d :set-mesh :set-shader :set-material-map
+   :set-material :set-transform :set-bone-info :set-model :set-model-animation :set-ray :set-ray-collision
+   :set-bounding-box :set-wave :set-audio-stream :set-sound :set-music
 
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps*))
