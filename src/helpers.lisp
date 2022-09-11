@@ -170,7 +170,8 @@ This macro adds type checking, finalizers where needed, and makes sure to use SE
 Note that you may pass NIL as COERCE-TYPE if you only want to use a default value without
 type coercion."
   (let ((obj (gensym))
-        (ptr (gensym)))
+        (ptr (gensym))
+        (new (gensym)))
     `(defmethod initialize-instance :after ((,obj ,type)
                                             &key ,@(mapcar #'(lambda (slot)
                                                                (if (= (length slot) 4)
@@ -179,16 +180,28 @@ type coercion."
                                                            slots))
        ,@(expand-check-types slots t)
        ,@(loop for slot in slots
-               collect (destructuring-bind (accessor type &optional coerce-type default-value) slot
+               collect (destructuring-bind (accessor slot-type &optional coerce-type default-value) slot
                          (declare (ignore default-value))
-                         `(when (or ,(eql type 'boolean) ,accessor)
-                            ,(if (and (subtypep type 'standard-object)
-                                      (= (length slot) 2))
-                                 `(set-slot ,(alexandria:make-keyword accessor) ,obj ,accessor)
-                                 `(setf (,accessor ,obj)
-                                        ,(if coerce-type
-                                             `(coerce ,accessor ',coerce-type)
-                                             accessor))))))
+                         (if (and (subtypep slot-type 'standard-object)
+                                  (= (length slot) 2))
+                             `(if ,accessor
+                                  (set-slot ,(alexandria:make-keyword accessor) ,obj ,accessor)
+                                  (let ((,new (make-instance ',(alexandria:symbolicate
+                                                                (format nil "RL-~a" accessor)))))
+                                    (free-later (c-struct ,new))
+                                    (setf (,accessor ,obj) ,new
+                                          (c-struct ,new) (,(alexandria:symbolicate
+                                                             (cadr
+                                                              (cl-ppcre:split "RL-"
+                                                                              (format nil "~a" type)))
+                                                             "."
+                                                             accessor)
+                                                           (c-struct ,obj)))))
+                             `(when (or ,(eql slot-type 'boolean) ,accessor)
+                                (setf (,accessor ,obj)
+                                      ,(if coerce-type
+                                           `(coerce ,accessor ',coerce-type)
+                                           accessor))))))
        (when (and (rl-class-p ',type)
                   (c-struct ,obj))
          ;; TODO: This probably needs a child wrapper check.

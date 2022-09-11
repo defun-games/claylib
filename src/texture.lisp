@@ -59,6 +59,7 @@
   (claylib/ll:set-texture-wrap (c-struct texture) value)
   (setf (slot-value texture '%wrap) value))
 
+;; TODO: Add defaults for %filter and %wrap (may need to figure out what those are)
 (default-slot-value tex %origin (make-vector2 0 0))
 (default-slot-value tex %rotation 0.0)
 (default-slot-value tex %tint +white+)

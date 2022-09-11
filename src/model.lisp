@@ -3,19 +3,19 @@
 (defclass rl-model ()
   ((%transform :initarg :transform
                :type rl-matrix
-               :reader transform)
+               :accessor transform)
    (%meshes :initarg :meshes
                                         ; TODO: type (pointer)
-            :reader meshes)
+            :accessor meshes)
    (%materials :initarg :materials
                                         ; TODO: type (pointer)
-               :reader materials)
+               :accessor materials)
    (%bones :initarg :bones
                                         ; TODO: type (pointer)
-           :reader bones)
+           :accessor bones)
    (%bind-pose :initarg :bind-pose
                :type rl-transform ; pointer
-               :reader bind-pose)
+               :accessor bind-pose)
    (%c-struct
     :type claylib/ll:model
     :initform (autowrap:alloc 'claylib/ll:model)
@@ -58,23 +58,48 @@
            :accessor scale)
    (%tint :initarg :tint
           :type rl-color
-          :accessor tint)))
+          :accessor tint)
+   (%filled :initarg :filled
+            :type boolean
+            :accessor filled)
+   (%asset :initarg :asset
+           :type model-asset
+           :accessor asset)))
 
 (definitializer model (scale rl-vector3 nil) (tint rl-color nil))
 
 (default-slot-value model %scale (make-vector3 1 1 1))
 (default-slot-value model %tint +white+)
+(default-slot-value model %filled t)
 
 (defun make-model (model-asset x y z
-                   &rest args &key scale tint rot-angle rot-axis)
+                   &rest args &key scale tint rot-angle rot-axis filled
+                                transform mesh-count material-count meshes
+                                materials mesh-material bone-count bones
+                                bind-pose)
   "Make a Claylib model.
 
 Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASSET."
-  (declare (ignore scale tint rot-angle rot-axis))
+  (declare (ignore scale tint rot-angle rot-axis filled))
   (load-asset model-asset)
-  (apply #'make-instance 'model
-         :pos (make-vector3 x y z)
-         args)
+  (let ((model (apply #'make-instance 'model
+                      :allow-other-keys t
+                      :asset model-asset
+                      :pos (make-vector3 x y z)
+                      args))
+        (rl-asset model-asset))
+    (setf (transform model) (or transform (transform rl-asset))
+          (mesh-count model) (or mesh-count (mesh-count rl-asset))
+          (material-count model) (or material-count (material-count rl-asset))
+          (meshes model) (or meshes (meshes rl-asset))
+          (materials model) (or materials (materials rl-asset))
+          (mesh-material model) (or mesh-material (mesh-material rl-asset))
+          (bone-count model) (or bone-count (bone-count rl-asset))
+          (bones model) (or bones (bones rl-asset))
+          (bind-pose model) (or bind-pose (bind-pose rl-asset))
+          ; TODO: anims
+          )
+    model)
   ;; TODO: Set the rl-model fields to the model-asset data.
   ;; Either allow this in initargs above or use the cwriters here, e.g.
   ;;
