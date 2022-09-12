@@ -120,12 +120,9 @@
       ((null (asset asset))
        (let ((model (make-instance 'rl-model)))
          (load-it model (path asset))
-         ;(claylib/ll:load-model (c-struct model) (namestring (path asset)))
          (setf (asset asset) model)))
       (force-reload
-       (load-it (c-asset asset) (path asset))
-       ;(claylib/ll:load-model (c-asset asset) (namestring (path asset)))
-       )))
+       (load-it (asset asset) (path asset)))))
   asset)
 
 (defun make-model-asset (path &key (load-now nil))
