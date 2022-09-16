@@ -5,13 +5,13 @@
                :type rl-matrix
                :reader transform)
    (%meshes :initarg :meshes
-                                        ; TODO: type (pointer)
+            :type rl-meshes
             :reader meshes)
    (%materials :initarg :materials
-                                        ; TODO: type (pointer)
+                                        ; TODO: make rl-materials sequence type
                :reader materials)
    (%bones :initarg :bones
-                                        ; TODO: type (pointer)
+                                        ; TODO: make rl-bones sequence type
            :reader bones)
    (%bind-pose :initarg :bind-pose
                :type rl-transform ; pointer
@@ -32,18 +32,23 @@
 (defcwriter bone-count rl-model bone-count model integer)
 (defcwriter-struct transform rl-model transform model matrix
   m0 m1 m2 m3 m4 m5 m6 m7 m8 m9 m10 m11 m12 m13 m14 m15)
-(defcwriter-struct meshes rl-model meshes model mesh ; pointer
-  vertex-count triangle-count vertices texcoords texcoords2 normals tangents colors
-  indices anim-vertices anim-normals bone-ids bone-weights vao-id vbo-id)
-(defcwriter-struct materials rl-model materials model material ; pointer
-  shader maps params)
-(defcwriter-struct bones rl-model bones model bone-info ; pointer
-  name parent)
-(defcwriter-struct bind-pose rl-model bind-pose model transform ; pointer
-  trans rot scale)
+;;
+;; TODO make special writers that translate this into code:
+;; When we set the meshes slot of an rl-model [to an rl-meshes object], set the meshes field in its
+;; C struct to the pointer held in the %pointer slot of the rl-meshes object
+;;
+;; (defcwriter-struct meshes rl-model meshes model mesh ; pointer
+;;   vertex-count triangle-count vertices texcoords texcoords2 normals tangents colors
+;;   indices anim-vertices anim-normals bone-ids bone-weights vao-id vbo-id)
+;; (defcwriter-struct materials rl-model materials model material ; pointer
+;;   shader maps params)
+;; (defcwriter-struct bones rl-model bones model bone-info ; pointer
+;;   name parent)
+;; (defcwriter-struct bind-pose rl-model bind-pose model transform ; pointer
+;;   trans rot scale)
 
 (definitializer rl-model
-  (transform rl-matrix) (mesh-count integer) (material-count integer) (meshes rl-mesh)
+  (transform rl-matrix) (mesh-count integer) (material-count integer) (meshes rl-meshes)
   (materials rl-material) (mesh-material integer) (bone-count integer)
   (bones rl-bone-info) (bind-pose rl-transform))
 
@@ -72,17 +77,28 @@
 Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASSET."
   (declare (ignore scale tint rot-angle rot-axis))
   (load-asset model-asset)
-  (apply #'make-instance 'model
-         :pos (make-vector3 x y z)
-         args)
-  ;; TODO: Set the rl-model fields to the model-asset data.
-  ;; Either allow this in initargs above or use the cwriters here, e.g.
-  ;;
-  ;; (setf (meshes model) (meshes model-asset)          ; pointer, a proper re-use!
-  ;;       (mesh-count model) (mesh-count model-asset)) ; integer, nothing to see here
-  ;;
-  ;; TODO: initialize fresh transforms and such
-  )
+  (let ((model (apply #'make-instance 'model
+                      :pos (make-vector3 x y z)
+                      args))
+        (base-model (c-asset model-asset)))
+    (set-model (c-struct model)
+               (c-struct (make-zero-matrix))  ; fresh transform for each instance
+               (mesh-count model-asset)
+               (material-count model-asset)
+               (model.meshes (c-asset model-asset))
+               (model.materials (c-asset model-asset))
+               (mesh-material model-asset)
+               (bone-count model-asset)
+               (model.bones (c-asset model-asset))
+               (model.bind-pose (c-asset model-asset)))
+    (setf (meshes model) (make-instance 'rl-meshes
+                                        :pointer (model.meshes (c-asset model-asset))
+                                        :mesh-count (mesh-count model-asset))
+          ;; TODO make rl-materials
+          ;; TODO make rl-bones
+          ;; TODO make rl-bind-pose
+          )
+    model))
 
 (defmethod free ((obj model))
   (free (scale obj))

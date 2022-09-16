@@ -52,14 +52,13 @@
 
 
 
-;; TODO when we make-model, set %meshes to an rl-meshes object holding the model.meshes pointer
 (defclass rl-meshes (sequence)
   ((%pointer :initarg :pointer
              :initform (error "Must give initial :POINTER argument.")
              :accessor pointer
              :documentation "The pointer a raylib Model keeps in their meshes field.")
    ;; Note: On init, we can set to the mesh-count of the model. But we must update mesh-count
-   ;; manually when the # of elements changes
+   ;; manually whenever the # of elements changes
    (%mesh-count :initarg :mesh-count
                 :initform (error "Must give initial :MESH-COUNT argument.")
                 :reader mesh-count
@@ -72,8 +71,15 @@
   (check-type index integer)
   (when (>= index (mesh-count sequence))
     (error "Index out of bounds."))
-  (cffi:mem-aref (pointer sequence) :mesh index))
+  (autowrap:c-aref sequence index 'mesh))
 
 (defmethod (setf sequences:elt) (value (sequence rl-meshes) index)
   (check-type index integer)
   ())
+
+(defmethod sequences:adjust-sequence ((sequence rl-meshes) length
+                                      &key initial-contents initial-element)
+  )
+
+(defmethod sequences:make-sequence-like ((sequence rl-meshes) length
+                                         &key initial-contents initial-element))
