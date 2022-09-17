@@ -1,12 +1,13 @@
 (in-package #:claylib)
 
-(defclass game-asset ()
-  ((%path :initarg :path
-          :type pathname
-          :accessor path)
-   (%asset
-    :initform nil
-    :accessor asset)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass game-asset ()
+    ((%path :initarg :path
+            :type pathname
+            :accessor path)
+     (%asset
+      :initform nil
+      :accessor asset))))
 
 (defreader c-asset game-asset c-struct asset)
 (defwriter c-asset game-asset c-struct asset)
@@ -24,8 +25,9 @@
 
 
 
-(defclass image-asset (game-asset)
-  ((%asset :type (or rl-image null))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass image-asset (game-asset)
+    ((%asset :type (or rl-image null)))))
 
 (defreader data image-asset data asset)
 (defreader width image-asset width asset)
@@ -54,8 +56,9 @@
 
 
 
-(defclass texture-asset (game-asset)
-  ((%asset :type (or rl-texture null))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass texture-asset (game-asset)
+    ((%asset :type (or rl-texture null)))))
 
 (defreader id texture-asset id asset)
 (defreader width texture-asset width asset)
@@ -79,8 +82,9 @@
 
 
 
-(defclass model-asset (game-asset)
-  ((%asset :type (or rl-model null))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass model-asset (game-asset)
+    ((%asset :type (or rl-model null)))))
 
 (defreader mesh-count model-asset mesh-count asset)
 (defreader material-count model-asset material-count asset)
@@ -134,14 +138,15 @@
 
 
 
-(defclass shader-asset (game-asset)
-  ((%vspath :initarg :vspath
-            :type (or pathname null)
-            :accessor vspath)
-   (%fspath :initarg :fspath
-            :type (or pathname null)
-            :accessor fspath)
-   (%asset :type (or rl-shader null))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass shader-asset (game-asset)
+    ((%vspath :initarg :vspath
+              :type (or pathname null)
+              :accessor vspath)
+     (%fspath :initarg :fspath
+              :type (or pathname null)
+              :accessor fspath)
+     (%asset :type (or rl-shader null)))))
 
 (defreader id shader-asset id asset)
 (defreader locs shader-asset locs asset)
@@ -165,17 +170,18 @@
 
 
 
-(defclass font-asset (game-asset)
-  ((%font-size :initarg :size
-               :type integer
-               :writer (setf size))
-   (%font-chars :initarg :chars
-                :type integer
-                :accessor chars)
-   (%glyph-count :initarg :glyph-count
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass font-asset (game-asset)
+    ((%font-size :initarg :size
                  :type integer
-                 :writer (setf glyph-count))
-   (%asset :type (or rl-font null))))
+                 :writer (setf size))
+     (%font-chars :initarg :chars
+                  :type integer
+                  :accessor chars)
+     (%glyph-count :initarg :glyph-count
+                   :type integer
+                   :writer (setf glyph-count))
+     (%asset :type (or rl-font null)))))
 
 (defmethod size ((obj font-asset))
   (if (asset obj)
@@ -222,11 +228,12 @@
 
 
 
-(defclass animation-asset (game-asset)
-  ((%num
-    :type integer
-    :accessor num)
-   (%asset :type (or rl-model-animation null))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass animation-asset (game-asset)
+    ((%num
+      :type integer
+      :accessor num)
+     (%asset :type (or rl-model-animation null)))))
 
 (defreader bone-count animation-asset bone-count asset)
 (defreader frame-count animation-asset frame-count asset)

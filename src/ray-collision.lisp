@@ -1,16 +1,17 @@
 (in-package #:claylib)
 
-(defclass rl-ray-collision ()
-  ((%point :initarg :point
-           :type rl-vector3
-           :reader point)
-   (%normal :initarg :normal
-            :type rl-vector3
-            :reader normal)
-   (%c-struct
-    :type claylib/ll:ray-collision
-    :initform (autowrap:alloc 'claylib/ll:ray-collision)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-ray-collision ()
+    ((%point :initarg :point
+             :type rl-vector3
+             :reader point)
+     (%normal :initarg :normal
+              :type rl-vector3
+              :reader normal)
+     (%c-struct
+      :type claylib/ll:ray-collision
+      :initform (autowrap:alloc 'claylib/ll:ray-collision)
+      :accessor c-struct))))
 
 (defcreader-bool hit rl-ray-collision hit ray-collision)
 (defcreader distance rl-ray-collision distance ray-collision)
@@ -21,7 +22,9 @@
 (defcwriter-struct normal rl-ray-collision normal ray-collision vector3 x y z)
 
 (definitializer rl-ray-collision
-    (hit boolean nil nil) (distance number float 0.0) (point rl-vector3) (normal rl-vector3))
+  :struct-slots ((%point) (%normal))
+  :pt-accessors ((hit boolean)
+                 (distance number float)))
 
 (default-free rl-ray-collision)
 (default-free-c claylib/ll:ray-collision)

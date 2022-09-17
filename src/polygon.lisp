@@ -1,29 +1,33 @@
 (in-package #:claylib)
 
-(defclass polygon (2d-shape)
-  ((%sides :initarg :sides
-           :type integer
-           :accessor sides)
-   (%radius :initarg :radius
-            :type (or integer float)
-            :reader radius)
-   (%rotation :initarg :rot
-              :type (or integer float)
-              :reader rot)
-   (%thickness :initarg :thickness
-               :type (or integer float)
-               :reader thickness)))
-
-(default-slot-value polygon %thickness 1.0)
-(default-slot-value polygon %rotation 0.0)
-(default-slot-value polygon %filled t)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass polygon (2d-shape)
+    ((%sides :initarg :sides
+             :type integer
+             :accessor sides)
+     (%radius :initarg :radius
+              :type number
+              :reader radius)
+     (%rotation :initarg :rot
+                :type number
+                :reader rot)
+     (%thickness :initarg :thickness
+                 :type number
+                 :reader thickness))))
 
 (defwriter-float radius polygon)
 (defwriter-float rot polygon %rotation)
 (defwriter-float thickness polygon)
 
 (definitializer polygon
-    (sides integer nil) (radius number float) (rot number float) (thickness number float))
+  :lisp-slots ((%sides)
+               (%radius t)
+               (%rotation t)
+               (%thickness t)))
+
+(default-slot-value polygon %thickness 1.0)
+(default-slot-value polygon %rotation 0.0)
+(default-slot-value polygon %filled t)
 
 (defun make-polygon (x y sides radius color
                      &rest args &key rotation thickness filled)

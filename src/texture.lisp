@@ -1,10 +1,11 @@
 (in-package #:claylib)
 
-(defclass rl-texture ()
-  ((%c-struct
-    :type claylib/ll:texture
-    :initform (autowrap:alloc 'claylib/ll:texture)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-texture ()
+    ((%c-struct
+      :type claylib/ll:texture
+      :initform (autowrap:alloc 'claylib/ll:texture)
+      :accessor c-struct))))
 
 (defcreader id rl-texture id texture)
 (defcreader width rl-texture width texture)
@@ -19,35 +20,40 @@
 (defcwriter data-format rl-texture format texture integer)
 
 (definitializer rl-texture
-    (id integer) (width integer) (height integer) (mipmaps integer) (data-format integer))
+  :pt-accessors ((id integer)
+                 (width integer)
+                 (height integer)
+                 (mipmaps integer)
+                 (data-format integer)))
 
 (default-free rl-texture)
 (default-free-c claylib/ll:texture unload-texture t)
 
 
 
-(defclass tex ()
-  ((%filter :initarg :filter
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass tex ()
+    ((%filter :initarg :filter
+              :type integer
+              :reader filter)
+     (%wrap :initarg :wrap
             :type integer
-            :reader filter)
-   (%wrap :initarg :wrap
-          :type integer
-          :reader wrap)
-   (%source :initarg :source
+            :reader wrap)
+     (%source :initarg :source
+              :type rl-rectangle
+              :accessor source)
+     (%dest :initarg :dest
             :type rl-rectangle
-            :accessor source)
-   (%dest :initarg :dest
-          :type rl-rectangle
-          :accessor dest)
-   (%origin :initarg :origin
-            :type rl-vector2
-            :accessor origin)
-   (%rotation :initarg :rot
-              :type (or float integer)
-              :reader rot)
-   (%tint :initarg :tint
-          :type rl-color
-          :accessor tint)))
+            :accessor dest)
+     (%origin :initarg :origin
+              :type rl-vector2
+              :accessor origin)
+     (%rotation :initarg :rot
+                :type number
+                :reader rot)
+     (%tint :initarg :tint
+            :type rl-color
+            :accessor tint))))
 
 (defwriter-float rot tex %rotation)
 
@@ -59,7 +65,17 @@
   (claylib/ll:set-texture-wrap (c-struct texture) value)
   (setf (slot-value texture '%wrap) value))
 
-;; TODO: Add defaults for %filter and %wrap (may need to figure out what those are)
+(definitializer tex
+  :lisp-slots ((%filter t)
+               (%wrap t)
+               (%source)
+               (%dest)
+               (%origin)
+               (%rotation t)
+               (%tint)))
+
+(default-slot-value tex %filter +texture-filter-point+)
+(default-slot-value tex %wrap +texture-wrap-repeat+)
 (default-slot-value tex %origin (make-vector2 0 0))
 (default-slot-value tex %rotation 0.0)
 (default-slot-value tex %tint +white+)
@@ -75,7 +91,8 @@
 
 
 
-(defclass texture (rl-texture tex) ())
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass texture (rl-texture tex) ()))
 
 (defmethod slot-unbound (_ (obj texture) (slot (eql '%source)))
   (setf (slot-value obj slot) (make-instance 'rl-rectangle
@@ -98,10 +115,11 @@
 
 
 
-(defclass texture-object (tex)
-  ((%asset :initarg :asset
-           :type texture-asset
-           :accessor asset)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass texture-object (tex)
+    ((%asset :initarg :asset
+             :type texture-asset
+             :accessor asset))))
 
 (defreader c-asset texture-object c-asset asset)
 
@@ -125,6 +143,9 @@
              (= (height (source obj)) (height (asset obj))))
     (setf (width (source obj)) (width asset)
           (height (source obj)) (height asset))))
+
+(definitializer texture-object
+  :lisp-slots ((%asset)))
 
 (defmethod slot-unbound (_ (obj texture-object) (slot (eql '%source)))
   (setf (slot-value obj slot) (make-instance 'rl-rectangle
@@ -166,17 +187,18 @@
 
 
 
-(defclass rl-render-texture ()
-  ((%texture :initarg :texture
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-render-texture ()
+    ((%texture :initarg :texture
+               :type texture
+               :reader texture)
+     (%depth :initarg :depth
              :type texture
-             :reader texture)
-   (%depth :initarg :depth
-           :type texture
-           :reader depth)
-   (%c-struct
-    :type claylib/ll:render-texture
-    :initform (autowrap:alloc 'claylib/ll:render-texture)
-    :accessor c-struct)))
+             :reader depth)
+     (%c-struct
+      :type claylib/ll:render-texture
+      :initform (autowrap:alloc 'claylib/ll:render-texture)
+      :accessor c-struct))))
 
 (defcreader id rl-render-texture id render-texture)
 
@@ -187,7 +209,8 @@
   id width height mipmaps data-format)
 
 (definitializer rl-render-texture
-    (id integer) (texture texture) (depth texture))
+  :struct-slots ((%texture) (%depth))
+  :pt-accessors ((id integer)))
 
 (default-free rl-render-texture)
 (default-free-c claylib/ll:render-texture unload-render-texture)

@@ -1,27 +1,32 @@
 (in-package #:claylib)
 
-(defclass text (2d-object)
-  ((%text :initarg :text
-          :type string
-          :accessor text)
-   (%font :initarg :font
-          :type rl-font
-          :accessor font)
-   (%font-size :initarg :size
-               :type (or integer float)
-               :reader size)
-   (%spacing :initarg :spacing
-             :type (or integer float)
-             :reader spacing)
-   (%color :initarg :color
-           :type rl-color
-           :accessor color)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass text (2d-object)
+    ((%text :initarg :text
+            :type string
+            :accessor text)
+     (%font :initarg :font
+            :type rl-font
+            :accessor font)
+     (%font-size :initarg :size
+                 :type number
+                 :reader size)
+     (%spacing :initarg :spacing
+               :type number
+               :reader spacing)
+     (%color :initarg :color
+             :type rl-color
+             :accessor color))))
 
 (defwriter-float size text %font-size)
 (defwriter-float spacing text)
 
 (definitializer text
-    (text string) (font rl-font nil) (size number float) (spacing number float) (color rl-color nil))
+  :lisp-slots ((%text)
+               (%font)
+               (%font-size t)
+               (%spacing t)
+               (%color)))
 
 (default-slot-value text %font +default-font+)
 (default-slot-value text %font-size (float (size +default-font+)))

@@ -1,19 +1,20 @@
 (in-package #:claylib)
 
-(defclass rl-camera-3d ()
-  ((%position :initarg :pos
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-camera-3d ()
+    ((%position :initarg :pos
+                :type rl-vector3
+                :reader pos)
+     (%target :initarg :target
               :type rl-vector3
-              :reader pos)
-   (%target :initarg :target
-            :type rl-vector3
-            :reader target)
-   (%up :initarg :up
-        :type rl-vector3
-        :reader up)
-   (%c-struct
-    :type claylib/ll:camera3d
-    :initform (autowrap:alloc 'claylib/ll:camera3d)
-    :accessor c-struct)))
+              :reader target)
+     (%up :initarg :up
+          :type rl-vector3
+          :reader up)
+     (%c-struct
+      :type claylib/ll:camera3d
+      :initform (autowrap:alloc 'claylib/ll:camera3d)
+      :accessor c-struct))))
 
 (defreader x rl-camera-3d x pos)
 (defreader y rl-camera-3d y pos)
@@ -31,49 +32,47 @@
 (defcwriter-struct up rl-camera-3d up camera3d vector3 x y z)
 
 (definitializer rl-camera-3d
-    (pos rl-vector3) (target rl-vector3) (up rl-vector3) (fovy number float) (projection integer))
+  :cname camera3d
+  :struct-slots ((%position) (%target) (%up))
+  :pt-accessors ((fovy number float 45.0)
+                 (projection integer nil +camera-perspective+)))
 
 (default-free rl-camera-3d)
 (default-free-c claylib/ll:camera3d)
 
 
 
-
-(defclass camera-3d (rl-camera-3d)
-  ((%mode :initarg :mode
-          :type integer
-          :reader mode)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass camera-3d (rl-camera-3d)
+    ((%mode :initarg :mode
+            :type integer
+            :reader mode))))
 
 (defmethod (setf mode) ((value integer) (camera camera-3d))
   (claylib/ll:set-camera-mode (c-struct camera) value)
   (setf (slot-value camera '%mode) value))
 
-(definitializer camera-3d (mode integer))
+(definitializer camera-3d
+  :lisp-slots ((%mode t)))
+
+(default-slot-value camera-3d %mode +camera-custom+)
 
 (defun make-camera-3d (pos-x pos-y pos-z
                        target-x target-y target-z
                        up-x up-y up-z
-                       &key
-                         (fovy 45.0)
-                         (projection +camera-perspective+)
-                         (mode +camera-custom+))
-  (make-instance 'camera-3d
-                 :pos (make-vector3 pos-x pos-y pos-z)
-                 :target (make-vector3 target-x target-y target-z)
-                 :up (make-vector3 up-x up-y up-z)
-                 :fovy fovy
-                 :projection projection
-                 :mode mode))
+                       &rest args &key fovy projection mode)
+  (declare (ignorable fovy projection mode))
+  (apply #'make-instance 'camera-3d
+         :pos (make-vector3 pos-x pos-y pos-z)
+         :target (make-vector3 target-x target-y target-z)
+         :up (make-vector3 up-x up-y up-z)
+         args))
 
 (defun make-camera-3d-from-vecs (pos target up
-                                 &key
-                                   (fovy 45.0)
-                                   (projection +camera-perspective+)
-                                   (mode +camera-custom+))
-  (make-instance 'camera-3d
-                 :pos pos
-                 :target target
-                 :up up
-                 :fovy fovy
-                 :projection projection
-                 :mode mode))
+                                 &rest args &key fovy projection mode)
+  (declare (ignorable fovy projection mode))
+  (apply #'make-instance 'camera-3d
+         :pos pos
+         :target target
+         :up up
+         args))

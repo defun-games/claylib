@@ -1,6 +1,7 @@
 (in-package #:claylib)
 
-(defclass pixel (2d-shape) ())
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass pixel (2d-shape) ()))
 
 (defun make-pixel (x y color)
   (make-instance 'pixel

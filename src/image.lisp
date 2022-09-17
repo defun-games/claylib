@@ -1,10 +1,11 @@
 (in-package #:claylib)
 
-(defclass rl-image ()
-  ((%c-struct
-    :type claylib/ll:image
-    :initform (autowrap:alloc 'claylib/ll:image)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-image ()
+    ((%c-struct
+      :type claylib/ll:image
+      :initform (autowrap:alloc 'claylib/ll:image)
+      :accessor c-struct))))
 
 (defcreader data rl-image data image) ; pointer
 (defcreader width rl-image width image)
@@ -19,29 +20,50 @@
 (defcwriter data-format rl-image format image integer)
 
 (definitializer rl-image
-    (width integer) (height integer) (mipmaps integer) (data-format integer))
+  :pt-accessors (; TODO: data?
+                 (width integer)
+                 (height integer)
+                 (mipmaps integer)
+                 (data-format integer)))
 
 (default-free rl-image)
 (default-free-c claylib/ll:image unload-image)
 
 
 
-(defclass image (rl-image)
-  ((%source :initarg :source
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass image (rl-image)
+    ((%source :initarg :source
+              :type rl-rectangle
+              :accessor source)
+     (%dest :initarg :dest
             :type rl-rectangle
-            :accessor source)
-   (%dest :initarg :dest
-          :type rl-rectangle
-          :accessor dest)
-   (%tint :initarg :tint
-          :type rl-color
-          :accessor tint)))
+            :accessor dest)
+     (%tint :initarg :tint
+            :type rl-color
+            :accessor tint))))
 
-(defun make-image (asset source dest &key (tint +white+) (copy-asset nil))
-  (let ((img (make-instance 'image
-                            :source source
-                            :dest dest
-                            :tint tint)))
+(definitializer image
+  :lisp-slots ((%source) (%dest) (%tint)))
+
+(default-slot-value image %tint +white+)
+
+(defmethod free ((obj image))
+  (mapcar #'free (list (source obj) (dest obj) (tint obj)))
+  (setf (source obj) nil
+        (dest obj) nil
+        (tint obj) nil)
+  (when (next-method-p)
+    (call-next-method)))
+
+(defun make-image (asset source dest
+                   &rest args &key tint (copy-asset nil))
+  (declare (ignorable tint))
+  (let ((img (apply #'make-instance 'image
+                    :allow-other-keys t
+                    :source source
+                    :dest dest
+                    args)))
     (setf (c-struct img) (if copy-asset
                              (c-struct (copy-asset-to-object asset))
                              (c-asset asset)))

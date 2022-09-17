@@ -1,17 +1,18 @@
 (in-package #:claylib)
 
-(defclass game-scene ()
-  ((%game-objects :initarg :objects
-                  :type hash-table
-                  :initform (make-hash-table :test #'equalp)
-                  :accessor objects)
-   (%game-assets :initarg :assets
-                 :type hash-table
-                 :initform (make-hash-table :test #'equalp)
-                 :accessor assets)
-   (%free :initarg :free
-          :type keyword
-          :accessor free)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass game-scene ()
+    ((%game-objects :initarg :objects
+                    :type hash-table
+                    :initform (make-hash-table :test #'equalp)
+                    :accessor objects)
+     (%game-assets :initarg :assets
+                   :type hash-table
+                   :initform (make-hash-table :test #'equalp)
+                   :accessor assets)
+     (%free :initarg :free
+            :type keyword
+            :accessor free))))
 
 (defun load-scene (scene &rest names)
   (dolist (asset names)

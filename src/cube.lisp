@@ -1,15 +1,16 @@
 (in-package #:claylib)
 
-(defclass cube (3d-shape)
-  ((%size :initarg :size
-          :type rl-vector3
-          :accessor size)
-   (%texture :initarg :texture
-             :type rl-texture
-             :accessor texture)
-   (%source :initarg :source
-            :type rl-rectangle
-            :accessor source)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass cube (3d-shape)
+    ((%size :initarg :size
+            :type rl-vector3
+            :accessor size)
+     (%texture :initarg :texture
+               :type rl-texture
+               :accessor texture)
+     (%source :initarg :source
+              :type rl-rectangle
+              :accessor source))))
 
 (defreader width cube x size)
 (defreader height cube y size)
@@ -32,7 +33,9 @@
           (height (source obj)) (height tex))))
 
 (definitializer cube
-    (size rl-vector3 nil) (texture rl-texture nil) (source rl-rectangle nil))
+  :lisp-slots ((%size)
+               (%texture t)
+               (%source)))
 
 (defmethod free ((obj cube))
   (when (slot-boundp obj '%texture)
@@ -53,7 +56,7 @@
                                              :height (height (texture obj)))))
 
 (defun make-cube (x y z width height length color &rest args &key filled texture source)
-  (declare (ignore filled texture source))
+  (declare (ignorable filled texture source))
   (apply #'make-instance 'cube
          :pos (make-vector3 x y z)
          :size (make-vector3 width height length)
@@ -61,7 +64,7 @@
          args))
 
 (defun make-cube-from-vecs (pos size color &rest args &key filled texture source)
-  (declare (ignore filled texture source))
+  (declare (ignorable filled texture source))
   (apply #'make-instance 'cube
          :pos pos
          :size size

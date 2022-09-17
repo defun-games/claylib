@@ -160,54 +160,119 @@ with 'RL-' and always have a direct or inherited '%C-STRUCT slot."
                                                 `(or ,type null)
                                                 type))))))
 
-(defmacro definitializer (type &rest slots)
-  "Define an initialize-instance :after method for a passed type. Each SLOT is expected to have
-the following format:
+(defmacro definitializer (class &key cname lisp-slots struct-slots pt-accessors)
+  "Define an initialize-instance :after method for a passed class name.
 
-(ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)
+:cname specifies the corresponding C struct name, when it is different from the Lisp version.
+e.g. camera3d for the CAMERA-3D class.
 
-This macro adds type checking, finalizers where needed, and makes sure to use SET-SLOT for structs.
-Note that you may pass NIL as COERCE-TYPE if you only want to use a default value without
-type coercion."
+:lisp-slots is a list of CLOS slots that are *not* tied to a backing C struct. Expected format:
+(SLOT-NAME &optional USE-WRITER-P COERCE-TYPE)
+Both the latter default to NIL. Set USE-WRITER-P when there is a custom writer to be used instead
+of the default slot setter. COERCE-TYPE will usually be float, when applicable.
+
+:struct-slots is a list of CLOS slots tied to a backing C struct. These slots themselves will
+contain other CLOS objects. Expected format:
+(SLOT-NAME &optional SUBCLASS)
+Set SUBCLASS when you want to initialize a slot with a different subclass than is named by its
+:type keyword. This is probably only needed with color, as a substitute for rl-color.
+
+:pt-accessors is a list of pass-through accessors tied to a backing C struct. These are *not* CLOS
+slots, but they will have custom readers and probably writers. Expected format:
+(ACCESSOR-NAME TYPE &optional COERCE-TYPE DEFAULT-VALUE)
+COERCE-TYPE will usually be float, when applicable. You can set COERCE-TYPE to NIL to ignore it if
+you still want to set a default value. This is the *only* place default values for C struct fields
+should be set."
   (let ((obj (gensym))
         (ptr (gensym))
-        (new (gensym)))
-    `(defmethod initialize-instance :after ((,obj ,type)
-                                            &key ,@(mapcar #'(lambda (slot)
-                                                               (if (= (length slot) 4)
-                                                                   `(,(car slot) ,(fourth slot))
-                                                                   (car slot)))
-                                                           slots))
-       ,@(expand-check-types slots t)
-       ,@(loop for slot in slots
-               collect (destructuring-bind (accessor slot-type &optional coerce-type default-value) slot
-                         (declare (ignore default-value))
-                         (if (and (subtypep slot-type 'standard-object)
-                                  (= (length slot) 2))
-                             `(if ,accessor
-                                  (set-slot ,(alexandria:make-keyword accessor) ,obj ,accessor)
-                                  (let ((,new (make-instance ',(alexandria:symbolicate
-                                                                (format nil "RL-~a" accessor)))))
+        (new (gensym))
+        (class-slots (closer-mop:class-direct-slots
+                      (find-class class))))
+    (labels ((slot-def (slot-name)
+               (find slot-name
+                     class-slots
+                     :test #'(lambda (name def)
+                               (eql (closer-mop:slot-definition-name def) name))))
+             (slot-arg (slot-name)
+               (alexandria:when-let ((def (slot-def slot-name)))
+                 (alexandria:symbolicate
+                  (format nil "~a"
+                          (car (closer-mop:slot-definition-initargs def))))))             
+             (slot-type (slot-name)
+               (alexandria:when-let ((def (slot-def slot-name)))
+                 (closer-mop:slot-definition-type (slot-def slot-name))))
+             (arg-supplied-p (arg)
+               (alexandria:symbolicate arg "-SUPPLIED-P")))
+      (let ((lisp-slot-args (remove nil
+                                    (mapcar #'(lambda (slot) (slot-arg (car slot)))
+                                            lisp-slots)))
+            (lisp-slot-types (mapcar #'(lambda (slot) (slot-type (car slot))) lisp-slots))
+            (struct-slot-args (mapcar #'(lambda (slot) (slot-arg (car slot))) struct-slots))
+            (struct-slot-types (mapcar #'(lambda (slot) (slot-type (car slot))) struct-slots)))
+        `(defmethod initialize-instance
+             :after ((,obj ,class)
+                     &key ,@(remove nil (append (mapcar #'(lambda (arg)
+                                                            `(,arg nil ,(arg-supplied-p arg)))
+                                                        lisp-slot-args)
+                                                struct-slot-args
+                                                (mapcar #'(lambda (accessor)
+                                                            (if (= (length accessor) 4)
+                                                                `(,(car accessor) ,(fourth accessor))
+                                                                (car accessor)))
+                                                        pt-accessors))))
+           ,@(loop for arg in (append lisp-slot-args struct-slot-args)
+                   for type in (append lisp-slot-types struct-slot-types)
+                   when arg
+                     collect `(check-type ,arg (or ,type null)))
+           ,@(expand-check-types pt-accessors t)
+           ,@(loop for arg in lisp-slot-args
+                   for type in lisp-slot-types
+                   for slot in lisp-slots
+                   collect (destructuring-bind (name &optional use-writer-p coerce-type) slot
+                             (let ((setter `(setf ,(if use-writer-p
+                                                       `(,arg ,obj)
+                                                       `(slot-value ,obj ',name))
+                                                  ,(if coerce-type
+                                                       `(coerce ,arg ',coerce-type)
+                                                       arg))))
+                               `(when ,(arg-supplied-p arg) ,setter))))
+           ,@(loop for arg in struct-slot-args
+                   for type in struct-slot-types
+                   for slot in struct-slots
+                   collect (destructuring-bind (name &optional subclass) slot
+                             `(if ,arg
+                                  (set-slot ,(alexandria:make-keyword arg) ,obj ,arg)
+                                  (let ((,new (make-instance ',(or subclass type))))
                                     (free-later (c-struct ,new))
-                                    (setf (,accessor ,obj) ,new
+                                    (setf (slot-value ,obj ',name) ,new
                                           (c-struct ,new) (,(alexandria:symbolicate
-                                                             (cadr
-                                                              (cl-ppcre:split "RL-"
-                                                                              (format nil "~a" type)))
+                                                             (or cname
+                                                                 (cadr
+                                                                  (cl-ppcre:split
+                                                                   "RL-"
+                                                                   (format nil "~a" class))))
                                                              "."
-                                                             accessor)
-                                                           (c-struct ,obj)))))
-                             `(when (or ,(eql slot-type 'boolean) ,accessor)
-                                (setf (,accessor ,obj)
-                                      ,(if coerce-type
-                                           `(coerce ,accessor ',coerce-type)
-                                           accessor))))))
-       (when (and (rl-class-p ',type)
-                  (c-struct ,obj))
-         ;; TODO: This probably needs a child wrapper check.
-         (tg:finalize ,obj
-                      (let ((,ptr (autowrap:ptr (c-struct ,obj))))
-                        (lambda () (autowrap:free ,ptr))))))))
+                                                             (cadr
+                                                              (cl-ppcre:split
+                                                               "%"
+                                                               (format nil "~a" name))))
+                                                           (c-struct ,obj)))))))
+           ,@(loop for accessor in pt-accessors
+                   collect (destructuring-bind (name type &optional coerce-type default-value) accessor
+                             (declare (ignorable default-value))
+                             (let ((val (if coerce-type
+                                            `(coerce ,name ',coerce-type)
+                                            name)))
+                               (if (eql type 'boolean)
+                                   `(setf (,name ,obj) ,val)
+                                   `(when ,name (setf (,name ,obj) ,val))))))
+           ,(when (rl-class-p class)
+              `(when (c-struct ,obj)
+                 ;; TODO: This probably needs a child wrapper check.
+                 (tg:finalize ,obj
+                              (let ((,ptr (autowrap:ptr (c-struct ,obj))))
+                                (lambda () (autowrap:free ,ptr))))))
+           ,obj)))))
 
 (defmacro definitializer-float (type &rest accessors)
   "Define a simple initialize-instance :after method to ensure that some number of slot values
