@@ -91,10 +91,13 @@ postion and dimensions to the reflect the result."
   (image rl-image nil (make-instance 'rl-image))
   (texture rl-texture nil))
 
-(defun-pt export-image claylib/ll:export-image
-  "Export image data to FILENAME."
-  (image rl-image nil)
-  (filename string))
+(defun export-image (image filepath &key)
+  "Export image data to FILEPATH."
+  (check-type image rl-image)
+  (check-type filepath (or pathname string))
+  (claylib/ll:export-image (c-struct image)
+                           (namestring filepath))
+  image)
 
 ;; Image generation functions
 
