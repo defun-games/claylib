@@ -1,28 +1,50 @@
 (in-package #:claylib)
 
-(defclass rl-color ()
-  ((%c-struct
-    :type claylib/ll:color
-    :initform (autowrap:alloc 'claylib/ll:color)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-color ()
+    ((%c-struct
+      :type claylib/ll:color
+      :initform (autowrap:alloc 'claylib/ll:color)
+      :reader c-struct))))
 
 (defcreader r rl-color r color)
 (defcreader g rl-color g color)
 (defcreader b rl-color b color)
 (defcreader a rl-color a color)
 
-(defcwriter r rl-color r color integer)
-(defcwriter g rl-color g color integer)
-(defcwriter b rl-color b color integer)
-(defcwriter a rl-color a color integer)
+(defmethod free ((obj rl-color))
+  (warn "BUG: Default RL-COLOR objects (~A) are not meant to be freed!" obj)
+  obj)
 
-(definitializer rl-color (r integer) (g integer) (b integer) (a integer))
 
-(default-free rl-color)
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass color (rl-color)
+    ((%c-struct
+      :accessor c-struct))))
+
+(defcwriter r color r color integer)
+(defcwriter g color g color integer)
+(defcwriter b color b color integer)
+(defcwriter a color a color integer)
+
+(definitializer color
+  :pt-accessors ((r integer)
+                 (g integer)
+                 (b integer)
+                 (a integer)))
+
+(defmethod free ((obj color))
+  (when (and (c-struct obj)
+             (autowrap:valid-p (c-struct obj)))
+    (free (c-struct obj)))
+  (setf (slot-value obj '%c-struct) nil)
+  (trivial-garbage:cancel-finalization obj))
+
 (default-free-c claylib/ll:color)
 
 (defun make-color (r g b &optional (a 255))
-  (make-instance 'rl-color :r r :g g :b b :a a))
+  (make-instance 'color :r r :g g :b b :a a))
 
 (defun copy-color (color)
   (if (typep color 'rl-color)
@@ -32,37 +54,42 @@
                   (claylib/ll:color.b color)
                   (claylib/ll:color.a color))))
 
+(defun copy-color-constant (color)
+  (let ((ret (make-instance 'rl-color)))
+    (setf (slot-value ret '%c-struct) color)
+    ret))
+
 ;; TODO: This is required due to WITH-TEXTURE-MODE/CLEAR-BACKGROUND
 ;; but feels kind of hackish and I'd rather not need it.
 (defmethod make-load-form ((obj rl-color) &optional environment)
   (declare (ignore environment))
   `(make-color ,(r obj) ,(g obj) ,(b obj) ,(a obj)))
 
-(defvar +lightgray+ (copy-color claylib/ll:+lightgray+))
-(defvar +gray+ (copy-color claylib/ll:+gray+))
-(defvar +darkgray+ (copy-color claylib/ll:+darkgray+))
-(defvar +yellow+ (copy-color claylib/ll:+yellow+))
-(defvar +gold+ (copy-color claylib/ll:+gold+))
-(defvar +orange+ (copy-color claylib/ll:+orange+))
-(defvar +pink+ (copy-color claylib/ll:+pink+))
-(defvar +red+ (copy-color claylib/ll:+red+))
-(defvar +maroon+ (copy-color claylib/ll:+maroon+))
-(defvar +green+ (copy-color claylib/ll:+green+))
-(defvar +lime+ (copy-color claylib/ll:+lime+))
-(defvar +darkgreen+ (copy-color claylib/ll:+darkgreen+))
-(defvar +skyblue+ (copy-color claylib/ll:+skyblue+))
-(defvar +blue+ (copy-color claylib/ll:+blue+))
-(defvar +darkblue+ (copy-color claylib/ll:+darkblue+))
-(defvar +purple+ (copy-color claylib/ll:+purple+))
-(defvar +violet+ (copy-color claylib/ll:+violet+))
-(defvar +darkpurple+ (copy-color claylib/ll:+darkpurple+))
-(defvar +beige+ (copy-color claylib/ll:+beige+))
-(defvar +brown+ (copy-color claylib/ll:+brown+))
-(defvar +darkbrown+ (copy-color claylib/ll:+darkbrown+))
-(defvar +white+ (copy-color claylib/ll:+white+))
-(defvar +black+ (copy-color claylib/ll:+black+))
-(defvar +blank+ (copy-color claylib/ll:+blank+))
-(defvar +magenta+ (copy-color claylib/ll:+magenta+))
-(defvar +raywhite+ (copy-color claylib/ll:+raywhite+))
+(defvar +lightgray+ (copy-color-constant claylib/ll:+lightgray+))
+(defvar +gray+ (copy-color-constant claylib/ll:+gray+))
+(defvar +darkgray+ (copy-color-constant claylib/ll:+darkgray+))
+(defvar +yellow+ (copy-color-constant claylib/ll:+yellow+))
+(defvar +gold+ (copy-color-constant claylib/ll:+gold+))
+(defvar +orange+ (copy-color-constant claylib/ll:+orange+))
+(defvar +pink+ (copy-color-constant claylib/ll:+pink+))
+(defvar +red+ (copy-color-constant claylib/ll:+red+))
+(defvar +maroon+ (copy-color-constant claylib/ll:+maroon+))
+(defvar +green+ (copy-color-constant claylib/ll:+green+))
+(defvar +lime+ (copy-color-constant claylib/ll:+lime+))
+(defvar +darkgreen+ (copy-color-constant claylib/ll:+darkgreen+))
+(defvar +skyblue+ (copy-color-constant claylib/ll:+skyblue+))
+(defvar +blue+ (copy-color-constant claylib/ll:+blue+))
+(defvar +darkblue+ (copy-color-constant claylib/ll:+darkblue+))
+(defvar +purple+ (copy-color-constant claylib/ll:+purple+))
+(defvar +violet+ (copy-color-constant claylib/ll:+violet+))
+(defvar +darkpurple+ (copy-color-constant claylib/ll:+darkpurple+))
+(defvar +beige+ (copy-color-constant claylib/ll:+beige+))
+(defvar +brown+ (copy-color-constant claylib/ll:+brown+))
+(defvar +darkbrown+ (copy-color-constant claylib/ll:+darkbrown+))
+(defvar +white+ (copy-color-constant claylib/ll:+white+))
+(defvar +black+ (copy-color-constant claylib/ll:+black+))
+(defvar +blank+ (copy-color-constant claylib/ll:+blank+))
+(defvar +magenta+ (copy-color-constant claylib/ll:+magenta+))
+(defvar +raywhite+ (copy-color-constant claylib/ll:+raywhite+))
 
 (defvar *claylib-background* +raywhite+)
