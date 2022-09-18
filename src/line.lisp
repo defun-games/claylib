@@ -25,11 +25,7 @@
 (definitializer line
   :lisp-slots ((%start) (%end) (%color)))
 
-(defmethod free ((obj line))
-  (mapcar #'free (list (start obj)
-                       (end obj)))
-  (when (next-method-p)
-    (call-next-method)))
+(default-free line %start %end)
 
 
 
@@ -61,12 +57,7 @@
 (default-slot-value line-2d %thickness 1.0)
 (default-slot-value line-2d %bezier nil)
 
-(defmethod free ((obj line-2d))
-  (mapcar #'free (list (control-pt obj) (control-pt2 obj)))
-  (setf (control-pt obj) nil
-        (control-pt2 obj) nil)
-  (when (next-method-p)
-    (call-next-method)))
+(default-free line-2d %start %end %control-pt %control-pt2)
 
 (defun make-line-2d (x1 y1 x2 y2 color
                      &rest args &key thickness bezier control-pt control-pt2)

@@ -16,10 +16,7 @@
 (definitializer plane
   :lisp-slots ((%size)))
 
-(defmethod free ((obj plane))
-  (free (size obj))
-  (when (next-method-p)
-    (call-next-method)))
+(default-free plane %size)
 
 (defun make-plane (x y z width length color)
   (make-instance 'plane

@@ -125,6 +125,9 @@ job, the user may never need to call this directly."))
 Don't use this if SLOT contains an atom or string -- use normal SETF instead. FREE specifies when to
 free VALUE."))
 
+(defgeneric sync-children (obj)
+  (:documentation "Scan an object's slots and synchronize Lisp and C objects."))
+
 (defgeneric load-asset (asset &key force-reload)
   (:documentation "Load a game-asset's backing C object from a file.
 Force a reload & free old memory when FORCE-RELOAD is T."))

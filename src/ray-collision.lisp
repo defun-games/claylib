@@ -21,12 +21,24 @@
 (defcwriter-struct point rl-ray-collision point ray-collision vector3 x y z)
 (defcwriter-struct normal rl-ray-collision normal ray-collision vector3 x y z)
 
+(defmethod sync-children ((obj rl-ray-collision))
+  (unless (eq (c-struct (point obj))
+              (ray-collision.point (c-struct obj)))
+    (free-later (c-struct (point obj)))
+    (setf (c-struct (point obj))
+          (ray-collision.point (c-struct obj))))
+  (unless (eq (c-struct (normal obj))
+              (ray-collision.normal (c-struct obj)))
+    (free-later (c-struct (normal obj)))
+    (setf (c-struct (normal obj))
+          (ray-collision.normal (c-struct obj)))))
+
 (definitializer rl-ray-collision
   :struct-slots ((%point) (%normal))
   :pt-accessors ((hit boolean)
                  (distance number float)))
 
-(default-free rl-ray-collision)
+(default-free rl-ray-collision %point %normal)
 (default-free-c claylib/ll:ray-collision)
 
 (defun make-ray-collision (point-x point-y point-z normal-x normal-y normal-z)

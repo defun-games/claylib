@@ -12,9 +12,8 @@
 (defcreader b rl-color b color)
 (defcreader a rl-color a color)
 
-(defmethod free ((obj rl-color))
-  (warn "BUG: Default RL-COLOR objects (~A) are not meant to be freed!" obj)
-  obj)
+;; Default RL-COLOR objects are not meant to be freed.
+(defmethod free ((obj rl-color)) nil)
 
 
 
@@ -35,10 +34,11 @@
                  (a integer)))
 
 (defmethod free ((obj color))
-  (when (and (c-struct obj)
+  (when (and (slot-boundp obj '%c-struct)
+             (c-struct obj)
              (autowrap:valid-p (c-struct obj)))
-    (free (c-struct obj)))
-  (setf (slot-value obj '%c-struct) nil)
+    (free (c-struct obj))
+    (slot-makunbound obj '%c-struct))
   (trivial-garbage:cancel-finalization obj))
 
 (default-free-c claylib/ll:color)

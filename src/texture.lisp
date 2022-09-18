@@ -80,14 +80,7 @@
 (default-slot-value tex %rotation 0.0)
 (default-slot-value tex %tint +white+)
 
-(defmethod free ((obj tex))
-  (when (slot-boundp obj '%source)
-    (free (source obj)))
-  (when (slot-boundp obj '%dest)
-    (free (dest obj)))
-  (free (origin obj))
-  (when (next-method-p)
-    (call-next-method)))
+(default-free tex %source %dest %origin %tint)
 
 
 
@@ -208,9 +201,21 @@
 (defcwriter-struct depth rl-render-texture depth render-texture texture
   id width height mipmaps data-format)
 
+(defmethod sync-children ((obj rl-render-texture))
+  (unless (eq (c-struct (texture obj))
+              (render-texture.texture (c-struct obj)))
+    (free-later (c-struct (texture obj)))
+    (setf (c-struct (texture obj))
+          (render-texture.texture (c-struct obj))))
+  (unless (eq (c-struct (depth obj))
+              (render-texture.depth (c-struct obj)))
+    (free-later (c-struct (depth obj)))
+    (setf (c-struct (depth obj))
+          (render-texture.depth (c-struct obj)))))
+
 (definitializer rl-render-texture
   :struct-slots ((%texture) (%depth))
   :pt-accessors ((id integer)))
 
-(default-free rl-render-texture)
+(default-free rl-render-texture %texture %depth)
 (default-free-c claylib/ll:render-texture unload-render-texture)

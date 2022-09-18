@@ -21,13 +21,25 @@
 (defcwriter-struct offset rl-camera-2d offset camera2d vector2 x y)
 (defcwriter-struct target rl-camera-2d target camera2d vector2 x y)
 
+(defmethod sync-children ((obj rl-camera-2d))
+  (unless (eq (c-struct (offset obj))
+              (camera2d.offset (c-struct obj)))
+    (free-later (c-struct (offset obj)))
+    (setf (c-struct (offset obj))
+          (camera2d.offset (c-struct obj))))
+  (unless (eq (c-struct (target obj))
+              (camera2d.target (c-struct obj)))
+    (free-later (c-struct (target obj)))
+    (setf (c-struct (target obj))
+          (camera2d.target (c-struct obj)))))
+
 (definitializer rl-camera-2d
   :cname camera2d
   :struct-slots ((%offset) (%target))
   :pt-accessors ((rot number float 0.0)
                  (zoom number float 1.0)))
 
-(default-free rl-camera-2d)
+(default-free rl-camera-2d %offset %target)
 (default-free-c claylib/ll:camera2d)
 
 (defun make-camera-2d (offset-x offset-y target-x target-y

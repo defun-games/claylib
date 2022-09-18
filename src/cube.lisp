@@ -37,17 +37,7 @@
                (%texture t)
                (%source)))
 
-(defmethod free ((obj cube))
-  (when (slot-boundp obj '%texture)
-    (free (texture obj)))
-  (when (slot-boundp obj '%source)
-    (free (source obj)))
-  (free (size obj))
-  (setf (size obj) nil
-        (texture obj) nil
-        (source obj) nil)
-  (when (next-method-p)
-    (call-next-method)))
+(default-free cube %size %texture %source)
 
 (defmethod slot-unbound (_ (obj cube) (slot (eql '%source)))
   (setf (slot-value obj slot) (make-instance 'rl-rectangle

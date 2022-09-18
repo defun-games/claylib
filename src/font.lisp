@@ -22,6 +22,13 @@
 (defcwriter-struct image rl-glyph-info image glyph-info image
   data width height mipmaps data-format)
 
+(defmethod sync-children ((obj rl-glyph-info))
+  (unless (eq (c-struct (image obj))
+              (glyph-info.image (c-struct obj)))
+    (free-later (c-struct (image obj)))
+    (setf (c-struct (image obj))
+          (glyph-info.image (c-struct obj)))))
+
 (definitializer rl-glyph-info
   :struct-slots ((%image))
   :pt-accessors ((value integer)
@@ -29,7 +36,7 @@
                  (offset-y integer)
                  (advance-x integer)))
 
-(default-free rl-glyph-info)
+(default-free rl-glyph-info %image)
 ;; TODO: I think UNLOAD-FONT-DATA should be used here somehow.
 (default-free-c claylib/ll:glyph-info)
 
@@ -65,13 +72,33 @@
 (defcwriter-struct glyphs rl-font glyphs font glyph-info  ; TODO: array/pointer
   value offset-x offset-y advance-x)
 
+(defmethod sync-children ((obj rl-font))
+  (flet ((i0 (array type)
+           (autowrap:c-aref array 0 type)))
+    (unless (eq (c-struct (texture obj))
+                (font.texture (c-struct obj)))
+      (free-later (c-struct (texture obj)))
+      (setf (c-struct (texture obj))
+            (font.texture (c-struct obj))))
+    (unless (eq (c-struct (recs obj))
+                (i0 (font.recs (c-struct obj)) 'claylib/ll:rectangle))
+      (free-later (c-struct (recs obj)))
+      (setf (c-struct (recs obj))
+            (i0 (font.recs (c-struct obj)) 'claylib/ll:rectangle)))
+    (unless (eq (c-struct (glyphs obj))
+                (i0 (font.glyphs (c-struct obj)) 'claylib/ll:glyph-info))
+      (free-later (c-struct (glyphs obj)))
+      (setf (c-struct (glyphs obj))
+            (i0 (font.glyphs (c-struct obj)) 'claylib/ll:glyph-info))))
+  (sync-children (glyphs obj)))
+
 (definitializer rl-font
   :struct-slots ((%texture) (%recs) (%glyphs))
   :pt-accessors ((size integer)
                 (glyph-count integer)
                 (glyph-padding integer)))
 
-(default-free rl-font)
+(default-free rl-font %texture %recs %glyphs)
 (default-free-c claylib/ll:font unload-font)
 
 

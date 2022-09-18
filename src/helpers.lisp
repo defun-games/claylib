@@ -133,9 +133,11 @@ backing it.'"
   (defun rl-class-p (type)
     "Determine whether a type represents a Raylib 'mirror' class -- these classes begin with 'RL-' and
 always have a direct '%C-STRUCT slot."
-    (member-if #'(lambda (slot)
-                   (eql (closer-mop:slot-definition-name slot) '%c-struct))
-               (closer-mop:class-direct-slots (find-class type))))
+    (unless (or (eql type 'boolean)
+                (eql type 'keyword))
+      (member-if #'(lambda (slot)
+                     (eql (closer-mop:slot-definition-name slot) '%c-struct))
+                 (closer-mop:class-direct-slots (find-class type)))))
 
   (defun rl-subclass-p (type)
     "Determine whether a type represents a Raylib 'mirror' class or subclass -- these classes begin
@@ -243,20 +245,8 @@ should be set."
                              `(if ,arg
                                   (set-slot ,(alexandria:make-keyword arg) ,obj ,arg)
                                   (let ((,new (make-instance ',(or subclass type))))
-                                    (free-later (c-struct ,new))
-                                    (setf (slot-value ,obj ',name) ,new
-                                          (c-struct ,new) (,(alexandria:symbolicate
-                                                             (or cname
-                                                                 (cadr
-                                                                  (cl-ppcre:split
-                                                                   "RL-"
-                                                                   (format nil "~a" class))))
-                                                             "."
-                                                             (cadr
-                                                              (cl-ppcre:split
-                                                               "%"
-                                                               (format nil "~a" name))))
-                                                           (c-struct ,obj)))))))
+                                    (setf (slot-value ,obj ',name) ,new)))))
+           (sync-children ,obj)
            ,@(loop for accessor in pt-accessors
                    collect (destructuring-bind (name type &optional coerce-type default-value) accessor
                              (declare (ignorable default-value))
@@ -274,26 +264,22 @@ should be set."
                                 (lambda () (autowrap:free ,ptr))))))
            ,obj)))))
 
-(defmacro definitializer-float (type &rest accessors)
-  "Define a simple initialize-instance :after method to ensure that some number of slot values
-are coerced to floats. For something more complex, try DEFINITIALIZER."
+(defmacro default-free (class &rest slot-names)
+  "Define a FREE method that is sane for most Lisp classes. You do not need to specify %C-STRUCT
+in the slot names -- it is included by default when applicable."
   (let ((obj (gensym)))
-    `(defmethod initialize-instance :after ((,obj ,type) &key)
-       ,@(loop for accessor in accessors
-               collect `(when (integerp (,accessor ,obj))
-                          (setf (,accessor ,obj) (coerce (,accessor ,obj) 'float)))))))
-
-(defmacro default-free (type)
-  "Define a FREE method that is sane for most Lisp types."
-  (let ((obj (gensym)))
-    `(defmethod free ((,obj ,type))
-       (when (and (slot-exists-p ,obj '%c-struct)
-                  (c-struct ,obj)
-                  (autowrap:valid-p (c-struct ,obj)))
-         (free (c-struct ,obj)))
-       (when (slot-exists-p ,obj '%c-struct)
-         (setf (slot-value ,obj '%c-struct) nil))
-       (tg:cancel-finalization ,obj)
+    `(defmethod free ((,obj ,class))
+       ,@(loop for name in slot-names
+               collect `(when (slot-boundp ,obj ',name)
+                          (free (slot-value ,obj ',name))
+                          (slot-makunbound ,obj ',name)))
+       ,(when (rl-class-p class)
+          `(when (and (slot-boundp ,obj '%c-struct)
+                      (typep ,obj 'autowrap:wrapper)
+                      (autowrap:valid-p (c-struct ,obj)))
+             (free (c-struct ,obj))
+             (slot-makunbound ,obj '%c-struct)))
+       ,(when (rl-class-p class) `(tg:cancel-finalization ,obj))
        (when (next-method-p)
          (call-next-method)))))
 

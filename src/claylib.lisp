@@ -97,3 +97,5 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
 
 (defmethod free ((obj list))
   (mapc #'free obj))
+
+(defmethod sync-children ((obj t)) nil)

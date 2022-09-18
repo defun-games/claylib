@@ -29,15 +29,7 @@
 (definitializer triangle
   :lisp-slots ((%v1) (%v2) (%v3)))
 
-(defmethod free ((obj triangle))
-  (mapcar #'free (list (v1 obj)
-                       (v2 obj)
-                       (v3 obj)))
-  (setf (v1 obj) nil
-        (v2 obj) nil
-        (v3 obj) nil)
-  (when (next-method-p)
-    (call-next-method)))
+(default-free triangle %v1 %v2 %v3)
 
 (defun make-triangle (x1 y1 x2 y2 x3 y3 color
                       &rest args &key filled)

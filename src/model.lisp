@@ -43,6 +43,44 @@
 (defcwriter-struct bind-pose rl-model bind-pose model transform ; pointer
   trans rot scale)
 
+(defmethod sync-children ((obj rl-model))
+  (flet ((i0 (array type)
+           (autowrap:c-aref array 0 type)))
+    (when (slot-boundp obj '%transform)
+      (unless (eq (c-struct (transform obj))
+                  (model.transform (c-struct obj)))
+        (free-later (c-struct (transform obj)))
+        (setf (c-struct (transform obj))
+              (model.transform (c-struct obj)))))
+    (when (slot-boundp obj '%meshes)
+      (unless (eq (c-struct (meshes obj))
+                  (i0 (model.meshes (c-struct obj)) 'claylib/ll:mesh))
+        (free-later (c-struct (meshes obj)))
+        (setf (c-struct (meshes obj))
+              (i0 (model.meshes (c-struct obj)) 'claylib/ll:mesh))))
+    (when (slot-boundp obj '%materials)
+      (unless (eq (c-struct (materials obj))
+                  (i0 (model.materials (c-struct obj)) 'claylib/ll:material))
+        (free-later (c-struct (materials obj)))
+        (setf (c-struct (materials obj))
+              (i0 (model.materials (c-struct obj)) 'claylib/ll:material))))
+    (when (slot-boundp obj '%bones)
+      (unless (eq (c-struct (bones obj))
+                  (i0 (model.bones (c-struct obj)) 'claylib/ll:bone-info))
+        (free-later (c-struct (bones obj)))
+        (setf (c-struct (bones obj))
+              (i0 (model.bones (c-struct obj)) 'claylib/ll:bone-info))))
+    (when (slot-boundp obj '%bind-pose)
+      (unless (eq (c-struct (bind-pose obj))
+                  (model.bind-pose (c-struct obj)))
+        (free-later (c-struct (bind-pose obj)))
+        (setf (c-struct (bind-pose obj))
+              (model.bind-pose (c-struct obj))))))
+  (when (slot-boundp obj '%materials)
+    (sync-children (materials obj)))
+  (when (slot-boundp obj '%bind-pose)
+    (sync-children (bind-pose obj))))
+
 (definitializer rl-model
   :struct-slots ((%transform) (%meshes) (%materials) (%bones) (%bind-pose))
   :pt-accessors ((mesh-count integer)
@@ -50,7 +88,7 @@
                  (mesh-material integer)
                  (bone-count integer)))
 
-(default-free rl-model)
+(default-free rl-model %transform %meshes %materials %bones %bind-pose)
 (default-free-c claylib/ll:model unload-model t)
 
 
@@ -98,8 +136,7 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
     (set-slot :materials model (or materials (materials rl-asset)))
     (set-slot :bones model (or bones (bones rl-asset)))
     (set-slot :bind-pose model (or bind-pose (bind-pose rl-asset)))
-    (setf 
-          (mesh-count model) (or mesh-count (mesh-count rl-asset))
+    (setf (mesh-count model) (or mesh-count (mesh-count rl-asset))
           (material-count model) (or material-count (material-count rl-asset))
           (mesh-material model) (or mesh-material (mesh-material rl-asset))
           (bone-count model) (or bone-count (bone-count rl-asset)))
@@ -114,9 +151,7 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
   ;; TODO: initialize fresh transforms and such
   )
 
-(defmethod free ((obj model))
-  (free (scale obj))
-  (call-next-method))
+(default-free model %scale %tint)
 
 (defmethod draw-object ((obj model))
   (claylib/ll:draw-model-ex (c-struct obj)

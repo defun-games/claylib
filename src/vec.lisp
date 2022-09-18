@@ -3,8 +3,6 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass vec () ()))
 
-(default-free vec)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -24,6 +22,7 @@
   :pt-accessors ((x number float)
                  (y number float)))
 
+(default-free rl-vector2)
 (default-free-c claylib/ll:vector2)
 
 (defun make-vector2 (x y)
@@ -51,6 +50,7 @@
                  (y number float)
                  (z number float)))
 
+(default-free rl-vector3)
 (default-free-c claylib/ll:vector3)
 
 (defun make-vector3 (x y z)
@@ -81,6 +81,7 @@
                  (z number float)
                  (w number float)))
 
+(default-free rl-vector4)
 (default-free-c claylib/ll:vector4)
 
 (defun make-vector4 (x y z w)

@@ -59,4 +59,4 @@
                  (vbo-id integer)))
 
 (default-free rl-mesh)
-(default-free-c claylib/ll:mesh unload-mesh)
+(default-free-c claylib/ll:mesh unload-mesh t)

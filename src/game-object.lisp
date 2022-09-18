@@ -23,12 +23,7 @@
 (definitializer 2d-object
   :lisp-slots ((%position)))
 
-(defmethod free ((obj 2d-object))
-  (when (slot-boundp obj '%position)
-    (free (pos obj)))
-  (setf (pos obj) nil)
-  (when (next-method-p)
-    (call-next-method)))
+(default-free 2d-object %position)
 
 
 
@@ -61,9 +56,4 @@
 (default-slot-value 3d-object %rot-axis (make-vector3 0 0 0))
 (default-slot-value 3d-object %rot-angle 0.0)
 
-(defmethod free ((obj 3d-object))
-  (mapcar #'free (list (pos obj) (rot-axis obj)))
-  (setf (pos obj) nil
-        (rot-axis obj) nil)
-  (when (next-method-p)
-    (call-next-method)))
+(default-free 3d-object %position %rot-axis)

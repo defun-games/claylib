@@ -27,7 +27,9 @@
                  (data-format integer)))
 
 (default-free rl-image)
-(default-free-c claylib/ll:image unload-image)
+(default-free-c claylib/ll:image)
+;; TODO: For some reason UNLOAD-IMAGE is broken now and I'm too tired to figure out why.
+;(default-free-c claylib/ll:image unload-image)
 
 
 
@@ -48,13 +50,7 @@
 
 (default-slot-value image %tint +white+)
 
-(defmethod free ((obj image))
-  (mapcar #'free (list (source obj) (dest obj) (tint obj)))
-  (setf (source obj) nil
-        (dest obj) nil
-        (tint obj) nil)
-  (when (next-method-p)
-    (call-next-method)))
+(default-free image %source %dest %tint)
 
 (defun make-image (asset source dest
                    &rest args &key tint (copy-asset nil))
