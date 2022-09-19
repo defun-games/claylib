@@ -275,7 +275,7 @@ in the slot names -- it is included by default when applicable."
                           (slot-makunbound ,obj ',name)))
        ,(when (rl-class-p class)
           `(when (and (slot-boundp ,obj '%c-struct)
-                      (typep ,obj 'autowrap:wrapper)
+                      (typep (c-struct ,obj) 'autowrap:wrapper)
                       (autowrap:valid-p (c-struct ,obj)))
              (free (c-struct ,obj))
              (slot-makunbound ,obj '%c-struct)))
