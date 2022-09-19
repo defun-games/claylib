@@ -34,7 +34,6 @@
           (camera2d.target (c-struct obj)))))
 
 (definitializer rl-camera-2d
-  :cname camera2d
   :struct-slots ((%offset) (%target))
   :pt-accessors ((rot number float 0.0)
                  (zoom number float 1.0)))

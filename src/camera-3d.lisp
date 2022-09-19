@@ -49,7 +49,6 @@
           (camera3d.up (c-struct obj)))))
 
 (definitializer rl-camera-3d
-  :cname camera3d
   :struct-slots ((%position) (%target) (%up))
   :pt-accessors ((fovy number float 45.0)
                  (projection integer nil +camera-perspective+)))

@@ -162,11 +162,8 @@ with 'RL-' and always have a direct or inherited '%C-STRUCT slot."
                                                 `(or ,type null)
                                                 type))))))
 
-(defmacro definitializer (class &key cname lisp-slots struct-slots pt-accessors)
+(defmacro definitializer (class &key lisp-slots struct-slots pt-accessors)
   "Define an initialize-instance :after method for a passed class name.
-
-:cname specifies the corresponding C struct name, when it is different from the Lisp version.
-e.g. camera3d for the CAMERA-3D class.
 
 :lisp-slots is a list of CLOS slots that are *not* tied to a backing C struct. Expected format:
 (SLOT-NAME &optional USE-WRITER-P COERCE-TYPE)
