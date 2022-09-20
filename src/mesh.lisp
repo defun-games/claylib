@@ -52,17 +52,28 @@
 
 
 
-(defclass rl-meshes (sequence)
-  ((%pointer :initarg :pointer
-             :initform (error "Must give initial :POINTER argument.")
-             :accessor pointer
-             :documentation "The pointer a raylib Model keeps in their meshes field.")
-   ;; Note: On init, we can set to the mesh-count of the model. But we must update mesh-count
-   ;; manually whenever the # of elements changes
+(defclass rl-meshes (sequences:sequence)
+  ((%c-struct :initarg :c-struct
+              :initform (error "Must give initial :C-STRUCT argument.")
+              :type 'claylib/wrap:mesh
+              :accessor c-struct
+              :documentation "The wrapper for the first Mesh in a meshes array.")
    (%mesh-count :initarg :mesh-count
                 :initform (error "Must give initial :MESH-COUNT argument.")
-                :reader mesh-count
-                :documentation "The number of meshes in this raylib array.")))
+                :type integer
+                :accessor mesh-count
+                :documentation "The number of meshes in this raylib array. This slot must be
+synchronized with the length of the array.")))
+
+(defconstant +foreign-mesh-size+ (cffi:foreign-type-size '(:struct mesh)))
+
+(defun copy-mesh (from-ptr to-ptr)
+  "Copy the mesh wrapper data at FROM-PTR to TO-PTR."
+  (cffi:foreign-funcall "memcpy"
+                        :pointer to-ptr
+                        :pointer from-ptr
+                        :int +foreign-mesh-size+
+                        :void))
 
 (defmethod sequences:length ((sequence rl-meshes))
   (mesh-count sequence))
@@ -71,15 +82,75 @@
   (check-type index integer)
   (when (>= index (mesh-count sequence))
     (error "Index out of bounds."))
-  (autowrap:c-aref sequence index 'mesh))
+  ;; TODO: to be consistent, this should return an rl-mesh, but that requires allocating a new
+  ;; rl-mesh upon each access. Hmm...
+  (autowrap:c-aref sequence index 'claylib/wrap:mesh))
 
 (defmethod (setf sequences:elt) (value (sequence rl-meshes) index)
   (check-type index integer)
-  ())
+  (let ((value (if (typep value 'rl-mesh) (c-struct value) value)))
+    (copy-mesh (autowrap:c-aptr sequence index 'claylib/wrap:mesh)
+               (autowrap:ptr (c-struct value)))))
 
 (defmethod sequences:adjust-sequence ((sequence rl-meshes) length
                                       &key initial-contents initial-element)
-  )
+  "Adjust the length of the given rl-meshes sequence. The length may only be decreased.
+
+Or, if either INITIAL-ELEMENT (an rl-mesh) or INITIAL-CONTENTS (a list of rl-mesh objects) is given,
+return a newly allocated sequence with the initial element or contents."
+  (cond
+    ((and initial-element initial-contents)
+     (error "Cannot specify both :INITIAL-ELEMENT and :INITIAL-CONTENTS"))
+
+    (initial-element
+     (let ((new-meshes (make-instance 'rl-meshes
+                                      :mesh-count length
+                                      :c-struct (autowrap:alloc 'claylib/wrap:mesh length))))
+       (loop for i below length
+             do (copy-mesh (autowrap:c-aptr (c-struct new-meshes) i 'claylib/wrap:mesh)
+                           (autowrap:ptr (c-struct initial-element)))
+             finally return new-meshes)))
+
+    (initial-contents
+     (let ((new-meshes (make-instance 'rl-meshes
+                                      :mesh-count length
+                                      :c-struct (autowrap:alloc 'claylib/wrap:mesh length))))
+       (loop for i below length
+             for mesh in initial-contents
+             do (copy-mesh (autowrap:c-aptr (c-struct new-meshes) i 'claylib/wrap:mesh)
+                           (autowrap:ptr (c-struct mesh)))
+             finally return new-meshes)))
+
+    (t
+     ;; Free the memory beyond the adjusted length index
+     ;; TODO will this cause double free later?
+     (loop for i from length to (1- (mesh-count sequence))
+           do (free (autowrap:c-aref (c-struct sequence) i 'claylib/wrap:mesh))
+           finally (setf (mesh-count sequence) length)
+           return sequence))))
 
 (defmethod sequences:make-sequence-like ((sequence rl-meshes) length
-                                         &key initial-contents initial-element))
+                                         &key initial-contents initial-element)
+  (let ((new-meshes (make-instance 'rl-meshes
+                                   :mesh-count length
+                                   :c-struct (autowrap:alloc new-seq 'mesh length))))
+    (cond
+      ((and initial-element initial-contents)
+       (error "Cannot specify both :INITIAL-ELEMENT and :INITIAL-CONTENTS"))
+
+      (initial-element
+       (loop for i below length
+             do (copy-mesh (autowrap:c-aptr (c-struct new-meshes) i 'claylib/wrap:mesh)
+                           (autowrap:ptr (c-struct initial-element)))))
+
+      (initial-contents
+       (loop for i below length
+             for mesh in initial-contents
+             do (copy-mesh (autowrap:c-aptr (c-struct new-meshes) i 'claylib/wrap:mesh)
+                           (autowrap:ptr (c-struct mesh)))))
+
+      (t
+       (loop for i below length
+             do (copy-mesh (autowrap:c-aptr (c-struct new-meshes) i 'claylib/wrap:mesh)
+                           (autowrap:c-aptr (c-struct sequence) i 'claylib/wrap:mesh)))))
+    new-meshes))

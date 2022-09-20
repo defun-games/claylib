@@ -79,8 +79,7 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
   (load-asset model-asset)
   (let ((model (apply #'make-instance 'model
                       :pos (make-vector3 x y z)
-                      args))
-        (base-model (c-asset model-asset)))
+                      args)))
     (set-model (c-struct model)
                (c-struct (make-zero-matrix))  ; fresh transform for each instance
                (mesh-count model-asset)
@@ -92,7 +91,10 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                (model.bones (c-asset model-asset))
                (model.bind-pose (c-asset model-asset)))
     (setf (meshes model) (make-instance 'rl-meshes
-                                        :pointer (model.meshes (c-asset model-asset))
+                                        :c-struct (autowrap:c-aref
+                                                   (model.meshes (c-asset model-asset))
+                                                   0
+                                                   'claylib/wrap:mesh)
                                         :mesh-count (mesh-count model-asset))
           ;; TODO make rl-materials
           ;; TODO make rl-bones
