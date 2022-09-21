@@ -478,7 +478,7 @@
    :set-matrix :set-color :set-rectangle :set-image :set-texture :set-render-texture :set-n-patch-info
    :set-glyph-info :set-font :set-camera3d :set-camera2d :set-mesh :set-shader :set-material-map
    :set-material :set-transform :set-bone-info :set-model :set-model-animation :set-ray :set-ray-collision
-   :set-bounding-box :set-wave :set-audio-stream :set-sound :set-music
+   :set-bounding-box :set-wave :set-audio-stream :set-sound :set-music :data-valid-p
 
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps*))
