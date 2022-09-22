@@ -25,7 +25,7 @@
 (definitializer line
   :lisp-slots ((%start) (%end) (%color)))
 
-(default-free line %start %end)
+(default-free line %start %end %color)
 
 
 

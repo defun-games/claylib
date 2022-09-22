@@ -14,7 +14,7 @@
 (definitializer shape
   :lisp-slots ((%color) (%filled)))
 
-;; TODO: free colors?
+(default-free shape %color)
 
 
 

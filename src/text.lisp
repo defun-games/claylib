@@ -33,6 +33,8 @@
                (%spacing t)
                (%color)))
 
+(default-free text %color)
+
 (defun make-text (text x y &rest args &key size color spacing font)
   (declare (ignore size color spacing font))
   (apply #'make-instance 'text
