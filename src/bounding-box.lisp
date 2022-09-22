@@ -10,7 +10,7 @@
             :reader high)
      (%c-struct
       :type claylib/ll:bounding-box
-      :initform (autowrap:alloc 'claylib/ll:bounding-box)
+      :initform (autowrap:calloc 'claylib/ll:bounding-box)
       :accessor c-struct))))
 
 (defcwriter-struct low rl-bounding-box min bounding-box vector3 x y z)

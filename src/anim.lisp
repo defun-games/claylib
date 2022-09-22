@@ -4,7 +4,7 @@
   (defclass rl-bone-info ()
     ((%c-struct
       :type claylib/ll:bone-info
-      :initform (autowrap:alloc 'claylib/ll:bone-info)
+      :initform (autowrap:calloc 'claylib/ll:bone-info)
       :accessor c-struct))))
 
 (defcreader name rl-bone-info name bone-info)  ; TODO: Array/string
@@ -32,7 +32,7 @@
                    :reader frame-poses)
      (%c-struct
       :type claylib/ll:model-animation
-      :initform (autowrap:alloc 'claylib/ll:model-animation)
+      :initform (autowrap:calloc 'claylib/ll:model-animation)
       :accessor c-struct))))
 
 (defcreader bone-count rl-model-animation bone-count model-animation)

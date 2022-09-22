@@ -146,13 +146,13 @@
      (%fspath :initarg :fspath
               :type (or pathname null)
               :accessor fspath)
-     (%asset :type (or rl-shader null)))))
+     (%asset :type (or rl-shader null)))
+    (:default-initargs
+     :vspath nil
+     :fspath nil)))
 
 (defreader id shader-asset id asset)
 (defreader locs shader-asset locs asset)
-
-(default-slot-value shader-asset %vspath nil)
-(default-slot-value shader-asset %fspath nil)
 
 (defmethod load-asset ((asset shader-asset) &key force-reload)
   (let ((vpath (when (vspath asset)
@@ -176,7 +176,7 @@
                  :type integer
                  :writer (setf size))
      (%font-chars :initarg :chars
-                  :type integer
+                  :type (or autowrap:wrapper cffi:foreign-pointer null)  ; TODO: How does a user easily specify this?
                   :accessor chars)
      (%glyph-count :initarg :glyph-count
                    :type integer
@@ -223,7 +223,7 @@
   asset)
 
 (defun make-font-asset (path &rest args &key size chars glyph-count (load-now nil))
-  (declare (ignore size chars glyph-count load-now))
+  (declare (ignorable size chars glyph-count load-now))
   (apply #'make-instance 'font-asset :path path args))
 
 

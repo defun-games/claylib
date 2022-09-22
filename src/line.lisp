@@ -44,7 +44,10 @@
                   :accessor control-pt)
      (%control-pt2 :initarg :control-pt2
                    :type rl-vector2
-                   :accessor control-pt2))))
+                   :accessor control-pt2))
+    (:default-initargs
+     :thickness 1.0
+     :bezier nil)))
 
 (defwriter-float thickness line-2d)
 
@@ -53,9 +56,6 @@
                (%bezier)
                (%control-pt)
                (%control-pt2)))
-
-(default-slot-value line-2d %thickness 1.0)
-(default-slot-value line-2d %bezier nil)
 
 (default-free line-2d %start %end %control-pt %control-pt2)
 

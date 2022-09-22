@@ -1,9 +1,24 @@
 (in-package #:claylib/ll)
 
+(defun array-valid-p (pointer array-len autowrap-type)
+  "Check validity of a C pointer-array. Does *not* test individual elements, only pointer sanity."
+  (let ((maxptr (1- (expt 2 64))))
+    (and (not (cffi:null-pointer-p pointer))
+         (>= (- maxptr (cffi:pointer-address pointer))
+             (* array-len (autowrap:foreign-type-size autowrap-type))))))
+
 (defgeneric data-valid-p (wrapper)
   (:documentation "Determine whether a wrapper is valid and its data can be safely read.
 
 *** FAIR WARNING: Some of these checks are more robust than others. ***"))
+
+(defmethod data-valid-p :around ((wrapper autowrap:wrapper))
+  (if (and (autowrap:valid-p wrapper)
+           (not (cffi:null-pointer-p (autowrap:ptr wrapper))))
+      (call-next-method)
+      ;; Null-pointer-wrappers are never valid.
+      ;; Quit early before C throws a hissy fit.
+      nil))
 
 (defmethod data-valid-p ((wrapper autowrap:wrapper)) t)
 
@@ -49,29 +64,17 @@
   (> (camera2d.zoom wrapper) 0))
 
 (defmethod data-valid-p ((wrapper mesh))
-  (let ((vcount (mesh.vertex-count wrapper))
-        (texcoords (mesh.texcoords wrapper))
-        (normals (mesh.normals wrapper))
-        (maxptr (1- (expt 2 64)))
-        (size (autowrap:foreign-type-size :float)))
+  (let ((vcount (mesh.vertex-count wrapper)))
     (and (> vcount 0)
          (> (mesh.triangle-count wrapper) 0)
-         (not (cffi:null-pointer-p (mesh.vertices wrapper)))
-         (not (cffi:null-pointer-p texcoords))
-         (not (cffi:null-pointer-p normals))
-         (>= (- maxptr (cffi:pointer-address texcoords))
-             (* vcount 2 size))
-         (>= (- maxptr (cffi:pointer-address normals))
-             (* vcount 3 size)))))
+         (array-valid-p (mesh.vertices wrapper) (* vcount 3) :float)
+         (array-valid-p (mesh.texcoords wrapper) (* vcount 2) :float)
+         (array-valid-p (mesh.normals wrapper) (* vcount 3) :float))))
 
 (defmethod data-valid-p ((wrapper shader))
   (let ((locs (shader.locs wrapper))
-        (maxptr (1- (expt 2 64)))
-        (max-shader-locs 32)
-        (size (autowrap:foreign-type-size :int)))
-    (and (not (cffi:null-pointer-p locs))
-         (>= (- maxptr (cffi:pointer-address locs))
-             (* max-shader-locs size))
+        (max-shader-locs 32))
+    (and (array-valid-p locs max-shader-locs :int)
          ;; Current Raylib shader loc values correspond to ints 0-25
          (>= (autowrap:c-aref locs 0 :int) 0)
          (<= (autowrap:c-aref locs 0 :int) 25))))
@@ -81,24 +84,15 @@
 
 (defmethod data-valid-p ((wrapper material))
   (let ((maps (material.maps wrapper))
-        (maxptr (1- (expt 2 64)))
-        (max-material-maps 12)
-        (size (autowrap:foreign-type-size 'material-map)))
-    (and (not (cffi:null-pointer-p maps))
-         (>= (- maxptr (cffi:pointer-address maps))
-             (* max-material-maps size))
+        (max-material-maps 12))
+    (and (array-valid-p maps max-material-maps 'material-map)
          (data-valid-p (material.shader wrapper))
          (data-valid-p (autowrap:c-aref maps 0 'material-map)))))
 
 (defmethod data-valid-p ((wrapper model))
-  (let ((mcount (model.mesh-count wrapper))
-        (meshes (model.meshes wrapper))
-        (maxptr (1- (expt 2 64)))
-        (size (autowrap:foreign-type-size 'mesh)))
+  (let ((mcount (model.mesh-count wrapper)))
     (and (> mcount 0)
-         (not (cffi:null-pointer-p meshes))
-         (>= (- maxptr (cffi:pointer-address meshes))
-             (* mcount size)))))
+         (array-valid-p (model.meshes wrapper) mcount 'mesh))))
 
 (defmethod data-valid-p ((wrapper model-animation))
   (and (> (model-animation.bone-count wrapper) 0)

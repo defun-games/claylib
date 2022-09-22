@@ -37,7 +37,10 @@
                 :accessor rot-axis)
      (%rot-angle :initarg :rot-angle
                  :type number
-                 :reader rot-angle))))
+                 :reader rot-angle))
+    (:default-initargs
+     :rot-axis (make-vector3 0 0 0)
+     :rot-angle 0.0)))
 
 (defreader x 3d-object x pos)
 (defreader y 3d-object y pos)
@@ -52,8 +55,5 @@
   :lisp-slots ((%position)
                (%rot-axis)
                (%rot-angle t)))
-
-(default-slot-value 3d-object %rot-axis (make-vector3 0 0 0))
-(default-slot-value 3d-object %rot-angle 0.0)
 
 (default-free 3d-object %position %rot-axis)

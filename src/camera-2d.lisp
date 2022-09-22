@@ -10,8 +10,11 @@
               :reader target)
      (%c-struct
       :type claylib/ll:camera2d
-      :initform (autowrap:alloc 'claylib/ll:camera2d)
-      :accessor c-struct))))
+      :initform (autowrap:calloc 'claylib/ll:camera2d)
+      :accessor c-struct))
+    (:default-initargs
+     :rot 0.0
+     :zoom 1.0)))
 
 (defcreader rot rl-camera-2d rotation camera2d)
 (defcreader zoom rl-camera-2d zoom camera2d)
@@ -35,8 +38,8 @@
 
 (definitializer rl-camera-2d
   :struct-slots ((%offset) (%target))
-  :pt-accessors ((rot number float 0.0)
-                 (zoom number float 1.0)))
+  :pt-accessors ((rot number float)
+                 (zoom number float)))
 
 (default-free rl-camera-2d %offset %target)
 (default-free-c claylib/ll:camera2d)

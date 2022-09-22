@@ -10,7 +10,7 @@
               :reader normal)
      (%c-struct
       :type claylib/ll:ray-collision
-      :initform (autowrap:alloc 'claylib/ll:ray-collision)
+      :initform (autowrap:calloc 'claylib/ll:ray-collision)
       :accessor c-struct))))
 
 (defcreader-bool hit rl-ray-collision hit ray-collision)

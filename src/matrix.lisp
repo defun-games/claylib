@@ -4,7 +4,7 @@
   (defclass rl-matrix ()
     ((%c-struct
       :type claylib/ll:matrix
-      :initform (autowrap:alloc 'claylib/ll:matrix)
+      :initform (autowrap:calloc 'claylib/ll:matrix)
       :accessor c-struct))))
 
 (defcreader m0 rl-matrix m0 matrix)

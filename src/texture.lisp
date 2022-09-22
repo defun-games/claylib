@@ -4,7 +4,7 @@
   (defclass rl-texture ()
     ((%c-struct
       :type claylib/ll:texture
-      :initform (autowrap:alloc 'claylib/ll:texture)
+      :initform (autowrap:calloc 'claylib/ll:texture)
       :accessor c-struct))))
 
 (defcreader id rl-texture id texture)
@@ -33,13 +33,7 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass tex ()
-    ((%filter :initarg :filter
-              :type integer
-              :reader filter)
-     (%wrap :initarg :wrap
-            :type integer
-            :reader wrap)
-     (%source :initarg :source
+    ((%source :initarg :source
               :type rl-rectangle
               :accessor source)
      (%dest :initarg :dest
@@ -53,39 +47,48 @@
                 :reader rot)
      (%tint :initarg :tint
             :type rl-color
-            :accessor tint))))
+            :accessor tint))
+    (:default-initargs
+     :origin (make-vector2 0 0)
+     :rot 0.0
+     :tint +white+)))
 
 (defwriter-float rot tex %rotation)
 
-(defmethod (setf filter) ((value integer) (texture tex))
-  (claylib/ll:set-texture-filter (c-struct texture) value)
-  (setf (slot-value texture '%filter) value))
-
-(defmethod (setf wrap) ((value integer) (texture tex))
-  (claylib/ll:set-texture-wrap (c-struct texture) value)
-  (setf (slot-value texture '%wrap) value))
-
 (definitializer tex
-  :lisp-slots ((%filter t)
-               (%wrap t)
-               (%source)
+  :lisp-slots ((%source)
                (%dest)
                (%origin)
                (%rotation t)
                (%tint)))
-
-(default-slot-value tex %filter +texture-filter-point+)
-(default-slot-value tex %wrap +texture-wrap-repeat+)
-(default-slot-value tex %origin (make-vector2 0 0))
-(default-slot-value tex %rotation 0.0)
-(default-slot-value tex %tint +white+)
 
 (default-free tex %source %dest %origin %tint)
 
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass texture (rl-texture tex) ()))
+  (defclass texture (rl-texture tex)
+    ((%filter :initarg :filter
+              :type integer
+              :reader filter)
+     (%wrap :initarg :wrap
+            :type integer
+            :reader wrap))
+    (:default-initargs
+     :filter +texture-filter-point+
+     :wrap +texture-wrap-repeat+)))
+
+(defmethod (setf filter) ((value integer) (texture texture))
+  (claylib/ll:set-texture-filter (c-struct texture) value)
+  (setf (slot-value texture '%filter) value))
+
+(defmethod (setf wrap) ((value integer) (texture texture))
+  (claylib/ll:set-texture-wrap (c-struct texture) value)
+  (setf (slot-value texture '%wrap) value))
+
+(definitializer texture
+  :lisp-slots ((%filter t)
+               (%wrap t)))
 
 (defmethod slot-unbound (_ (obj texture) (slot (eql '%source)))
   (setf (slot-value obj slot) (make-instance 'rl-rectangle
@@ -190,7 +193,7 @@
              :reader depth)
      (%c-struct
       :type claylib/ll:render-texture
-      :initform (autowrap:alloc 'claylib/ll:render-texture)
+      :initform (autowrap:calloc 'claylib/ll:render-texture)
       :accessor c-struct))))
 
 (defcreader id rl-render-texture id render-texture)

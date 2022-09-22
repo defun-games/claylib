@@ -98,4 +98,12 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
 (defmethod free ((obj list))
   (mapc #'free obj))
 
+(defmethod free ((obj t))
+  ;; TODO: We *shouldn't* have to worry about FREE being called on pointers. I believe the fact that
+  ;; we do will be fixed with sequences. Also, ideally this method shouldn't exist -- we need to know
+  ;; if FREE is not defined for a class.
+  (when (cffi-sys:pointerp obj)
+    (warn "Attempted to free a pointer ~A. This shouldn't happen. When this warning stops appearing,
+delete the universal FREE method (see TODO)." obj)))
+
 (defmethod sync-children ((obj t)) nil)

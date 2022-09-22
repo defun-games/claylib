@@ -13,7 +13,10 @@
                 :reader rot)
      (%thickness :initarg :thickness
                  :type number
-                 :reader thickness))))
+                 :reader thickness))
+    (:default-initargs
+     :thickness 1.0
+     :rot 0.0)))
 
 (defwriter-float radius polygon)
 (defwriter-float rot polygon %rotation)
@@ -24,10 +27,6 @@
                (%radius t)
                (%rotation t)
                (%thickness t)))
-
-(default-slot-value polygon %thickness 1.0)
-(default-slot-value polygon %rotation 0.0)
-(default-slot-value polygon %filled t)
 
 (defun make-polygon (x y sides radius color
                      &rest args &key rotation thickness filled)

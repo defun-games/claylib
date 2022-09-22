@@ -4,7 +4,7 @@
   (defclass rl-shader ()
     ((%c-struct
       :type claylib/ll:shader
-      :initform (autowrap:alloc 'claylib/ll:shader)
+      :initform (autowrap:calloc 'claylib/ll:shader)
       :accessor c-struct))))
 
 (defcreader id rl-shader id shader)
@@ -32,7 +32,7 @@
              :reader color)
      (%c-struct
       :type claylib/ll:material-map
-      :initform (autowrap:alloc 'claylib/ll:material-map)
+      :initform (autowrap:calloc 'claylib/ll:material-map)
       :accessor c-struct))))
 
 (defcreader value rl-material-map value material-map)
@@ -75,7 +75,7 @@
             :reader maps)
      (%c-struct
       :type claylib/ll:material
-      :initform (autowrap:alloc 'claylib/ll:material)
+      :initform (autowrap:calloc 'claylib/ll:material)
       :accessor c-struct))))
 
 (defcreader params rl-material params material)  ; TODO: Array
@@ -94,11 +94,17 @@
       (free-later (c-struct (shader obj)))
       (setf (c-struct (shader obj))
             (material.shader (c-struct obj))))
-    (unless (eq (c-struct (maps obj))
-                (i0 (material.maps (c-struct obj)) 'claylib/ll:material-map))
-      (free-later (c-struct (maps obj)))
-      (setf (c-struct (maps obj))
-            (i0 (material.maps (c-struct obj)) 'claylib/ll:material-map))))
+    (unless (cffi-sys:null-pointer-p
+             (autowrap:ptr (c-struct obj)))
+      (when (and (data-valid-p (c-struct obj))
+                 (array-valid-p (material.maps (c-struct obj))
+                                12
+                                'claylib/ll:material-map))
+        (unless (eq (c-struct (maps obj))
+                    (i0 (material.maps (c-struct obj)) 'claylib/ll:material-map))
+          (free-later (c-struct (maps obj)))
+          (setf (c-struct (maps obj))
+                (i0 (material.maps (c-struct obj)) 'claylib/ll:material-map))))))
   (sync-children (maps obj)))
 
 (definitializer rl-material

@@ -178,10 +178,8 @@ Set SUBCLASS when you want to initialize a slot with a different subclass than i
 
 :pt-accessors is a list of pass-through accessors tied to a backing C struct. These are *not* CLOS
 slots, but they will have custom readers and probably writers. Expected format:
-(ACCESSOR-NAME TYPE &optional COERCE-TYPE DEFAULT-VALUE)
-COERCE-TYPE will usually be float, when applicable. You can set COERCE-TYPE to NIL to ignore it if
-you still want to set a default value. This is the *only* place default values for C struct fields
-should be set."
+(ACCESSOR-NAME TYPE &optional COERCE-TYPE)
+COERCE-TYPE will usually be float, when applicable."
   (let ((obj (gensym))
         (ptr (gensym))
         (new (gensym))
@@ -199,12 +197,10 @@ should be set."
                           (car (closer-mop:slot-definition-initargs def))))))             
              (slot-type (slot-name)
                (alexandria:when-let ((def (slot-def slot-name)))
-                 (closer-mop:slot-definition-type (slot-def slot-name))))
+                 (closer-mop:slot-definition-type def)))
              (arg-supplied-p (arg)
                (alexandria:symbolicate arg "-SUPPLIED-P")))
-      (let ((lisp-slot-args (remove nil
-                                    (mapcar #'(lambda (slot) (slot-arg (car slot)))
-                                            lisp-slots)))
+      (let ((lisp-slot-args (mapcar #'(lambda (slot) (slot-arg (car slot))) lisp-slots))
             (lisp-slot-types (mapcar #'(lambda (slot) (slot-type (car slot))) lisp-slots))
             (struct-slot-args (mapcar #'(lambda (slot) (slot-arg (car slot))) struct-slots))
             (struct-slot-types (mapcar #'(lambda (slot) (slot-type (car slot))) struct-slots)))
@@ -212,13 +208,9 @@ should be set."
              :after ((,obj ,class)
                      &key ,@(remove nil (append (mapcar #'(lambda (arg)
                                                             `(,arg nil ,(arg-supplied-p arg)))
-                                                        lisp-slot-args)
+                                                        (remove nil lisp-slot-args))
                                                 struct-slot-args
-                                                (mapcar #'(lambda (accessor)
-                                                            (if (= (length accessor) 4)
-                                                                `(,(car accessor) ,(fourth accessor))
-                                                                (car accessor)))
-                                                        pt-accessors))))
+                                                (mapcar #'car pt-accessors))))
            ,@(loop for arg in (append lisp-slot-args struct-slot-args)
                    for type in (append lisp-slot-types struct-slot-types)
                    when arg
@@ -227,14 +219,15 @@ should be set."
            ,@(loop for arg in lisp-slot-args
                    for type in lisp-slot-types
                    for slot in lisp-slots
-                   collect (destructuring-bind (name &optional use-writer-p coerce-type) slot
-                             (let ((setter `(setf ,(if use-writer-p
-                                                       `(,arg ,obj)
-                                                       `(slot-value ,obj ',name))
-                                                  ,(if coerce-type
-                                                       `(coerce ,arg ',coerce-type)
-                                                       arg))))
-                               `(when ,(arg-supplied-p arg) ,setter))))
+                   when arg
+                     collect (destructuring-bind (name &optional use-writer-p coerce-type) slot
+                               (let ((setter `(setf ,(if use-writer-p
+                                                         `(,arg ,obj)
+                                                         `(slot-value ,obj ',name))
+                                                    ,(if coerce-type
+                                                         `(coerce ,arg ',coerce-type)
+                                                         arg))))
+                                 `(when ,(arg-supplied-p arg) ,setter))))
            ,@(loop for arg in struct-slot-args
                    for type in struct-slot-types
                    for slot in struct-slots
@@ -245,8 +238,7 @@ should be set."
                                     (setf (slot-value ,obj ',name) ,new)))))
            (sync-children ,obj)
            ,@(loop for accessor in pt-accessors
-                   collect (destructuring-bind (name type &optional coerce-type default-value) accessor
-                             (declare (ignorable default-value))
+                   collect (destructuring-bind (name type &optional coerce-type) accessor
                              (let ((val (if coerce-type
                                             `(coerce ,name ',coerce-type)
                                             name)))
@@ -288,8 +280,9 @@ in the slot names -- it is included by default when applicable."
     `(defmethod free ((,obj ,type))
        (when (eql (,validity-fn ,obj) t)
          ,(when fn
-            `(when (or (and ,window-required-p (is-window-ready-p))
-                       ,(and fn (not window-required-p)))
+            `(when (and (or (and ,window-required-p (is-window-ready-p))
+                            ,(and fn (not window-required-p)))
+                        (data-valid-p ,obj))
                (,fn ,obj)))
          (autowrap:free ,obj)))))
 

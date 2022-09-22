@@ -4,7 +4,7 @@
   (defclass rl-rectangle ()
     ((%c-struct
       :type claylib/ll:rectangle
-      :initform (autowrap:alloc 'claylib/ll:rectangle)
+      :initform (autowrap:calloc 'claylib/ll:rectangle)
       :accessor c-struct))))
 
 (defcreader x rl-rectangle x rectangle)
@@ -47,7 +47,11 @@
                       :type keyword
                       :accessor gradient-style
                       :documentation
-                      "Whether to draw a gradient horizontally or vertically. Must be :H or :V."))))
+                      "Whether to draw a gradient horizontally or vertically. Must be :H or :V."))
+    (:default-initargs
+     :rot 0.0
+     :thickness 1.0
+     :origin (make-vector2 0 0))))
 
 (defwriter-float rot rectangle %rotation)
 (defwriter-float thickness rectangle)
@@ -57,10 +61,6 @@
                (%rotation t)
                (%thickness t)
                (%gradient-style)))
-
-(default-slot-value rectangle %rotation 0.0)
-(default-slot-value rectangle %thickness 1.0)
-(default-slot-value rectangle %position (make-vector2 0 0))
 
 (default-free rectangle)
 

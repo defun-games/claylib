@@ -25,7 +25,12 @@ camera).")
               :accessor origin)
      (%tint :initarg :tint
             :type rl-color
-            :accessor tint))))
+            :accessor tint))
+    (:default-initargs
+     :size (make-vector2 1 1)
+     :rot-axis (make-vector3 0 1 0)
+     :origin (make-vector3 0 0 0)
+     :tint +white+)))
 
 (defreader c-asset billboard c-asset asset)
 (defreader x-scale billboard x size)
@@ -36,11 +41,6 @@ camera).")
 
 (definitializer billboard
   :lisp-slots ((%asset) (%camera) (%size) (%source) (%rot-axis) (%rot-angle) (%origin) (%tint)))
-
-(default-slot-value billboard %size (make-vector2 1 1))
-(default-slot-value billboard %rot-axis (make-vector3 0 1 0))
-(default-slot-value billboard %origin (make-vector3 0 0 0))
-(default-slot-value billboard %tint +white+)
 
 (default-free billboard %size %source %rot-axis %origin %tint)
 

@@ -13,8 +13,11 @@
           :reader up)
      (%c-struct
       :type claylib/ll:camera3d
-      :initform (autowrap:alloc 'claylib/ll:camera3d)
-      :accessor c-struct))))
+      :initform (autowrap:calloc 'claylib/ll:camera3d)
+      :accessor c-struct))
+    (:default-initargs
+     :fovy 45.0
+     :projection +camera-perspective+)))
 
 (defreader x rl-camera-3d x pos)
 (defreader y rl-camera-3d y pos)
@@ -50,8 +53,8 @@
 
 (definitializer rl-camera-3d
   :struct-slots ((%position) (%target) (%up))
-  :pt-accessors ((fovy number float 45.0)
-                 (projection integer nil +camera-perspective+)))
+  :pt-accessors ((fovy number float)
+                 (projection integer)))
 
 (default-free rl-camera-3d %position %target %up)
 (default-free-c claylib/ll:camera3d)
@@ -62,7 +65,9 @@
   (defclass camera-3d (rl-camera-3d)
     ((%mode :initarg :mode
             :type integer
-            :reader mode))))
+            :reader mode))
+    (:default-initargs
+     :mode +camera-custom+)))
 
 (defmethod (setf mode) ((value integer) (camera camera-3d))
   (claylib/ll:set-camera-mode (c-struct camera) value)
@@ -70,8 +75,6 @@
 
 (definitializer camera-3d
   :lisp-slots ((%mode t)))
-
-(default-slot-value camera-3d %mode +camera-custom+)
 
 (defun make-camera-3d (pos-x pos-y pos-z
                        target-x target-y target-z

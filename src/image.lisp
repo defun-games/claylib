@@ -4,7 +4,7 @@
   (defclass rl-image ()
     ((%c-struct
       :type claylib/ll:image
-      :initform (autowrap:alloc 'claylib/ll:image)
+      :initform (autowrap:calloc 'claylib/ll:image)
       :accessor c-struct))))
 
 (defcreader data rl-image data image) ; pointer
@@ -43,12 +43,12 @@
             :accessor dest)
      (%tint :initarg :tint
             :type rl-color
-            :accessor tint))))
+            :accessor tint))
+    (:default-initargs
+     :tint +white+)))
 
 (definitializer image
   :lisp-slots ((%source) (%dest) (%tint)))
-
-(default-slot-value image %tint +white+)
 
 (default-free image %source %dest %tint)
 

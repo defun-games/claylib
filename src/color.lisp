@@ -4,7 +4,7 @@
   (defclass rl-color ()
     ((%c-struct
       :type claylib/ll:color
-      :initform (autowrap:alloc 'claylib/ll:color)
+      :initform (autowrap:calloc 'claylib/ll:color)
       :reader c-struct))))
 
 (defcreader r rl-color r color)

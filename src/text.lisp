@@ -16,7 +16,12 @@
                :reader spacing)
      (%color :initarg :color
              :type rl-color
-             :accessor color))))
+             :accessor color))
+    (:default-initargs
+     :font +default-font+
+     :size (float (size +default-font+))
+     :spacing 1.0
+     :color +gray+)))
 
 (defwriter-float size text %font-size)
 (defwriter-float spacing text)
@@ -27,11 +32,6 @@
                (%font-size t)
                (%spacing t)
                (%color)))
-
-(default-slot-value text %font +default-font+)
-(default-slot-value text %font-size (float (size +default-font+)))
-(default-slot-value text %spacing 1.0)
-(default-slot-value text %color +gray+)
 
 (defun make-text (text x y &rest args &key size color spacing font)
   (declare (ignore size color spacing font))

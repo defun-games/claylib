@@ -7,7 +7,7 @@
              :reader image)
      (%c-struct
       :type claylib/ll:glyph-info
-      :initform (autowrap:alloc 'claylib/ll:glyph-info)
+      :initform (autowrap:calloc 'claylib/ll:glyph-info)
       :accessor c-struct))))
 
 (defcreader value rl-glyph-info value glyph-info)
@@ -55,7 +55,7 @@
               :reader glyphs)
      (%c-struct
       :type claylib/ll:font
-      :initform (autowrap:alloc 'claylib/ll:font)
+      :initform (autowrap:calloc 'claylib/ll:font)
       :accessor c-struct))))
 
 (defcreader size rl-font base-size font)
@@ -95,8 +95,8 @@
 (definitializer rl-font
   :struct-slots ((%texture) (%recs) (%glyphs))
   :pt-accessors ((size integer)
-                (glyph-count integer)
-                (glyph-padding integer)))
+                 (glyph-count integer)
+                 (glyph-padding integer)))
 
 (default-free rl-font %texture %recs %glyphs)
 (default-free-c claylib/ll:font unload-font)

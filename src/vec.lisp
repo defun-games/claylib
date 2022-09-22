@@ -9,7 +9,7 @@
   (defclass rl-vector2 (vec)
     ((%c-struct
       :type claylib/ll:vector2
-      :initform (autowrap:alloc 'claylib/ll:vector2)
+      :initform (autowrap:calloc 'claylib/ll:vector2)
       :accessor c-struct))))
 
 (defcreader x rl-vector2 x vector2)
@@ -34,7 +34,7 @@
   (defclass rl-vector3 (vec)
     ((%c-struct
       :type claylib/ll:vector3
-      :initform (autowrap:alloc 'claylib/ll:vector3)
+      :initform (autowrap:calloc 'claylib/ll:vector3)
       :accessor c-struct))))
 
 (defcreader x rl-vector3 x vector3)
@@ -62,7 +62,7 @@
   (defclass rl-vector4 (vec)
     ((%c-struct
       :type claylib/ll:vector4
-      :initform (autowrap:alloc 'claylib/ll:vector4)
+      :initform (autowrap:calloc 'claylib/ll:vector4)
       :accessor c-struct))))
 
 (defcreader x rl-vector4 x vector4)

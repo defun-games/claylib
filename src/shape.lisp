@@ -7,12 +7,12 @@
              :accessor color)
      (%filled :initarg :filled
               :type boolean
-              :accessor filled))))
+              :accessor filled))
+    (:default-initargs
+     :filled t)))
 
 (definitializer shape
   :lisp-slots ((%color) (%filled)))
-
-(default-slot-value shape %filled t)
 
 ;; TODO: free colors?
 
