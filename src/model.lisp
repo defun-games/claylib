@@ -113,21 +113,3 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                             (rot-angle obj)
                             (c-struct (scale obj))
                             (c-struct (tint obj))))
-
-(defun extract-model-data (path)
-  "Return a plist of the model data of interest in the file at PATH."
-  (let* ((rl-model (make-instance 'rl-model))
-         (c-model (c-struct rl-model)))
-    (claylib/ll:load-model c-model (namestring path))
-    ;; TODO: make copies of the following fields, need copy functions!
-    (list :transform      (model.transform c-model)
-          :mesh-count     (mesh-count rl-model)
-          :material-count (material-count rl-model)
-          :meshes         (model.meshes c-model)
-          :materials      (model.materials c-model)
-          :mesh-material  (mesh-material rl-model)
-          :bone-count     (bone-count rl-model)
-          :bones          (model.bones c-model)
-          :bind-pose      (model.bind-pose c-model))
-    ;; TODO: free rl-model
-    ))
