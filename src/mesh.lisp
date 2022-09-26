@@ -52,105 +52,32 @@
 
 
 
-(defclass rl-meshes (sequences:sequence)
-  ((%c-struct :initarg :c-struct
+(defclass rl-meshes ()
+  ((%lisp-array :type simple-vector ;; TODO define array type to ensure elements are rl-mesh objects
+                :accessor lisp-array
+                :documentation "A Lisp array of RL-MESH objects that tracks the C Mesh array
+(i.e. %C-STRUCT) underneath.")
+   (%c-struct :initarg :c-struct
               :initform (error "Must give initial :C-STRUCT argument.")
               :type 'claylib/wrap:mesh
               :accessor c-struct
-              :documentation "The wrapper for the first Mesh in a meshes array.")
-   (%mesh-count :initarg :mesh-count
-                :initform (error "Must give initial :MESH-COUNT argument.")
-                :type integer
-                :accessor mesh-count
-                :documentation "The number of meshes in this raylib array. This slot must be
-synchronized with the length of the array.")))
+              :documentation "The wrapper for the first Mesh in a meshes array.")))
 
-(defconstant +foreign-mesh-size+ (cffi:foreign-type-size '(:struct mesh)))
+(defmethod initialize-instance :after ((meshes rl-meshes) &key c-struct mesh-count)
+  (check-type c-struct claylib/wrap:mesh)
+  (if mesh-count
+      (check-type mesh-count integer)
+      (error "Must provide mesh-count in order to read the correct amount of Raylib Meshes."))
+  (let ((contents (loop for i below mesh-count
+                        for mesh = (make-instance 'rl-mesh)
+                        do (setf (slot-value mesh '%c-struct)
+                                 (autowrap:c-aref c-struct i 'claylib/wrap:mesh))
+                        collect mesh)))
+    (setf (lisp-array meshes)
+          (make-array mesh-count
+                      :element-type 'rl-mesh
+                      :initial-contents contents))))
 
-(defun copy-mesh (from-ptr to-ptr)
-  "Copy the mesh wrapper data at FROM-PTR to TO-PTR."
-  (cffi:foreign-funcall "memcpy"
-                        :pointer to-ptr
-                        :pointer from-ptr
-                        :int +foreign-mesh-size+
-                        :void))
-
-(defmethod sequences:length ((sequence rl-meshes))
-  (mesh-count sequence))
-
-(defmethod sequences:elt ((sequence rl-meshes) index)
-  (check-type index integer)
-  (when (>= index (mesh-count sequence))
-    (error "Index out of bounds."))
-  ;; TODO: to be consistent, this should return an rl-mesh, but that requires allocating a new
-  ;; rl-mesh upon each access. Hmm...
-  (autowrap:c-aref sequence index 'claylib/wrap:mesh))
-
-(defmethod (setf sequences:elt) (value (sequence rl-meshes) index)
-  (check-type index integer)
-  (let ((value (if (typep value 'rl-mesh) (c-struct value) value)))
-    (copy-mesh (autowrap:c-aptr sequence index 'claylib/wrap:mesh)
-               (autowrap:ptr (c-struct value)))))
-
-(defmethod sequences:adjust-sequence ((sequence rl-meshes) length
-                                      &key initial-contents initial-element)
-  "Adjust the length of the given rl-meshes sequence. The length may only be decreased.
-
-Or, if either INITIAL-ELEMENT (an rl-mesh) or INITIAL-CONTENTS (a list of rl-mesh objects) is given,
-return a newly allocated sequence with the initial element or contents."
-  (cond
-    ((and initial-element initial-contents)
-     (error "Cannot specify both :INITIAL-ELEMENT and :INITIAL-CONTENTS"))
-
-    (initial-element
-     (let ((new-meshes (make-instance 'rl-meshes
-                                      :mesh-count length
-                                      :c-struct (autowrap:alloc 'claylib/wrap:mesh length))))
-       (loop for i below length
-             do (copy-mesh (autowrap:c-aptr (c-struct new-meshes) i 'claylib/wrap:mesh)
-                           (autowrap:ptr (c-struct initial-element)))
-             finally return new-meshes)))
-
-    (initial-contents
-     (let ((new-meshes (make-instance 'rl-meshes
-                                      :mesh-count length
-                                      :c-struct (autowrap:alloc 'claylib/wrap:mesh length))))
-       (loop for i below length
-             for mesh in initial-contents
-             do (copy-mesh (autowrap:c-aptr (c-struct new-meshes) i 'claylib/wrap:mesh)
-                           (autowrap:ptr (c-struct mesh)))
-             finally return new-meshes)))
-
-    (t
-     ;; Free the memory beyond the adjusted length index
-     ;; TODO will this cause double free later?
-     (loop for i from length to (1- (mesh-count sequence))
-           do (free (autowrap:c-aref (c-struct sequence) i 'claylib/wrap:mesh))
-           finally (setf (mesh-count sequence) length)
-           return sequence))))
-
-(defmethod sequences:make-sequence-like ((sequence rl-meshes) length
-                                         &key initial-contents initial-element)
-  (let ((new-meshes (make-instance 'rl-meshes
-                                   :mesh-count length
-                                   :c-struct (autowrap:alloc new-seq 'mesh length))))
-    (cond
-      ((and initial-element initial-contents)
-       (error "Cannot specify both :INITIAL-ELEMENT and :INITIAL-CONTENTS"))
-
-      (initial-element
-       (loop for i below length
-             do (copy-mesh (autowrap:c-aptr (c-struct new-meshes) i 'claylib/wrap:mesh)
-                           (autowrap:ptr (c-struct initial-element)))))
-
-      (initial-contents
-       (loop for i below length
-             for mesh in initial-contents
-             do (copy-mesh (autowrap:c-aptr (c-struct new-meshes) i 'claylib/wrap:mesh)
-                           (autowrap:ptr (c-struct mesh)))))
-
-      (t
-       (loop for i below length
-             do (copy-mesh (autowrap:c-aptr (c-struct new-meshes) i 'claylib/wrap:mesh)
-                           (autowrap:c-aptr (c-struct sequence) i 'claylib/wrap:mesh)))))
-    new-meshes))
+;; TODO: Define a writer method on RL-MESHES similar to SET-SLOT that, when a list element is
+;; replaced, also replaces the corresponding C array element. See DEFCWRITER-STRUCT.
+;; TODO: also somehow update the parent's mesh-count (is this done with sync-children?)
