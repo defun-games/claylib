@@ -54,9 +54,9 @@
 
 ;; TODO: inherit from sequence, define sequence methods to ease access
 (defclass rl-meshes ()
-  ((%lisp-array :type simple-vector ;; TODO define array type to ensure elements are rl-mesh objects
-                :accessor lisp-array
-                :documentation "A Lisp array of RL-MESH objects that tracks the C Mesh array
+  ((%array :type simple-vector ;; TODO define array type to ensure elements are rl-mesh objects
+           :accessor array
+           :documentation "A Lisp array of RL-MESH objects that tracks the C Mesh array
 (i.e. %C-STRUCT) underneath.")
    ;; TODO: get rid of %c-struct, it is unnecessary after initializing the array
    (%c-struct :initarg :c-struct
@@ -78,7 +78,7 @@
                         do (setf (slot-value mesh '%c-struct)
                                  (autowrap:c-aref c-struct i 'claylib/wrap:mesh))
                         collect mesh)))
-    (setf (lisp-array meshes)
+    (setf (array meshes)
           (make-array mesh-count
                       :element-type 'rl-mesh
                       :initial-contents contents))))
@@ -115,7 +115,7 @@
 Example:
 (set-meshes-element n rl-meshes rl-mesh)
 
-\"To set the nth element of rl-meshes, set the nth element of its %lisp-array slot & overwrite the
+\"To set the nth element of rl-meshes, set the nth element of its %array slot & overwrite the
 nth element of the underlying c-struct.\""
   ;; When memcpying, this setf is unnecessary. The lisp array will contain the new rl-mesh object
   ;; but the C array will already have that data copied into it.
@@ -125,10 +125,10 @@ nth element of the underlying c-struct.\""
   ;; C array). Then to set an rl-mesh in an rl-meshes, it's a matter of memcpying the new data to
   ;; the known location
   ;;
-  ;; (setf (elt (lisp-array rl-meshes) n) rl-mesh)
+  ;; (setf (elt (array rl-meshes) n) rl-mesh)
   (cffi:foreign-funcall "memcpy"
                         ;; :pointer (autowrap:c-aptr (c-struct rl-meshes) n 'claylib/wrap:mesh)
-                        :pointer (autowrap:ptr (c-struct (elt (lisp-array rl-meshes) n)))
+                        :pointer (autowrap:ptr (c-struct (elt (array rl-meshes) n)))
                         :pointer (autowrap:ptr (c-struct rl-mesh))
                         :int +foreign-mesh-size+
                         :void))
