@@ -6,7 +6,7 @@
                :reader transform)
    (%meshes :initarg :meshes
             :type rl-meshes
-            :reader meshes)
+            :accessor meshes)
    (%materials :initarg :materials
                                         ; TODO: make rl-materials sequence type
                :reader materials)

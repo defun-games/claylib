@@ -60,7 +60,7 @@
    (%c-struct :initarg :c-struct
               :initform (error "Must give initial :C-STRUCT argument.")
               :type 'claylib/wrap:mesh
-              :accessor c-struct
+              :reader c-struct
               :documentation "The wrapper for the first Mesh in a meshes array.")))
 
 (defmethod initialize-instance :after ((meshes rl-meshes) &key c-struct mesh-count)
@@ -78,6 +78,43 @@
                       :element-type 'rl-mesh
                       :initial-contents contents))))
 
-;; TODO: Define a writer method on RL-MESHES similar to SET-SLOT that, when a list element is
-;; replaced, also replaces the corresponding C array element. See DEFCWRITER-STRUCT.
-;; TODO: also somehow update the parent's mesh-count (is this done with sync-children?)
+;; TODO: Does autowrap give me something like this already? I need to know the size for memcpy later
+;; but this method is not guaranteed to work as many of these values are pointers which are not
+;; guaranteed to have the same size as ints.
+(cffi:defcstruct mesh
+  (vertex-count :int)
+  (triangle-count :int)
+  (vertices :int)
+  (tex-coords :int)
+  (tex-coords2 :int)
+  (normals :int)
+  (tangents :int)
+  (colors :int)
+  (indices :int)
+  (anim-vertices :int)
+  (anim-normals :int)
+  (bone-ids :int)
+  (bone-weights :int)
+  (vao-id :uint)
+  (vbo-id :int))
+(defconstant +foreign-mesh-size+ (cffi:foreign-type-size '(:struct mesh)))
+
+;; TODO:
+;; - Update the parent's mesh-count. Is this done with sync-children?
+;; - Make this into a setf on rl-meshes if possible.
+;;   A bad approach: define a setf that takes a new rl-meshes (possible just a modified version of
+;;   the original) and compares each element. When they differ, memcpy the new element onto the old.
+(defun set-meshes-elt (n rl-meshes rl-mesh)
+  "Set the Nth element of RL-MESHES to RL-MESH.
+
+Example:
+(set-meshes-element n rl-meshes rl-mesh)
+
+\"To set the nth element of rl-meshes, set the nth element of its %lisp-array slot & overwrite the
+nth element of the underlying c-struct.\""
+  (setf (elt (lisp-array rl-meshes) n) rl-mesh)
+  (cffi:foreign-funcall "memcpy"
+                        :pointer (autowrap:c-aptr (c-struct rl-meshes) n 'claylib/wrap:mesh)
+                        :pointer (autowrap:ptr (c-struct rl-mesh))
+                        :int +foreign-mesh-size+
+                        :void))
