@@ -101,7 +101,7 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
           ;; TODO make rl-bind-pose
           (mesh-count model) (mesh-count model-asset)
           (material-count model) (material-count model-asset)
-          (bone-count (bone-count model-asset)))
+          (bone-count model) (bone-count model-asset))
     model))
 
 (defmethod free ((obj model))
