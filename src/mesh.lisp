@@ -54,16 +54,9 @@
 
 ;; TODO: inherit from sequence, define sequence methods to ease access
 (defclass rl-meshes ()
-  ((%array :type simple-vector ;; TODO define array type to ensure elements are rl-mesh objects
-           :accessor array
-           :documentation "A Lisp array of RL-MESH objects that tracks the C Mesh array
-(i.e. %C-STRUCT) underneath.")
-   ;; TODO: get rid of %c-struct, it is unnecessary after initializing the array
-   (%c-struct :initarg :c-struct
-              :initform (error "Must give initial :C-STRUCT argument.")
-              :type 'claylib/wrap:mesh
-              :reader c-struct
-              :documentation "The wrapper for the first Mesh in a meshes array.")))
+  ((%cl-array :type simple-vector ;; TODO define array type to ensure elements are rl-mesh objects
+           :accessor cl-array
+           :documentation "A Lisp array of RL-MESH objects tracking the C Mesh array underneath.")))
 
 (defmethod initialize-instance :after ((meshes rl-meshes) &key c-struct mesh-count)
   ;; Note: C-STRUCT is the mesh wrapper at the start of the array.
@@ -78,7 +71,7 @@
                         do (setf (slot-value mesh '%c-struct)
                                  (autowrap:c-aref c-struct i 'claylib/wrap:mesh))
                         collect mesh)))
-    (setf (array meshes)
+    (setf (cl-array meshes)
           (make-array mesh-count
                       :element-type 'rl-mesh
                       :initial-contents contents))))
@@ -105,30 +98,21 @@
 (defconstant +foreign-mesh-size+ (cffi:foreign-type-size '(:struct mesh)))
 
 ;; TODO:
-;; - Update the parent's mesh-count. Is this done with sync-children?
-;; - Make this into a setf on rl-meshes if possible.
-;;   A bad approach: define a setf that takes a new rl-meshes (possible just a modified version of
-;;   the original) and compares each element. When they differ, memcpy the new element onto the old.
+;; - Make this into a setf on rl-meshes
+;;   The correct approach: inherit from sequence and implement setf for an index
 (defun set-meshes-elt (n rl-meshes rl-mesh)
-  "Set the Nth element of RL-MESHES to RL-MESH.
+  "Set the Nth element of RL-MESHES such that it contains a copy of the C data in RL-MESH.
+
+Since rl-meshes deals with a C array (contiguous memory), we cannot simply change the location of
+the data.
 
 Example:
 (set-meshes-element n rl-meshes rl-mesh)
 
 \"To set the nth element of rl-meshes, set the nth element of its %array slot & overwrite the
 nth element of the underlying c-struct.\""
-  ;; When memcpying, this setf is unnecessary. The lisp array will contain the new rl-mesh object
-  ;; but the C array will already have that data copied into it.
-  ;;
-  ;; What I should do instead is track only the lisp array because it gives me index-wise access
-  ;; into the C data anyway (each rl-mesh has a c-struct which is a wrapper around each Mesh in the
-  ;; C array). Then to set an rl-mesh in an rl-meshes, it's a matter of memcpying the new data to
-  ;; the known location
-  ;;
-  ;; (setf (elt (array rl-meshes) n) rl-mesh)
   (cffi:foreign-funcall "memcpy"
-                        ;; :pointer (autowrap:c-aptr (c-struct rl-meshes) n 'claylib/wrap:mesh)
-                        :pointer (autowrap:ptr (c-struct (elt (array rl-meshes) n)))
+                        :pointer (autowrap:ptr (c-struct (elt (cl-array rl-meshes) n)))
                         :pointer (autowrap:ptr (c-struct rl-mesh))
                         :int +foreign-mesh-size+
                         :void))
