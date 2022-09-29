@@ -98,9 +98,6 @@
   (length (cl-array sequence)))
 
 (defmethod sequences:elt ((sequence rl-meshes) index)
-  (check-type index integer)
-  (unless (<= 0 index (length sequence))
-    (error "Index out of bounds."))
   (elt (cl-array sequence) index))
 
 (defmethod (setf sequences:elt) (value (sequence rl-meshes) index) ;; (n rl-meshes rl-mesh)
