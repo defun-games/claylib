@@ -55,8 +55,8 @@
 ;; TODO: inherit from sequence, define sequence methods to ease access
 (defclass rl-meshes ()
   ((%cl-array :type simple-vector ;; TODO define array type to ensure elements are rl-mesh objects
-           :accessor cl-array
-           :documentation "A Lisp array of RL-MESH objects tracking the C Mesh array underneath.")))
+              :accessor cl-array
+              :documentation "A Lisp array of RL-MESH objects tracking the C Mesh array underneath.")))
 
 (defmethod initialize-instance :after ((meshes rl-meshes) &key c-struct mesh-count)
   ;; Note: C-STRUCT is the mesh wrapper at the start of the array.
@@ -77,24 +77,22 @@
                       :initial-contents contents))))
 
 ;; TODO: Does autowrap give me something like this already? I need to know the size for memcpy later
-;; but this method is not guaranteed to work as many of these values are pointers which are not
-;; guaranteed to have the same size as ints.
 (cffi:defcstruct mesh
   (vertex-count :int)
   (triangle-count :int)
-  (vertices :int)
-  (tex-coords :int)
-  (tex-coords2 :int)
-  (normals :int)
-  (tangents :int)
-  (colors :int)
-  (indices :int)
-  (anim-vertices :int)
-  (anim-normals :int)
-  (bone-ids :int)
-  (bone-weights :int)
+  (vertices :pointer)
+  (tex-coords :pointer)
+  (tex-coords2 :pointer)
+  (normals :pointer)
+  (tangents :pointer)
+  (colors :pointer)
+  (indices :pointer)
+  (anim-vertices :pointer)
+  (anim-normals :pointer)
+  (bone-ids :pointer)
+  (bone-weights :pointer)
   (vao-id :uint)
-  (vbo-id :int))
+  (vbo-id :pointer))
 (defconstant +foreign-mesh-size+ (cffi:foreign-type-size '(:struct mesh)))
 
 ;; TODO:
