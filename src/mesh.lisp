@@ -52,8 +52,26 @@
 
 
 
-;; TODO: inherit from sequence, define sequence methods to ease access
-(defclass rl-meshes ()
+;; TODO: Does autowrap give me something like this already? I need to know the size for memcpy later
+(cffi:defcstruct mesh
+  (vertex-count :int)
+  (triangle-count :int)
+  (vertices :pointer)
+  (tex-coords :pointer)
+  (tex-coords2 :pointer)
+  (normals :pointer)
+  (tangents :pointer)
+  (colors :pointer)
+  (indices :pointer)
+  (anim-vertices :pointer)
+  (anim-normals :pointer)
+  (bone-ids :pointer)
+  (bone-weights :pointer)
+  (vao-id :uint)
+  (vbo-id :pointer))
+(defconstant +foreign-mesh-size+ (cffi:foreign-type-size '(:struct mesh)))
+
+(defclass rl-meshes (sequences:sequence)
   ((%cl-array :type simple-vector ;; TODO define array type to ensure elements are rl-mesh objects
               :accessor cl-array
               :documentation "A Lisp array of RL-MESH objects tracking the C Mesh array underneath.")))
@@ -76,33 +94,21 @@
                       :element-type 'rl-mesh
                       :initial-contents contents))))
 
-;; TODO: Does autowrap give me something like this already? I need to know the size for memcpy later
-(cffi:defcstruct mesh
-  (vertex-count :int)
-  (triangle-count :int)
-  (vertices :pointer)
-  (tex-coords :pointer)
-  (tex-coords2 :pointer)
-  (normals :pointer)
-  (tangents :pointer)
-  (colors :pointer)
-  (indices :pointer)
-  (anim-vertices :pointer)
-  (anim-normals :pointer)
-  (bone-ids :pointer)
-  (bone-weights :pointer)
-  (vao-id :uint)
-  (vbo-id :pointer))
-(defconstant +foreign-mesh-size+ (cffi:foreign-type-size '(:struct mesh)))
+(defmethod sequences:length ((sequence rl-meshes))
+  (length (cl-array sequence)))
 
-;; TODO:
-;; - Make this into a setf on rl-meshes
-;;   The correct approach: inherit from sequence and implement setf for an index
-(defun set-meshes-elt (n rl-meshes rl-mesh)
-  "Set the Nth element of RL-MESHES such that it contains a copy of the C data in RL-MESH.
+(defmethod sequences:elt ((sequence rl-meshes) index)
+  (check-type index integer)
+  (unless (<= 0 index (length sequence))
+    (error "Index out of bounds."))
+  (elt (cl-array sequence) index))
+
+(defmethod (setf sequences:elt) (value (sequence rl-meshes) index) ;; (n rl-meshes rl-mesh)
+  "Set the element at INDEX of the rl-meshes SEQUENCE such that it contains a copy of the C data in
+VALUE (an rl-mesh).
 
 Since rl-meshes deals with a C array (contiguous memory), we cannot simply change the location of
-the data.
+the data by changing the pointer, we must memcpy it in.
 
 Example:
 (set-meshes-element n rl-meshes rl-mesh)
@@ -110,7 +116,22 @@ Example:
 \"To set the nth element of rl-meshes, set the nth element of its %array slot & overwrite the
 nth element of the underlying c-struct.\""
   (cffi:foreign-funcall "memcpy"
-                        :pointer (autowrap:ptr (c-struct (elt (cl-array rl-meshes) n)))
-                        :pointer (autowrap:ptr (c-struct rl-mesh))
+                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
+                        :pointer (autowrap:ptr (c-struct value))
                         :int +foreign-mesh-size+
                         :void))
+
+;; (defmethod sequences:adjust-sequence ((sequence rl-meshes) length
+;;                                       &key initial-contents initial-element)
+;; ;; Cannot meaningfully change length
+;;   (unless (= length (length rl-meshes))
+;;     (error "Cannot change the length of a C array."))
+;;   (cond
+;;     ((and initial-contents initial-element)
+;;      (error "Cannot give both INITIAL-CONTENTS and INITIAL-ELEMENT"))
+
+;;     (initial-contents
+;;      )
+
+;;     (initial-element
+;;      )))
