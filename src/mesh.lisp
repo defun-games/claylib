@@ -72,7 +72,7 @@
 (defconstant +foreign-mesh-size+ (cffi:foreign-type-size '(:struct mesh)))
 
 (defclass rl-meshes (sequences:sequence)
-  ((%cl-array :type simple-vector ;; TODO define array type to ensure elements are rl-mesh objects
+  ((%cl-array :type (array rl-mesh 1)
               :accessor cl-array
               :documentation "A Lisp array of RL-MESH objects tracking the C Mesh array underneath.")))
 
@@ -118,6 +118,7 @@ nth element of the underlying c-struct.\""
                         :int +foreign-mesh-size+
                         :void))
 
+;; TODO: Necessary? Can we safely leave this unimplemented?
 ;; (defmethod sequences:adjust-sequence ((sequence rl-meshes) length
 ;;                                       &key initial-contents initial-element)
 ;; ;; Cannot meaningfully change length
@@ -128,7 +129,13 @@ nth element of the underlying c-struct.\""
 ;;      (error "Cannot give both INITIAL-CONTENTS and INITIAL-ELEMENT"))
 
 ;;     (initial-contents
-;;      )
+;;      (loop for rl-mesh in initial-contents
+;;            do ; copy each mesh in
+;;            ))
 
 ;;     (initial-element
 ;;      )))
+
+;; TODO: Necessary? Can we safely leave this unimplemented?
+;; (defmethod sequences:make-sequence-like ((sequence rl-meshes) length
+;;                                          &key initial-contents initial-ellement))
