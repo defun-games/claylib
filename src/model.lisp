@@ -138,12 +138,13 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
     (set-slot :bones model (or bones (bones rl-asset)))
     (set-slot :bind-pose model (or bind-pose (bind-pose rl-asset)))
     (setf (mesh-count model) (or mesh-count (mesh-count rl-asset))
-          (meshes model) (make-instance 'rl-meshes
-                                        :c-struct (autowrap:c-aref
-                                                   (model.meshes (c-asset rl-asset))
-                                                   0
-                                                   'claylib/wrap:mesh)
-                                        :mesh-count (mesh-count model))
+          (meshes model) (or meshes
+                             (make-instance 'rl-meshes
+                                            :c-struct (autowrap:c-aref
+                                                       (model.meshes (c-asset rl-asset))
+                                                       0
+                                                       'claylib/wrap:mesh)
+                                            :mesh-count (mesh-count model)))
           (material-count model) (or material-count (material-count rl-asset))
           (mesh-material model) (or mesh-material (mesh-material rl-asset))
           (bone-count model) (or bone-count (bone-count rl-asset)))
