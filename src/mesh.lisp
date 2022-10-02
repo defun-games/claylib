@@ -100,12 +100,12 @@
 (defmethod sequences:elt ((sequence rl-meshes) index)
   (elt (cl-array sequence) index))
 
-(defmethod (setf sequences:elt) (value (sequence rl-meshes) index) ;; (n rl-meshes rl-mesh)
+(defmethod (setf sequences:elt) (value (sequence rl-meshes) index)
   "Set the element at INDEX of the rl-meshes SEQUENCE such that it contains a copy of the C data in
 VALUE (an rl-mesh).
 
-Since rl-meshes deals with a C array (contiguous memory), we cannot simply change the location of
-the data by changing the pointer, we must memcpy it in.
+Since rl-meshes deals with a C array (contiguous memory), we cannot simply change the data of any
+particular element by changing the pointer, we must memcpy it in.
 
 Example:
 (set-meshes-element n rl-meshes rl-mesh)
