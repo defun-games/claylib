@@ -133,9 +133,11 @@ backing it.'"
   (defun rl-class-p (type)
     "Determine whether a type represents a Raylib 'mirror' class -- these classes begin with 'RL-' and
 always have a direct '%C-STRUCT slot."
-    (member-if #'(lambda (slot)
-                   (eql (closer-mop:slot-definition-name slot) '%c-struct))
-               (closer-mop:class-direct-slots (find-class type))))
+    (unless (or (eql type 'boolean)
+                (eql type 'keyword))
+      (member-if #'(lambda (slot)
+                     (eql (closer-mop:slot-definition-name slot) '%c-struct))
+                 (closer-mop:class-direct-slots (find-class type)))))
 
   (defun rl-subclass-p (type)
     "Determine whether a type represents a Raylib 'mirror' class or subclass -- these classes begin
@@ -160,62 +162,113 @@ with 'RL-' and always have a direct or inherited '%C-STRUCT slot."
                                                 `(or ,type null)
                                                 type))))))
 
-(defmacro definitializer (type &rest slots)
-  "Define an initialize-instance :after method for a passed type. Each SLOT is expected to have
-the following format:
+(defmacro definitializer (class &key lisp-slots struct-slots pt-accessors)
+  "Define an initialize-instance :after method for a passed class name.
 
-(ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)
+:lisp-slots is a list of CLOS slots that are *not* tied to a backing C struct. Expected format:
+(SLOT-NAME &optional USE-WRITER-P COERCE-TYPE)
+Both the latter default to NIL. Set USE-WRITER-P when there is a custom writer to be used instead
+of the default slot setter. COERCE-TYPE will usually be float, when applicable.
 
-This macro adds type checking, finalizers where needed, and makes sure to use SET-SLOT for structs.
-Note that you may pass NIL as COERCE-TYPE if you only want to use a default value without
-type coercion."
+:struct-slots is a list of CLOS slots tied to a backing C struct. These slots themselves will
+contain other CLOS objects. Expected format:
+(SLOT-NAME &optional SUBCLASS)
+Set SUBCLASS when you want to initialize a slot with a different subclass than is named by its
+:type keyword. This is probably only needed with color, as a substitute for rl-color.
+
+:pt-accessors is a list of pass-through accessors tied to a backing C struct. These are *not* CLOS
+slots, but they will have custom readers and probably writers. Expected format:
+(ACCESSOR-NAME TYPE &optional COERCE-TYPE)
+COERCE-TYPE will usually be float, when applicable."
   (let ((obj (gensym))
-        (ptr (gensym)))
-    `(defmethod initialize-instance :after ((,obj ,type)
-                                            &key ,@(mapcar #'(lambda (slot)
-                                                               (if (= (length slot) 4)
-                                                                   `(,(car slot) ,(fourth slot))
-                                                                   (car slot)))
-                                                           slots))
-       ,@(expand-check-types slots t)
-       ,@(loop for slot in slots
-               collect (destructuring-bind (accessor type &optional coerce-type default-value) slot
-                         (declare (ignore default-value))
-                         `(when (or ,(eql type 'boolean) ,accessor)
-                            ,(if (and (subtypep type 'standard-object)
-                                      (= (length slot) 2))
-                                 `(set-slot ,(alexandria:make-keyword accessor) ,obj ,accessor)
-                                 `(setf (,accessor ,obj)
-                                        ,(if coerce-type
-                                             `(coerce ,accessor ',coerce-type)
-                                             accessor))))))
-       (when (and (rl-class-p ',type)
-                  (c-struct ,obj))
-         ;; TODO: This probably needs a child wrapper check.
-         (tg:finalize ,obj
-                      (let ((,ptr (autowrap:ptr (c-struct ,obj))))
-                        (lambda () (autowrap:free ,ptr))))))))
+        (ptr (gensym))
+        (new (gensym))
+        (class-slots (closer-mop:class-direct-slots
+                      (find-class class))))
+    (labels ((slot-def (slot-name)
+               (find slot-name
+                     class-slots
+                     :test #'(lambda (name def)
+                               (eql (closer-mop:slot-definition-name def) name))))
+             (slot-arg (slot-name)
+               (alexandria:when-let ((def (slot-def slot-name)))
+                 (alexandria:symbolicate
+                  (format nil "~a"
+                          (car (closer-mop:slot-definition-initargs def))))))             
+             (slot-type (slot-name)
+               (alexandria:when-let ((def (slot-def slot-name)))
+                 (closer-mop:slot-definition-type def)))
+             (arg-supplied-p (arg)
+               (alexandria:symbolicate arg "-SUPPLIED-P")))
+      (let ((lisp-slot-args (mapcar #'(lambda (slot) (slot-arg (car slot))) lisp-slots))
+            (lisp-slot-types (mapcar #'(lambda (slot) (slot-type (car slot))) lisp-slots))
+            (struct-slot-args (mapcar #'(lambda (slot) (slot-arg (car slot))) struct-slots))
+            (struct-slot-types (mapcar #'(lambda (slot) (slot-type (car slot))) struct-slots)))
+        `(defmethod initialize-instance
+             :after ((,obj ,class)
+                     &key ,@(remove nil (append (mapcar #'(lambda (arg)
+                                                            `(,arg nil ,(arg-supplied-p arg)))
+                                                        (remove nil lisp-slot-args))
+                                                struct-slot-args
+                                                (mapcar #'car pt-accessors))))
+           ,@(loop for arg in (append lisp-slot-args struct-slot-args)
+                   for type in (append lisp-slot-types struct-slot-types)
+                   when arg
+                     collect `(check-type ,arg (or ,type null)))
+           ,@(expand-check-types pt-accessors t)
+           ,@(loop for arg in lisp-slot-args
+                   for type in lisp-slot-types
+                   for slot in lisp-slots
+                   when arg
+                     collect (destructuring-bind (name &optional use-writer-p coerce-type) slot
+                               (let ((setter `(setf ,(if use-writer-p
+                                                         `(,arg ,obj)
+                                                         `(slot-value ,obj ',name))
+                                                    ,(if coerce-type
+                                                         `(coerce ,arg ',coerce-type)
+                                                         arg))))
+                                 `(when ,(arg-supplied-p arg) ,setter))))
+           ,@(loop for arg in struct-slot-args
+                   for type in struct-slot-types
+                   for slot in struct-slots
+                   collect (destructuring-bind (name &optional subclass) slot
+                             `(if ,arg
+                                  (set-slot ,(alexandria:make-keyword arg) ,obj ,arg)
+                                  (let ((,new (make-instance ',(or subclass type))))
+                                    (setf (slot-value ,obj ',name) ,new)))))
+           (sync-children ,obj)
+           ,@(loop for accessor in pt-accessors
+                   collect (destructuring-bind (name type &optional coerce-type) accessor
+                             (let ((val (if coerce-type
+                                            `(coerce ,name ',coerce-type)
+                                            name)))
+                               (if (eql type 'boolean)
+                                   `(setf (,name ,obj) ,val)
+                                   `(when ,name (setf (,name ,obj) ,val))))))
+           ,(when (rl-class-p class)
+              `(when (c-struct ,obj)
+                 ;; TODO: This probably needs a child wrapper check.
+                 (tg:finalize ,obj
+                              (let ((,ptr (autowrap:ptr (c-struct ,obj))))
+                                (lambda () (autowrap:free ,ptr))))))
+           ,obj)))))
 
-(defmacro definitializer-float (type &rest accessors)
-  "Define a simple initialize-instance :after method to ensure that some number of slot values
-are coerced to floats. For something more complex, try DEFINITIALIZER."
+(defmacro default-free (class &rest slot-names)
+  "Define a FREE method that is sane for most Lisp classes. You do not need to specify %C-STRUCT
+in the slot names -- it is included by default when applicable."
   (let ((obj (gensym)))
-    `(defmethod initialize-instance :after ((,obj ,type) &key)
-       ,@(loop for accessor in accessors
-               collect `(when (integerp (,accessor ,obj))
-                          (setf (,accessor ,obj) (coerce (,accessor ,obj) 'float)))))))
-
-(defmacro default-free (type)
-  "Define a FREE method that is sane for most Lisp types."
-  (let ((obj (gensym)))
-    `(defmethod free ((,obj ,type))
-       (when (and (slot-exists-p ,obj '%c-struct)
-                  (c-struct ,obj)
-                  (autowrap:valid-p (c-struct ,obj)))
-         (free (c-struct ,obj)))
-       (when (slot-exists-p ,obj '%c-struct)
-         (setf (slot-value ,obj '%c-struct) nil))
-       (tg:cancel-finalization ,obj)
+    `(defmethod free ((,obj ,class))
+       ,@(loop for name in slot-names
+               collect `(when (slot-boundp ,obj ',name)
+                          (free (slot-value ,obj ',name))
+                          (slot-makunbound ,obj ',name)))
+       ,(when (rl-class-p class)
+          `(when (and (slot-boundp ,obj '%c-struct)
+                      (typep (c-struct ,obj) 'autowrap:wrapper)
+                      (autowrap:valid-p (c-struct ,obj)))
+             (free (c-struct ,obj))
+             (slot-makunbound ,obj '%c-struct)))
+       ,(when (rl-class-p class) `(tg:cancel-finalization ,obj))
        (when (next-method-p)
          (call-next-method)))))
 
@@ -227,8 +280,9 @@ are coerced to floats. For something more complex, try DEFINITIALIZER."
     `(defmethod free ((,obj ,type))
        (when (eql (,validity-fn ,obj) t)
          ,(when fn
-            `(when (or (and ,window-required-p (is-window-ready-p))
-                       ,(and fn (not window-required-p)))
+            `(when (and (or (and ,window-required-p (is-window-ready-p))
+                            ,(and fn (not window-required-p)))
+                        (data-valid-p ,obj))
                (,fn ,obj)))
          (autowrap:free ,obj)))))
 

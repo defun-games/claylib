@@ -33,7 +33,8 @@
   :components ((:module "ll"
                 :components
                 ((:file "package")
-                 (:file "claylib-ll")))))
+                 (:file "claylib-ll")
+                 (:file "validate")))))
 
 (asdf:defsystem #:claylib
   :description "Lispy game toolkit built on top of Raylib"

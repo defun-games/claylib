@@ -1,14 +1,15 @@
 (in-package #:claylib)
 
-(defclass rl-mesh ()
-  ((%c-struct
-    :type claylib/ll:mesh
-    :initform (autowrap:alloc 'claylib/ll:mesh)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-mesh ()
+    ((%c-struct
+      :type claylib/ll:mesh
+      :initform (autowrap:calloc 'claylib/ll:mesh)
+      :accessor c-struct))))
 
 (defcreader vertex-count rl-mesh vertex-count mesh)
 (defcreader triangle-count rl-mesh triangle-count mesh)
-;; All of the below fields except vao-id are pointers
+;; TODO: All of the below fields except vao-id/vbo-id are array/pointers
 (defcreader vertices rl-mesh vertices mesh)
 (defcreader texcoords rl-mesh texcoords mesh)
 (defcreader texcoords2 rl-mesh texcoords2 mesh)
@@ -21,11 +22,11 @@
 (defcreader bone-ids rl-mesh bone-ids mesh)
 (defcreader bone-weights rl-mesh bone-weights mesh)
 (defcreader vao-id rl-mesh vao-id mesh)
-(defcreader vbo-id rl-mesh vbo-id mesh)
+(defcreader vbo-id rl-mesh vbo-id mesh)  ; pointer
 
 (defcwriter vertex-count rl-mesh vertex-count mesh integer)
 (defcwriter triangle-count rl-mesh triangle-count mesh integer)
-;; All of the below fields except vao-id are pointers
+;; TODO: All of the below fields except vao-id/vbo-id are array/pointers
 (defcwriter vertices rl-mesh vertices mesh number float)
 (defcwriter texcoords rl-mesh texcoords mesh number float)
 (defcwriter texcoords2 rl-mesh texcoords2 mesh number float)
@@ -38,17 +39,27 @@
 (defcwriter bone-ids rl-mesh bone-ids mesh integer)
 (defcwriter bone-weights rl-mesh bone-weights mesh number float)
 (defcwriter vao-id rl-mesh vao-id mesh integer)
-(defcwriter vbo-id rl-mesh vbo-id mesh integer)
+(defcwriter vbo-id rl-mesh vbo-id mesh integer)  ; pointer
 
 (definitializer rl-mesh
-  (vertex-count integer) (triangle-count integer) (vertices number float)
-  (texcoords number float) (texcoords2 number float) (normals number float)
-  (tangents number float) (colors integer) (indices integer) (anim-vertices number float)
-  (anim-normals number float) (bone-ids integer) (bone-weights number float)
-  (vao-id integer) (vbo-id integer))
+  :pt-accessors ((vertex-count integer)
+                 (triangle-count integer)
+                 (vertices number float)
+                 (texcoords number float)
+                 (texcoords2 number float)
+                 (normals number float)
+                 (tangents number float)
+                 (colors integer)
+                 (indices integer)
+                 (anim-vertices number float)
+                 (anim-normals number float)
+                 (bone-ids integer)
+                 (bone-weights number float)
+                 (vao-id integer)
+                 (vbo-id integer)))
 
 (default-free rl-mesh)
-(default-free-c claylib/ll:mesh unload-mesh)
+(default-free-c claylib/ll:mesh unload-mesh t)
 
 
 

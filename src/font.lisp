@@ -1,13 +1,14 @@
 (in-package #:claylib)
 
-(defclass rl-glyph-info ()
-  ((%image :initarg :image
-           :type rl-image
-           :reader image)
-   (%c-struct
-    :type claylib/ll:glyph-info
-    :initform (autowrap:alloc 'claylib/ll:glyph-info)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-glyph-info ()
+    ((%image :initarg :image
+             :type rl-image
+             :reader image)
+     (%c-struct
+      :type claylib/ll:glyph-info
+      :initform (autowrap:calloc 'claylib/ll:glyph-info)
+      :accessor c-struct))))
 
 (defcreader value rl-glyph-info value glyph-info)
 (defcreader offset-x rl-glyph-info offset-x glyph-info)
@@ -21,30 +22,41 @@
 (defcwriter-struct image rl-glyph-info image glyph-info image
   data width height mipmaps data-format)
 
-(definitializer rl-glyph-info
-    (value integer) (offset-x integer) (offset-y integer) (advance-x integer) (image rl-image))
+(defmethod sync-children ((obj rl-glyph-info))
+  (unless (eq (c-struct (image obj))
+              (glyph-info.image (c-struct obj)))
+    (free-later (c-struct (image obj)))
+    (setf (c-struct (image obj))
+          (glyph-info.image (c-struct obj)))))
 
-(default-free rl-glyph-info)
+(definitializer rl-glyph-info
+  :struct-slots ((%image))
+  :pt-accessors ((value integer)
+                 (offset-x integer)
+                 (offset-y integer)
+                 (advance-x integer)))
+
+(default-free rl-glyph-info %image)
 ;; TODO: I think UNLOAD-FONT-DATA should be used here somehow.
 (default-free-c claylib/ll:glyph-info)
 
 
 
-
-(defclass rl-font ()
-  ((%texture :initarg :texture
-             :type rl-texture
-             :reader texture)
-   (%recs :initarg :recs
-          ; :type TODO - pointer
-          :reader recs)
-   (%glyphs :initarg :glyphs
-            ; :type TODO - pointer
-            :reader glyphs)
-   (%c-struct
-    :type claylib/ll:font
-    :initform (autowrap:alloc 'claylib/ll:font)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-font ()
+    ((%texture :initarg :texture
+               :type rl-texture
+               :reader texture)
+     (%recs :initarg :recs
+            :type rl-rectangle  ; TODO: array/pointer
+            :reader recs)
+     (%glyphs :initarg :glyphs
+              :type rl-glyph-info  ; TODO: array/pointer
+              :reader glyphs)
+     (%c-struct
+      :type claylib/ll:font
+      :initform (autowrap:calloc 'claylib/ll:font)
+      :accessor c-struct))))
 
 (defcreader size rl-font base-size font)
 (defcreader glyph-count rl-font glyph-count font)
@@ -55,25 +67,47 @@
 (defcwriter glyph-padding rl-font glyph-padding font integer)
 (defcwriter-struct texture rl-font texture font texture
   id width height mipmaps data-format)
-(defcwriter-struct recs rl-font recs font rectangle ; pointer
+(defcwriter-struct recs rl-font recs font rectangle  ; TODO: array/pointer
   x y width height)
-(defcwriter-struct glyphs rl-font glyphs font glyph-info ; pointer
+(defcwriter-struct glyphs rl-font glyphs font glyph-info  ; TODO: array/pointer
   value offset-x offset-y advance-x)
 
-(definitializer rl-font
-    (size integer) (glyph-count integer) (glyph-padding integer)
-  (texture rl-texture) (recs t) (glyphs t))
+(defmethod sync-children ((obj rl-font))
+  (flet ((i0 (array type)
+           (autowrap:c-aref array 0 type)))
+    (unless (eq (c-struct (texture obj))
+                (font.texture (c-struct obj)))
+      (free-later (c-struct (texture obj)))
+      (setf (c-struct (texture obj))
+            (font.texture (c-struct obj))))
+    (unless (eq (c-struct (recs obj))
+                (i0 (font.recs (c-struct obj)) 'claylib/ll:rectangle))
+      (free-later (c-struct (recs obj)))
+      (setf (c-struct (recs obj))
+            (i0 (font.recs (c-struct obj)) 'claylib/ll:rectangle)))
+    (unless (eq (c-struct (glyphs obj))
+                (i0 (font.glyphs (c-struct obj)) 'claylib/ll:glyph-info))
+      (free-later (c-struct (glyphs obj)))
+      (setf (c-struct (glyphs obj))
+            (i0 (font.glyphs (c-struct obj)) 'claylib/ll:glyph-info))))
+  (sync-children (glyphs obj)))
 
-(default-free rl-font)
+(definitializer rl-font
+  :struct-slots ((%texture) (%recs) (%glyphs))
+  :pt-accessors ((size integer)
+                 (glyph-count integer)
+                 (glyph-padding integer)))
+
+(default-free rl-font %texture %recs %glyphs)
 (default-free-c claylib/ll:font unload-font)
 
 
 
-
-(defclass font (rl-font game-asset)
-  ((%chars :initarg :chars
-           :type integer
-           :accessor chars)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass font (rl-font game-asset)
+    ((%chars :initarg :chars
+             :type integer
+             :accessor chars))))
 
 (defun make-font (path
                   &key (size 10) (chars 0) (glyph-count 224) (glyph-padding 0) texture recs glyphs)
@@ -87,7 +121,8 @@
                  :recs recs
                  :glyphs glyphs))
 
-(defclass default-font (font) ())
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass default-font (font) ()))
 
 (defmethod initialize-instance :around ((font default-font) &key)
   (c-let ((c-font claylib/ll:font))

@@ -1,15 +1,16 @@
 (in-package #:claylib)
 
-(defclass triangle (2d-shape)
-  ((%v1 :initarg :v1
-        :type rl-vector2
-        :accessor v1)
-   (%v2 :initarg :v2
-        :type rl-vector2
-        :accessor v2)
-   (%v3 :initarg :v3
-        :type rl-vector2
-        :accessor v3)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass triangle (2d-shape)
+    ((%v1 :initarg :v1
+          :type rl-vector2
+          :accessor v1)
+     (%v2 :initarg :v2
+          :type rl-vector2
+          :accessor v2)
+     (%v3 :initarg :v3
+          :type rl-vector2
+          :accessor v3))))
 
 (defreader x1 triangle x v1)
 (defreader y1 triangle y v1)
@@ -26,35 +27,29 @@
 (defwriter y3 triangle y v3 number)
 
 (definitializer triangle
-    (v1 rl-vector2 nil) (v2 rl-vector2 nil) (v3 rl-vector2 nil))
+  :lisp-slots ((%v1) (%v2) (%v3)))
 
-(defmethod free ((obj triangle))
-  (mapcar #'free (list (v1 obj)
-                       (v2 obj)
-                       (v3 obj)))
-  (setf (v1 obj) nil
-        (v2 obj) nil
-        (v3 obj) nil)
-  (when (next-method-p)
-    (call-next-method)))
+(default-free triangle %v1 %v2 %v3)
 
 (defun make-triangle (x1 y1 x2 y2 x3 y3 color
-                      &key (filled t))
-  (make-instance 'triangle
-                 :v1 (make-vector2 x1 y1)
-                 :v2 (make-vector2 x2 y2)
-                 :v3 (make-vector2 x3 y3)
-                 :color color
-                 :filled filled))
+                      &rest args &key filled)
+  (declare (ignorable filled))
+  (apply #'make-instance 'triangle
+         :v1 (make-vector2 x1 y1)
+         :v2 (make-vector2 x2 y2)
+         :v3 (make-vector2 x3 y3)
+         :color color
+         args))
 
 (defun make-triangle-from-vecs (v1 v2 v3 color
-                                &key (filled t))
-  (make-instance 'triangle
-                 :v1 v1
-                 :v2 v2
-                 :v3 v3
-                 :color color
-                 :filled filled))
+                                &rest args &key filled)
+  (declare (ignorable filled))
+  (apply #'make-instance 'triangle
+         :v1 v1
+         :v2 v2
+         :v3 v3
+         :color color
+         args))
 
 (defmethod draw-object ((obj triangle))
   (let ((v1 (c-struct (v1 obj)))

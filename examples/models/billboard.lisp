@@ -14,7 +14,7 @@
                (bill (make-billboard bill-ass
                                      *cam*
                                      0 2 0
-                                     4 4
+                                     2 2
                                      (make-rectangle 0 0
                                                      (width bill-ass) (height bill-ass)
                                                      +white+))))))

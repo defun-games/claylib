@@ -1,16 +1,17 @@
 (in-package #:claylib)
 
-(defclass rl-ray-collision ()
-  ((%point :initarg :point
-           :type rl-vector3
-           :reader point)
-   (%normal :initarg :normal
-            :type rl-vector3
-            :reader normal)
-   (%c-struct
-    :type claylib/ll:ray-collision
-    :initform (autowrap:alloc 'claylib/ll:ray-collision)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-ray-collision ()
+    ((%point :initarg :point
+             :type rl-vector3
+             :reader point)
+     (%normal :initarg :normal
+              :type rl-vector3
+              :reader normal)
+     (%c-struct
+      :type claylib/ll:ray-collision
+      :initform (autowrap:calloc 'claylib/ll:ray-collision)
+      :accessor c-struct))))
 
 (defcreader-bool hit rl-ray-collision hit ray-collision)
 (defcreader distance rl-ray-collision distance ray-collision)
@@ -20,10 +21,24 @@
 (defcwriter-struct point rl-ray-collision point ray-collision vector3 x y z)
 (defcwriter-struct normal rl-ray-collision normal ray-collision vector3 x y z)
 
-(definitializer rl-ray-collision
-    (hit boolean nil nil) (distance number float 0.0) (point rl-vector3) (normal rl-vector3))
+(defmethod sync-children ((obj rl-ray-collision))
+  (unless (eq (c-struct (point obj))
+              (ray-collision.point (c-struct obj)))
+    (free-later (c-struct (point obj)))
+    (setf (c-struct (point obj))
+          (ray-collision.point (c-struct obj))))
+  (unless (eq (c-struct (normal obj))
+              (ray-collision.normal (c-struct obj)))
+    (free-later (c-struct (normal obj)))
+    (setf (c-struct (normal obj))
+          (ray-collision.normal (c-struct obj)))))
 
-(default-free rl-ray-collision)
+(definitializer rl-ray-collision
+  :struct-slots ((%point) (%normal))
+  :pt-accessors ((hit boolean)
+                 (distance number float)))
+
+(default-free rl-ray-collision %point %normal)
 (default-free-c claylib/ll:ray-collision)
 
 (defun make-ray-collision (point-x point-y point-z normal-x normal-y normal-z)

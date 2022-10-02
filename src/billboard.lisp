@@ -1,30 +1,36 @@
 (in-package #:claylib)
 
-(defclass billboard (3d-object)
-  ((%asset :initarg :asset
-           :type texture-asset
-           :accessor asset)
-   (%camera :initarg :camera
-            :type rl-camera-3d
-            :accessor camera
-            :documentation "The camera to view the billboard from.")
-   (%size :initarg :size
-          :type rl-vector2
-          :accessor size)
-   (%source :initarg :source
-            :type rl-rectangle
-            :accessor source)
-   (%rot-axis :initarg :up
-              :accessor up
-              :documentation "The vector which defines the \"up\" direction for this billboard.")
-   (%rot-angle :documentation "The counter-clockwise rotation of the billboard (as it appears to the
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass billboard (3d-object)
+    ((%asset :initarg :asset
+             :type texture-asset
+             :accessor asset)
+     (%camera :initarg :camera
+              :type rl-camera-3d
+              :accessor camera
+              :documentation "The camera to view the billboard from.")
+     (%size :initarg :size
+            :type rl-vector2
+            :accessor size)
+     (%source :initarg :source
+              :type rl-rectangle
+              :accessor source)
+     (%rot-axis :initarg :up
+                :accessor up
+                :documentation "The vector which defines the \"up\" direction for this billboard.")
+     (%rot-angle :documentation "The counter-clockwise rotation of the billboard (as it appears to the
 camera).")
-   (%origin :initarg :origin
-            :type rl-vector3
-            :accessor origin)
-   (%tint :initarg :tint
-          :type rl-color
-          :accessor tint)))
+     (%origin :initarg :origin
+              :type rl-vector3
+              :accessor origin)
+     (%tint :initarg :tint
+            :type rl-color
+            :accessor tint))
+    (:default-initargs
+     :size (make-vector2 1 1)
+     :rot-axis (make-vector3 0 1 0)
+     :origin (make-vector3 0 0 0)
+     :tint +white+)))
 
 (defreader c-asset billboard c-asset asset)
 (defreader x-scale billboard x size)
@@ -34,11 +40,9 @@ camera).")
 (defwriter y-scale billboard y size number)
 
 (definitializer billboard
-    (up rl-vector3 nil))
+  :lisp-slots ((%asset) (%camera) (%size) (%source) (%rot-axis) (%rot-angle) (%origin) (%tint)))
 
-(default-slot-value billboard %origin (make-vector3 0 0 0))
-(default-slot-value billboard %tint +white+)
-(default-slot-value billboard %rot-axis (make-vector3 0 1 0))
+(default-free billboard %size %source %rot-axis %origin %tint)
 
 (defun make-billboard (texture-asset camera x y z x-scale y-scale source
                        &rest args &key up rot-angle origin tint)
@@ -52,12 +56,6 @@ camera).")
          :size (make-vector2 x-scale y-scale)
          :source source
          args))
-
-(defmethod free ((obj billboard))
-  (free (size obj))
-  (free (source obj))
-  (free (origin obj))
-  (call-next-method))
 
 (defmethod draw-object ((obj billboard))
   (claylib/ll:draw-billboard-pro (c-struct (camera obj))

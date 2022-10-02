@@ -1,16 +1,17 @@
 (in-package #:claylib)
 
-(defclass rl-ray ()
-  ((%position :initarg :pos
-              :type rl-vector3
-              :reader pos)
-   (%direction :initarg :dir
-               :type rl-vector3
-               :reader dir)
-   (%c-struct
-    :type claylib/ll:ray
-    :initform (autowrap:alloc 'claylib/ll:ray)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-ray ()
+    ((%position :initarg :pos
+                :type rl-vector3
+                :reader pos)
+     (%direction :initarg :dir
+                 :type rl-vector3
+                 :reader dir)
+     (%c-struct
+      :type claylib/ll:ray
+      :initform (autowrap:calloc 'claylib/ll:ray)
+      :accessor c-struct))))
 
 (defreader x rl-ray x pos)
 (defreader y rl-ray y pos)
@@ -22,21 +23,36 @@
 (defcwriter-struct pos rl-ray position ray vector3 x y z)
 (defcwriter-struct dir rl-ray direction ray vector3 x y z)
 
-(definitializer rl-ray (pos rl-vector3) (dir rl-vector3))
+(defmethod sync-children ((obj rl-ray))
+  (unless (eq (c-struct (pos obj))
+              (ray.position (c-struct obj)))
+    (free-later (c-struct (pos obj)))
+    (setf (c-struct (pos obj))
+          (ray.position (c-struct obj))))
+  (unless (eq (c-struct (dir obj))
+              (ray.direction (c-struct obj)))
+    (free-later (c-struct (dir obj)))
+    (setf (c-struct (dir obj))
+          (ray.direction (c-struct obj)))))
 
-(default-free rl-ray)
+(definitializer rl-ray
+  :struct-slots ((%position) (%direction)))
+
+(default-free rl-ray %position %direction)
 (default-free-c claylib/ll:ray)
 
 
 
-(defclass ray (rl-ray)
-  ((%color :initarg :color
-           :type rl-color
-           :accessor color)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass ray (rl-ray)
+    ((%color :initarg :color
+             :type rl-color
+             :accessor color))))
 
-(definitializer ray (color rl-color nil))
+(definitializer ray
+  :lisp-slots ((%color)))
 
-(default-free ray)
+(default-free ray %color)
 
 (defun make-ray (pos-x pos-y pos-z dir-x dir-y dir-z color)
   (make-instance 'ray
