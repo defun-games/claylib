@@ -25,7 +25,7 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-model-animation ()
     ((%bones :initarg :bones
-             :type rl-bone-info  ; TODO: Array/pointer
+             :type rl-bones
              :reader bones)
      (%frame-poses :initarg :frame-poses
                    :type rl-transform  ; TODO: Array/pointer-pointer
@@ -71,3 +71,44 @@
   (when (autowrap:valid-p anim)
     (unload-model-animation anim)
     (autowrap:free anim)))
+
+
+
+(cffi:defcstruct bone-info
+  (name :char :count 32)
+  (parent :int))
+(defconstant +foreign-bone-info-size+ (cffi:foreign-type-size '(:struct bone-info)))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-bones (sequences:sequence)
+    ((%cl-array :type (array rl-bone-info 1)
+                :initarg :cl-array
+                :reader cl-array
+                :documentation "An RL-BONE-INFO array tracking the C BoneInfo array underneath."))))
+
+(defun make-bones-array (c-struct bone-count)
+  "Make an array of rl-bone-info objects using BONE-COUNT elements of the BoneInfo wrapper C-STRUCT.
+
+Warning: this can refer to bogus C data if BONE-COUNT does not match the real C array length."
+  (let ((contents (loop for i below bone-count
+                        for bone = (make-instance 'rl-bone-info)
+                        do (setf (slot-value bone '%c-struct)
+                                 (autowrap:c-aref c-struct i 'claylib/wrap:bone-info))
+                        collect bone)))
+    (make-array bone-count
+                :element-type 'rl-bone-info
+                :initial-contents contents)))
+
+(defmethod sequences:length ((sequence rl-bones))
+  (length (cl-array sequence)))
+
+(defmethod sequences:elt ((sequence rl-meshes) index)
+  (elt (cl-array sequence) index))
+
+(defmethod (setf sequences:elt) (value (sequence rl-bones) index)
+  (check-type value rl-bone-info)
+  (cffi:foreign-funcall "memcpy"
+                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
+                        :pointer (autowrap:ptr (c-struct value))
+                        :int +foreign-bone-info-size+
+                        :void))
