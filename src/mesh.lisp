@@ -82,11 +82,12 @@
   (vbo-id :pointer))
 (defconstant +foreign-mesh-size+ (cffi:foreign-type-size '(:struct mesh)))
 
-(defclass rl-meshes (sequences:sequence)
-  ((%cl-array :type (array rl-mesh 1)
-              :initarg :cl-array
-              :reader cl-array
-              :documentation "A Lisp array of RL-MESH objects tracking the C Mesh array underneath.")))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-meshes (sequences:sequence)
+    ((%cl-array :type (array rl-mesh 1)
+                :initarg :cl-array
+                :reader cl-array
+                :documentation "An RL-MESH array tracking the C Mesh array underneath."))))
 
 (defun make-meshes-array (c-struct mesh-count)
   "Make an array of rl-mesh objects using MESH-COUNT elements of the Mesh wrapper C-STRUCT.
