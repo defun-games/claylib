@@ -84,26 +84,22 @@
 
 (defclass rl-meshes (sequences:sequence)
   ((%cl-array :type (array rl-mesh 1)
-              :accessor cl-array
+              :initarg :cl-array
+              :reader cl-array
               :documentation "A Lisp array of RL-MESH objects tracking the C Mesh array underneath.")))
 
-(defmethod initialize-instance :after ((meshes rl-meshes) &key c-struct mesh-count)
-  ;; Note: C-STRUCT is the mesh wrapper at the start of the array.
-  (if c-struct
-      (check-type c-struct claylib/wrap:mesh)
-      (error "Must provide c-struct in order to initialize the Lisp array."))
-  (if mesh-count
-      (check-type mesh-count integer)
-      (error "Must provide mesh-count in order to read the correct amount of Raylib Meshes."))
+(defun make-meshes-array (c-struct mesh-count)
+  "Make an array of rl-mesh objects using MESH-COUNT elements of the Mesh wrapper C-STRUCT.
+
+Warning: this can refer to bogus C data if MESH-COUNT does not match the real C array length."
   (let ((contents (loop for i below mesh-count
                         for mesh = (make-instance 'rl-mesh)
                         do (setf (slot-value mesh '%c-struct)
                                  (autowrap:c-aref c-struct i 'claylib/wrap:mesh))
                         collect mesh)))
-    (setf (cl-array meshes)
-          (make-array mesh-count
-                      :element-type 'rl-mesh
-                      :initial-contents contents))))
+    (make-array mesh-count
+                :element-type 'rl-mesh
+                :initial-contents contents)))
 
 (defmethod sequences:length ((sequence rl-meshes))
   (length (cl-array sequence)))

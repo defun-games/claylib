@@ -132,7 +132,8 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                       :asset model-asset
                       :pos (make-vector3 x y z)
                       args))
-        (rl-asset model-asset))
+        (rl-asset model-asset)
+        (c-meshes (autowrap:c-aref (model.meshes (c-asset model-asset)) 0 'claylib/wrap:mesh)))
     (set-slot :transform model (or transform (transform rl-asset))) ; TODO (make-zero-matrix) here?
     (set-slot :materials model (or materials (materials rl-asset)))
     (set-slot :bones model (or bones (bones rl-asset)))
@@ -140,11 +141,8 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
     (setf (mesh-count model) (or mesh-count (mesh-count rl-asset))
           (meshes model) (or meshes
                              (make-instance 'rl-meshes
-                                            :c-struct (autowrap:c-aref
-                                                       (model.meshes (c-asset rl-asset))
-                                                       0
-                                                       'claylib/wrap:mesh)
-                                            :mesh-count (mesh-count model)))
+                                            :cl-array (make-meshes-array c-meshes
+                                                                         (mesh-count model))))
           (material-count model) (or material-count (material-count rl-asset))
           (mesh-material model) (or mesh-material (mesh-material rl-asset))
           (bone-count model) (or bone-count (bone-count rl-asset)))
