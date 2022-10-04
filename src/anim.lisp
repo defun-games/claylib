@@ -102,7 +102,7 @@ Warning: this can refer to bogus C data if BONE-COUNT does not match the real C 
 (defmethod sequences:length ((sequence rl-bones))
   (length (cl-array sequence)))
 
-(defmethod sequences:elt ((sequence rl-meshes) index)
+(defmethod sequences:elt ((sequence rl-bones) index)
   (elt (cl-array sequence) index))
 
 (defmethod (setf sequences:elt) (value (sequence rl-bones) index)
