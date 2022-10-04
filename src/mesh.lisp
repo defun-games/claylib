@@ -121,7 +121,6 @@ Example:
 \"To set the nth element of rl-meshes, set the nth element of its %cl-array slot & overwrite the
 nth element of the underlying c-struct.\""
   (check-type value rl-mesh)
-  ;; TODO: should this be a deep copy for the pointer fields in a Mesh?
   (cffi:foreign-funcall "memcpy"
                         :pointer (autowrap:ptr (c-struct (elt sequence index)))
                         :pointer (autowrap:ptr (c-struct value))
