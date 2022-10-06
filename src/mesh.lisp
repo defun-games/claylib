@@ -60,3 +60,91 @@
 
 (default-free rl-mesh)
 (default-free-c claylib/ll:mesh unload-mesh t)
+
+
+
+;; TODO: Does autowrap give me something like this already? I need to know the size for memcpy later
+(cffi:defcstruct mesh
+  (vertex-count :int)
+  (triangle-count :int)
+  (vertices :pointer)
+  (tex-coords :pointer)
+  (tex-coords2 :pointer)
+  (normals :pointer)
+  (tangents :pointer)
+  (colors :pointer)
+  (indices :pointer)
+  (anim-vertices :pointer)
+  (anim-normals :pointer)
+  (bone-ids :pointer)
+  (bone-weights :pointer)
+  (vao-id :uint)
+  (vbo-id :pointer))
+(defconstant +foreign-mesh-size+ (cffi:foreign-type-size '(:struct mesh)))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-meshes (sequences:sequence)
+    ((%cl-array :type (array rl-mesh 1)
+                :initarg :cl-array
+                :reader cl-array
+                :documentation "An RL-MESH array tracking the C Mesh array underneath."))))
+
+(defun make-meshes-array (c-struct mesh-count)
+  "Make an array of rl-mesh objects using MESH-COUNT elements of the Mesh wrapper C-STRUCT.
+
+Warning: this can refer to bogus C data if MESH-COUNT does not match the real C array length."
+  (let ((contents (loop for i below mesh-count
+                        for mesh = (make-instance 'rl-mesh)
+                        do (setf (slot-value mesh '%c-struct)
+                                 (autowrap:c-aref c-struct i 'claylib/wrap:mesh))
+                        collect mesh)))
+    (make-array mesh-count
+                :element-type 'rl-mesh
+                :initial-contents contents)))
+
+(defmethod sequences:length ((sequence rl-meshes))
+  (length (cl-array sequence)))
+
+(defmethod sequences:elt ((sequence rl-meshes) index)
+  (elt (cl-array sequence) index))
+
+(defmethod (setf sequences:elt) (value (sequence rl-meshes) index)
+  "Set the element at INDEX of the rl-meshes SEQUENCE such that it contains a copy of the C data in
+VALUE (an rl-mesh).
+
+Since rl-meshes deals with a C array (contiguous memory), we cannot simply change the data of any
+particular element by changing the pointer, we must memcpy it in.
+
+Example:
+(set-meshes-element n rl-meshes rl-mesh)
+
+\"To set the nth element of rl-meshes, set the nth element of its %cl-array slot & overwrite the
+nth element of the underlying c-struct.\""
+  (check-type value rl-mesh)
+  (cffi:foreign-funcall "memcpy"
+                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
+                        :pointer (autowrap:ptr (c-struct value))
+                        :int +foreign-mesh-size+
+                        :void))
+
+;; TODO: Necessary? Can we safely leave this unimplemented?
+;; (defmethod sequences:adjust-sequence ((sequence rl-meshes) length
+;;                                       &key initial-contents initial-element)
+;; ;; Cannot meaningfully change length
+;;   (unless (= length (length rl-meshes))
+;;     (error "Cannot change the length of a C array."))
+;;   (cond
+;;     ((and initial-contents initial-element)
+;;      (error "Cannot give both INITIAL-CONTENTS and INITIAL-ELEMENT"))
+
+;;     (initial-contents
+;;      (loop for rl-mesh in initial-contents
+;;            do ; copy each mesh in
+;;            ))
+
+;;     (initial-element
+;;      )))
+
+;; TODO: Necessary? Can we safely leave this unimplemented?
+;; (defmethod sequences:make-sequence-like ((sequence rl-meshes) length
+;;                                          &key initial-contents initial-ellement))

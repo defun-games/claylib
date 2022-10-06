@@ -6,13 +6,13 @@
                  :type rl-matrix
                  :reader transform)
      (%meshes :initarg :meshes
-              :type rl-mesh  ; TODO: Array/pointer
-              :reader meshes)
+              :type rl-meshes
+              :accessor meshes)
      (%materials :initarg :materials
-                 :type rl-material  ; TODO: Array/pointer
+                 :type rl-materials  ; TODO: make rl-materials sequence type
                  :reader materials)
      (%bones :initarg :bones
-             :type rl-bone-info  ; TODO: Array/pointer
+             :type rl-bones
              :reader bones)
      (%bind-pose :initarg :bind-pose
                  :type rl-transform ; pointer
@@ -132,26 +132,26 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                       :asset model-asset
                       :pos (make-vector3 x y z)
                       args))
-        (rl-asset model-asset))
-    (set-slot :transform model (or transform (transform rl-asset)))
-    (set-slot :meshes model (or meshes (meshes rl-asset)))
+        (rl-asset model-asset)
+        (c-meshes (autowrap:c-aref (model.meshes (c-asset model-asset)) 0 'claylib/wrap:mesh))
+        (c-bones (autowrap:c-aref (model.bones (c-asset model-asset)) 0 'claylib/wrap:bone-info)))
+    (set-slot :transform model (or transform (transform rl-asset))) ; TODO (make-zero-matrix) here?
     (set-slot :materials model (or materials (materials rl-asset)))
-    (set-slot :bones model (or bones (bones rl-asset)))
     (set-slot :bind-pose model (or bind-pose (bind-pose rl-asset)))
     (setf (mesh-count model) (or mesh-count (mesh-count rl-asset))
+          (meshes model) (or meshes
+                             (make-instance 'rl-meshes
+                                            :cl-array (make-meshes-array c-meshes
+                                                                         (mesh-count model))))
           (material-count model) (or material-count (material-count rl-asset))
           (mesh-material model) (or mesh-material (mesh-material rl-asset))
-          (bone-count model) (or bone-count (bone-count rl-asset)))
+          (bone-count model) (or bone-count (bone-count rl-asset))
+          (bones model) (or bones
+                            (make-instance 'rl-bones
+                                           :cl-array (make-bones-array c-bones
+                                                                       (bone-count model)))))
     ;; TODO: anims
-    model)
-  ;; TODO: Set the rl-model fields to the model-asset data.
-  ;; Either allow this in initargs above or use the cwriters here, e.g.
-  ;;
-  ;; (setf (meshes model) (meshes model-asset)          ; pointer, a proper re-use!
-  ;;       (mesh-count model) (mesh-count model-asset)) ; integer, nothing to see here
-  ;;
-  ;; TODO: initialize fresh transforms and such
-  )
+    model))
 
 (default-free model %scale %tint)
 
@@ -162,21 +162,3 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                             (rot-angle obj)
                             (c-struct (scale obj))
                             (c-struct (tint obj))))
-
-(defun extract-model-data (path)
-  "Return a plist of the model data of interest in the file at PATH."
-  (let* ((rl-model (make-instance 'rl-model))
-         (c-model (c-struct rl-model)))
-    (claylib/ll:load-model c-model (namestring path))
-    ;; TODO: make copies of the following fields, need copy functions!
-    (list :transform      (model.transform c-model)
-          :mesh-count     (mesh-count rl-model)
-          :material-count (material-count rl-model)
-          :meshes         (model.meshes c-model)
-          :materials      (model.materials c-model)
-          :mesh-material  (mesh-material rl-model)
-          :bone-count     (bone-count rl-model)
-          :bones          (model.bones c-model)
-          :bind-pose      (model.bind-pose c-model))
-    ;; TODO: free rl-model
-    ))

@@ -1,6 +1,7 @@
 ;;;; package.lisp
 (defpackage #:claylib
   (:use #:cl #:plus-c #:claylib/ll)
+  (:local-nicknames (#:sequences #:org.shirakumo.trivial-extensible-sequences))
   (:shadow
 
    ;;; Shadowed symbols
