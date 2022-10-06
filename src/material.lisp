@@ -113,3 +113,88 @@
 
 (default-free rl-material %shader %maps)
 (default-free-c claylib/ll:material unload-material)
+
+
+
+(cffi:defcstruct texture-2d
+  (id :uint)
+  (width :int)
+  (height :int)
+  (mipmaps :int)
+  (format :int))
+(cffi:defcstruct color
+  (r :unsigned-char)
+  (g :unsigned-char)
+  (b :unsigned-char)
+  (a :unsigned-char))
+(cffi:defcstruct material-map
+  (texture (:struct texture-2d))
+  (color (:struct color))
+  (value :float))
+(defconstant +foreign-material-map-size+ (cffi:foreign-type-size '(:struct material-map)))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-material-maps (sequences:sequence)
+    ((%cl-array :type (array rl-material-map 1)
+                :initarg :cl-array
+                :reader cl-array
+                :documentation "An RL-MATERIAL-MAP array tracking the C MaterialMap array underneath."))))
+
+
+
+(cffi:defcstruct shader
+  (id :uint)
+  (locs :pointer))
+(cffi:defcstruct material
+  (shader (:struct shader))
+  (maps :pointer)
+  (params :float :count 4))
+(defconstant +foreign-material-size+ (cffi:foreign-type-size '(:struct material)))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-materials (sequences:sequence)
+    ((%cl-array :type (array rl-material 1)
+                :initarg :cl-array
+                :reader cl-array
+                :documentation "An RL-MATERIAL array tracking the C Material array underneath."))))
+
+(defun make-material-array (c-struct material-count)
+  "Make an array of rl-material objects using MATERIAL-COUNT elements of the Material wrapper
+C-STRUCT.
+
+Warning: this can refer to bogus C data if MATERIAL-COUNT does not match the real C array length."
+  (let ((contents (loop for i below material-count
+                        for mat = (make-instance 'rl-material)
+                        do (setf (slot-value mat '%c-struct)
+                                 (autowrap:c-aref c-struct i 'claylib/wrap:material)
+
+                                 (slot-value mat '%shader)
+                                 (let ((shader (make-instance 'rl-shader)))
+                                   (setf (c-struct shader)
+                                         (material.shader c-struct))
+                                   shader)
+
+                                 (slot-value mat '%maps)
+                                 ;; TODO implement make-material-map-array
+                                 ;; and somehow know the map-count
+                                 (let ((maps (make-instance 'rl-material-maps)))
+                                   (setf (slot-value maps '%cl-array)
+                                         (make-material-map-array (material.maps mat) map-count))))
+                        collect mat)))
+    (make-array material-count
+                :element-type 'rl-material
+                :initial-contents contents)))
+
+(defmethod sequences:length ((sequence rl-materials))
+  (length (cl-array sequence)))
+
+(defmethod sequences:elt ((sequence rl-materials) index)
+  (elt (cl-array sequence) index))
+
+(defmethod (setf sequences:elt) (value (sequence rl-materials) index)
+  (check-type value rl-material)
+  (cffi:foreign-funcall "memcpy"
+                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
+                        :pointer (autowrap:ptr (c-struct value))
+                        :int +foreign-material-size+
+                        :void))

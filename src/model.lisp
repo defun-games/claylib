@@ -9,7 +9,7 @@
               :type rl-meshes
               :accessor meshes)
      (%materials :initarg :materials
-                 ;; :type rl-materials  ; TODO: make rl-materials sequence type
+                 :type rl-materials  ; TODO: make rl-materials sequence type
                  :reader materials)
      (%bones :initarg :bones
              :type rl-bones
