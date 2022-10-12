@@ -205,30 +205,29 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                       :asset model-asset
                       :pos (make-vector3 x y z)
                       args))
-        (c-meshes (model.meshes (c-asset model-asset)))
-        (c-materials (model.materials (c-asset model-asset)))
-;        (c-bones (model.bones (c-asset model-asset)))
-        )
-    (set-slot :transform model (or transform (transform model-asset)))
-    ;(set-slot :materials model (or materials (materials rl-asset)))
-    ;(set-slot :bind-pose model (or bind-pose (bind-pose rl-asset)))
-    (setf (mesh-count model) (or mesh-count (mesh-count model-asset))
+        (rl-asset model-asset)
+        (c-meshes (autowrap:c-aref (model.meshes (c-asset model-asset)) 0 'claylib/wrap:mesh))
+        (c-bones (autowrap:c-aref (model.bones (c-asset model-asset)) 0 'claylib/wrap:bone-info))
+        (c-materials (autowrap:c-aref (model.materials (c-asset model-asset)) 0 'claylib/wrap:material)))
+    (set-slot :transform model (or transform (transform rl-asset))) ; TODO (make-zero-matrix) here?
+    (set-slot :materials model (or materials (materials rl-asset)))
+    (set-slot :bind-pose model (or bind-pose (bind-pose rl-asset)))
+    (setf (mesh-count model) (or mesh-count (mesh-count rl-asset))
           (meshes model) (or meshes
                              (make-instance 'rl-meshes
                                             :cl-array (make-meshes-array c-meshes
                                                                          (mesh-count model))))
-          (material-count model) (or material-count (material-count model-asset))
-          (materials model) (or materials
-                                (make-instance 'rl-materials
-                                               :cl-array (make-material-array c-materials
-                                                                              (material-count model))))
-          (mesh-materials model) (or mesh-materials (mesh-materials model-asset))
-;          (bone-count model) (or bone-count (bone-count model-asset))
-          #|
+          (material-count model) (or material-count (material-count rl-asset))
+          (mesh-material model) (or mesh-material
+                                    (make-instance 'rl-materials
+                                                   :cl-array (make-material-array c-materials
+                                                                                  (material-count model)))
+                                    (mesh-material rl-asset))
+          (bone-count model) (or bone-count (bone-count rl-asset))
           (bones model) (or bones
                             (make-instance 'rl-bones
                                            :cl-array (make-bones-array c-bones
-                                                                       (bone-count model))))|#)
+                                                                       (bone-count model)))))
     ;; TODO: anims
     model))
 
