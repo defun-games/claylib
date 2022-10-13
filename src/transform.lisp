@@ -45,3 +45,13 @@
 
 (default-free rl-transform %translation %rotation %scale)
 (default-free-c claylib/ll:transform)
+
+
+
+;; TODO implement methods etc.
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-transforms (sequences:sequence)
+    ((%cl-array :type (array rl-transform 1)
+                :initarg :cl-array
+                :reader cl-array
+                :documentation "An RL-TRANSFORM array tracking the C Transform array underneath."))))

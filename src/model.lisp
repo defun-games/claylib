@@ -192,9 +192,8 @@
 (defun make-model (model-asset x y z
                    &rest args &key scale tint rot-angle rot-axis filled
                                 transform mesh-count material-count meshes
-                                materials mesh-materials ;bone-count bones
-                                ;bind-pose
-                                )
+                                materials mesh-material bone-count bones
+                                bind-pose animations)
   "Make a Claylib model.
 
 Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASSET."
@@ -228,7 +227,6 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                             (make-instance 'rl-bones
                                            :cl-array (make-bones-array c-bones
                                                                        (bone-count model)))))
-    ;; TODO: anims
     model))
 
 ;(default-free model %scale %tint)
