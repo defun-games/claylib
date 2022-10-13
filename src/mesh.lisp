@@ -89,14 +89,14 @@
                 :reader cl-array
                 :documentation "An RL-MESH array tracking the C Mesh array underneath."))))
 
-(defun make-meshes-array (c-struct mesh-count)
-  "Make an array of rl-mesh objects using MESH-COUNT elements of the Mesh wrapper C-STRUCT.
+(defun make-meshes-array (c-array mesh-count)
+  "Make an array of rl-mesh objects using MESH-COUNT elements of the Mesh wrapper C-ARRAY.
 
 Warning: this can refer to bogus C data if MESH-COUNT does not match the real C array length."
   (let ((contents (loop for i below mesh-count
                         for mesh = (make-instance 'rl-mesh)
                         do (setf (slot-value mesh '%c-struct)
-                                 (autowrap:c-aref c-struct i 'claylib/wrap:mesh))
+                                 (autowrap:c-aref c-array i 'claylib/wrap:mesh))
                         collect mesh)))
     (make-array mesh-count
                 :element-type 'rl-mesh
