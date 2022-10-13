@@ -140,6 +140,41 @@
                 :reader cl-array
                 :documentation "An RL-MATERIAL-MAP array tracking the C MaterialMap array underneath."))))
 
+(defun make-material-map-array (c-struct &optional (map-count 11)) ; 11 entries in MaterialMapIndex
+  (let ((contents (loop for i below map-count
+                        for map = (make-instance 'rl-material-map)
+                        for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:material-map)
+                        do (setf (slot-value map '%c-struct)
+                                 c-elt
+
+                                 (slot-value map '%texture)
+                                 (let ((tex (make-instance 'rl-texture)))
+                                   (setf (c-struct tex) (material-map.texture c-elt))
+                                   tex)
+
+                                 (slot-value map '%color)
+                                 (let ((col (make-instance 'rl-color)))
+                                   (setf (c-struct col) (material-map.color c-elt))
+                                   col))
+                        collect map)))
+    (make-array map-count
+                :element-type 'rl-material-map
+                :initial-contents contents)))
+
+(defmethod sequences:length ((sequence rl-material-maps))
+  (length (cl-array sequence)))
+
+(defmethod sequences:elt ((sequence rl-material-maps) index)
+  (elt (cl-array sequence) index))
+
+(defmethod (setf sequences:elt) (value (sequence rl-material-maps) index)
+  (check-type value rl-material-map)
+  (cffi:foreign-funcall "memcpy"
+                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
+                        :pointer (autowrap:ptr (c-struct value))
+                        :int +foreign-material-map-size+
+                        :void))
+
 
 
 (cffi:defcstruct shader
@@ -165,21 +200,21 @@ C-STRUCT.
 Warning: this can refer to bogus C data if MATERIAL-COUNT does not match the real C array length."
   (let ((contents (loop for i below material-count
                         for mat = (make-instance 'rl-material)
+                        for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:material)
                         do (setf (slot-value mat '%c-struct)
-                                 (autowrap:c-aref c-struct i 'claylib/wrap:material)
+                                 c-elt
 
                                  (slot-value mat '%shader)
                                  (let ((shader (make-instance 'rl-shader)))
                                    (setf (c-struct shader)
-                                         (material.shader c-struct))
+                                         (material.shader c-elt))
                                    shader)
 
                                  (slot-value mat '%maps)
-                                 ;; TODO implement make-material-map-array
-                                 ;; and somehow know the map-count
                                  (let ((maps (make-instance 'rl-material-maps)))
                                    (setf (slot-value maps '%cl-array)
-                                         (make-material-map-array (material.maps mat) map-count))))
+                                         (make-material-map-array (material.maps c-elt)))
+                                   maps))
                         collect mat)))
     (make-array material-count
                 :element-type 'rl-material
