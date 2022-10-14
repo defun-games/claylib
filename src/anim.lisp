@@ -141,6 +141,9 @@ Warning: this can refer to bogus C data if NUM does not match the real C array l
                         for c-bones = (autowrap:c-aref (model-animation.bones c-elt)
                                                        0
                                                        'claylib/wrap:bone-info)
+                        for c-frame-poses = (autowrap:c-aref (model-animation.frame-poses c-elt)
+                                                             0
+                                                             'claylib/wrap:transform)
                         for bone-count = (model-animation.bone-count c-elt)
                         for frame-count = (model-animation.frame-count c-elt)
                         do (setf (slot-value anim '%c-struct)
@@ -153,7 +156,7 @@ Warning: this can refer to bogus C data if NUM does not match the real C array l
 
                                  (slot-value anim '%frame-poses)
                                  (make-instance 'rl-transforms
-                                                :cl-array (make-transform-array c-transforms
+                                                :cl-array (make-transform-array c-frame-poses
                                                                                 frame-count)))
                         collect anim)))
     (make-array num
@@ -167,7 +170,7 @@ Warning: this can refer to bogus C data if NUM does not match the real C array l
   (elt (cl-array sequence) index))
 
 (defmethod (setf sequences:elt) (value (sequence rl-animations) index)
-  (check-type value rl-animation)
+  (check-type value rl-model-animation)
   (cffi:foreign-funcall "memcpy"
                         :pointer (autowrap:ptr (c-struct (elt sequence index)))
                         :pointer (autowrap:ptr (c-struct value))
