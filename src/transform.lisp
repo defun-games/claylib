@@ -58,23 +58,16 @@
   (z :float)
   (w :float))
 (cffi:defcstruct transform
-  (translation '(:struct vector3))
-  (rotation '(:struct vector4))
-  (scale '(:struct vector3)))
+  (translation (:struct vector3))
+  (rotation (:struct vector4))
+  (scale (:struct vector3)))
 (defconstant +foreign-transform-size+ (cffi:foreign-type-size '(:struct transform)))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-transforms (sequences:sequence)
-    ((%cl-array :type (array rl-transform 1)
-                :initarg :cl-array
-                :reader cl-array
-                :documentation "An RL-TRANSFORM array tracking the C Transform array underneath."))))
+  (defclass rl-transforms (rl-sequence)
+    ((%cl-array :type (array rl-transform 1)))))
 
-(defun make-transform-array (c-struct num)
-  "Make an array of rl-model-animation objects using NUM elements of the ModelAnimation wrapper
-C-STRUCT.
-
-Warning: this can refer to bogus C data if NUM does not match the real C array length."
+(defmethod make-rl-*-array ((c-struct claylib/wrap:transform) num)
   (let ((contents (loop for i below num
                         for trans = (make-instance 'rl-transform)
                         for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:transform)
@@ -83,25 +76,19 @@ Warning: this can refer to bogus C data if NUM does not match the real C array l
 
                                  (slot-value trans '%translation)
                                  (let ((v (make-instance 'rl-vector3)))
-                                   (setf (c-struct v (transform.translation))))
+                                   (setf (c-struct v) (transform.translation)))
 
                                  (slot-value trans '%rotation)
                                  (let ((v (make-instance 'rl-vector4)))
-                                   (setf (c-struct v (transform.rotation))))
+                                   (setf (c-struct v) (transform.rotation)))
 
                                  (slot-value trans '%scale)
                                  (let ((v (make-instance 'rl-vector3)))
-                                   (setf (c-struct v (transform.scale)))))
+                                   (setf (c-struct v) (transform.scale))))
                         collect trans)))
     (make-array num
                 :element-type 'rl-transform
                 :initial-contents contents)))
-
-(defmethod sequences:length ((sequence rl-transforms))
-  (length (cl-array sequence)))
-
-(defmethod sequences:elt ((sequence rl-transforms) index)
-  (elt (cl-array sequence) index))
 
 (defmethod (setf sequences:elt) (value (sequence rl-transforms) index)
   (check-type value rl-transform)

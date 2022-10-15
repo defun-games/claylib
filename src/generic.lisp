@@ -146,3 +146,10 @@ Force a reload & free old memory when FORCE-RELOAD is T."))
 
 (defgeneric switch-scene (scene)
   (:documentation "Switch *SCENE* to SCENE, loading the new & unloading the old scene."))
+
+(defgeneric make-rl-*-array (c-struct num)
+  (:documentation "Make an array of appropriate rl-* objects using NUM elements of the C array
+referenced by C-STRUCT.
+
+Warning: if NUM is greater than or equal to the number of elements in the C array, you will get
+bogus data."))

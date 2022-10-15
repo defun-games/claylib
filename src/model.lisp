@@ -214,19 +214,18 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
     (setf (mesh-count model) (or mesh-count (mesh-count rl-asset))
           (meshes model) (or meshes
                              (make-instance 'rl-meshes
-                                            :cl-array (make-meshes-array c-meshes
-                                                                         (mesh-count model))))
+                                            :cl-array (make-rl-*-array c-meshes
+                                                                       (mesh-count model))))
           (material-count model) (or material-count (material-count rl-asset))
           (mesh-material model) (or mesh-material
                                     (make-instance 'rl-materials
-                                                   :cl-array (make-material-array c-materials
-                                                                                  (material-count model)))
+                                                   :cl-array (make-rl-*-array c-materials
+                                                                              (material-count model)))
                                     (mesh-material rl-asset))
           (bone-count model) (or bone-count (bone-count rl-asset))
           (bones model) (or bones
                             (make-instance 'rl-bones
-                                           :cl-array (make-bones-array c-bones
-                                                                       (bone-count model)))))
+                                           :cl-array (make-rl-*-array c-bones (bone-count model)))))
     model))
 
 ;(default-free model %scale %tint)
