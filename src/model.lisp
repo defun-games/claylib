@@ -202,6 +202,7 @@
 Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASSET."
   (declare (ignorable scale tint rot-angle rot-axis filled))
   (load-asset model-asset)
+  (when animation-asset (load-asset animation-asset))
   (let ((model (apply #'make-instance 'model
                       :allow-other-keys t
                       :asset model-asset
