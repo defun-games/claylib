@@ -35,8 +35,11 @@
              :type rl-bones
              :reader bones)
      (%bind-pose :initarg :bind-pose
-                 :type rl-transform ; pointer
+                 :type rl-transforms
                  :reader bind-pose)
+     (%animations :initarg :animations
+                  :type rl-animations
+                  :accessor animations)
      (%c-struct
       :type claylib/ll:model
       :initform (autowrap:calloc 'claylib/ll:model)
@@ -158,7 +161,8 @@
     (sync-children (bind-pose obj))))
 
 (definitializer rl-model
-  :struct-slots ((%transform) (%meshes) (%materials) (%bones) (%bind-pose))
+  :lisp-slots ((%meshes) (%materials) (%bones) (%bind-pose) (%animations))
+  :struct-slots ((%transform))
   :pt-accessors ((mesh-count integer)
                  (material-count integer)
                  (mesh-materials sequence)
