@@ -221,25 +221,28 @@
     ((%cl-array :type (array rl-material 1)))))
 
 (defmethod make-rl-*-array ((c-struct claylib/wrap:material) num)
-  (let ((contents (loop for i below num
-                        for mat = (make-instance 'rl-material)
-                        for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:material)
-                        do (setf (slot-value mat '%c-struct)
-                                 c-elt
+  (let ((contents
+          (loop
+            for i below num
+            for mat = (make-instance 'rl-material)
+            for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:material)
+            do (setf (slot-value mat '%c-struct)
+                     c-elt
 
-                                 (slot-value mat '%shader)
-                                 (let ((shader (make-instance 'rl-shader)))
-                                   (setf (c-struct shader)
-                                         (material.shader c-elt))
-                                   shader)
+                     (slot-value mat '%shader)
+                     (let ((shader (make-instance 'rl-shader)))
+                       (setf (c-struct shader)
+                             (material.shader c-elt))
+                       shader)
 
-                                 (slot-value mat '%maps)
-                                 (let ((maps (make-instance 'rl-material-maps)))
-                                   (setf (slot-value maps '%cl-array)
-                                         (make-rl-*-array (material.maps c-elt)
-                                                          11)) ; 11 entries in MaterialMapIndex
-                                   maps))
-                        collect mat)))
+                     (slot-value mat '%maps)
+                     (let ((maps (make-instance 'rl-material-maps)))
+                       (setf (slot-value maps '%cl-array)
+                             (make-rl-*-array
+                              (autowrap:c-aref (material.maps c-elt) 0 'claylib/wrap:material-map)
+                              11)) ; TODO 11 entries in MaterialMapIndex, is this the correct num?
+                       maps))
+            collect mat)))
     (make-array num
                 :element-type 'rl-material
                 :initial-contents contents)))
