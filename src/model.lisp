@@ -27,16 +27,16 @@
                  :reader transform)
      (%meshes :initarg :meshes
               :type rl-meshes
-              :reader meshes)
+              :accessor meshes)
      (%materials :initarg :materials
                  :type rl-materials
-                 :reader materials)
+                 :accessor materials)
      (%bones :initarg :bones
              :type rl-bones
-             :reader bones)
+             :accessor bones)
      (%bind-pose :initarg :bind-pose
                  :type rl-transforms
-                 :reader bind-pose)
+                 :accessor bind-pose)
      (%animations :initarg :animations
                   :type rl-animations
                   :accessor animations)
@@ -61,7 +61,9 @@
 (defcwriter bone-count rl-model bone-count model integer)
 (defcwriter-struct transform rl-model transform model matrix
   m0 m1 m2 m3 m4 m5 m6 m7 m8 m9 m10 m11 m12 m13 m14 m15)
-(defcwriter-struct meshes rl-model meshes model mesh  ; TODO: Array/pointer
+;; Shouldn't need these cwriters when using lisp sequences
+;; nor the SETFs (sequence methods or regular accessors should handle that)
+#| (defcwriter-struct meshes rl-model meshes model mesh  ; TODO: Array/pointer
   vertex-count triangle-count vertices texcoords texcoords2 normals tangents colors
   indices anim-vertices anim-normals bone-ids bone-weights vao-id vbo-id)
 (defcwriter-struct materials rl-model materials model material  ; TODO: Array/pointer
@@ -119,6 +121,10 @@
     (setf (mesh-material model i) (if (< i (length value))
                                       (elt value i)
                                       0))))
+|#
+
+;; TODO define SETF :AFTER methods for updating the meshes pointer when setting any rl-sequence slot
+;; (e.g. %meshes) of a model
 
 (defmethod sync-children ((obj rl-model))
   (flet ((i0 (array type)
