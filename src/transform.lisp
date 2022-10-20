@@ -76,15 +76,15 @@
 
                                  (slot-value trans '%translation)
                                  (let ((v (make-instance 'rl-vector3)))
-                                   (setf (c-struct v) (transform.translation)))
+                                   (setf (c-struct v) (transform.translation c-elt)))
 
                                  (slot-value trans '%rotation)
                                  (let ((v (make-instance 'rl-vector4)))
-                                   (setf (c-struct v) (transform.rotation)))
+                                   (setf (c-struct v) (transform.rotation c-elt)))
 
                                  (slot-value trans '%scale)
                                  (let ((v (make-instance 'rl-vector3)))
-                                   (setf (c-struct v) (transform.scale))))
+                                   (setf (c-struct v) (transform.scale c-elt))))
                         collect trans)))
     (make-array num
                 :element-type 'rl-transform
