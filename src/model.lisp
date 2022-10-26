@@ -130,15 +130,11 @@
         (unless (eq (c-struct (transform obj)) tform)
           (free-later (c-struct (transform obj)))
           (setf (c-struct (transform obj)) tform)))
-      (format t "slot-bound: ~A~%" (slot-boundp obj '%meshes))
-      (format t "array-valid: ~A~%" (array-valid-p meshes (mesh-count obj) 'claylib/ll:mesh))
       (when (and (slot-boundp obj '%meshes)
                  (array-valid-p meshes (mesh-count obj) 'claylib/ll:mesh))
         (let ((mesh0 (i0 meshes 'claylib/ll:mesh)))
-          (format t "mesh0: ~A~%" mesh0)
           (unless (eq (c-struct (meshes obj)) mesh0)
             (free-later (c-struct (meshes obj)))
-            (format t "setting c-struct ~A~%" (c-struct (meshes obj)))
             (setf (c-struct (meshes obj)) mesh0))))
       (when (and (slot-boundp obj '%materials)
                  (array-valid-p mats (material-count obj) 'claylib/ll:material))
@@ -170,8 +166,6 @@
 
 (default-free rl-model %transform %meshes %materials %bones %bind-pose)
 (default-free-c claylib/ll:model unload-model t)
-
-
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass model (rl-model 3d-object)
@@ -238,7 +232,11 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
     ;; TODO: anims
     model))
 
-(default-free model %scale %tint)
+;(default-free model %scale %tint)
+(defmethod free ((obj model))
+  (dolist (slot '(%scale %tint %position %rot-axis %transform %meshes %materials %bones %bind-pose))
+    (free (slot-value obj slot))
+    (slot-makunbound obj slot)))
 
 (defmethod draw-object ((obj model))
   (claylib/ll:draw-model-ex (c-struct obj)
