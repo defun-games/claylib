@@ -94,7 +94,7 @@
                                                     index
                                                     'claylib/ll:material)
                           :pointer (autowrap:ptr (c-struct value))
-                          :int +foreign-mesh-size+
+                          :int +foreign-material-size+
                           :void)))
 (defmethod (setf materials) ((value rl-materials) (model rl-model))
   (when (cffi-sys:null-pointer-p (model.materials (c-struct model)))
@@ -223,11 +223,11 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                              (make-instance 'rl-meshes
                                             :cl-array (make-meshes-array c-meshes
                                                                          (mesh-count model))))
+          (material-count model) (or material-count (material-count model-asset))
           (materials model) (or materials
                                 (make-instance 'rl-materials
                                                :cl-array (make-material-array c-materials
                                                                               (material-count model))))
-          (material-count model) (or material-count (material-count model-asset))
           (mesh-materials model) (or mesh-materials (mesh-materials model-asset))
 ;          (bone-count model) (or bone-count (bone-count model-asset))
           #|

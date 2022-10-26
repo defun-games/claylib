@@ -257,7 +257,7 @@
    :mesh.bone-ids :mesh.bone-weights :mesh.vao-id :mesh.vbo-id
    :shader :shader.id :shader.locs
    :material-map :material-map.texture :material-map.color :material-map.value
-   :material :material.shader :material.maps :material.params
+   :material :material.shader :material.maps :material.params[]
    :model :model.transform :model.mesh-count :model.material-count :model.meshes :model.materials
    :model.mesh-material :model.bone-count :model.bones :model.bind-pose
    :transform :transform.translation :transform.rotation :transform.scale

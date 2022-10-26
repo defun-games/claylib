@@ -8,14 +8,26 @@
       :accessor c-struct))))
 
 (defcreader id rl-shader id shader)
-(defcreader locs rl-shader locs shader)  ; TODO: Array/pointer
+(defmethod loc ((shader rl-shader) (index integer))
+  (when (and (< index 32) (>= index 0))
+    (autowrap:c-aref (shader.locs (c-struct shader)) index :int)))
+(defmethod locs ((shader rl-shader))
+  (loop for i below 32
+        collect (loc shader i)))
 
 (defcwriter id rl-shader id shader integer)
-(defcwriter locs rl-shader locs shader integer)  ; TODO: Array/pointer
+(defmethod (setf loc) ((value integer) (shader rl-shader) (index integer))
+  (when (and (< index 32) (>= index 0))
+    (setf (autowrap:c-aref (shader.locs (c-struct shader)) index :int) value)))
+(defmethod (setf locs) ((value sequence) (shader rl-shader))
+  (dotimes (i 32)
+    (setf (loc shader i) (if (< i (length value))
+                             (elt value i)
+                             0))))
 
 (definitializer rl-shader
   :pt-accessors ((id integer)
-                 (locs integer)))
+                 (locs sequence)))
 
 (default-free rl-shader)
 (default-free-c claylib/ll:shader unload-shader)
@@ -71,20 +83,47 @@
               :type rl-shader
               :reader shader)
      (%maps :initarg :maps
-            :type rl-material-map  ; TODO: Array/pointer
+            :type rl-material-maps
             :reader maps)
      (%c-struct
       :type claylib/ll:material
       :initform (autowrap:calloc 'claylib/ll:material)
       :accessor c-struct))))
 
-(defcreader params rl-material params material)  ; TODO: Array
+(defmethod param ((material rl-material) (index integer))
+  (when (and (< index 4) (>= index 0))
+    (material.params[] (c-struct material) index)))
+(defmethod params ((material rl-material))
+  (loop for i below 4
+        collect (param material i)))
 
-(defcwriter params rl-material params material number float)  ; TODO: Array
 (defcwriter-struct shader rl-material shader material shader
   id locs)
 (defcwriter-struct maps rl-material maps material material-map ; Array/pointer
   texture color value)
+(defmethod (setf matmap) ((value rl-material-map) (material rl-material) (index integer))
+  (when (and (< index 11) (>= index 0))
+    (cffi:foreign-funcall "memcpy"
+                          :pointer (autowrap:c-aptr (material.maps (c-struct material))
+                                                    index
+                                                    'claylib/ll:material-map)
+                          :pointer (autowrap:ptr (c-struct value))
+                          :int +foreign-material-map-size+
+                          :void)))
+(defmethod (setf maps) ((value rl-material-maps) (material rl-material))
+  (when (cffi-sys:null-pointer-p (material.maps (c-struct material)))
+    (setf (material.maps (c-struct material))
+          (autowrap:ptr (autowrap:calloc 'claylib/ll:material-map (length value)))))
+  (dotimes (i 11)
+    (setf (matmap material i) (elt value i))))
+(defmethod (setf param) ((value number) (material rl-material) (index integer))
+  (when (and (< index 4) (>= index 0))
+    (setf (material.params[] (c-struct material) index) (coerce value 'float))))
+(defmethod (setf params) ((value sequence) (material rl-material))
+  (dotimes (i 4)
+    (setf (param material i) (if (< i (length value))
+                                 (elt value i)
+                                 0))))
 
 (defmethod sync-children ((obj rl-material))
   (flet ((i0 (array type)
@@ -109,7 +148,7 @@
 
 (definitializer rl-material
   :struct-slots ((%shader) (%maps))
-  :pt-accessors ((params number float)))
+  :pt-accessors ((params sequence)))
 
 (default-free rl-material %shader %maps)
 (default-free-c claylib/ll:material unload-material)
@@ -153,7 +192,7 @@
                                    tex)
 
                                  (slot-value map '%color)
-                                 (let ((col (make-instance 'rl-color)))
+                                 (let ((col (make-instance 'color)))
                                    (setf (c-struct col) (material-map.color c-elt))
                                    col))
                         collect map)))
