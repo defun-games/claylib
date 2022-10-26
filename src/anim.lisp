@@ -40,9 +40,6 @@
 
 (defcwriter bone-count rl-model-animation bone-count model-animation integer)
 (defcwriter frame-count rl-model-animation frame-count model-animation integer)
-(defcwriter-struct bones rl-model-animation bones model-animation bone-info name parent)  ; TODO: Array/pointer
-(defcwriter-struct frame-poses
-  rl-model-animation frame-poses model-animation transform translation rotation scale)
 
 (defmethod sync-children ((obj rl-model-animation))
   (flet ((i0 (array type)
@@ -60,7 +57,7 @@
     (sync-children (frame-poses obj))))
 
 (definitializer rl-model-animation
-  :struct-slots ((%bones) (%frame-poses))
+  :lisp-slots ((%bones) (%frame-poses))
   :pt-accessors ((bone-count integer)
                  (frame-count integer)))
 
