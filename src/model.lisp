@@ -123,8 +123,22 @@
                                       0))))
 |#
 
-;; TODO define SETF :AFTER methods for updating the meshes pointer when setting any rl-sequence slot
-;; (e.g. %meshes) of a model
+;; Define SETF :AFTER methods to update the Raylib Model array pointers when setting any rl-sequence
+;; slot in a Claylib model (e.g. %meshes)
+
+(defmethod (setf meshes) :after ((value rl-meshes) (model rl-model))
+  (setf (model.meshes (c-struct model)) (autowrap:ptr (c-struct (elt value 0)))))
+
+(defmethod (setf materials) :after ((value rl-materials) (model rl-model))
+  (setf (model.materials (c-struct model)) (autowrap:ptr (c-struct (elt value 0)))))
+
+(defmethod (setf bones) :after ((value rl-bones) (model rl-model))
+  (setf (model.bones (c-struct model)) (autowrap:ptr (c-struct (elt value 0)))))
+
+(defmethod (setf bind-pose) :after ((value rl-transforms) (model rl-model))
+  (setf (model.bind-pose (c-struct model)) (autowrap:ptr (c-struct (elt value 0)))))
+
+
 
 (defmethod sync-children ((obj rl-model))
   (flet ((i0 (array type)
