@@ -90,7 +90,7 @@
   (let ((contents (loop for i below num
                         for mesh = (make-instance 'rl-mesh)
                         do (setf (slot-value mesh '%c-struct)
-                                 (autowrap:c-aref c-array i 'claylib/wrap:mesh))
+                                 (autowrap:c-aref c-struct i 'claylib/wrap:mesh))
                         collect mesh)))
     (make-array num
                 :element-type 'rl-mesh
