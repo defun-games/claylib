@@ -77,6 +77,58 @@
 
 
 
+(cffi:defcstruct texture-2d
+  (id :uint)
+  (width :int)
+  (height :int)
+  (mipmaps :int)
+  (format :int))
+(cffi:defcstruct color
+  (r :unsigned-char)
+  (g :unsigned-char)
+  (b :unsigned-char)
+  (a :unsigned-char))
+(cffi:defcstruct material-map
+  (texture (:struct texture-2d))
+  (color (:struct color))
+  (value :float))
+(defconstant +foreign-material-map-size+ (cffi:foreign-type-size '(:struct material-map)))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-material-maps (rl-sequence)
+    ((%cl-array :type (array rl-material-map 1)))))
+
+(defmethod make-rl-*-array ((c-struct claylib/wrap:material-map) num)
+  (let ((contents (loop for i below num
+                        for map = (make-instance 'rl-material-map)
+                        for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:material-map)
+                        do (setf (slot-value map '%c-struct)
+                                 c-elt
+
+                                 (slot-value map '%texture)
+                                 (let ((tex (make-instance 'rl-texture)))
+                                   (setf (c-struct tex) (material-map.texture c-elt))
+                                   tex)
+
+                                 (slot-value map '%color)
+                                 (let ((col (make-instance 'color)))
+                                   (setf (c-struct col) (material-map.color c-elt))
+                                   col))
+                        collect map)))
+    (make-array num
+                :element-type 'rl-material-map
+                :initial-contents contents)))
+
+(defmethod (setf sequences:elt) (value (sequence rl-material-maps) index)
+  (check-type value rl-material-map)
+  (cffi:foreign-funcall "memcpy"
+                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
+                        :pointer (autowrap:ptr (c-struct value))
+                        :int +foreign-material-map-size+
+                        :void))
+
+
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-material ()
     ((%shader :initarg :shader
@@ -152,58 +204,6 @@
 
 (default-free rl-material %shader %maps)
 (default-free-c claylib/ll:material unload-material)
-
-
-
-(cffi:defcstruct texture-2d
-  (id :uint)
-  (width :int)
-  (height :int)
-  (mipmaps :int)
-  (format :int))
-(cffi:defcstruct color
-  (r :unsigned-char)
-  (g :unsigned-char)
-  (b :unsigned-char)
-  (a :unsigned-char))
-(cffi:defcstruct material-map
-  (texture (:struct texture-2d))
-  (color (:struct color))
-  (value :float))
-(defconstant +foreign-material-map-size+ (cffi:foreign-type-size '(:struct material-map)))
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-material-maps (rl-sequence)
-    ((%cl-array :type (array rl-material-map 1)))))
-
-(defmethod make-rl-*-array ((c-struct claylib/wrap:material-map) num)
-  (let ((contents (loop for i below num
-                        for map = (make-instance 'rl-material-map)
-                        for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:material-map)
-                        do (setf (slot-value map '%c-struct)
-                                 c-elt
-
-                                 (slot-value map '%texture)
-                                 (let ((tex (make-instance 'rl-texture)))
-                                   (setf (c-struct tex) (material-map.texture c-elt))
-                                   tex)
-
-                                 (slot-value map '%color)
-                                 (let ((col (make-instance 'color)))
-                                   (setf (c-struct col) (material-map.color c-elt))
-                                   col))
-                        collect map)))
-    (make-array num
-                :element-type 'rl-material-map
-                :initial-contents contents)))
-
-(defmethod (setf sequences:elt) (value (sequence rl-material-maps) index)
-  (check-type value rl-material-map)
-  (cffi:foreign-funcall "memcpy"
-                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
-                        :pointer (autowrap:ptr (c-struct value))
-                        :int +foreign-material-map-size+
-                        :void))
 
 
 
