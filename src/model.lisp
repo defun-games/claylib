@@ -213,7 +213,8 @@
 
 (defun make-model (model-asset x y z
                    &rest args &key scale tint rot-angle rot-axis filled transform mesh-count
-                                material-count meshes materials mesh-materials ;bone-count bones bind-pose
+                                material-count meshes materials mesh-materials bone-count bones
+                                bind-pose
                                 ;animation-asset
                                 )
   "Make a Claylib model.
@@ -228,10 +229,10 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                       :pos (make-vector3 x y z)
                       args))
         (c-meshes (autowrap:c-aref (model.meshes (c-asset model-asset)) 0 'claylib/ll:mesh))
-        ;(c-bones (autowrap:c-aref (model.bones (c-asset model-asset)) 0 'claylib/ll:bone-info))
+        (c-bones (autowrap:c-aref (model.bones (c-asset model-asset)) 0 'claylib/ll:bone-info))
         (c-materials (autowrap:c-aref (model.materials (c-asset model-asset)) 0 'claylib/ll:material))
-        ;(c-poses (autorwap:c-aref (model.bind-pose (c-asset model-asset)) 0 'claylib/ll:transform))
-        ;(c-anims (when animation-asset (autorwap:c-aref (c-asset animation-asset) 0 'claylib/ll:model-animation))
+        (c-poses (autowrap:c-aref (model.bind-pose (c-asset model-asset)) 0 'claylib/ll:transform))
+        ;(c-anims (when animation-asset (autowrap:c-aref (c-asset animation-asset) 0 'claylib/ll:model-animation))
         )
     (set-slot :transform model (or transform (transform model-asset))) ; TODO (make-zero-matrix) here?
     (setf (mesh-count model)
@@ -250,7 +251,7 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
 
           (mesh-materials model)
           (or mesh-materials (mesh-materials model-asset))
-          #|
+
           (bone-count model)
           (or bone-count (bone-count model-asset))
 
@@ -261,8 +262,7 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
           (bind-pose model)
           (or bind-pose (make-instance 'rl-transforms
                                        ;; TODO Is bone-count the right number of bind-poses?
-                                       :cl-array (make-rl-*-array c-poses (bone-count model))))|#
-          )
+                                       :cl-array (make-rl-*-array c-poses (bone-count model)))))
     #|
     (when animation-asset
       (setf (animations model)
