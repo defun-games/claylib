@@ -83,30 +83,18 @@
 (defconstant +foreign-mesh-size+ (cffi:foreign-type-size '(:struct mesh)))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-meshes (sequences:sequence)
-    ((%cl-array :type (array rl-mesh 1)
-                :initarg :cl-array
-                :reader cl-array
-                :documentation "An RL-MESH array tracking the C Mesh array underneath."))))
+  (defclass rl-meshes (rl-sequence)
+    ((%cl-array :type (array rl-mesh 1)))))
 
-(defun make-meshes-array (c-array mesh-count)
-  "Make an array of rl-mesh objects using MESH-COUNT elements of the Mesh wrapper C-ARRAY.
-
-Warning: this can refer to bogus C data if MESH-COUNT does not match the real C array length."
-  (let ((contents (loop for i below mesh-count
+(defmethod make-rl-*-array ((c-struct claylib/wrap:mesh) num)
+  (let ((contents (loop for i below num
                         for mesh = (make-instance 'rl-mesh)
                         do (setf (slot-value mesh '%c-struct)
-                                 (autowrap:c-aref c-array i 'claylib/wrap:mesh))
+                                 (autowrap:c-aref c-struct i 'claylib/wrap:mesh))
                         collect mesh)))
-    (make-array mesh-count
+    (make-array num
                 :element-type 'rl-mesh
                 :initial-contents contents)))
-
-(defmethod sequences:length ((sequence rl-meshes))
-  (length (cl-array sequence)))
-
-(defmethod sequences:elt ((sequence rl-meshes) index)
-  (elt (cl-array sequence) index))
 
 (defmethod (setf sequences:elt) (value (sequence rl-meshes) index)
   "Set the element at INDEX of the rl-meshes SEQUENCE such that it contains a copy of the C data in

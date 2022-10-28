@@ -27,16 +27,19 @@
                  :reader transform)
      (%meshes :initarg :meshes
               :type rl-meshes
-              :reader meshes)
+              :accessor meshes)
      (%materials :initarg :materials
                  :type rl-materials
-                 :reader materials)
+                 :accessor materials)
      (%bones :initarg :bones
              :type rl-bones
-             :reader bones)
+             :accessor bones)
      (%bind-pose :initarg :bind-pose
-                 :type rl-transform ; pointer
-                 :reader bind-pose)
+                 :type rl-transforms
+                 :accessor bind-pose)
+     (%animations :initarg :animations
+                  :type rl-animations
+                  :accessor animations)
      (%c-struct
       :type claylib/ll:model
       :initform (autowrap:calloc 'claylib/ll:model)
@@ -58,7 +61,9 @@
 (defcwriter bone-count rl-model bone-count model integer)
 (defcwriter-struct transform rl-model transform model matrix
   m0 m1 m2 m3 m4 m5 m6 m7 m8 m9 m10 m11 m12 m13 m14 m15)
-(defcwriter-struct meshes rl-model meshes model mesh  ; TODO: Array/pointer
+;; Shouldn't need these cwriters when using lisp sequences
+;; nor the SETFs (sequence methods or regular accessors should handle that)
+#| (defcwriter-struct meshes rl-model meshes model mesh  ; TODO: Array/pointer
   vertex-count triangle-count vertices texcoords texcoords2 normals tangents colors
   indices anim-vertices anim-normals bone-ids bone-weights vao-id vbo-id)
 (defcwriter-struct materials rl-model materials model material  ; TODO: Array/pointer
@@ -116,6 +121,24 @@
     (setf (mesh-material model i) (if (< i (length value))
                                       (elt value i)
                                       0))))
+|#
+
+;; Define SETF :AFTER methods to update the Raylib Model array pointers when setting any rl-sequence
+;; slot in a Claylib model (e.g. %meshes)
+
+(defmethod (setf meshes) :after ((value rl-meshes) (model rl-model))
+  (setf (model.meshes (c-struct model)) (autowrap:ptr (c-struct (elt value 0)))))
+
+(defmethod (setf materials) :after ((value rl-materials) (model rl-model))
+  (setf (model.materials (c-struct model)) (autowrap:ptr (c-struct (elt value 0)))))
+
+(defmethod (setf bones) :after ((value rl-bones) (model rl-model))
+  (setf (model.bones (c-struct model)) (autowrap:ptr (c-struct (elt value 0)))))
+
+(defmethod (setf bind-pose) :after ((value rl-transforms) (model rl-model))
+  (setf (model.bind-pose (c-struct model)) (autowrap:ptr (c-struct (elt value 0)))))
+
+
 
 (defmethod sync-children ((obj rl-model))
   (flet ((i0 (array type)
@@ -158,7 +181,8 @@
     (sync-children (bind-pose obj))))
 
 (definitializer rl-model
-  :struct-slots ((%transform) (%meshes) (%materials) (%bones) (%bind-pose))
+  :lisp-slots ((%meshes) (%materials) (%bones) (%bind-pose) (%animations))
+  :struct-slots ((%transform))
   :pt-accessors ((mesh-count integer)
                  (material-count integer)
                  (mesh-materials sequence)
@@ -190,46 +214,59 @@
   :lisp-slots ((%scale) (%tint) (%filled) (%asset)))
 
 (defun make-model (model-asset x y z
-                   &rest args &key scale tint rot-angle rot-axis filled
-                                transform mesh-count material-count meshes
-                                materials mesh-materials ;bone-count bones
-                                ;bind-pose
-                                )
+                   &rest args &key scale tint rot-angle rot-axis filled transform mesh-count
+                                material-count meshes materials bone-count bones bind-pose
+                                animation-asset)
   "Make a Claylib model.
 
 Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASSET."
   (declare (ignorable scale tint rot-angle rot-axis filled))
   (load-asset model-asset)
+  (when animation-asset (load-asset animation-asset))
   (let ((model (apply #'make-instance 'model
                       :allow-other-keys t
                       :asset model-asset
                       :pos (make-vector3 x y z)
                       args))
-        (c-meshes (model.meshes (c-asset model-asset)))
-        (c-materials (model.materials (c-asset model-asset)))
-;        (c-bones (model.bones (c-asset model-asset)))
-        )
-    (set-slot :transform model (or transform (transform model-asset)))
-    ;(set-slot :materials model (or materials (materials rl-asset)))
-    ;(set-slot :bind-pose model (or bind-pose (bind-pose rl-asset)))
-    (setf (mesh-count model) (or mesh-count (mesh-count model-asset))
-          (meshes model) (or meshes
-                             (make-instance 'rl-meshes
-                                            :cl-array (make-meshes-array c-meshes
-                                                                         (mesh-count model))))
-          (material-count model) (or material-count (material-count model-asset))
-          (materials model) (or materials
-                                (make-instance 'rl-materials
-                                               :cl-array (make-material-array c-materials
-                                                                              (material-count model))))
-          (mesh-materials model) (or mesh-materials (mesh-materials model-asset))
-;          (bone-count model) (or bone-count (bone-count model-asset))
-          #|
-          (bones model) (or bones
-                            (make-instance 'rl-bones
-                                           :cl-array (make-bones-array c-bones
-                                                                       (bone-count model))))|#)
-    ;; TODO: anims
+        (rl-asset model-asset)
+        (c-meshes (autowrap:c-aref (model.meshes (c-asset model-asset)) 0 'claylib/wrap:mesh))
+        (c-bones (autowrap:c-aref (model.bones (c-asset model-asset)) 0 'claylib/wrap:bone-info))
+        (c-materials
+          (autowrap:c-aref (model.materials (c-asset model-asset)) 0 'claylib/wrap:material))
+        (c-poses
+          (autowrap:c-aref (model.bind-pose (c-asset model-asset)) 0 'claylib/wrap:transform))
+        (c-anims (when animation-asset
+                   (autowrap:c-aref (c-asset animation-asset) 0 'claylib/wrap:model-animation))))
+    (set-slot :transform model (or transform (transform rl-asset))) ; TODO (make-zero-matrix) here?
+    (setf (mesh-count model)
+          (or mesh-count (mesh-count rl-asset))
+
+          (meshes model)
+          (or meshes (make-instance 'rl-meshes
+                                    :cl-array (make-rl-*-array c-meshes (mesh-count model))))
+          (material-count model)
+          (or material-count (material-count rl-asset))
+
+          (materials model)
+          (or materials (make-instance 'rl-materials
+                                       :cl-array (make-rl-*-array c-materials
+                                                                  (material-count model))))
+
+          (bone-count model)
+          (or bone-count (bone-count rl-asset))
+
+          (bones model)
+          (or bones (make-instance 'rl-bones
+                                   :cl-array (make-rl-*-array c-bones (bone-count model))))
+
+          (bind-pose model)
+          (or bind-pose (make-instance 'rl-transforms
+                                       ;; TODO Is bone-count the right number of bind-poses?
+                                       :cl-array (make-rl-*-array c-poses (bone-count model)))))
+    (when animation-asset
+      (setf (animations model)
+            (make-instance 'rl-animations
+                           :cl-array (make-rl-*-array c-anims (num animation-asset)))))
     model))
 
 ;(default-free model %scale %tint)

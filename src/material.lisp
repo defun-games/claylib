@@ -173,14 +173,11 @@
 (defconstant +foreign-material-map-size+ (cffi:foreign-type-size '(:struct material-map)))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-material-maps (sequences:sequence)
-    ((%cl-array :type (array rl-material-map 1)
-                :initarg :cl-array
-                :reader cl-array
-                :documentation "An RL-MATERIAL-MAP array tracking the C MaterialMap array underneath."))))
+  (defclass rl-material-maps (rl-sequence)
+    ((%cl-array :type (array rl-material-map 1)))))
 
-(defun make-material-map-array (c-struct &optional (map-count 11)) ; 11 entries in MaterialMapIndex
-  (let ((contents (loop for i below map-count
+(defmethod make-rl-*-array ((c-struct claylib/wrap:material-map) num)
+  (let ((contents (loop for i below num
                         for map = (make-instance 'rl-material-map)
                         for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:material-map)
                         do (setf (slot-value map '%c-struct)
@@ -192,19 +189,13 @@
                                    tex)
 
                                  (slot-value map '%color)
-                                 (let ((col (make-instance 'color)))
-                                   (setf (c-struct col) (material-map.color c-elt))
+                                 (let ((col (make-instance 'rl-color)))
+                                   (setf (slot-value col '%c-struct) (material-map.color c-elt))
                                    col))
                         collect map)))
-    (make-array map-count
+    (make-array num
                 :element-type 'rl-material-map
                 :initial-contents contents)))
-
-(defmethod sequences:length ((sequence rl-material-maps))
-  (length (cl-array sequence)))
-
-(defmethod sequences:elt ((sequence rl-material-maps) index)
-  (elt (cl-array sequence) index))
 
 (defmethod (setf sequences:elt) (value (sequence rl-material-maps) index)
   (check-type value rl-material-map)
@@ -226,44 +217,35 @@
 (defconstant +foreign-material-size+ (cffi:foreign-type-size '(:struct material)))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-materials (sequences:sequence)
-    ((%cl-array :type (array rl-material 1)
-                :initarg :cl-array
-                :reader cl-array
-                :documentation "An RL-MATERIAL array tracking the C Material array underneath."))))
+  (defclass rl-materials (rl-sequence)
+    ((%cl-array :type (array rl-material 1)))))
 
-(defun make-material-array (c-struct material-count)
-  "Make an array of rl-material objects using MATERIAL-COUNT elements of the Material wrapper
-C-STRUCT.
+(defmethod make-rl-*-array ((c-struct claylib/wrap:material) num)
+  (let ((contents
+          (loop
+            for i below num
+            for mat = (make-instance 'rl-material)
+            for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:material)
+            do (setf (slot-value mat '%c-struct)
+                     c-elt
 
-Warning: this can refer to bogus C data if MATERIAL-COUNT does not match the real C array length."
-  (let ((contents (loop for i below material-count
-                        for mat = (make-instance 'rl-material)
-                        for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:material)
-                        do (setf (slot-value mat '%c-struct)
-                                 c-elt
+                     (slot-value mat '%shader)
+                     (let ((shader (make-instance 'rl-shader)))
+                       (setf (c-struct shader)
+                             (material.shader c-elt))
+                       shader)
 
-                                 (slot-value mat '%shader)
-                                 (let ((shader (make-instance 'rl-shader)))
-                                   (setf (c-struct shader)
-                                         (material.shader c-elt))
-                                   shader)
-
-                                 (slot-value mat '%maps)
-                                 (let ((maps (make-instance 'rl-material-maps)))
-                                   (setf (slot-value maps '%cl-array)
-                                         (make-material-map-array (material.maps c-elt)))
-                                   maps))
-                        collect mat)))
-    (make-array material-count
+                     (slot-value mat '%maps)
+                     (let ((maps (make-instance 'rl-material-maps)))
+                       (setf (slot-value maps '%cl-array)
+                             (make-rl-*-array
+                              (autowrap:c-aref (material.maps c-elt) 0 'claylib/wrap:material-map)
+                              11)) ; TODO 11 entries in MaterialMapIndex, is this the correct num?
+                       maps))
+            collect mat)))
+    (make-array num
                 :element-type 'rl-material
                 :initial-contents contents)))
-
-(defmethod sequences:length ((sequence rl-materials))
-  (length (cl-array sequence)))
-
-(defmethod sequences:elt ((sequence rl-materials) index)
-  (elt (cl-array sequence) index))
 
 (defmethod (setf sequences:elt) (value (sequence rl-materials) index)
   (check-type value rl-material)

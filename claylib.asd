@@ -48,6 +48,7 @@
                (:module "src"
                 :components ((:file "generic")
                              (:file "helpers")
+                             (:file "sequence")
                              (:file "vec")
                              (:file "color")
                              (:file "bounding-box")
