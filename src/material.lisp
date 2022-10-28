@@ -189,8 +189,8 @@
                                    tex)
 
                                  (slot-value map '%color)
-                                 (let ((col (make-instance 'rl-color)))
-                                   (setf (slot-value col '%c-struct) (material-map.color c-elt))
+                                 (let ((col (make-instance 'color)))
+                                   (setf (c-struct col) (material-map.color c-elt))
                                    col))
                         collect map)))
     (make-array num
