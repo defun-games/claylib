@@ -81,9 +81,7 @@
                                                     'claylib/ll:mesh)
                           :pointer (autowrap:ptr (c-struct value))
                           :int +foreign-mesh-size+
-                          :void)
-#|    (setf (autowrap:c-aref (model.meshes model) index 'claylib/ll:mesh)
-          (c-struct value))|#))
+                          :void)))
 (defmethod (setf meshes) ((value rl-meshes) (model rl-model))
   (when (cffi-sys:null-pointer-p (model.meshes (c-struct model)))
     (setf (model.meshes (c-struct model))
@@ -107,6 +105,7 @@
           (autowrap:ptr (autowrap:calloc 'claylib/ll:material (length value)))))
   (dotimes (i (material-count model))
     (setf (material model i) (elt value i))))
+|#
 (defmethod (setf mesh-material) ((value integer) (model rl-model) (index integer))
   (when (and (< index (mesh-count model))
              (>= index 0)
@@ -121,7 +120,6 @@
     (setf (mesh-material model i) (if (< i (length value))
                                       (elt value i)
                                       0))))
-|#
 
 ;; Define SETF :AFTER methods to update the Raylib Model array pointers when setting any rl-sequence
 ;; slot in a Claylib model (e.g. %meshes)
@@ -215,45 +213,46 @@
 
 (defun make-model (model-asset x y z
                    &rest args &key scale tint rot-angle rot-axis filled transform mesh-count
-                                material-count meshes materials bone-count bones bind-pose
-                                animation-asset)
+                                material-count meshes materials mesh-materials ;bone-count bones bind-pose
+                                ;animation-asset
+                                )
   "Make a Claylib model.
 
 Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASSET."
   (declare (ignorable scale tint rot-angle rot-axis filled))
   (load-asset model-asset)
-  (when animation-asset (load-asset animation-asset))
+  ;(when animation-asset (load-asset animation-asset))
   (let ((model (apply #'make-instance 'model
                       :allow-other-keys t
                       :asset model-asset
                       :pos (make-vector3 x y z)
                       args))
-        (rl-asset model-asset)
-        (c-meshes (autowrap:c-aref (model.meshes (c-asset model-asset)) 0 'claylib/wrap:mesh))
-        (c-bones (autowrap:c-aref (model.bones (c-asset model-asset)) 0 'claylib/wrap:bone-info))
-        (c-materials
-          (autowrap:c-aref (model.materials (c-asset model-asset)) 0 'claylib/wrap:material))
-        (c-poses
-          (autowrap:c-aref (model.bind-pose (c-asset model-asset)) 0 'claylib/wrap:transform))
-        (c-anims (when animation-asset
-                   (autowrap:c-aref (c-asset animation-asset) 0 'claylib/wrap:model-animation))))
-    (set-slot :transform model (or transform (transform rl-asset))) ; TODO (make-zero-matrix) here?
+        (c-meshes (autowrap:c-aref (model.meshes (c-asset model-asset)) 0 'claylib/ll:mesh))
+        ;(c-bones (autowrap:c-aref (model.bones (c-asset model-asset)) 0 'claylib/ll:bone-info))
+        (c-materials (autowrap:c-aref (model.materials (c-asset model-asset)) 0 'claylib/ll:material))
+        ;(c-poses (autorwap:c-aref (model.bind-pose (c-asset model-asset)) 0 'claylib/ll:transform))
+        ;(c-anims (when animation-asset (autorwap:c-aref (c-asset animation-asset) 0 'claylib/ll:model-animation))
+        )
+    (set-slot :transform model (or transform (transform model-asset))) ; TODO (make-zero-matrix) here?
     (setf (mesh-count model)
-          (or mesh-count (mesh-count rl-asset))
+          (or mesh-count (mesh-count model-asset))
 
           (meshes model)
           (or meshes (make-instance 'rl-meshes
                                     :cl-array (make-rl-*-array c-meshes (mesh-count model))))
           (material-count model)
-          (or material-count (material-count rl-asset))
+          (or material-count (material-count model-asset))
 
           (materials model)
           (or materials (make-instance 'rl-materials
                                        :cl-array (make-rl-*-array c-materials
                                                                   (material-count model))))
 
+          (mesh-materials model)
+          (or mesh-materials (mesh-materials model-asset))
+          #|
           (bone-count model)
-          (or bone-count (bone-count rl-asset))
+          (or bone-count (bone-count model-asset))
 
           (bones model)
           (or bones (make-instance 'rl-bones
@@ -262,11 +261,13 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
           (bind-pose model)
           (or bind-pose (make-instance 'rl-transforms
                                        ;; TODO Is bone-count the right number of bind-poses?
-                                       :cl-array (make-rl-*-array c-poses (bone-count model)))))
+                                       :cl-array (make-rl-*-array c-poses (bone-count model))))|#
+          )
+    #|
     (when animation-asset
       (setf (animations model)
             (make-instance 'rl-animations
-                           :cl-array (make-rl-*-array c-anims (num animation-asset)))))
+                           :cl-array (make-rl-*-array c-anims (num animation-asset)))))|#
     model))
 
 ;(default-free model %scale %tint)
