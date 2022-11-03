@@ -218,24 +218,22 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass animation-asset (game-asset)
-    ((%num
-      :type integer
-      :accessor num)
-     (%asset :type (or rl-model-animation null)))))
+    ((%asset :type (or rl-animations null)))))
 
-(defreader bone-count animation-asset bone-count asset)
-(defreader frame-count animation-asset frame-count asset)
-(defreader bones animation-asset bones asset)
-(defreader frame-poses animation-asset frame-poses asset)
+;; (defreader bone-count animation-asset bone-count asset)
+;; (defreader frame-count animation-asset frame-count asset)
+;; (defreader bones animation-asset bones asset)
+;; (defreader frame-poses animation-asset frame-poses asset)
 
 (defmethod load-asset ((asset animation-asset) &key force-reload)
   (cond
     ((null (asset asset))
-     (let ((anim (make-instance 'rl-model-animation)))
        (c-let ((i :int))
-         (setf (c-struct anim) (load-model-animations (namestring (path asset)) (i &))
-               (num asset) i
-               (asset asset) anim))))
+         (let* ((0th-anim (load-model-animations (namestring (path asset)) (i &)))
+                (anims (make-instance 'rl-animations
+                                      :cl-array (make-rl-*-array 0th-anim i))))
+           (setf (asset asset) anims))))
+    ;; TODO how best to force-reload?
     (force-reload
      (c-let ((i :int))
        (setf (c-asset asset)
@@ -247,11 +245,12 @@
   "Make an animation asset from a PATH. This does not load the model unless LOAD-NOW is non-nil."
   (make-instance 'animation-asset :path path :load-now load-now))
 
+;; TODO update free to work with rl-animations sequence
 (defmethod free ((asset animation-asset))
   (when (and (asset asset)
-             (autowrap:valid-p (c-asset asset)))
-    (claylib/ll:unload-model-animations (c-asset asset) (num asset))
-    (autowrap:free (c-asset asset)))
+             (autowrap:valid-p (c-struct (elt (asset asset) 0))))
+    (claylib/ll:unload-model-animations (c-struct (elt (asset asset) 0)) (length (asset asset)))
+    (autowrap:free (c-struct (elt (asset asset) 0))))
   (setf (slot-value asset '%asset) nil)
   (when (next-method-p)
     (call-next-method)))

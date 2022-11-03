@@ -214,15 +214,13 @@
 (defun make-model (model-asset x y z
                    &rest args &key scale tint rot-angle rot-axis filled transform mesh-count
                                 material-count meshes materials mesh-materials bone-count bones
-                                bind-pose
-                                ;animation-asset
-                                )
+                                bind-pose animation-asset)
   "Make a Claylib model.
 
 Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASSET."
   (declare (ignorable scale tint rot-angle rot-axis filled))
   (load-asset model-asset)
-  ;(when animation-asset (load-asset animation-asset))
+  (when animation-asset (load-asset animation-asset))
   (let ((model (apply #'make-instance 'model
                       :allow-other-keys t
                       :asset model-asset
@@ -231,9 +229,7 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
         (c-meshes (autowrap:c-aref (model.meshes (c-asset model-asset)) 0 'claylib/ll:mesh))
         (c-bones (autowrap:c-aref (model.bones (c-asset model-asset)) 0 'claylib/ll:bone-info))
         (c-materials (autowrap:c-aref (model.materials (c-asset model-asset)) 0 'claylib/ll:material))
-        (c-poses (autowrap:c-aref (model.bind-pose (c-asset model-asset)) 0 'claylib/ll:transform))
-        ;(c-anims (when animation-asset (autowrap:c-aref (c-asset animation-asset) 0 'claylib/ll:model-animation))
-        )
+        (c-poses (autowrap:c-aref (model.bind-pose (c-asset model-asset)) 0 'claylib/ll:transform)))
     (set-slot :transform model (or transform (transform model-asset))) ; TODO (make-zero-matrix) here?
     (setf (mesh-count model)
           (or mesh-count (mesh-count model-asset))
@@ -263,11 +259,8 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
           (or bind-pose (make-instance 'rl-transforms
                                        ;; TODO Is bone-count the right number of bind-poses?
                                        :cl-array (make-rl-*-array c-poses (bone-count model)))))
-    #|
     (when animation-asset
-      (setf (animations model)
-            (make-instance 'rl-animations
-                           :cl-array (make-rl-*-array c-anims (num animation-asset)))))|#
+      (setf (animations model) (asset animation-asset)))
     model))
 
 ;(default-free model %scale %tint)
