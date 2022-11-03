@@ -15,7 +15,7 @@
 (defparameter *scene*
   (make-scene ((model-asset (car *assets*))
                (model-texture (cadr *assets*))
-               ;(model-anims (caddr *assets*))  ; TODO: This line causes a hang on quit
+               (model-anims (caddr *assets*))  ; TODO: This line causes a hang on quit
                )
               ((camera (make-camera-3d 10 10 10
                                        0 0 0
@@ -23,6 +23,7 @@
                                        :mode +camera-free+))
                (model (let ((m (claylib::make-model model-asset     ; TODO: This form causes a double free on quit
                                                     0 0 0
+                                                    :animation-asset model-anims
                                                     :rot-axis (make-vector3 1 0 0)
                                                     :rot-angle -90
                                                     :tint +white+)))
@@ -44,11 +45,17 @@
 (defun main ()
   (with-window (:title "raylib [models] example - model animation")
     (with-scenes *scene*
-      (with-scene-objects (camera) *scene*
+      (with-scene-objects (camera model) *scene*
         (do-game-loop (:livesupport t
                        :vars ((anim-frame-counter 0)))
           (update-camera camera)
-          ;; TODO: Animations go here
+          (when (is-key-down-p +key-space+)
+            (incf anim-frame-counter)
+            (claylib/ll:update-model-animation (claylib::c-struct model)
+                                               (claylib::c-struct (elt (claylib::animations model) 0))
+                                               anim-frame-counter)
+            (when (>= anim-frame-counter (claylib::frame-count (elt (claylib::animations model) 0)))
+              (setf anim-frame-counter 0)))
           (with-drawing ()
             (with-3d-mode camera
               (draw-scene *scene* 'model 'grid))
