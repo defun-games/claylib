@@ -105,7 +105,8 @@
    :with-scissor-mode :make-zero-matrix :is-window-state-p :make-triangle :make-triangle-from-vecs
    :make-texture :make-texture-from-rec :make-empty-texture :make-texture-asset :get-gesture-detected
    :is-mouse-button-released-p :make-polygon :make-font :make-image-asset :make-pixel :make-image
-   :make-simple-rec :make-billboard :make-font-asset :window-should-close-p
+   :make-simple-rec :make-billboard :make-font-asset :window-should-close-p :make-model-asset
+   :make-model :make-animation-asset
 
    ;; Scenes
    :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
@@ -115,6 +116,7 @@
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
    :hit :low :high :r :g :b :a :dest :filter :origin :source :tint :radius :x3 :y3 :v1 :v2 :v3
    :load-asset :filled :font :size :spacing :asset :start :end :bezier :up :x-scale :y-scale
+   :frame-count :animations
 
    ;; Math
    :vector2-subtract :vector2-add :vector2-scale :vector2-length

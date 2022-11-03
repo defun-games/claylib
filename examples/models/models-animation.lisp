@@ -5,11 +5,11 @@
 (in-package #:claylib/examples/models-animation)
 
 (defparameter *assets*
-  (list (claylib::make-model-asset
+  (list (make-model-asset
          (claylib/examples:claylib-path "examples/models/resources/models/iqm/guy.iqm"))
         (make-texture-asset
          (claylib/examples:claylib-path "examples/models/resources/models/iqm/guytex.png"))
-        (claylib::make-animation-asset
+        (make-animation-asset
          (claylib/examples:claylib-path "examples/models/resources/models/iqm/guyanim.iqm"))))
 
 (defparameter *scene*
@@ -21,12 +21,12 @@
                                        0 0 0
                                        0 1 0
                                        :mode +camera-free+))
-               (model (let ((m (claylib::make-model model-asset     ; TODO: This form causes a double free on quit
-                                                    0 0 0
-                                                    :animation-asset model-anims
-                                                    :rot-axis (make-vector3 1 0 0)
-                                                    :rot-angle -90
-                                                    :tint +white+)))
+               (model (let ((m (make-model model-asset  ; TODO: This form causes a double free on quit
+                                           0 0 0
+                                           :animation-asset model-anims
+                                           :rot-axis (make-vector3 1 0 0)
+                                           :rot-angle -90
+                                           :tint +white+)))
                         (claylib/wrap:set-material-texture
                          (autowrap:ptr (claylib::c-struct (elt (claylib::materials m) 0)))
                          claylib/wrap:+material-map-diffuse+
@@ -52,7 +52,7 @@
           (when (is-key-down-p +key-space+)
             (incf anim-frame-counter)
             (update-model-animation model anim-frame-counter)
-            (when (>= anim-frame-counter (claylib::frame-count (elt (claylib::animations model) 0)))
+            (when (>= anim-frame-counter (frame-count (elt (animations model) 0)))
               (setf anim-frame-counter 0)))
           (with-drawing ()
             (with-3d-mode camera
