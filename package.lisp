@@ -37,7 +37,8 @@
    :with-window :load-font :load-model-from-mesh :gen-mesh-cube :gen-image-checked :load-texture-from-image
    :fade :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw :with-drawing
-   :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex)
+   :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex
+   :update-model-animation)
 
 
 
@@ -137,7 +138,7 @@
    :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw
    :copy-asset-to-object :set-window-position :check-collision-recs :get-collision-rec
-   :check-collision-point-circle :measure-text-ex
+   :check-collision-point-circle :measure-text-ex :update-model-animation
 
    ;;; Raygui
 
