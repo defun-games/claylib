@@ -1,8 +1,8 @@
 (in-package #:cl-user)
-(defpackage claylib/examples/models-animation
+(defpackage claylib/examples/animation
   (:use :cl :claylib)
   (:export :main))
-(in-package #:claylib/examples/models-animation)
+(in-package #:claylib/examples/animation)
 
 (defparameter *assets*
   (list (make-model-asset
