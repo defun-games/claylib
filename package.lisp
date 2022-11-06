@@ -38,7 +38,7 @@
    :fade :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw :with-drawing
    :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex
-   :update-model-animation)
+   :update-model-animation :set-material-texture)
 
 
 
@@ -88,6 +88,12 @@
    :+camera-orthographic+ :+camera-custom+ :+camera-free+ :+camera-orbital+ :+camera-first-person+
    :update-camera :get-world-to-screen-3d
 
+   ;; Material maps
+   :+material-map-albedo+ :+material-map-brdf+ :+material-map-cubemap+ :+material-map-emission+
+   :+material-map-height+ :+material-map-irradiance+ :+material-map-metalness+ :+material-map-normal+
+   :+material-map-occlusion+ :+material-map-prefilter+ :+material-map-roughness+
+   :+material-map-diffuse+ :+material-map-specular+
+
    ;; Types
    :text :rectangle :rl-rectangle :circle :cube :grid :rl-vector2 :rl-vector3 :rl-vector4 :rl-color
    :line-2d :rl-camera-3d :camera-3d :rl-camera-2d :plane :rl-ray :ray :rl-ray-collision :rl-bounding-box
@@ -116,7 +122,7 @@
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
    :hit :low :high :r :g :b :a :dest :filter :origin :source :tint :radius :x3 :y3 :v1 :v2 :v3
    :load-asset :filled :font :size :spacing :asset :start :end :bezier :up :x-scale :y-scale
-   :frame-count :animations
+   :frame-count :animations :bones :materials
 
    ;; Math
    :vector2-subtract :vector2-add :vector2-scale :vector2-length
@@ -140,7 +146,7 @@
    :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw
    :copy-asset-to-object :set-window-position :check-collision-recs :get-collision-rec
-   :check-collision-point-circle :measure-text-ex :update-model-animation
+   :check-collision-point-circle :measure-text-ex :update-model-animation :set-material-texture
 
    ;;; Raygui
 

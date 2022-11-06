@@ -182,10 +182,10 @@
    ;; Model drawing functions
    :draw-model :draw-model-ex :draw-model-wires :draw-model-wires-ex :draw-bounding-box
    :draw-billboard :draw-billboard-rec :draw-billboard-pro
-   
+
    ;; Mesh management functions
    :upload-mesh :update-mesh-buffer :unload-mesh :draw-mesh :draw-mesh-instanced :export-mesh
-   :get-mesh-bounding-box :gen-mesh-tangents :gen-mesh-binormals 
+   :get-mesh-bounding-box :gen-mesh-tangents :gen-mesh-binormals
 
    ;; Mesh generation functions
    :gen-mesh-poly :gen-mesh-plane :gen-mesh-cube :gen-mesh-sphere :gen-mesh-hemisphere
@@ -283,9 +283,9 @@
    :vr-stereo-config.left-lens-center :vr-stereo-config.right-lens-center
    :vr-stereo-config.left-screen-center :vr-stereo-config.right-screen-center :vr-stereo-config.scale
    :vr-stereo-config.scale-in
-   
+
    ;;; Constants
-   
+
    ;; Colors
    :+lightgray+ :+gray+ :+darkgray+ :+yellow+ :+gold+ :+orange+ :+pink+ :+red+ :+maroon+ :+green+
    :+lime+ :+darkgreen+ :+skyblue+ :+blue+ :+darkblue+ :+purple+ :+violet+ :+darkpurple+ :+beige+
@@ -294,7 +294,7 @@
    ;; Blending
    :+blend-alpha+ :+blend-additive+ :+blend-multiplied+ :+blend-add-colors+ :+blend-subtract-colors+
    :+blend-custom+
-   
+
    ;; Keys
    :+key-a+ :+key-b+ :+key-c+ :+key-d+ :+key-e+ :+key-f+ :+key-g+ :+key-h+ :+key-i+ :+key-j+
    :+key-k+ :+key-l+ :+key-m+ :+key-n+ :+key-o+ :+key-p+ :+key-q+ :+key-r+ :+key-s+ :+key-t+
@@ -326,7 +326,7 @@
    :+mouse-cursor-pointing-hand+ :+mouse-cursor-resize-ew+ :+mouse-cursor-resize-ns+
    :+mouse-cursor-resize-nwse+ :+mouse-cursor-resize-nesw+ :+mouse-cursor-resize-all+
    :+mouse-cursor-not-allowed+
-   
+
    ;; Gamepad
    :+gamepad-axis-left-x+ :+gamepad-axis-left-y+ :+gamepad-axis-right-x+ :+gamepad-axis-right-y+
    :+gamepax-axis-left-trigger+ :+gamepad-axis-right-trigger+ :+gamepad-button-left-face-up+
@@ -347,7 +347,7 @@
    :+shader-loc-map-roughness+ :+shader-loc-map-occlusion+ :+shader-loc-map-emission+
    :+shader-loc-map-height+ :+shader-loc-map-cubemap+ :+shader-loc-map-irradiance+
    :+shader-loc-map-prefilter+ :+shader-loc-map-brdf+
-   
+
    ;; Shader attributes
    :+shader-attrib-float+ :+shader-attrib-vec2+ :+shader-attrib-vec3+ :+shader-attrib-vec4+
 
@@ -355,11 +355,12 @@
    :+shader-uniform-float+ :+shader-uniform-vec2+ :+shader-uniform-vec3+ :+shader-uniform-vec4+
    :+shader-uniform-int+ :+shader-uniform-ivec2+ :+shader-uniform-ivec3+ :+shader-uniform-ivec4+
    :+shader-uniform-sampler2d+
-   
+
    ;; Material maps
    :+material-map-albedo+ :+material-map-brdf+ :+material-map-cubemap+ :+material-map-emission+
    :+material-map-height+ :+material-map-irradiance+ :+material-map-metalness+ :+material-map-normal+
    :+material-map-occlusion+ :+material-map-prefilter+ :+material-map-roughness+
+   :+material-map-diffuse+ :+material-map-specular+
 
    ;; Cubemap layouts
    :+cubemap-layout-auto-detect+ :+cubemap-layout-line-vertical+ :+cubemap-layout-line-horizontal+
@@ -372,7 +373,7 @@
 
    ;; Texture wrapping
    :+texture-wrap-repeat+ :+texture-wrap-clamp+ :+texture-wrap-mirror-repeat+ :+texture-wrap-mirror-clamp+
-   
+
    ;; Pixel formats
    :+pixelformat-uncompressed-grayscale+ :+pixelformat-uncompressed-gray-alpha+
    :+pixelformat-uncompressed-r5g6b5+ :+pixelformat-uncompressed-r8g8b8+
@@ -385,13 +386,13 @@
    :+pixelformat-compressed-etc2-eac-rgba+ :+pixelformat-compressed-pvrt-rgb+
    :+pixelformat-compressed-pvrt-rgba+ :+pixelformat-compressed-astc-4x4-rgba+
    :+pixelformat-compressed-astc-8x8-rgba+
-   
+
    ;; Npatch
    :+npatch-nine-patch+ :+npatch-three-patch-vertical+ :+npatch-three-patch-horizontal+
-   
+
    ;; Font types
    :+font-default+ :+font-bitmap+ :+font-sdf+
-   
+
    ;; Camera
    :+camera-perspective+ :+camera-orthographic+ :+camera-free+ :+camera-orbital+ :+camera-first-person+
    :+camera-third-person+ :+camera-custom+
@@ -469,9 +470,9 @@
    :+scrollbar+ :+border-width+ :+arrows-size+ :+slider-padding+ :+arrows-visible+ :+slider-width+
    :+listview+ :+scrollbar-side+ :+scrollbar-left-side+ :+scrollbar-right-side+ :+scrollbar-width+
    :+default+
-   
+
    ;;; claylib/ll extras
-   
+
    ;; Convenience wrappers
    :close-window-p :run-window-p :with-window :loop-drawing :do-drawing :with-drawing :with-mode2d
    :with-mode3d :set-vector2 :set-vector3 :set-vector4 :with-texture-mode :with-scissor-mode

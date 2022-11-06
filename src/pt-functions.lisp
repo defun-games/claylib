@@ -215,6 +215,14 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   (height number float)
   (length number float))
 
+;; Material loading/unloading functions
+
+(defun-pt-void set-material-texture claylib/ll:set-material-texture
+  "Set texture for a material map type (+MATERIAL-MAP-DIFFUSE+, +MATERIAL-MAP-SPECULAR+...)"
+  (material rl-material)
+  (map-type integer)
+  (texture rl-texture))
+
 ;; Model animations loading/unloading functions
 
 (defun update-model-animation (model frame)
