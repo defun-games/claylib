@@ -10,8 +10,9 @@
                  :reader dir)
      (%c-struct
       :type claylib/ll:ray
-      :initform (autowrap:calloc 'claylib/ll:ray)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:ray))))
 
 (defreader x rl-ray x pos)
 (defreader y rl-ray y pos)

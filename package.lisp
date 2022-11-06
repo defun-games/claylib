@@ -9,7 +9,8 @@
 
    ;; Structs
    :model :texture :shader :model-animation :font :rectangle :color :ray :ray-collision :matrix
-   :vector2 :vector3 :vector4 :bounding-box :image
+   :vector2 :vector3 :vector4 :bounding-box :image :glyph-info :material-map :material :mesh
+   :render-texture :transform
 
    ;; Colors
    :+lightgray+ :+gray+ :+darkgray+ :+yellow+ :+gold+ :+orange+ :+pink+ :+red+ :+maroon+
@@ -92,7 +93,8 @@
    :line-2d :rl-camera-3d :camera-3d :rl-camera-2d :plane :rl-ray :ray :rl-ray-collision :rl-bounding-box
    :rl-texture :texture :rl-transform :rl-model :model :rl-mesh :rl-shader :rl-material-map :rl-material
    :rl-matrix :triangle :image-asset :texture-asset :model-asset :shader-asset :font-asset
-   :animation-asset :pixel :image :game-scene
+   :animation-asset :pixel :image :game-scene :glyph-info :material-map :material :mesh :render-texture
+   :transform
 
    ;; Misc. convenience wrappers
    :with-window :do-game-loop :with-drawing :is-key-pressed-p :is-gesture-detected-p :is-key-down-p

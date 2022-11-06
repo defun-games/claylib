@@ -4,8 +4,9 @@
   (defclass rl-texture ()
     ((%c-struct
       :type claylib/ll:texture
-      :initform (autowrap:calloc 'claylib/ll:texture)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:texture))))
 
 (defcreader id rl-texture id texture)
 (defcreader width rl-texture width texture)
@@ -193,8 +194,9 @@
              :reader depth)
      (%c-struct
       :type claylib/ll:render-texture
-      :initform (autowrap:calloc 'claylib/ll:render-texture)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:render-texture))))
 
 (defcreader id rl-render-texture id render-texture)
 
@@ -222,3 +224,8 @@
 
 (default-free rl-render-texture %texture %depth)
 (default-free-c claylib/ll:render-texture unload-render-texture)
+
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass render-texture (rl-render-texture) ()))

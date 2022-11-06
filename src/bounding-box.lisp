@@ -10,8 +10,9 @@
             :reader high)
      (%c-struct
       :type claylib/ll:bounding-box
-      :initform (autowrap:calloc 'claylib/ll:bounding-box)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:bounding-box))))
 
 (defcwriter-struct low rl-bounding-box min bounding-box vector3 x y z)
 (defcwriter-struct high rl-bounding-box max bounding-box vector3 x y z)
@@ -33,3 +34,8 @@
 
 (default-free rl-bounding-box %low %high)
 (default-free-c claylib/ll:bounding-box)
+
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass bounding-box (rl-bounding-box) ()))

@@ -4,8 +4,9 @@
   (defclass rl-matrix ()
     ((%c-struct
       :type claylib/ll:matrix
-      :initform (autowrap:calloc 'claylib/ll:matrix)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:matrix))))
 
 (defcreader m0 rl-matrix m0 matrix)
 (defcreader m1 rl-matrix m1 matrix)
@@ -62,8 +63,13 @@
 (default-free rl-matrix)
 (default-free-c claylib/ll:matrix)
 
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass matrix (rl-matrix) ()))
+
 (defun make-zero-matrix ()
-  (make-instance 'rl-matrix
+  (make-instance 'matrix
                  :m0 0 :m1 0 :m2 0 :m3 0
                  :m4 0 :m5 0 :m6 0 :m7 0
                  :m8 0 :m9 0 :m10 0 :m11 0

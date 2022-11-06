@@ -4,8 +4,9 @@
   (defclass rl-bone-info ()
     ((%c-struct
       :type claylib/ll:bone-info
-      :initform (autowrap:calloc 'claylib/ll:bone-info)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:bone-info))))
 
 (defcreader name rl-bone-info name bone-info)  ; TODO: Array/string
 (defcreader parent rl-bone-info parent bone-info)
@@ -23,6 +24,11 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass bone (rl-bone-info) ()))
+
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-model-animation ()
     ((%bones :initarg :bones
              :type rl-bones
@@ -32,8 +38,9 @@
                    :reader frame-poses)
      (%c-struct
       :type claylib/ll:model-animation
-      :initform (autowrap:calloc 'claylib/ll:model-animation)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:model-animation))))
 
 (defcreader bone-count rl-model-animation bone-count model-animation)
 (defcreader frame-count rl-model-animation frame-count model-animation)
@@ -70,6 +77,11 @@
   (when (autowrap:valid-p anim)
     (unload-model-animation anim)
     (autowrap:free anim)))
+
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass model-animation (rl-model-animation) ()))
 
 
 

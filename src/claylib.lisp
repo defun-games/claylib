@@ -105,5 +105,3 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
   (when (cffi-sys:pointerp obj)
     (warn "Attempted to free a pointer ~A. This shouldn't happen. When this warning stops appearing,
 delete the universal FREE method (see TODO)." obj)))
-
-(defmethod sync-children ((obj t)) nil)

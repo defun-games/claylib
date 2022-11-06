@@ -4,8 +4,9 @@
   (defclass rl-rectangle ()
     ((%c-struct
       :type claylib/ll:rectangle
-      :initform (autowrap:calloc 'claylib/ll:rectangle)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:rectangle))))
 
 (defcreader x rl-rectangle x rectangle)
 (defcreader y rl-rectangle y rectangle)

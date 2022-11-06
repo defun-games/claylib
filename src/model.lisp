@@ -1,24 +1,4 @@
 (in-package #:claylib)
-#|
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-mesh-materials (sequences:sequence)
-    ((%cl-array :type (array integer 1)
-                :initarg :cl-array
-                :reader cl-array
-                :documentation "Simple array mapping meshes to their associated materials, per model."))))
-
-(defmethod sequences:length ((sequence rl-mesh-materials))
-  (length (cl-array sequence)))
-
-(defmethod sequences:elt ((sequence rl-mesh-materials) index)
-  (elt (cl-array sequence) index))
-
-(defmethod (setf sequences:elt) ((value integer) (sequence rl-mesh-materials) index)
-  (setf (aref (cl-array sequence) index) value)
-  (c-let ((n :int :value value))  ; TODO: Technically a memory leak, but does it actually matter?
-    (setf (autowrap:c-aref ))))
-|#
-
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-model ()
@@ -42,8 +22,9 @@
                   :accessor animations)
      (%c-struct
       :type claylib/ll:model
-      :initform (autowrap:calloc 'claylib/ll:model)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:model))))
 
 (defcreader mesh-count rl-model mesh-count model)
 (defcreader material-count rl-model material-count model)
@@ -188,6 +169,8 @@
 
 (default-free rl-model %transform %meshes %materials %bones %bind-pose)
 (default-free-c claylib/ll:model unload-model t)
+
+
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass model (rl-model 3d-object)

@@ -13,9 +13,9 @@
           :reader up)
      (%c-struct
       :type claylib/ll:camera3d
-      :initform (autowrap:calloc 'claylib/ll:camera3d)
       :accessor c-struct))
     (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:camera3d)
      :fovy 45.0
      :projection +camera-perspective+)))
 

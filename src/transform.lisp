@@ -13,8 +13,9 @@
              :reader scale)
      (%c-struct
       :type claylib/ll:transform
-      :initform (autowrap:calloc 'claylib/ll:transform)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:transform))))
 
 (defcwriter-struct trans rl-transform translation transform vector3 x y z)
 (defcwriter-struct rot rl-transform rotation transform vector4 x y z w)
@@ -45,6 +46,11 @@
 
 (default-free rl-transform %translation %rotation %scale)
 (default-free-c claylib/ll:transform)
+
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass transform (rl-transform) ()))
 
 
 

@@ -10,8 +10,9 @@
               :reader normal)
      (%c-struct
       :type claylib/ll:ray-collision
-      :initform (autowrap:calloc 'claylib/ll:ray-collision)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:ray-collision))))
 
 (defcreader-bool hit rl-ray-collision hit ray-collision)
 (defcreader distance rl-ray-collision distance ray-collision)
@@ -41,12 +42,17 @@
 (default-free rl-ray-collision %point %normal)
 (default-free-c claylib/ll:ray-collision)
 
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass ray-collision (rl-ray-collision) ()))
+
 (defun make-ray-collision (point-x point-y point-z normal-x normal-y normal-z)
-  (make-instance 'rl-ray-collision
+  (make-instance 'ray-collision
                  :point (make-vector3 point-x point-y point-z)
                  :normal (make-vector3 normal-x normal-y normal-z)))
 
 (defun make-ray-collision-from-vecs (point normal)
-  (make-instance 'rl-ray-collision
+  (make-instance 'ray-collision
                  :point point
                  :normal normal))

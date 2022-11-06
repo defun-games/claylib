@@ -4,13 +4,16 @@
   (defclass rl-color ()
     ((%c-struct
       :type claylib/ll:color
-      :initform (autowrap:calloc 'claylib/ll:color)
-      :reader c-struct))))
+      :reader c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:color))))
 
 (defcreader r rl-color r color)
 (defcreader g rl-color g color)
 (defcreader b rl-color b color)
 (defcreader a rl-color a color)
+
+(definitializer rl-color)
 
 ;; Default RL-COLOR objects are not meant to be freed.
 (defmethod free ((obj rl-color)) nil)
@@ -55,9 +58,7 @@
                   (claylib/ll:color.a color))))
 
 (defun copy-color-constant (color)
-  (let ((ret (make-instance 'rl-color)))
-    (setf (slot-value ret '%c-struct) color)
-    ret))
+  (make-instance 'rl-color :c-struct color))
 
 ;; TODO: This is required due to WITH-TEXTURE-MODE/CLEAR-BACKGROUND
 ;; but feels kind of hackish and I'd rather not need it.

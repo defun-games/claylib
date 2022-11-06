@@ -4,8 +4,9 @@
   (defclass rl-mesh ()
     ((%c-struct
       :type claylib/ll:mesh
-      :initform (autowrap:calloc 'claylib/ll:mesh)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:mesh))))
 
 (defcreader vertex-count rl-mesh vertex-count mesh)
 (defcreader triangle-count rl-mesh triangle-count mesh)
@@ -60,6 +61,11 @@
 
 (default-free rl-mesh)
 (default-free-c claylib/ll:mesh unload-mesh t)
+
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass mesh (rl-mesh) ()))
 
 
 

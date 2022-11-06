@@ -7,8 +7,9 @@
              :reader image)
      (%c-struct
       :type claylib/ll:glyph-info
-      :initform (autowrap:calloc 'claylib/ll:glyph-info)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:glyph-info))))
 
 (defcreader value rl-glyph-info value glyph-info)
 (defcreader offset-x rl-glyph-info offset-x glyph-info)
@@ -43,6 +44,11 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass glyph-info (rl-glyph-info) ()))
+
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-font ()
     ((%texture :initarg :texture
                :type rl-texture
@@ -55,8 +61,9 @@
               :reader glyphs)
      (%c-struct
       :type claylib/ll:font
-      :initform (autowrap:calloc 'claylib/ll:font)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:font))))
 
 (defcreader size rl-font base-size font)
 (defcreader glyph-count rl-font glyph-count font)

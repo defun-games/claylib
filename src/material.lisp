@@ -4,8 +4,9 @@
   (defclass rl-shader ()
     ((%c-struct
       :type claylib/ll:shader
-      :initform (autowrap:calloc 'claylib/ll:shader)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:shader))))
 
 (defcreader id rl-shader id shader)
 (defmethod loc ((shader rl-shader) (index integer))
@@ -35,6 +36,11 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass shader (rl-shader) ()))
+
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-material-map ()
     ((%texture :initarg :texture
                :type rl-texture
@@ -44,8 +50,9 @@
              :reader color)
      (%c-struct
       :type claylib/ll:material-map
-      :initform (autowrap:calloc 'claylib/ll:material-map)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:material-map))))
 
 (defcreader value rl-material-map value material-map)
 
@@ -74,6 +81,11 @@
 
 (default-free rl-material-map %texture %color)
 (default-free-c claylib/ll:material-map)
+
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass material-map (rl-material-map) ()))
 
 
 
@@ -139,8 +151,9 @@
             :reader maps)
      (%c-struct
       :type claylib/ll:material
-      :initform (autowrap:calloc 'claylib/ll:material)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:material))))
 
 (defmethod param ((material rl-material) (index integer))
   (when (and (< index 4) (>= index 0))
@@ -204,6 +217,11 @@
 
 (default-free rl-material %shader %maps)
 (default-free-c claylib/ll:material unload-material)
+
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass material (rl-material) ()))
 
 
 

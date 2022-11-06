@@ -4,8 +4,9 @@
   (defclass rl-image ()
     ((%c-struct
       :type claylib/ll:image
-      :initform (autowrap:calloc 'claylib/ll:image)
-      :accessor c-struct))))
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:image))))
 
 (defcreader data rl-image data image) ; pointer
 (defcreader width rl-image width image)

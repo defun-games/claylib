@@ -206,16 +206,21 @@ COERCE-TYPE will usually be float, when applicable."
             (struct-slot-types (mapcar #'(lambda (slot) (slot-type (car slot))) struct-slots)))
         `(defmethod initialize-instance
              :after ((,obj ,class)
+                     &rest initargs
                      &key ,@(remove nil (append (mapcar #'(lambda (arg)
                                                             `(,arg nil ,(arg-supplied-p arg)))
                                                         (remove nil lisp-slot-args))
                                                 struct-slot-args
-                                                (mapcar #'car pt-accessors))))
+                                                (mapcar #'car pt-accessors)))
+                       &allow-other-keys)
            ,@(loop for arg in (append lisp-slot-args struct-slot-args)
                    for type in (append lisp-slot-types struct-slot-types)
                    when arg
                      collect `(check-type ,arg (or ,type null)))
            ,@(expand-check-types pt-accessors t)
+           (when (and (slot-exists-p ,obj '%c-struct)
+                      (not (slot-boundp ,obj '%c-struct)))
+              (setf (slot-value ,obj '%c-struct) (getf initargs :c-struct)))
            ,@(loop for arg in lisp-slot-args
                    for type in lisp-slot-types
                    for slot in lisp-slots
@@ -396,3 +401,5 @@ expected to have the following format:
        (,c-fn (c-struct retval)
               ,@(expand-c-fun-args args))
        retval)))
+
+(defmethod sync-children ((obj t)) nil)
