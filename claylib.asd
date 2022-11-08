@@ -145,7 +145,8 @@
                  (:module "models"
                   :components
                   ((:file "animation")
-                   (:file "billboard")))
+                   (:file "billboard")
+                   (:file "box-collisions")))
                  (:module "text"
                   :components
                   ((:file "raylib-fonts")
