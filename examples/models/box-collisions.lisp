@@ -92,9 +92,8 @@
           ;; Collisions
           (cube-bbox player :bbox pbbox)
           (setf collision
-                (or ;; TODO pass-through
-                 (= 1 (claylib/ll:check-collision-boxes (claylib::c-struct pbbox)
-                                                        (claylib::c-struct ebbox)))
+                (or
+                 (check-collision-boxes pbbox ebbox)
                  ;; TODO pass-through
                  (= 1 (claylib/ll:check-collision-box-sphere (claylib::c-struct pbbox)
                                                              (claylib::c-struct (pos enemy-sphere))
