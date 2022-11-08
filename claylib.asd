@@ -72,6 +72,7 @@
                              (:file "texture")
                              (:file "text")
                              (:file "cube")
+                             (:file "sphere")
                              (:file "font")
                              (:file "transform")
                              (:file "material")

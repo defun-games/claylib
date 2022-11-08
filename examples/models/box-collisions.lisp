@@ -4,41 +4,6 @@
   (:export :main))
 (in-package #:claylib/examples/box-collisions)
 
-;; TODO sphere support in Claylib?
-(defclass sphere ()
-  ((%position :initarg :pos
-              :type rl-vector3
-              :accessor pos)
-   (%size :initarg :size
-          :type float
-          :accessor size)
-   (%color :initarg :color
-           :type rl-color
-           :accessor color)
-   (%filled :initarg :filled
-            :initform t
-            :type boolean
-            :accessor filled)
-   (%rings :initarg :rings
-           :initform 16
-           :type (integer 0 *)
-           :accessor rings)
-   (%slices :initarg :slices
-            :initform 16
-            :type (integer 0 *)
-            :accessor slices)))
-
-(defmethod draw-object ((obj sphere))
-  (if (filled obj)
-      (claylib/ll:draw-sphere (claylib::c-struct (pos obj))
-                              (size obj)
-                              (claylib::c-struct (color obj)))
-      (claylib/ll:draw-sphere-wires (claylib::c-struct (pos obj))
-                                    (size obj)
-                                    (rings obj)
-                                    (slices obj)
-                                    (claylib::c-struct (color obj)))))
-
 (defun cube-bbox (cube &key (bbox (make-instance 'rl-bounding-box
                                                  :low (make-vector3 0 0 0)
                                                  :high (make-vector3 0 0 0))))
@@ -72,15 +37,15 @@
                (ebbox (make-instance 'rl-bounding-box
                                      :low (make-vector3 0 0 0)
                                      :high (make-vector3 0 0 0)))
-               (enemy-sphere (make-instance 'sphere
-                                            :pos (make-vector3 4 0 0)
-                                            :size 1.5
-                                            :color +gray+))
-               (sphere-wires (make-instance 'sphere
-                                            :pos (make-vector3 4 0 0)
-                                            :size 1.5
-                                            :color +darkgray+
-                                            :filled nil))
+               (enemy-sphere (make-sphere 4 0 0
+                                          1.5
+                                          +gray+))
+               (sphere-wires (make-sphere 4 0 0
+                                          1.5
+                                          +darkgray+
+                                          :filled nil
+                                          :rings 16
+                                          :slices 16))
                (grid (make-grid 10 1))
                (text (make-text "Move player with cursors to collide"
                                 220 40 :size 20 :color +gray+)))))
