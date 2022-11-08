@@ -66,12 +66,8 @@
           ;; Collisions
           (cube-bbox player :bbox pbbox)
           (setf collision
-                (or
-                 (check-collision-boxes pbbox ebbox)
-                 ;; TODO pass-through
-                 (= 1 (claylib/ll:check-collision-box-sphere (claylib::c-struct pbbox)
-                                                             (claylib::c-struct (pos enemy-sphere))
-                                                             (size enemy-sphere)))))
+                (or (check-collision-boxes pbbox ebbox)
+                    (check-collision-box-sphere pbbox enemy-sphere)))
           (setf (color player) (if collision +red+ +green+))
 
           (with-drawing ()
