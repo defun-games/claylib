@@ -18,7 +18,15 @@
    (%filled :initarg :filled
             :initform t
             :type boolean
-            :accessor filled)))
+            :accessor filled)
+   (%rings :initarg :rings
+           :initform 16
+           :type (integer 0 *)
+           :accessor rings)
+   (%slices :initarg :slices
+            :initform 16
+            :type (integer 0 *)
+            :accessor slices)))
 
 (defmethod draw-object ((obj sphere))
   (if (filled obj)
@@ -27,7 +35,8 @@
                               (claylib::c-struct (color obj)))
       (claylib/ll:draw-sphere-wires (claylib::c-struct (pos obj))
                                     (size obj)
-                                    16 16 ; TODO don't hard-code
+                                    (rings obj)
+                                    (slices obj)
                                     (claylib::c-struct (color obj)))))
 
 (defun cube-bbox (cube &key (bbox (make-instance 'rl-bounding-box
@@ -79,7 +88,7 @@
 (defun main ()
   (with-window (:title "raylib [models] example - box collisions")
     (with-scenes *scene*
-      (with-scene-objects (camera player enemy-box enemy-sphere text pbbox ebbox box-wires sphere-wires) *scene*
+      (with-scene-objects (camera player enemy-box enemy-sphere pbbox ebbox box-wires sphere-wires grid) *scene*
         (cube-bbox enemy-box :bbox ebbox)
         (do-game-loop (:livesupport t
                        :vars ((collision nil)))
@@ -102,6 +111,6 @@
 
           (with-drawing ()
             (with-3d-mode camera
-              (draw-objects player enemy-box enemy-sphere box-wires sphere-wires))
-            (draw-object text)
+              (draw-objects player enemy-box enemy-sphere box-wires sphere-wires grid))
+            (draw-scene *scene* 'text)
             (draw-fps 10 10)))))))
