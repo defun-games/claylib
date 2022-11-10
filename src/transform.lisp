@@ -21,26 +21,6 @@
 (defcwriter-struct rot rl-transform rotation transform vector4 x y z w)
 (defcwriter-struct scale rl-transform scale transform vector3 x y z)
 
-(defmethod sync-children ((obj rl-transform))
-  (when (typep (c-struct obj) 'autowrap:wrapper)
-    (unless (eq (c-struct (trans obj))
-                (transform.translation (c-struct obj)))
-      (free-later (c-struct (trans obj)))
-      (setf (c-struct (trans obj))
-            (transform.translation (c-struct obj)))))
-  (when (typep (c-struct obj) 'autowrap:wrapper)
-    (unless (eq (c-struct (rot obj))
-                (transform.rotation (c-struct obj)))
-      (free-later (c-struct (rot obj)))
-      (setf (c-struct (rot obj))
-            (transform.rotation (c-struct obj)))))
-  (when (typep (c-struct obj) 'autowrap:wrapper)
-    (unless (eq (c-struct (scale obj))
-                (transform.scale (c-struct obj)))
-      (free-later (c-struct (scale obj)))
-      (setf (c-struct (scale obj))
-            (transform.scale (c-struct obj))))))
-
 (definitializer rl-transform
   :struct-slots ((%translation) (%rotation) (%scale)))
 

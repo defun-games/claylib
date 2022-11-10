@@ -206,18 +206,6 @@
 (defcwriter-struct depth rl-render-texture depth render-texture texture
   id width height mipmaps data-format)
 
-(defmethod sync-children ((obj rl-render-texture))
-  (unless (eq (c-struct (texture obj))
-              (render-texture.texture (c-struct obj)))
-    (recycle (c-struct (texture obj)))
-    (setf (c-struct (texture obj))
-          (render-texture.texture (c-struct obj))))
-  (unless (eq (c-struct (depth obj))
-              (render-texture.depth (c-struct obj)))
-    (recycle (c-struct (depth obj)))
-    (setf (c-struct (depth obj))
-          (render-texture.depth (c-struct obj)))))
-
 (definitializer rl-render-texture
   :struct-slots ((%texture) (%depth))
   :pt-accessors ((id integer)))

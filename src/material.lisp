@@ -62,18 +62,6 @@
 (defcwriter-struct color rl-material-map color material-map color
   r g b a)
 
-(defmethod sync-children ((obj rl-material-map))
-  (unless (eq (c-struct (texture obj))
-              (material-map.texture (c-struct obj)))
-    (free-later (c-struct (texture obj)))
-    (setf (c-struct (texture obj))
-          (material-map.texture (c-struct obj))))
-  (unless (eq (c-struct (color obj))
-              (material-map.color (c-struct obj)))
-    (free-later (c-struct (color obj)))
-    (setf (c-struct (color obj))
-          (material-map.color (c-struct obj)))))
-
 (definitializer rl-material-map
   :struct-slots ((%texture)
                  (%color color))
@@ -189,27 +177,6 @@
     (setf (param material i) (if (< i (length value))
                                  (elt value i)
                                  0))))
-
-(defmethod sync-children ((obj rl-material))
-  (flet ((i0 (array type)
-           (autowrap:c-aref array 0 type)))
-    (unless (eq (c-struct (shader obj))
-                (material.shader (c-struct obj)))
-      (free-later (c-struct (shader obj)))
-      (setf (c-struct (shader obj))
-            (material.shader (c-struct obj))))
-    (unless (cffi-sys:null-pointer-p
-             (autowrap:ptr (c-struct obj)))
-      (when (and (data-valid-p (c-struct obj))
-                 (array-valid-p (material.maps (c-struct obj))
-                                12
-                                'claylib/ll:material-map))
-        (unless (eq (c-struct (maps obj))
-                    (i0 (material.maps (c-struct obj)) 'claylib/ll:material-map))
-          (free-later (c-struct (maps obj)))
-          (setf (c-struct (maps obj))
-                (i0 (material.maps (c-struct obj)) 'claylib/ll:material-map))))))
-  (sync-children (maps obj)))
 
 (definitializer rl-material
   :struct-slots ((%shader) (%maps))

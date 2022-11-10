@@ -34,23 +34,6 @@
 (defcwriter-struct target rl-camera-3d target camera3d vector3 x y z)
 (defcwriter-struct up rl-camera-3d up camera3d vector3 x y z)
 
-(defmethod sync-children ((obj rl-camera-3d))
-  (unless (eq (c-struct (pos obj))
-              (camera3d.position (c-struct obj)))
-    (free-later (c-struct (pos obj)))
-    (setf (c-struct (pos obj))
-          (camera3d.position (c-struct obj))))
-  (unless (eq (c-struct (target obj))
-              (camera3d.target (c-struct obj)))
-    (free-later (c-struct (target obj)))
-    (setf (c-struct (target obj))
-          (camera3d.target (c-struct obj))))
-  (unless (eq (c-struct (up obj))
-              (camera3d.up (c-struct obj)))
-    (free-later (c-struct (up obj)))
-    (setf (c-struct (up obj))
-          (camera3d.up (c-struct obj)))))
-
 (definitializer rl-camera-3d
   :struct-slots ((%position) (%target) (%up))
   :pt-accessors ((fovy number float)

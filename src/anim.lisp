@@ -48,23 +48,6 @@
 (defcwriter bone-count rl-model-animation bone-count model-animation integer)
 (defcwriter frame-count rl-model-animation frame-count model-animation integer)
 
-(defmethod sync-children ((obj rl-model-animation))
-  (flet ((i0 (array type)
-           (autowrap:c-aref array 0 type)))
-    ;; TODO investigate what to do with this commented code
-    ;; (unless (eq (c-struct (bones obj))
-    ;;             (i0 (model-animation.bones (c-struct obj)) 'claylib/ll:bone-info))
-    ;;   (free-later (c-struct (bones obj)))
-    ;;   (setf (c-struct (bones obj))
-    ;;         (i0 (model-animation.bones (c-struct obj)) 'claylib/ll:bone-info)))
-    ;; (unless (eq (c-struct (frame-poses obj))
-    ;;             (i0 (model-animation.frame-poses (c-struct obj)) 'claylib/ll:transform))
-    ;;   (free-later (c-struct (frame-poses obj)))
-    ;;   (setf (c-struct (frame-poses obj))
-    ;;         (i0 (model-animation.frame-poses (c-struct obj)) 'claylib/ll:transform)))
-    ;; (sync-children (frame-poses obj))
-    ))
-
 (definitializer rl-model-animation
   :lisp-slots (#|(%bones) (%frame-poses)|#) ; TODO investigate what to do with these
   :pt-accessors ((bone-count integer)

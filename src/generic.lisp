@@ -124,9 +124,6 @@ job, the user may never need to call this directly."))
   (:documentation "Copy the slot values (of object VALUE) to the slots in child object SLOT of parent OBJ.
 Don't use this if SLOT contains an atom or string -- use normal SETF instead."))
 
-(defgeneric sync-children (obj)
-  (:documentation "Scan an object's slots and synchronize Lisp and C objects."))
-
 (defgeneric load-asset (asset &key force-reload)
   (:documentation "Load a game-asset's backing C object from a file.
 Force a reload & free old memory when FORCE-RELOAD is T."))

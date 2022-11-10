@@ -405,5 +405,3 @@ expected to have the following format:
        (,c-fn (c-struct retval)
               ,@(expand-c-fun-args args))
        retval)))
-
-(defmethod sync-children ((obj t)) nil)

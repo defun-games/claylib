@@ -24,18 +24,6 @@
 (defcwriter-struct pos rl-ray position ray vector3 x y z)
 (defcwriter-struct dir rl-ray direction ray vector3 x y z)
 
-(defmethod sync-children ((obj rl-ray))
-  (unless (eq (c-struct (pos obj))
-              (ray.position (c-struct obj)))
-    (free-later (c-struct (pos obj)))
-    (setf (c-struct (pos obj))
-          (ray.position (c-struct obj))))
-  (unless (eq (c-struct (dir obj))
-              (ray.direction (c-struct obj)))
-    (free-later (c-struct (dir obj)))
-    (setf (c-struct (dir obj))
-          (ray.direction (c-struct obj)))))
-
 (definitializer rl-ray
   :struct-slots ((%position) (%direction)))
 
