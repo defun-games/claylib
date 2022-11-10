@@ -1,5 +1,7 @@
 (in-package #:claylib)
 
+(default-unload claylib/ll:shader unload-shader t)
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-shader ()
     ((%c-struct
@@ -128,6 +130,8 @@
                         :void))
 
 
+
+(default-unload claylib/ll:material unload-material t)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-material ()

@@ -1,5 +1,7 @@
 (in-package #:claylib)
 
+(default-unload claylib/ll:mesh unload-mesh t)
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-mesh ()
     ((%c-struct

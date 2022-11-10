@@ -1,5 +1,7 @@
 (in-package #:claylib)
 
+(default-unload claylib/ll:texture unload-texture t)
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-texture ()
     ((%c-struct
@@ -183,6 +185,8 @@
                                (c-struct (tint obj))))
 
 
+
+(default-unload claylib/ll:render-texture unload-render-texture t)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-render-texture ()

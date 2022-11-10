@@ -1,5 +1,7 @@
 (in-package #:claylib)
 
+(default-unload claylib/ll:model unload-model t)
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-model ()
     ((%transform :initarg :transform

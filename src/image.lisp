@@ -1,5 +1,7 @@
 (in-package #:claylib)
 
+(default-unload claylib/ll:image unload-image)
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-image ()
     ((%c-struct

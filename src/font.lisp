@@ -72,6 +72,8 @@
 
 
 
+(default-unload claylib/ll:font unload-font t)
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-font ()
     ((%texture :initarg :texture

@@ -287,6 +287,21 @@ in the slot names -- it is included by default when applicable."
                (,fn ,obj)))
          (autowrap:free ,obj)))))
 
+(defmacro default-unload (type fn &optional window-required-p)
+  "Define an initializer for a C wrapper type which will add a UNLOAD-* function to its finalizer."
+  (let ((obj (gensym))
+        (ptr (gensym)))
+    `(defmethod initialize-instance :after ((,obj ,type) &key)
+       (when (eql (slot-value ,obj 'autowrap::validity) t)
+         (tg:cancel-finalization ,obj)
+         (tg:finalize ,obj
+                      (let ((,ptr (autowrap:ptr ,obj)))
+                        (lambda ()
+                          ,(if window-required-p
+                               `(when (is-window-ready-p) (,fn ,obj))
+                               `(,fn ,obj))
+                          (autowrap:free ,ptr))))))))
+
 (defmacro default-slot-value (class slot-name value)
   "Define a SLOT-UNBOUND method as a lazy fallback default slot value."
   (let ((obj (gensym))

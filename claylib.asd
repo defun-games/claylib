@@ -125,7 +125,7 @@
                   ((:file "basic-shapes")
                    (:file "bouncing-ball")
                    (:file "colors-palette")
-                   (:file "logo-raylib")
+                   (:file "logo-raylib-shapes")
                    (:file "logo-raylib-anim")
                    (:file "rectangle-scaling")
                    (:file "lines-bezier")
@@ -133,7 +133,7 @@
                    (:file "following-eyes")))
                  (:module "textures"
                   :components
-                  ((:file "logo-raylib")
+                  ((:file "logo-raylib-texture")
                    (:file "mouse-painting")
                    (:file "background-scrolling")
                    (:file "sprite-anim")

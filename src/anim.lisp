@@ -28,6 +28,8 @@
 
 
 
+(default-unload claylib/ll:model-animation unload-model-animation t)
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-model-animation ()
     ((%bones :initarg :bones
