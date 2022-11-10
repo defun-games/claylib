@@ -3,38 +3,12 @@
 (in-package #:claylib)
 
 (defparameter +claylib-directory+ (asdf:system-source-directory :claylib))
-#|
-(defvar *garbage* ())
 
-(defun free-later (thing)
-  (pushnew thing *garbage*))
-
-(defun collect-garbage ()
-  (mapcar #'free *garbage*)
-  (setf *garbage* ()))
-|#
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass garbage ()
-    ((%c-struct :initarg :c-struct
-                :type autowrap:wrapper
-                :reader c-struct))))
-
-(defmethod initialize-instance :after ((obj garbage) &key)
-  (tg:finalize obj
-               (let ((ptr (autowrap:ptr (c-struct obj))))
-                 (lambda () (autowrap:free ptr)))))
-
-(defun recycle (wrapper &key force)
-  (check-type wrapper autowrap:wrapper)
-  (cond ((or force
-             (eql (slot-value wrapper 'autowrap::validity) t))
-         (make-instance 'garbage :c-struct wrapper))
-        ((not (slot-value wrapper 'autowrap::validity))
-         (warn "Wrapper ~A has already been invalidated! Ignoring, as this could risk a double-free.
-Pass :force t to recycle it anyway." wrapper))
-        (t (warn "Wrapper ~A is a child wrapper! You almost certainly do NOT want to recycle this.
-Pass :force t to recycle it anyway." wrapper)))
-  nil)
+(defmethod initialize-instance :after ((wrapper autowrap:wrapper) &key)
+  (when (eql (slot-value wrapper 'autowrap::validity) t)
+    (tg:finalize wrapper
+                 (let ((ptr (autowrap:ptr wrapper)))
+                   (lambda () (autowrap:free ptr))))))
 
 (defmacro with-2d-mode (camera &body body)
   `(progn

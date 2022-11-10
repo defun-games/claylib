@@ -28,48 +28,6 @@
                             (alexandria:hash-table-alist (assets scene))))
     (load-asset (cdr asset))))
 
-(defun unload-scene (scene &rest names)
-  (dolist (thing names)
-    (free (gethash thing (assets scene)))
-    (free (gethash thing (objects scene)))))
-
-(defun unload-scene-all (scene)
-  (dolist (asset (alexandria:hash-table-values (assets scene)))
-    (free asset))
-  (dolist (obj (alexandria:hash-table-values (objects scene)))
-    (free obj)))
-
-(defun unload-scene-except (scene &rest names)
-  (dolist (asset (remove-if (lambda (kv)
-                              (member (car kv) names))
-                            (alexandria:hash-table-alist (assets scene))))
-    (free (cdr asset)))
-  (dolist (obj (remove-if (lambda (kv)
-                            (member (car kv) names))
-                          (alexandria:hash-table-alist (objects scene))))
-    (free (cdr obj))))
-
-(defun unload-scene-later (scene &rest names)
-  (dolist (thing names)
-    (free-later (gethash thing (assets scene)))
-    (free-later (gethash thing (objects scene)))))
-
-(defun unload-scene-all-later (scene)
-  (dolist (asset (alexandria:hash-table-values (assets scene)))
-    (free-later asset))
-  (dolist (obj (alexandria:hash-table-values (objects scene)))
-    (free-later obj)))
-
-(defun unload-scene-except-later (scene &rest names)
-  (dolist (asset (remove-if (lambda (kv)
-                              (member (car kv) names))
-                            (alexandria:hash-table-alist (assets scene))))
-    (free-later (cdr asset)))
-  (dolist (obj (remove-if (lambda (kv)
-                            (member (car kv) names))
-                          (alexandria:hash-table-alist (objects scene))))
-    (free-later (cdr obj))))
-
 (defun draw-scene (scene &rest names)
   "Draw the objects in SCENE referred to by the symbols in NAMES."
   (dolist (obj names)
@@ -99,19 +57,6 @@ This is handy when the objects are in scope already, for example via WITH-SCENE-
   (loop for kv in (nreverse (alexandria:hash-table-alist (objects scene)))
         when (cl-ppcre:scan regex (symbol-name (car kv)))
           do (draw-object (cdr kv))))
-
-(defmacro defscene (name assets objects)
-  ;; TODO: free old scene when reloading
-  `(progn
-;     (unintern ',name)
-     (defvar ,name
-       ,(let ((sym (gensym)))
-          `(let ((,sym (make-instance 'game-scene)))
-             (dolist (asset ,assets)
-               (setf (gethash (car asset) (assets ,sym)) (cadr asset)))
-             (dolist (object ,objects)
-               (setf (gethash (car object) (objects ,sym)) (cadr object)))
-             ,sym)))))
 
 (defmacro make-scene (assets objects &key (gc t) (defer-init t))
   "Make a GAME-SCENE.

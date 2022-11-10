@@ -98,14 +98,10 @@
 (defcwriter glyph-padding rl-font glyph-padding font integer)
 (defcwriter-struct texture rl-font texture font texture
   id width height mipmaps data-format)
-#|
-(defcwriter-struct recs rl-font recs font rectangle  ; TODO: array/pointer
-  x y width height)
-(defcwriter-struct glyphs rl-font glyphs font glyph-info  ; TODO: array/pointer
-  value offset-x offset-y advance-x)|#
 
 (definitializer rl-font
-  :struct-slots ((%texture) (%recs) (%glyphs))
+  :lisp-slots ((%recs) (%glyphs))
+  :struct-slots ((%texture))
   :pt-accessors ((size integer)
                  (glyph-count integer)
                  (glyph-padding integer)))
@@ -136,9 +132,6 @@
 (defmethod initialize-instance :around ((font default-font) &rest initargs &key &allow-other-keys)
   (setf (c-struct font) (getf initargs :c-struct))
   (claylib/ll:get-font-default (c-struct font))
-  (tg:finalize font
-               (let ((ptr (autowrap:ptr (c-struct font))))
-                 (lambda () (autowrap:free ptr))))
   font)
 
 (defparameter +default-font+ nil)

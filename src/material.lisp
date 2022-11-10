@@ -179,7 +179,8 @@
                                  0))))
 
 (definitializer rl-material
-  :struct-slots ((%shader) (%maps))
+  :lisp-slots ((%maps))
+  :struct-slots ((%shader))
   :pt-accessors ((params sequence)))
 
 (default-free rl-material %shader %maps)

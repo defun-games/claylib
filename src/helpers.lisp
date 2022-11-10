@@ -123,7 +123,6 @@ backing it.'"
            (setf (slot-value ,obj ',(intern (format nil "%~:@a" lisp-slot))) ,value)))
        (unless (eq (c-struct (,lisp-slot ,obj))
                    (,c-writer (c-struct ,obj)))
-         (recycle (c-struct (,lisp-slot ,obj)))
          (setf (c-struct (,lisp-slot ,obj)) (,c-writer (c-struct ,obj)))))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -179,7 +178,6 @@ slots, but they will have custom readers and probably writers. Expected format:
 (ACCESSOR-NAME TYPE &optional COERCE-TYPE)
 COERCE-TYPE will usually be float, when applicable."
   (let ((obj (gensym))
-        (ptr (gensym))
         (class-slots (closer-mop:class-direct-slots
                       (find-class class))))
     (labels ((slot-def (slot-name)
@@ -254,12 +252,6 @@ COERCE-TYPE will usually be float, when applicable."
                                (if (eql type 'boolean)
                                    `(setf (,name ,obj) ,val)
                                    `(when ,name (setf (,name ,obj) ,val))))))
-           ,(when (rl-class-p class)
-              `(when (c-struct ,obj)
-                 ;; TODO: This probably needs a child wrapper check.
-                 (tg:finalize ,obj
-                              (let ((,ptr (autowrap:ptr (c-struct ,obj))))
-                                (lambda () (autowrap:free ,ptr))))))
            ,obj)))))
 
 (defmacro default-free (class &rest slot-names)
