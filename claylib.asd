@@ -123,8 +123,8 @@
                   :components
                   ((:file "basic-shapes")
                    (:file "bouncing-ball")
-                   (:file "colors-palette")
-                   (:file "logo-raylib")
+                   ;(:file "colors-palette")
+                   ;(:file "logo-raylib")
                    (:file "logo-raylib-anim")
                    (:file "rectangle-scaling")
                    (:file "lines-bezier")

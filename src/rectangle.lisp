@@ -33,6 +33,32 @@
 
 
 
+(defconstant +foreign-rectangle-size+ (autowrap:sizeof 'claylib/ll:rectangle))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-rectangles (rl-sequence)
+    ((%cl-array :type (array rl-rectangle 1)))))
+
+(defmethod make-rl-*-array ((c-struct claylib/ll:rectangle) num)
+  (let ((contents (loop for i below num
+                        for rect = (make-instance 'rl-rectangle)
+                        do (setf (slot-value rect '%c-struct)
+                                 (autowrap:c-aref c-struct i 'claylib/ll:rectangle))
+                        collect rect)))
+    (make-array num
+                :element-type 'rl-rectangle
+                :initial-contents contents)))
+
+(defmethod (setf sequences:elt) (value (sequence rl-rectangles) index)
+  (check-type value rl-rectangle)
+  (cffi:foreign-funcall "memcpy"
+                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
+                        :pointer (autowrap:ptr (c-struct value))
+                        :int +foreign-rectangle-size+
+                        :void))
+
+
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rectangle (rl-rectangle 2d-shape)
     ((%position :initarg :origin

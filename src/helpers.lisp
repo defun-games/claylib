@@ -114,20 +114,17 @@ backing it.'"
         (struct-setter (intern (format nil "SET-~:@a" struct-type) 'claylib/ll)))
     `(defmethod set-slot ((,slot (eql ,(alexandria:make-keyword lisp-slot)))
                           (,obj ,lisp-type)
-                          (,value ,(intern (format nil "RL-~:@a" struct-type)))
-                          &key (free :later))
+                          (,value ,(intern (format nil "RL-~:@a" struct-type))))
        (,struct-setter (,c-writer (c-struct ,obj))
                        ,@(loop for reader in readers
                                collect `(,reader ,value)))
-       (case free
-         (:now (free ,value))
-         (:later (free-later ,value))
-         (:never nil)
-         (t (error ":FREE must be :NOW, :LATER, or :NEVER")))
        (handler-case (,lisp-slot ,obj)
          (unbound-slot ()
            (setf (slot-value ,obj ',(intern (format nil "%~:@a" lisp-slot))) ,value)))
-       (setf (c-struct (,lisp-slot ,obj)) (,c-writer (c-struct ,obj))))))
+       (unless (eq (c-struct (,lisp-slot ,obj))
+                   (,c-writer (c-struct ,obj)))
+         (recycle (c-struct (,lisp-slot ,obj)))
+         (setf (c-struct (,lisp-slot ,obj)) (,c-writer (c-struct ,obj)))))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun rl-class-p (type)
@@ -172,9 +169,10 @@ of the default slot setter. COERCE-TYPE will usually be float, when applicable.
 
 :struct-slots is a list of CLOS slots tied to a backing C struct. These slots themselves will
 contain other CLOS objects. Expected format:
-(SLOT-NAME &optional SUBCLASS)
+(SLOT-NAME &optional SUBCLASS C-FIELD)
 Set SUBCLASS when you want to initialize a slot with a different subclass than is named by its
-:type keyword. This is probably only needed with color, as a substitute for rl-color.
+:type keyword. This is probably only needed with color, as a substitute for rl-color. Similar for
+C-FIELD, when the C-FIELD name is something different from SLOT-NAME-WITHOUT-%.
 
 :pt-accessors is a list of pass-through accessors tied to a backing C struct. These are *not* CLOS
 slots, but they will have custom readers and probably writers. Expected format:
@@ -182,7 +180,6 @@ slots, but they will have custom readers and probably writers. Expected format:
 COERCE-TYPE will usually be float, when applicable."
   (let ((obj (gensym))
         (ptr (gensym))
-        (new (gensym))
         (class-slots (closer-mop:class-direct-slots
                       (find-class class))))
     (labels ((slot-def (slot-name)
@@ -236,12 +233,19 @@ COERCE-TYPE will usually be float, when applicable."
            ,@(loop for arg in struct-slot-args
                    for type in struct-slot-types
                    for slot in struct-slots
-                   collect (destructuring-bind (name &optional subclass) slot
+                   collect (destructuring-bind (name &optional subclass c-field) slot
                              `(if ,arg
                                   (set-slot ,(alexandria:make-keyword arg) ,obj ,arg)
-                                  (let ((,new (make-instance ',(or subclass type))))
-                                    (setf (slot-value ,obj ',name) ,new)))))
-           (sync-children ,obj)
+                                  (setf (slot-value ,obj ',name)
+                                        (make-instance ',(or subclass type)
+                                                       :c-struct (,(alexandria:symbolicate
+                                                                    (subseq (write-to-string class) 3)
+                                                                    "."
+                                                                    (or c-field
+                                                                        (subseq
+                                                                         (write-to-string name)
+                                                                         1)))
+                                                                  (c-struct ,obj)))))))
            ,@(loop for accessor in pt-accessors
                    collect (destructuring-bind (name type &optional coerce-type) accessor
                              (let ((val (if coerce-type

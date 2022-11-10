@@ -156,11 +156,11 @@ postion and dimensions to the reflect the result."
   (unless (slot-boundp rt '%texture)
     (setf (slot-value rt '%texture) (make-instance 'texture)
           (c-struct (texture rt)) (claylib/ll:render-texture.texture (c-struct rt))))
-  (set-slot :texture rt (texture rt) :free :never)
+  (set-slot :texture rt (texture rt))
   (unless (slot-boundp rt '%depth)
     (setf (slot-value rt '%depth) (make-instance 'texture)
           (c-struct (texture rt)) (claylib/ll:render-texture.texture (c-struct rt))))
-  (set-slot :depth rt (make-instance 'texture) :free :never)
+  (set-slot :depth rt (make-instance 'texture))
   rt)
 
 ;; Color/pixel related functions

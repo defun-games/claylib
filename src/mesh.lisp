@@ -70,6 +70,7 @@
 
 
 ;; TODO: Does autowrap give me something like this already? I need to know the size for memcpy later
+#|
 (cffi:defcstruct mesh
   (vertex-count :int)
   (triangle-count :int)
@@ -85,8 +86,8 @@
   (bone-ids :pointer)
   (bone-weights :pointer)
   (vao-id :uint)
-  (vbo-id :pointer))
-(defconstant +foreign-mesh-size+ (cffi:foreign-type-size '(:struct mesh)))
+  (vbo-id :pointer))|#
+(defconstant +foreign-mesh-size+ (autowrap:sizeof 'claylib/ll:mesh))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-meshes (rl-sequence)

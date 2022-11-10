@@ -164,7 +164,7 @@
                  :type integer
                  :writer (setf size))
      (%font-chars :initarg :chars
-                  :type (or autowrap:wrapper cffi:foreign-pointer null)  ; TODO: How does a user easily specify this?
+                  :type sequence
                   :accessor chars)
      (%glyph-count :initarg :glyph-count
                    :type integer
@@ -195,11 +195,22 @@
            (if (or (slot-boundp asset '%font-size)
                    (slot-boundp asset '%font-chars)
                    (slot-boundp asset '%glyph-count))
-               (claylib/ll:load-font-ex font
-                                        (namestring (path asset))
-                                        (size asset)
-                                        (chars asset)
-                                        (glyph-count asset))
+               (c-with ((c-array :int :count (glyph-count asset) :calloc t))
+                 (flet ((c-char (char i)
+                          (setf (autowrap:c-aref c-array i :int) (char-int char))))
+                   (claylib/ll:load-font-ex font
+                                            (namestring (path asset))
+                                            (size asset)
+                                            (etypecase (chars asset)
+                                              (list (loop for char in (chars asset)
+                                                          for i from 0
+                                                          collect (c-char char i)
+                                                          finally (return c-array)))
+                                              (array (loop for char across (chars asset)
+                                                           for i from 0
+                                                           collect (c-char char i)
+                                                           finally (return c-array))))
+                                            (glyph-count asset))))
                (claylib/ll:load-font font (namestring (path asset))))))
     (cond
       ((null (asset asset))

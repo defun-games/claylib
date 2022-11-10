@@ -120,10 +120,9 @@ job, the user may never need to call this directly."))
 (defgeneric (setf size) (value obj)
   (:documentation "Set the size value or vector of some object."))
 
-(defgeneric set-slot (slot obj value &key free)
+(defgeneric set-slot (slot obj value)
   (:documentation "Copy the slot values (of object VALUE) to the slots in child object SLOT of parent OBJ.
-Don't use this if SLOT contains an atom or string -- use normal SETF instead. FREE specifies when to
-free VALUE."))
+Don't use this if SLOT contains an atom or string -- use normal SETF instead."))
 
 (defgeneric sync-children (obj)
   (:documentation "Scan an object's slots and synchronize Lisp and C objects."))

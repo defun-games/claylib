@@ -19,7 +19,7 @@
                                       (subtext (make-text "PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN"
                                                           120 220
                                                           :size 20 :color +darkgreen+)))
-                                  :free :later))
+                                  :gc nil))
 
 (defparameter *gameplay* (make-scene () ((paint (make-screen +purple+))
                                          (text (make-text "GAMEPLAY SCREEN" 20 20
@@ -27,7 +27,7 @@
                                          (subtext (make-text "PRESS ENTER or TAP to JUMP to ENDING SCREEN"
                                                              130 220
                                                              :size 20 :color +maroon+)))
-                                     :free :later))
+                                     :gc nil))
 
 (defparameter *ending* (make-scene () ((paint (make-screen +blue+))
                                        (text (make-text "ENDING SCREEN" 20 20
@@ -35,7 +35,7 @@
                                        (subtext (make-text "PRESS ENTER or TAP to RETURN to TITLE SCREEN"
                                                            120 220
                                                            :size 20 :color +darkblue+)))
-                                   :free :later))
+                                   :gc nil))
 
 (defun next-screen ()
   "Is user indicating we can move to the next stage?"

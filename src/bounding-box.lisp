@@ -30,7 +30,8 @@
           (bounding-box.max (c-struct obj)))))
 
 (definitializer rl-bounding-box
-  :struct-slots ((%low) (%high)))
+  :struct-slots ((%low nil min)
+                 (%high nil max)))
 
 (default-free rl-bounding-box %low %high)
 (default-free-c claylib/ll:bounding-box)

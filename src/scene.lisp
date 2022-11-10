@@ -10,9 +10,9 @@
                    :type hash-table
                    :initform (make-hash-table :test #'equalp)
                    :accessor assets)
-     (%free :initarg :free
-            :type keyword
-            :accessor free))))
+     (%gc :initarg :gc
+          :type boolean
+          :accessor gc))))
 
 (defun load-scene (scene &rest names)
   (dolist (asset names)
@@ -113,7 +113,7 @@ This is handy when the objects are in scope already, for example via WITH-SCENE-
                (setf (gethash (car object) (objects ,sym)) (cadr object)))
              ,sym)))))
 
-(defmacro make-scene (assets objects &key (free :now) (defer-init t))
+(defmacro make-scene (assets objects &key (gc t) (defer-init t))
   "Make a GAME-SCENE.
 
 DEFER-INIT will defer initialization of the scene's OBJECTS until later (usually via WITH-SCENES or
@@ -124,7 +124,7 @@ an OpenGL context before being loaded into the GPU."
                      (loop for (binding val) in objects
                            collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy)))
                      objects)))
-    `(let ((,scene (make-instance 'game-scene :free ,free)))
+    `(let ((,scene (make-instance 'game-scene :gc ,gc)))
        (let* (,@assets ,@objects)
          (declare (ignorable ,@(mapcar #'car (append assets objects))))
          (progn
@@ -165,12 +165,6 @@ Note: additional scenes can be loaded/freed at any point using {SET-UP,TEAR-DOWN
 (defmethod set-up-scene ((scene null)) ())
 
 (defmethod tear-down-scene ((scene game-scene))
-  (case (free scene)
-    (:now (progn
-            (unload-scene-all scene)
-            (collect-garbage)))
-    (:later (unload-scene-all-later scene))
-    (:never nil)
-    (t (error "%FREE must be :NOW, :LATER, or :NEVER"))))
+  (when (gc scene) (tg:gc :full t)))
 
 (defmethod tear-down-scene ((scene null)) ())
