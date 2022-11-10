@@ -39,7 +39,7 @@
    :fade :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw :with-drawing
    :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex
-   :update-model-animation :set-material-texture)
+   :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere)
 
 
 
@@ -101,7 +101,7 @@
    :rl-texture :texture :rl-transform :rl-model :model :rl-mesh :rl-shader :rl-material-map :rl-material
    :rl-matrix :triangle :image-asset :texture-asset :model-asset :shader-asset :font-asset
    :animation-asset :pixel :image :game-scene :glyph-info :material-map :material :mesh :render-texture
-   :transform
+   :transform :sphere
 
    ;; Misc. convenience wrappers
    :with-window :do-game-loop :with-drawing :is-key-pressed-p :is-gesture-detected-p :is-key-down-p
@@ -114,7 +114,7 @@
    :make-texture :make-texture-from-rec :make-empty-texture :make-texture-asset :get-gesture-detected
    :is-mouse-button-released-p :make-polygon :make-font :make-image-asset :make-pixel :make-image
    :make-simple-rec :make-billboard :make-font-asset :window-should-close-p :make-model-asset
-   :make-model :make-animation-asset
+   :make-model :make-animation-asset :make-sphere :make-sphere-from-vec
 
    ;; Scenes
    :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
@@ -149,6 +149,7 @@
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw
    :copy-asset-to-object :set-window-position :check-collision-recs :get-collision-rec
    :check-collision-point-circle :measure-text-ex :update-model-animation :set-material-texture
+   :check-collision-boxes :check-collision-box-sphere
 
    ;;; Raygui
 

@@ -238,6 +238,19 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
 
 ;; Collision detection functions
 
+(defun-pt-bool check-collision-boxes claylib/ll:check-collision-boxes
+  "Check collision between two bounding boxes."
+  (box1 rl-bounding-box)
+  (box2 rl-bounding-box))
+
+(defun check-collision-box-sphere (box sphere)
+  "Check collision between bounding box and a sphere."
+  (check-type box rl-bounding-box)
+  (check-type sphere sphere)
+  (= 1 (claylib/ll:check-collision-box-sphere (c-struct box)
+                                              (c-struct (pos sphere))
+                                              (radius sphere))))
+
 (defun-pt get-ray-collision-box claylib/ll:get-ray-collision-box
   "Gets a collision box for the passed ray and bounding box.
 Allocates a new RAY-COLLISION unless you pass one."
