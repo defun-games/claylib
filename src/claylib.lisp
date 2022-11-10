@@ -110,8 +110,6 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
      ,(when exit-key
         `(claylib/ll:set-exit-key ,exit-key))
      ,@body
-     ;(free +default-font+)
-     ;(collect-garbage)
      (when (is-window-ready-p)
        (close-window))))
 

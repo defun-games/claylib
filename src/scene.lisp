@@ -129,9 +129,9 @@ an OpenGL context before being loaded into the GPU."
          (declare (ignorable ,@(mapcar #'car (append assets objects))))
          (progn
            ,@(loop for (binding val) in assets
-                   collect `(setf (gethash ',binding (assets ,scene)) ,val))
+                   collect `(setf (gethash ',binding (assets ,scene)) ,binding))
            ,@(loop for (binding val) in objects
-                   collect `(setf (gethash ',binding (objects ,scene)) ,val))))
+                   collect `(setf (gethash ',binding (objects ,scene)) ,binding))))
        ,scene)))
 
 (defun scene-object (scene object)
