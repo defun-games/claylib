@@ -35,7 +35,7 @@
 
 (defun main ()
   (with-window (:title "raylib [text] example - sprite font loading")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (arrange-text (scene-object *scene* 'fonts))
       (do-game-loop (:livesupport t)
         (with-drawing ()

@@ -17,7 +17,7 @@
                                                 360 370
                                                 :size 10
                                                 :color +gray+))))))
-      (with-scenes scene
+      (with-scenes scene ()
         (do-game-loop (:livesupport t)
           (with-drawing ()
             (draw-scene-all scene)))))))

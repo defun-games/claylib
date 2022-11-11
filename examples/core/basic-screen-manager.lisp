@@ -18,24 +18,21 @@
                                                        :size 40 :color +darkgreen+))
                                       (subtext (make-text "PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN"
                                                           120 220
-                                                          :size 20 :color +darkgreen+)))
-                                  :gc nil))
+                                                          :size 20 :color +darkgreen+)))))
 
 (defparameter *gameplay* (make-scene () ((paint (make-screen +purple+))
                                          (text (make-text "GAMEPLAY SCREEN" 20 20
                                                           :size 40 :color +maroon+))
                                          (subtext (make-text "PRESS ENTER or TAP to JUMP to ENDING SCREEN"
                                                              130 220
-                                                             :size 20 :color +maroon+)))
-                                     :gc nil))
+                                                             :size 20 :color +maroon+)))))
 
 (defparameter *ending* (make-scene () ((paint (make-screen +blue+))
                                        (text (make-text "ENDING SCREEN" 20 20
                                                         :size 40 :color +darkblue+))
                                        (subtext (make-text "PRESS ENTER or TAP to RETURN to TITLE SCREEN"
                                                            120 220
-                                                           :size 20 :color +darkblue+)))
-                                   :gc nil))
+                                                           :size 20 :color +darkblue+)))))
 
 (defun next-screen ()
   "Is user indicating we can move to the next stage?"
@@ -45,7 +42,7 @@
 
 (defun main ()
   (with-window (:title "raylib [core] example - basic screen manager")
-    (with-scenes (list *logo* *title* *gameplay* *ending*)
+    (with-scenes (list *logo* *title* *gameplay* *ending*) ()
       (do-game-loop (:livesupport t
                      :vars ((scenes `(,*logo* ,@(alexandria:circular-list *title* *gameplay* *ending*)))
                             (frame-count 0)))

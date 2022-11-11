@@ -24,7 +24,7 @@
                                                10 10
                                                :size 20 :color +darkgray+))
                               (ball (make-circle -100 -100 40 +darkblue+))))))
-      (with-scenes scene
+      (with-scenes scene ()
         (do-game-loop (:livesupport t
                        :vars ((color +darkblue+)))
           (with-scene-objects (ball text) scene

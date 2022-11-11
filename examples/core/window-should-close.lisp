@@ -19,7 +19,7 @@
 (defun main ()
   (with-window (:title "raylib [core] example - window should close"
                 :exit-key +key-null+)
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (do-game-loop (:livesupport t
                      :vars ((exit-window-requested nil)
                             (exit-window nil))

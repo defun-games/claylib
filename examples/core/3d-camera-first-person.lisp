@@ -47,7 +47,7 @@
                 (make-cube-from-vecs pos size color)
                 (gethash (gensym "COLUMN") (objects scene))
                 (make-cube-from-vecs pos size +maroon+ :filled nil))))
-      (with-scenes scene
+      (with-scenes scene ()
         (do-game-loop (:livesupport t)
           (update-camera camera)
           (with-drawing ()

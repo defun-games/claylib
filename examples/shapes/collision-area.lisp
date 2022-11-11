@@ -52,7 +52,7 @@
 
 (defun main ()
   (with-window (:title "raylib [shapes] example - collision area")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (with-scene-objects (collision-indicator box-a box-b box-collision collision-message
                                                collision-area) *scene*
         (do-game-loop (:livesupport t

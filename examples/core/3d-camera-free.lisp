@@ -40,7 +40,7 @@
                                  (t6 (make-text "- Z to zoom to (0, 0, 0)"
                                                 40 120
                                                 :size 10 :color +darkgray+))))))
-      (with-scenes scene
+      (with-scenes scene ()
         (do-game-loop (:livesupport t)
           (update-camera camera)
           (when (is-key-down-p +key-z+)

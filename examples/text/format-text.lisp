@@ -13,7 +13,7 @@
 
 (defun main ()
   (with-window (:title "raylib [text] example - text formatting")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (do-game-loop (:livesupport t
                      :vars ((score 100020)
                             (hiscore 200450)

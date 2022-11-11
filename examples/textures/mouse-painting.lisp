@@ -59,7 +59,7 @@
                                           150 180
                                           :size 20
                                           :color +raywhite+))))))
-      (with-scenes scene
+      (with-scenes scene ()
         ;; Clear render texture before entering the game loop
         (with-texture-mode (target))
         (do-game-loop (:livesupport t

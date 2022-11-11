@@ -32,7 +32,7 @@
                               (text4 (make-text "" 200 20 :size 20))
                               (text5 (make-text "" 200 40 :size 20))
                               (text6 (make-text "" 200 60 :size 20))))))
-      (with-scenes scene
+      (with-scenes scene ()
         (load-model-from-mesh (gen-mesh-cylinder 0.2 1.0 32)
                               :model (scene-object scene 'model))
         (do-game-loop (:livesupport t)

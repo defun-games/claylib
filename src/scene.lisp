@@ -89,15 +89,19 @@ an OpenGL context before being loaded into the GPU."
                                        `(,obj (gethash ',obj (objects ,scene)))))
      ,@body))
 
-(defmacro with-scenes (scenes &body body)
+(defmacro with-scenes (scenes (&key (gc nil gc-supplied-p)) &body body)
   "Execute BODY after loading & initializing SCENES, tearing them down afterwards.
+Pass :GC (T or NIL) to force/unforce garbage collection, overriding what the scenes request.
 
 Note: additional scenes can be loaded/GC'd at any point using {SET-UP,TEAR-DOWN}-SCENE."
   (unless (listp scenes) (setf scenes `(list ,scenes)))
   `(progn
      (mapcar #'set-up-scene ,scenes)
      ,@body
-     (mapcar #'tear-down-scene ,scenes)))
+     ,(cond
+        ((and gc-supplied-p gc) `(tg:gc :full t))
+        ((not gc-supplied-p) `(mapcar #'tear-down-scene ,scenes))
+        (t nil))))
 
 (defmethod set-up-scene ((scene game-scene))
   (load-scene-all scene)

@@ -62,7 +62,7 @@ and see the screen scaling!"
             (origin (texture target)) (make-vector2 0 0)
             (rot (texture target)) 0.0
             (tint (texture target)) +white+)
-      (with-scenes scene
+      (with-scenes scene ()
         (do-game-loop (:livesupport t)
           (let ((scale (coerce (min (/ (get-screen-width) game-screen-width)
                                     (/ (get-screen-height) game-screen-height))

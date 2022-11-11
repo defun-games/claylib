@@ -26,7 +26,7 @@
                                  0 1 0
                                  :mode +camera-orbital+)))
       (declare (special *cam*))
-      (with-scenes *scene*
+      (with-scenes *scene* ()
         (do-game-loop (:livesupport t)
           (update-camera *cam*)
           (with-drawing ()

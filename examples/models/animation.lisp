@@ -43,7 +43,7 @@
 
 (defun main ()
   (with-window (:title "raylib [models] example - model animation")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (with-scene-objects (camera model) *scene*
         (do-game-loop (:livesupport t
                        :vars ((anim-frame-counter 0)))

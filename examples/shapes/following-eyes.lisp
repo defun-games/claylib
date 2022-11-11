@@ -41,7 +41,7 @@
 
 (defun main ()
   (with-window (:title "raylib [shapes] example - following eyes")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (with-scene-objects (sclera-l sclera-r iris-l iris-r pupil-l pupil-r collision-circle) *scene*
         (do-game-loop (:livesupport t)
           (update-eye iris-l pupil-l sclera-l collision-circle)

@@ -52,7 +52,7 @@
 
 (defun main ()
   (with-window (:title "raylib [models] example - box collisions")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (with-scene-objects (camera player enemy-box enemy-sphere pbbox ebbox box-wires sphere-wires grid) *scene*
         (cube-bbox enemy-box :bbox ebbox)
         (do-game-loop (:livesupport t

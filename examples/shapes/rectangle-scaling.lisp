@@ -28,7 +28,7 @@
 
 (defun main ()
   (with-window (:title "raylib [shapes] example - rectangle scaling mouse")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (with-scene-objects (rec mark-outline mark) *scene*
         (do-game-loop (:livesupport t
                        :vars ((mouse-position (make-vector2 0 0))

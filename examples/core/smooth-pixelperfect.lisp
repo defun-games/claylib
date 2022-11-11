@@ -32,7 +32,7 @@
                                                   10 40
                                                   :size 20 :color +darkgreen+))))))
 
-      (with-scenes scene
+      (with-scenes scene ()
         (let ((tex (scene-object scene 'tex)))
           (setf (source tex) (make-simple-rec 0 0 (width tex) (- (height tex)))
                 (dest tex) (make-simple-rec (- virtual-ratio)

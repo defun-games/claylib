@@ -57,7 +57,7 @@
                                                           (- (get-screen-height) 20)
                                                           :size 10
                                                           :color +gray+))))))
-      (with-scenes scene
+      (with-scenes scene ()
         (do-game-loop (:livesupport t
                        :vars ((current-frame 0)
                               (frames-counter 0 (+ 1 frames-counter))
