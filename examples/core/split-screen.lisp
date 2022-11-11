@@ -54,7 +54,7 @@
                                          0.25 1 0.25
                                          +brown+
                                          :texture texture-grid))))
-      (with-scenes scene
+      (with-scenes scene ()
         (let ((tex1 (scene-object scene 'texture-player1))
               (tex2 (scene-object scene 'texture-player2)))
           (setf (source tex1) split-screen-rect

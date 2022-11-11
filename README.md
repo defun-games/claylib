@@ -6,6 +6,8 @@ Claylib is not yet in Quicklisp. Load claylib.asd and run `(ql:quickload :clayli
 
 To see the [examples](/examples) in action, just run e.g. `(claylib/examples/basic-window:main)`. Hit Escape to exit. At the time of this writing, most of the core examples are done, as well as a handful of shape and texture examples. GUI examples are very **work-in-progress**.
 
+Tested only on Linux, so far. There's no obvious reason it can't work on other platforms, but you might need to build Raylib and Raygui yourself.
+
 ## Packages
 This repo contains four separate ASDF systems:
 - `claylib/wrap` wraps Raylib, Raymath, and Raygui via [cl-autowrap](https://github.com/rpav/cl-autowrap), along with a few small fixes. There's probably no reason to use it directly.
@@ -21,7 +23,7 @@ The project should be considered **beta**. Development is active and API's are s
 For `claylib`, you're best off reviewing the examples as a survey of what's done and what's not. 2D support is largely complete; 3D support is a bit more iffy. If any piece is particularly important to you, please file an [issue](https://github.com/defun-games/claylib/issues) and we will prioritize it!
 
 ## Using `claylib`
-Walking through the [first texture example](/examples/textures/logo-raylib.lisp) will give a "boilerplate" of how you might make a game with `claylib`. (This is certainly not the only way, just _a_ way.)
+Walking through the [first texture example](/examples/textures/logo-raylib-texture.lisp) will give a "boilerplate" of how you might make a game with `claylib`. (This is certainly not the only way, just _a_ way.)
 
 ### `with-window`
 ```
@@ -50,13 +52,13 @@ The `with-window` macro initializes a new Raylib window and takes care of freein
 
 **Objects**, in a nutshell, are things that get drawn on the screen. Technically you can put things in here that can't be drawn, but there probably aren't many reasons to, and it could break your draw loop if you aren't careful. Sometimes you'll want to compose objects from an already defined asset, such as via `make-texture`.
 
-Under the hood, `make-scene` is a macro that includes a `let*` so you can reference previous bindings within the same definition. (This does mean, however, that the assets and objects share a namespace and must all have unique names.) In this case, `scene` will contain two game objects named `text` and `texture`, with the latter being formed from the asset `texass`. There is also a `:free` keyword you can pass, which is explained below.
+Under the hood, `make-scene` is a macro that includes a `let*` so you can reference previous bindings within the same definition. (This does mean, however, that the assets and objects share a namespace and must all have unique names.) In this case, `scene` will contain two game objects named `text` and `texture`, with the latter being formed from the asset `texass`. There is also a `:gc` keyword, a boolean that toggles garbage collection when the scene closes out. This is `t` by default.
 
 ### `make-whatever`
 ```
-(make-texture-asset (asdf:system-relative-pathname
-                     :claylib
-                     "examples/textures/resources/raylib_logo.png"))
+(make-texture-asset
+ (claylib/examples:claylib-path
+  "examples/textures/resources/raylib_logo.png"))
 (make-texture texass
               (/ (- (get-screen-width) image-size) 2.0)
               (/ (- (get-screen-height) image-size) 2.0))
@@ -75,12 +77,10 @@ As mentioned above, `make-texture-asset` takes a required pathname and a `:load-
 
 ### `with-scenes`
 ```
-(with-scenes scene
+(with-scenes scene ()
   ...)
 ```
-The `with-scenes` macro loads your scene assets if you passed any, and automatically frees your assets _and_ scene objects after the body returns, by default.
-
-"But wait," you say, "what if I don't want that stuff freed yet?" Well, now you know the purpose of that `:free` argument to `make-scene`. You can pass a single keyword argument, `:free`, as one of three values: `:now`, `:later`, or `:never`. The default is to free `:now`, where "now" is whenever you close out the current scene. Freeing `:later` pushes those objects to a `*garbage*` list, to be freed whenever you call `(collect-garbage)` (which may be at the end of the _next_ scene unless you change `:free` again). `:never` puts you in the land of manual memory management, for maximum control and minimum sanity.
+The `with-scenes` macro takes a single scene or a list of scenes; for each scene it loads your assets if you passed any and prepares your game objects. In the parens you can pass a `:gc` argument, which will either force or disable garbage collection at the end of the body regardless of scene-specific settings. If `:gc` is not passed, the scene setting is used (i.e. GC will run if at least one scene requests it).
 
 ### `do-game-loop`
 ```
@@ -99,6 +99,7 @@ A simple macro that encloses the body in a drawing mode. By default it clears th
 - `with-2d-mode`
 - `with-3d-mode`
 - `with-texture-mode`
+- `with-scissor-mode`
 
 ### `draw-scene-*`
 ```

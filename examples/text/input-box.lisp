@@ -27,7 +27,7 @@
 
 (defun main ()
   (with-window (:title "raylib [text] example - input box")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (with-scene-objects (box box-line cursor txt-input txt-chars) *scene*
         (do-game-loop (:livesupport t
                        :vars ((mouse-on-text-p nil)

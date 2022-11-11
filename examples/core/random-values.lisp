@@ -15,7 +15,7 @@
                                (num (make-text (format nil "~d" rand-value)
                                                360 180
                                                :size 80 :color +lightgray+))))))
-      (with-scenes scene
+      (with-scenes scene ()
         (do-game-loop (:livesupport t)
           (incf frames-counter)
           (when (= (mod (/ frames-counter 120) 2) 1)

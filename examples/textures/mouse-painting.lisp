@@ -59,7 +59,7 @@
                                           150 180
                                           :size 20
                                           :color +raywhite+))))))
-      (with-scenes scene
+      (with-scenes scene ()
         ;; Clear render texture before entering the game loop
         (with-texture-mode (target))
         (do-game-loop (:livesupport t
@@ -151,7 +151,9 @@
                            (is-mouse-button-released-p +mouse-button-left+))
                       (is-key-pressed-p +key-s+))
               (let ((image (load-image-from-texture (texture target))))
-                (export-image (image-flip-vertical image) "my_amazing_texture_painting.png")
+                (export-image (image-flip-vertical image)
+                              (claylib/examples:claylib-path
+                               "examples/textures/my_amazing_texture_painting.png"))
                 (setf show-save-message t)))
 
             (when (and show-save-message (> (incf save-message-counter) 240))

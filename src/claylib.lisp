@@ -4,14 +4,11 @@
 
 (defparameter +claylib-directory+ (asdf:system-source-directory :claylib))
 
-(defvar *garbage* ())
-
-(defun free-later (thing)
-  (pushnew thing *garbage*))
-
-(defun collect-garbage ()
-  (mapcar #'free *garbage*)
-  (setf *garbage* ()))
+(defmethod initialize-instance :after ((wrapper autowrap:wrapper) &key)
+  (when (eql (slot-value wrapper 'autowrap::validity) t)
+    (tg:finalize wrapper
+                 (let ((ptr (autowrap:ptr wrapper)))
+                   (lambda () (autowrap:free ptr))))))
 
 (defmacro with-2d-mode (camera &body body)
   `(progn
@@ -87,13 +84,8 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
      ,(when exit-key
         `(claylib/ll:set-exit-key ,exit-key))
      ,@body
-     (free +default-font+)
-     (collect-garbage)
      (when (is-window-ready-p)
        (close-window))))
 
 (defmethod draw-object ((obj list))
   (mapc #'draw-object obj))
-
-(defmethod free ((obj list))
-  (mapc #'free obj))

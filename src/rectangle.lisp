@@ -1,10 +1,12 @@
 (in-package #:claylib)
 
-(defclass rl-rectangle ()
-  ((%c-struct
-    :type claylib/ll:rectangle
-    :initform (autowrap:alloc 'claylib/ll:rectangle)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-rectangle ()
+    ((%c-struct
+      :type claylib/ll:rectangle
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:rectangle))))
 
 (defcreader x rl-rectangle x rectangle)
 (defcreader y rl-rectangle y rectangle)
@@ -17,10 +19,10 @@
 (defcwriter height rl-rectangle height rectangle number float)
 
 (definitializer rl-rectangle
-    (x number float) (y number float) (width number float) (height number float))
-
-(default-free rl-rectangle)
-(default-free-c claylib/ll:rectangle)
+  :pt-accessors ((x number float)
+                 (y number float)
+                 (width number float)
+                 (height number float)))
 
 (defun make-simple-rec (x y width height)
   "Make an RL-RECTANGLE for non-drawable uses such as defining a source or dest rectangle."
@@ -28,47 +30,87 @@
 
 
 
-(defclass rectangle (rl-rectangle 2d-shape)
-  ((%position :initarg :origin
-              :accessor origin)
-   (%rotation :initarg :rot
-              :type (or integer float)
-              :reader rot)
-   (%thickness :initarg :thickness
-               :type (or integer float)
-               :accessor thickness)
-   ;; TODO support custom vertex colors ('EX)
-   (%gradient-style :initarg :gradient-style
-                    :initform nil
-                    :type (or keyword null)
-                    :accessor gradient-style
-                    :documentation
-                    "Whether to draw a gradient horizontally or vertically. Must be :H or :V.")))
+(defconstant +foreign-rectangle-size+ (autowrap:sizeof 'claylib/ll:rectangle))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-rectangles (rl-sequence)
+    ((%cl-array :type (array rl-rectangle 1)))))
+
+(defmethod make-rl-*-array ((c-struct claylib/ll:rectangle) num)
+  (let ((contents (loop for i below num
+                        for rect = (make-instance 'rl-rectangle)
+                        do (setf (slot-value rect '%c-struct)
+                                 (autowrap:c-aref c-struct i 'claylib/ll:rectangle))
+                        collect rect)))
+    (make-array num
+                :element-type 'rl-rectangle
+                :initial-contents contents)))
+
+(defmethod (setf sequences:elt) (value (sequence rl-rectangles) index)
+  (check-type value rl-rectangle)
+  (cffi:foreign-funcall "memcpy"
+                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
+                        :pointer (autowrap:ptr (c-struct value))
+                        :int +foreign-rectangle-size+
+                        :void))
+
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rectangle (rl-rectangle 2d-shape)
+    ((%position :initarg :origin
+                :accessor origin)
+     (%rotation :initarg :rot
+                :type number
+                :reader rot)
+     (%thickness :initarg :thickness
+                 :type number
+                 :reader thickness)
+     ;; TODO support custom vertex colors ('EX)
+     (%gradient-style :initarg :gradient-style
+                      :type keyword
+                      :accessor gradient-style
+                      :documentation
+                      "Whether to draw a gradient horizontally or vertically. Must be :H or :V."))
+    (:default-initargs
+     :rot 0.0
+     :thickness 1.0
+     :origin (make-vector2 0 0))))
 
 (defwriter-float rot rectangle %rotation)
 (defwriter-float thickness rectangle)
 
 (definitializer rectangle
-    (rot number float 0.0) (thickness number float 1.0) (origin rl-vector2 nil (make-vector2 0 0)))
-
-(default-free rectangle)
+  :lisp-slots ((%position)
+               (%rotation t)
+               (%thickness t)
+               (%gradient-style)))
 
 (defun make-rectangle (x y width height color
-                       &key (color2 nil) (filled t) (rotation 0) (thickness 1)
-                         (origin (make-vector2 0 0)) (gradient-style nil))
-  (make-instance 'rectangle :x x :y y :width width :height height :color color :color2 color2
-                            :filled filled :rot rotation :thickness thickness :origin origin
-                            :gradient-style gradient-style))
+                       &rest args &key color2 filled rotation thickness origin gradient-style)
+  (declare (ignorable color2 filled rotation thickness origin gradient-style))
+  (apply #'make-instance 'rectangle
+         :x x
+         :y y
+         :width width
+         :height height
+         :color color
+         args))
 
 (defun make-rectangle-from-vecs (pos size color
-                                 &key (filled t) (rotation 0) (thickness 1)
-                                   (origin (make-vector2 0 0)))
-  (make-instance 'rectangle :x (x pos) :y (y pos) :width (x size) :height (y size) :color color
-                 :filled filled :rot rotation :thickness thickness :origin origin))
+                                 &rest args &key color2 filled rotation thickness origin gradient-style)
+  (declare (ignorable color2 filled rotation thickness origin gradient-style))
+  (apply #'make-instance 'rectangle
+         :x (x pos)
+         :y (y pos)
+         :width (x size)
+         :height (y size)
+         :color color
+         args))
 
 (defmethod draw-object ((obj rectangle))
   (cond
-    ((and (filled obj) (color2 obj) (gradient-style obj))
+    ((and (filled obj) (slot-boundp obj '%color2) (gradient-style obj))
      (funcall (case (gradient-style obj)
                 (:v #'claylib/ll:draw-rectangle-gradient-v)
                 (:h #'claylib/ll:draw-rectangle-gradient-h))

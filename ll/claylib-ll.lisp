@@ -148,56 +148,76 @@
      ,@body
      (end-scissor-mode)))
 
-#|
-(defun set-vector2 (vec x y)
-  "Set the coordinate values of a 2D vector."
-  (setf (vector2.x vec) (coerce x 'float)
-        (vector2.y vec) (coerce y 'float)))
-
-
-(defun set-vector3 (vec x y z)
-  "Set the coordinate values of a 3D vector."
-  (setf (vector3.x vec) (coerce x 'float)
-        (vector3.y vec) (coerce y 'float)
-        (vector3.z vec) (coerce z 'float)))
-
-(defun set-vector4 (vec x y z w)
-  "Set the coordinate values of a 4D vector."
-  (setf (vector4.x vec) (coerce x 'float)
-        (vector4.y vec) (coerce y 'float)
-        (vector4.z vec) (coerce z 'float)
-        (vector4.w vec) (coerce w 'float)))
-|#
 (defmacro struct-setter (name &rest skip-fields)
   ;; TODO: Type checking/coercion
-  (let ((fields (mapcar #'(lambda (field)
-                            (intern (remove #\:
-                                            (format nil "~a"
-                                                    (autowrap:foreign-type-name field)))))
-                        (reverse (autowrap:foreign-record-fields
-                                  (autowrap:find-type `(:struct (,name))))))))
-    `(defun ,(intern (format nil "SET-~:@a" name)) ,(append '(struct)
-                                                     (remove-if #'(lambda (f)
-                                                                    (member f skip-fields))
-                                                      fields))
-       ,@(loop for field in fields
-               unless (member field skip-fields)
-                 collect (let ((accessor (intern (format nil "~:@a.~:@a" name field))))
-                           `(setf (,accessor struct) ,field))))))
+  (flet ((setter (name)
+           (alexandria:symbolicate (format nil "SET-~:@a" name)))
+         (getter (type field)
+           (alexandria:symbolicate (format nil "~:@a.~:@a" type field)))
+         (get-fields (type)
+           (reverse (autowrap:foreign-record-fields
+                     (autowrap:find-type `(:struct (,type)))))))
+    (let ((field-specs (mapcar #'(lambda (field)
+                                   `(,(alexandria:symbolicate
+                                       (remove #\:
+                                               (format nil "~a"
+                                                       (autowrap:foreign-type-name field))))
+                                     ,(autowrap:basic-foreign-type field)))
+                                (get-fields name))))
+      `(defun ,(setter name) ,(append '(struct)
+                               (remove-if #'(lambda (f)
+                                              (member f skip-fields))
+                                (mapcar #'car field-specs)))
+         ,@(loop for field in field-specs
+                 unless (member (car field) skip-fields)
+                   collect (let ((accessor (getter name (car field))))
+                             (if (typep (cadr field) 'autowrap:foreign-record)
+                                 (let ((ftype (autowrap:foreign-type-name (cadr field))))
+                                   `(,(setter ftype) (,accessor struct)
+                                     ,@(loop for subfield in (get-fields ftype)
+                                             collect `(,(getter ftype
+                                                                (autowrap:foreign-type-name subfield))
+                                                       ,(car field)))))
+                                 `(setf (,accessor struct) ,(car field)))))))))
 
 (struct-setter vector2)
 (struct-setter vector3)
 (struct-setter vector4)
-(struct-setter texture)
+(struct-setter matrix)
+(struct-setter color)
 (struct-setter rectangle)
 (struct-setter image)
-(struct-setter glyph-info image)
-(struct-setter color)
-(struct-setter shader)
-(struct-setter material-map color texture)
-(struct-setter matrix)
+(struct-setter texture)
+(struct-setter render-texture)
+(struct-setter n-patch-info)
+(struct-setter glyph-info)
+(struct-setter font)
+(struct-setter camera3d)
+(struct-setter camera2d)
 (struct-setter mesh)
-(struct-setter material params shader)
+(struct-setter shader)
+(struct-setter material-map)
+
+(defun set-material (struct shader maps params)
+  (set-shader (material.shader struct)
+              (shader.id shader)
+              (shader.locs shader))
+  (setf (material.maps struct) maps)
+  (dotimes (i 4)
+    (when (nth i params)
+      (setf (material.params[] struct i) (nth i params)))))
+
+(struct-setter transform)
 (struct-setter bone-info name)
-;(struct-setter transform rotation scale translation) ; Transforms are read-only apparently?
+(struct-setter model)
+(struct-setter model-animation)
+(struct-setter ray)
+(struct-setter ray-collision)
+(struct-setter bounding-box)
+(struct-setter wave)
 (struct-setter audio-stream)
+(struct-setter sound)
+(struct-setter music)
+(struct-setter vr-device-info chroma-ab-correction lens-distortion-values)
+;(struct-setter vr-stereo-config left-lens-center left-screen-center projection right-lens-center right-screen-center scale scale-in view-offset)
+(struct-setter file-path-list)

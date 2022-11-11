@@ -32,7 +32,7 @@ function has been running."
 
 (defun main ()
   (with-window (:title "raylib [core] example - loading thread")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (with-scene-objects (progress-bar) *scene*
         (do-game-loop (:livesupport t
                        :vars ((state :waiting)

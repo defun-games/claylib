@@ -1,16 +1,18 @@
 (in-package #:claylib)
 
-(defclass rl-ray ()
-  ((%position :initarg :pos
-              :type rl-vector3
-              :reader pos)
-   (%direction :initarg :dir
-               :type rl-vector3
-               :reader dir)
-   (%c-struct
-    :type claylib/ll:ray
-    :initform (autowrap:alloc 'claylib/ll:ray)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-ray ()
+    ((%position :initarg :pos
+                :type rl-vector3
+                :reader pos)
+     (%direction :initarg :dir
+                 :type rl-vector3
+                 :reader dir)
+     (%c-struct
+      :type claylib/ll:ray
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:ray))))
 
 (defreader x rl-ray x pos)
 (defreader y rl-ray y pos)
@@ -22,21 +24,19 @@
 (defcwriter-struct pos rl-ray position ray vector3 x y z)
 (defcwriter-struct dir rl-ray direction ray vector3 x y z)
 
-(definitializer rl-ray (pos rl-vector3) (dir rl-vector3))
-
-(default-free rl-ray)
-(default-free-c claylib/ll:ray)
+(definitializer rl-ray
+  :struct-slots ((%position) (%direction)))
 
 
 
-(defclass ray (rl-ray)
-  ((%color :initarg :color
-           :type rl-color
-           :accessor color)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass ray (rl-ray)
+    ((%color :initarg :color
+             :type rl-color
+             :accessor color))))
 
-(definitializer ray (color rl-color nil))
-
-(default-free ray)
+(definitializer ray
+  :lisp-slots ((%color)))
 
 (defun make-ray (pos-x pos-y pos-z dir-x dir-y dir-z color)
   (make-instance 'ray

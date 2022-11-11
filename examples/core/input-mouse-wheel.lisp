@@ -17,7 +17,7 @@
                                           10 10
                                           :size 20 :color +gray+))
                          (subtext (make-text "" 10 40 :size 20 :color +lightgray+))))))
-      (with-scenes scene
+      (with-scenes scene ()
         (do-game-loop (:livesupport t)
           (with-scene-objects (box subtext) scene
             (decf (y box) (* (get-mouse-wheel-move) 4))

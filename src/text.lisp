@@ -1,32 +1,37 @@
 (in-package #:claylib)
 
-(defclass text (2d-object)
-  ((%text :initarg :text
-          :type string
-          :accessor text)
-   (%font :initarg :font
-          :type rl-font
-          :accessor font)
-   (%font-size :initarg :size
-               :type (or integer float)
-               :reader size)
-   (%spacing :initarg :spacing
-             :type (or integer float)
-             :reader spacing)
-   (%color :initarg :color
-           :type rl-color
-           :accessor color)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass text (2d-object)
+    ((%text :initarg :text
+            :type string
+            :accessor text)
+     (%font :initarg :font
+            :type rl-font
+            :accessor font)
+     (%font-size :initarg :size
+                 :type number
+                 :reader size)
+     (%spacing :initarg :spacing
+               :type number
+               :reader spacing)
+     (%color :initarg :color
+             :type rl-color
+             :accessor color))
+    (:default-initargs
+     :font +default-font+
+     :size (float (size +default-font+))
+     :spacing 1.0
+     :color +gray+)))
 
 (defwriter-float size text %font-size)
 (defwriter-float spacing text)
 
 (definitializer text
-    (text string) (font rl-font nil) (size number float) (spacing number float) (color rl-color nil))
-
-(default-slot-value text %font +default-font+)
-(default-slot-value text %font-size (float (size +default-font+)))
-(default-slot-value text %spacing 1.0)
-(default-slot-value text %color +gray+)
+  :lisp-slots ((%text)
+               (%font)
+               (%font-size t)
+               (%spacing t)
+               (%color)))
 
 (defun make-text (text x y &rest args &key size color spacing font)
   (declare (ignore size color spacing font))

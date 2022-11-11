@@ -14,7 +14,7 @@
 
 (defun main ()
   (with-window (:title "raylib [core] example - basic window")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (do-game-loop (:livesupport t)
         (with-drawing ()
           (draw-scene-all *scene*))))))

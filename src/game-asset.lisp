@@ -1,31 +1,25 @@
 (in-package #:claylib)
 
-(defclass game-asset ()
-  ((%path :initarg :path
-          :type pathname
-          :accessor path)
-   (%asset
-    :initform nil
-    :accessor asset)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass game-asset ()
+    ((%path :initarg :path
+            :type pathname
+            :accessor path)
+     (%asset
+      :initform nil
+      :accessor asset))))
 
 (defreader c-asset game-asset c-struct asset)
 (defwriter c-asset game-asset c-struct asset)
-
-(defmethod free ((asset game-asset))
-  (when (and (slot-boundp asset '%asset)
-             (asset asset))
-    (free (asset asset)))
-  (setf (slot-value asset '%asset) nil)
-  (when (next-method-p)
-    (call-next-method)))
 
 (defmethod initialize-instance :after ((asset game-asset) &key load-now)
   (when load-now (load-asset asset)))
 
 
 
-(defclass image-asset (game-asset)
-  ((%asset :type (or rl-image null))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass image-asset (game-asset)
+    ((%asset :type (or rl-image null)))))
 
 (defreader data image-asset data asset)
 (defreader width image-asset width asset)
@@ -54,8 +48,9 @@
 
 
 
-(defclass texture-asset (game-asset)
-  ((%asset :type (or rl-texture null))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass texture-asset (game-asset)
+    ((%asset :type (or rl-texture null)))))
 
 (defreader id texture-asset id asset)
 (defreader width texture-asset width asset)
@@ -79,18 +74,33 @@
 
 
 
-(defclass model-asset (game-asset)
-  ((%asset :type (or rl-model null))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass model-asset (game-asset)
+    ((%asset :type (or rl-model null)))))
 
 (defreader mesh-count model-asset mesh-count asset)
 (defreader material-count model-asset material-count asset)
-(defreader mesh-material model-asset mesh-material asset)
 (defreader bone-count model-asset bone-count asset)
 (defreader transform model-asset transform asset)
 (defreader meshes model-asset meshes asset)
 (defreader materials model-asset materials asset)
+(defreader mesh-materials model-asset mesh-materials asset)
 (defreader bones model-asset bones asset)
 (defreader bind-pose model-asset bind-pose asset)
+(defmethod mesh-material ((masset model-asset) (index integer))
+  (mesh-material (asset masset) index))
+
+(defwriter mesh-count model-asset mesh-count asset)
+(defwriter material-count model-asset material-count asset)
+(defwriter bone-count model-asset bone-count asset)
+(defwriter transform model-asset transform asset)
+(defwriter meshes model-asset meshes asset)
+(defwriter materials model-asset materials asset)
+(defwriter mesh-materials model-asset mesh-materials asset)
+(defwriter bones model-asset bones asset)
+(defwriter bind-pose model-asset bind-pose asset)
+(defmethod (setf mesh-material) ((value integer) (masset model-asset) (index integer))
+  (setf (mesh-material (asset masset) index) value))
 
 (defmethod load-asset ((asset model-asset) &key force-reload)
   (cond
@@ -102,22 +112,27 @@
      (claylib/ll:load-model (c-asset asset) (namestring (path asset)))))
   asset)
 
+(defun make-model-asset (path &key (load-now nil))
+  "Make a model asset from a PATH. This does not load the model unless LOAD-NOW is non-nil."
+  (make-instance 'model-asset :path path :load-now load-now))
 
 
-(defclass shader-asset (game-asset)
-  ((%vspath :initarg :vspath
-            :type (or pathname null)
-            :accessor vspath)
-   (%fspath :initarg :fspath
-            :type (or pathname null)
-            :accessor fspath)
-   (%asset :type (or rl-shader null))))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass shader-asset (game-asset)
+    ((%vspath :initarg :vspath
+              :type (or pathname null)
+              :accessor vspath)
+     (%fspath :initarg :fspath
+              :type (or pathname null)
+              :accessor fspath)
+     (%asset :type (or rl-shader null)))
+    (:default-initargs
+     :vspath nil
+     :fspath nil)))
 
 (defreader id shader-asset id asset)
 (defreader locs shader-asset locs asset)
-
-(default-slot-value shader-asset %vspath nil)
-(default-slot-value shader-asset %fspath nil)
 
 (defmethod load-asset ((asset shader-asset) &key force-reload)
   (let ((vpath (when (vspath asset)
@@ -135,17 +150,18 @@
 
 
 
-(defclass font-asset (game-asset)
-  ((%font-size :initarg :size
-               :type integer
-               :writer (setf size))
-   (%font-chars :initarg :chars
-                :type integer
-                :accessor chars)
-   (%glyph-count :initarg :glyph-count
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass font-asset (game-asset)
+    ((%font-size :initarg :size
                  :type integer
-                 :writer (setf glyph-count))
-   (%asset :type (or rl-font null))))
+                 :writer (setf size))
+     (%font-chars :initarg :chars
+                  :type sequence
+                  :accessor chars)
+     (%glyph-count :initarg :glyph-count
+                   :type integer
+                   :writer (setf glyph-count))
+     (%asset :type (or rl-font null)))))
 
 (defmethod size ((obj font-asset))
   (if (asset obj)
@@ -163,7 +179,7 @@
 (defreader glyphs font-asset glyphs asset)
 
 (default-slot-value font-asset %font-size 10)
-(default-slot-value font-asset %font-chars (cffi:null-pointer))
+(default-slot-value font-asset %font-chars nil)
 (default-slot-value font-asset %glyph-count 224)
 
 (defmethod load-asset ((asset font-asset) &key force-reload)
@@ -171,11 +187,23 @@
            (if (or (slot-boundp asset '%font-size)
                    (slot-boundp asset '%font-chars)
                    (slot-boundp asset '%glyph-count))
-               (claylib/ll:load-font-ex font
-                                        (namestring (path asset))
-                                        (size asset)
-                                        (chars asset)
-                                        (glyph-count asset))
+               (c-with ((c-array :int :count (glyph-count asset) :calloc t))
+                 (flet ((c-char (char i)
+                          (setf (autowrap:c-aref c-array i :int) (char-int char))))
+                   (claylib/ll:load-font-ex font
+                                            (namestring (path asset))
+                                            (size asset)
+                                            (etypecase (chars asset)
+                                              (null (cffi:null-pointer))
+                                              (list (loop for char in (chars asset)
+                                                          for i from 0
+                                                          collect (c-char char i)
+                                                          finally (return c-array)))
+                                              (array (loop for char across (chars asset)
+                                                           for i from 0
+                                                           collect (c-char char i)
+                                                           finally (return c-array))))
+                                            (glyph-count asset))))
                (claylib/ll:load-font font (namestring (path asset))))))
     (cond
       ((null (asset asset))
@@ -187,30 +215,29 @@
   asset)
 
 (defun make-font-asset (path &rest args &key size chars glyph-count (load-now nil))
-  (declare (ignore size chars glyph-count load-now))
+  (declare (ignorable size chars glyph-count load-now))
   (apply #'make-instance 'font-asset :path path args))
 
 
 
-(defclass animation-asset (game-asset)
-  ((%num
-    :type integer
-    :accessor num)
-   (%asset :type (or rl-model-animation null))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass animation-asset (game-asset)
+    ((%asset :type (or rl-animations null)))))
 
-(defreader bone-count animation-asset bone-count asset)
-(defreader frame-count animation-asset frame-count asset)
-(defreader bones animation-asset bones asset)
-(defreader frame-poses animation-asset frame-poses asset)
+;; (defreader bone-count animation-asset bone-count asset)
+;; (defreader frame-count animation-asset frame-count asset)
+;; (defreader bones animation-asset bones asset)
+;; (defreader frame-poses animation-asset frame-poses asset)
 
 (defmethod load-asset ((asset animation-asset) &key force-reload)
   (cond
     ((null (asset asset))
-     (let ((anim (make-instance 'rl-model-animation)))
        (c-let ((i :int))
-         (setf (c-struct anim) (load-model-animations (namestring (path asset)) (i &))
-               (num asset) i
-               (asset asset) anim))))
+         (let* ((0th-anim (load-model-animations (namestring (path asset)) (i &)))
+                (anims (make-instance 'rl-animations
+                                      :cl-array (make-rl-*-array 0th-anim i))))
+           (setf (asset asset) anims))))
+    ;; TODO how best to force-reload?
     (force-reload
      (c-let ((i :int))
        (setf (c-asset asset)
@@ -218,16 +245,9 @@
              (num asset) i))))
   asset)
 
-(defmethod free ((asset animation-asset))
-  (when (and (asset asset)
-             (autowrap:valid-p (c-asset asset)))
-    (claylib/ll:unload-model-animations (c-asset asset) (num asset))
-    (autowrap:free (c-asset asset)))
-  (setf (slot-value asset '%asset) nil)
-  (when (next-method-p)
-    (call-next-method)))
-
-
+(defun make-animation-asset (path &key (load-now nil))
+  "Make an animation asset from a PATH. This does not load the model unless LOAD-NOW is non-nil."
+  (make-instance 'animation-asset :path path :load-now load-now))
 
 (defmethod load-asset ((asset list) &key force-reload)
   (dolist (ass asset)

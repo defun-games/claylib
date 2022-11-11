@@ -20,7 +20,7 @@
                               (text2 (make-text "Press S to toggle scissor test"
                                                 10 10
                                                 :size 20 :color +black+))))))
-      (with-scenes scene
+      (with-scenes scene ()
         (do-game-loop (:livesupport t)
           (when (is-key-pressed-p +key-s+) (setf scissor-mode (not scissor-mode)))
           (setf (x scissor-area) (- (get-mouse-x) (/ (width scissor-area) 2))

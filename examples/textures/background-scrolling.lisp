@@ -38,7 +38,7 @@ the associated texture TEX."
 
 (defun main ()
   (with-window (:title "raylib [textures] example - background scrolling")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (with-scene-objects (textures) *scene*
         (do-game-loop (:livesupport t
                        :vars ((scrolling-back 0 (compute-scrolling scrolling-back

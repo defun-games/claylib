@@ -44,10 +44,6 @@
 (defgeneric (setf z2) (value line)
   (:documentation "Set the Z value of the end point of a 3D line."))
 
-(defgeneric free (thing)
-  (:documentation "Free a C object, or free all C objects backing a CLOS object. If Claylib does its
-job, the user may never need to call this directly."))
-
 (defgeneric width (shape)
   (:documentation "Get the width (X dimension) of any shape."))
 (defgeneric height (shape)
@@ -120,10 +116,9 @@ job, the user may never need to call this directly."))
 (defgeneric (setf size) (value obj)
   (:documentation "Set the size value or vector of some object."))
 
-(defgeneric set-slot (slot obj value &key free)
+(defgeneric set-slot (slot obj value)
   (:documentation "Copy the slot values (of object VALUE) to the slots in child object SLOT of parent OBJ.
-Don't use this if SLOT contains an atom or string -- use normal SETF instead. FREE specifies when to
-free VALUE."))
+Don't use this if SLOT contains an atom or string -- use normal SETF instead."))
 
 (defgeneric load-asset (asset &key force-reload)
   (:documentation "Load a game-asset's backing C object from a file.
@@ -143,3 +138,10 @@ Force a reload & free old memory when FORCE-RELOAD is T."))
 
 (defgeneric switch-scene (scene)
   (:documentation "Switch *SCENE* to SCENE, loading the new & unloading the old scene."))
+
+(defgeneric make-rl-*-array (c-struct num)
+  (:documentation "Make an array of appropriate rl-* objects using NUM elements of the C array
+referenced by C-STRUCT.
+
+Warning: if NUM is greater than or equal to the number of elements in the C array, you will get
+bogus data."))

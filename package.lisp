@@ -1,6 +1,7 @@
 ;;;; package.lisp
 (defpackage #:claylib
   (:use #:cl #:plus-c #:claylib/ll)
+  (:local-nicknames (#:sequences #:org.shirakumo.trivial-extensible-sequences))
   (:shadow
 
    ;;; Shadowed symbols
@@ -8,7 +9,8 @@
 
    ;; Structs
    :model :texture :shader :model-animation :font :rectangle :color :ray :ray-collision :matrix
-   :vector2 :vector3 :vector4 :bounding-box :image
+   :vector2 :vector3 :vector4 :bounding-box :image :glyph-info :material-map :material :mesh
+   :render-texture :transform
 
    ;; Colors
    :+lightgray+ :+gray+ :+darkgray+ :+yellow+ :+gold+ :+orange+ :+pink+ :+red+ :+maroon+
@@ -36,7 +38,8 @@
    :with-window :load-font :load-model-from-mesh :gen-mesh-cube :gen-image-checked :load-texture-from-image
    :fade :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw :with-drawing
-   :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex)
+   :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex
+   :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere)
 
 
 
@@ -86,12 +89,19 @@
    :+camera-orthographic+ :+camera-custom+ :+camera-free+ :+camera-orbital+ :+camera-first-person+
    :update-camera :get-world-to-screen-3d
 
+   ;; Material maps
+   :+material-map-albedo+ :+material-map-brdf+ :+material-map-cubemap+ :+material-map-emission+
+   :+material-map-height+ :+material-map-irradiance+ :+material-map-metalness+ :+material-map-normal+
+   :+material-map-occlusion+ :+material-map-prefilter+ :+material-map-roughness+
+   :+material-map-diffuse+ :+material-map-specular+
+
    ;; Types
    :text :rectangle :rl-rectangle :circle :cube :grid :rl-vector2 :rl-vector3 :rl-vector4 :rl-color
    :line-2d :rl-camera-3d :camera-3d :rl-camera-2d :plane :rl-ray :ray :rl-ray-collision :rl-bounding-box
    :rl-texture :texture :rl-transform :rl-model :model :rl-mesh :rl-shader :rl-material-map :rl-material
    :rl-matrix :triangle :image-asset :texture-asset :model-asset :shader-asset :font-asset
-   :animation-asset :pixel :image :game-scene
+   :animation-asset :pixel :image :game-scene :glyph-info :material-map :material :mesh :render-texture
+   :transform :sphere
 
    ;; Misc. convenience wrappers
    :with-window :do-game-loop :with-drawing :is-key-pressed-p :is-gesture-detected-p :is-key-down-p
@@ -103,7 +113,8 @@
    :with-scissor-mode :make-zero-matrix :is-window-state-p :make-triangle :make-triangle-from-vecs
    :make-texture :make-texture-from-rec :make-empty-texture :make-texture-asset :get-gesture-detected
    :is-mouse-button-released-p :make-polygon :make-font :make-image-asset :make-pixel :make-image
-   :make-simple-rec :make-billboard :make-font-asset :window-should-close-p
+   :make-simple-rec :make-billboard :make-font-asset :window-should-close-p :make-model-asset
+   :make-model :make-animation-asset :make-sphere :make-sphere-from-vec
 
    ;; Scenes
    :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
@@ -113,6 +124,7 @@
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
    :hit :low :high :r :g :b :a :dest :filter :origin :source :tint :radius :x3 :y3 :v1 :v2 :v3
    :load-asset :filled :font :size :spacing :asset :start :end :bezier :up :x-scale :y-scale
+   :frame-count :animations :bones :materials
 
    ;; Math
    :vector2-subtract :vector2-add :vector2-scale :vector2-length
@@ -136,7 +148,8 @@
    :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw
    :copy-asset-to-object :set-window-position :check-collision-recs :get-collision-rec
-   :check-collision-point-circle :measure-text-ex
+   :check-collision-point-circle :measure-text-ex :update-model-animation :set-material-texture
+   :check-collision-boxes :check-collision-box-sphere
 
    ;;; Raygui
 

@@ -1,8 +1,8 @@
 (in-package #:cl-user)
-(defpackage claylib/examples/logo-raylib
+(defpackage claylib/examples/logo-raylib-texture
   (:use :cl :claylib)
   (:export :main))
-(in-package #:claylib/examples/logo-raylib)
+(in-package #:claylib/examples/logo-raylib-texture)
 
 (defun main ()
   (with-window (:title "raylib [textures] example - texture loading and drawing")
@@ -17,7 +17,7 @@
                                                 360 370
                                                 :size 10
                                                 :color +gray+))))))
-      (with-scenes scene
+      (with-scenes scene ()
         (do-game-loop (:livesupport t)
           (with-drawing ()
             (draw-scene-all scene)))))))

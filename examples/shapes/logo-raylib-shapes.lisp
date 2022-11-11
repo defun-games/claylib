@@ -1,8 +1,8 @@
 (in-package #:cl-user)
-(defpackage claylib/examples/logo-raylib
+(defpackage claylib/examples/logo-raylib-shapes
   (:use :cl :claylib)
   (:export :main))
-(in-package #:claylib/examples/logo-raylib)
+(in-package #:claylib/examples/logo-raylib-shapes)
 
 (defparameter *scene*
   (make-scene ()
@@ -24,7 +24,7 @@
 
 (defun main ()
   (with-window (:title "raylib [shapes] example - raylib logo using shapes")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (do-game-loop (:livesupport t)
         (with-drawing ()
           (draw-scene-all *scene*))))))

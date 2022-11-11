@@ -48,7 +48,7 @@
 
 (defun main ()
   (with-window (:title "raylib [text] example - raylib fonts")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (arrange-text (scene-object *scene* 'fonts))
       (do-game-loop (:livesupport t)
         (with-drawing ()

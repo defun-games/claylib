@@ -33,7 +33,7 @@
 
 (defun main ()
   (with-window (:title "raylib [shapes] example - raylib logo animation")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (with-scene-objects (top-side-rec left-side-rec bottom-side-rec right-side-rec text white-rec
                                         replay-text) *scene*
           (do-game-loop (:livesupport t

@@ -1,10 +1,12 @@
 (in-package #:claylib)
 
-(defclass rl-matrix ()
-  ((%c-struct
-    :type claylib/ll:matrix
-    :initform (autowrap:alloc 'claylib/ll:matrix)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-matrix ()
+    ((%c-struct
+      :type claylib/ll:matrix
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:matrix))))
 
 (defcreader m0 rl-matrix m0 matrix)
 (defcreader m1 rl-matrix m1 matrix)
@@ -41,28 +43,30 @@
 (defcwriter m15 rl-matrix m15 matrix number float)
 
 (definitializer rl-matrix
-  (m0 number float)
-  (m1 number float)
-  (m2 number float)
-  (m3 number float)
-  (m4 number float)
-  (m5 number float)
-  (m6 number float)
-  (m7 number float)
-  (m8 number float)
-  (m9 number float)
-  (m10 number float)
-  (m11 number float)
-  (m12 number float)
-  (m13 number float)
-  (m14 number float)
-  (m15 number float))
+  :pt-accessors ((m0 number float)
+                 (m1 number float)
+                 (m2 number float)
+                 (m3 number float)
+                 (m4 number float)
+                 (m5 number float)
+                 (m6 number float)
+                 (m7 number float)
+                 (m8 number float)
+                 (m9 number float)
+                 (m10 number float)
+                 (m11 number float)
+                 (m12 number float)
+                 (m13 number float)
+                 (m14 number float)
+                 (m15 number float)))
 
-(default-free rl-matrix)
-(default-free-c claylib/ll:matrix)
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass matrix (rl-matrix) ()))
 
 (defun make-zero-matrix ()
-  (make-instance 'rl-matrix
+  (make-instance 'matrix
                  :m0 0 :m1 0 :m2 0 :m3 0
                  :m4 0 :m5 0 :m6 0 :m7 0
                  :m8 0 :m9 0 :m10 0 :m11 0

@@ -33,7 +33,8 @@
   :components ((:module "ll"
                 :components
                 ((:file "package")
-                 (:file "claylib-ll")))))
+                 (:file "claylib-ll")
+                 (:file "validate")))))
 
 (asdf:defsystem #:claylib
   :description "Lispy game toolkit built on top of Raylib"
@@ -42,11 +43,12 @@
   :version "0.0.1"
   :serial t
   :depends-on (#:claylib/ll #:cl-plus-c #:trivial-garbage #:livesupport #:closer-mop
-               #:eager-future2)
+               #:eager-future2 #:trivial-extensible-sequences)
   :components ((:file "package")
                (:module "src"
                 :components ((:file "generic")
                              (:file "helpers")
+                             (:file "sequence")
                              (:file "vec")
                              (:file "color")
                              (:file "bounding-box")
@@ -70,6 +72,7 @@
                              (:file "texture")
                              (:file "text")
                              (:file "cube")
+                             (:file "sphere")
                              (:file "font")
                              (:file "transform")
                              (:file "material")
@@ -122,7 +125,7 @@
                   ((:file "basic-shapes")
                    (:file "bouncing-ball")
                    (:file "colors-palette")
-                   (:file "logo-raylib")
+                   (:file "logo-raylib-shapes")
                    (:file "logo-raylib-anim")
                    (:file "rectangle-scaling")
                    (:file "lines-bezier")
@@ -130,7 +133,7 @@
                    (:file "following-eyes")))
                  (:module "textures"
                   :components
-                  ((:file "logo-raylib")
+                  ((:file "logo-raylib-texture")
                    (:file "mouse-painting")
                    (:file "background-scrolling")
                    (:file "sprite-anim")
@@ -142,7 +145,9 @@
                    (:file "scroll-panel")))
                  (:module "models"
                   :components
-                  ((:file "billboard")))
+                  ((:file "animation")
+                   (:file "billboard")
+                   (:file "box-collisions")))
                  (:module "text"
                   :components
                   ((:file "raylib-fonts")

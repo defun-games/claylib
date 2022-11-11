@@ -1,17 +1,18 @@
 (in-package #:claylib)
 
-(defclass game-scene ()
-  ((%game-objects :initarg :objects
-                  :type hash-table
-                  :initform (make-hash-table :test #'equalp)
-                  :accessor objects)
-   (%game-assets :initarg :assets
-                 :type hash-table
-                 :initform (make-hash-table :test #'equalp)
-                 :accessor assets)
-   (%free :initarg :free
-          :type keyword
-          :accessor free)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass game-scene ()
+    ((%game-objects :initarg :objects
+                    :type hash-table
+                    :initform (make-hash-table :test #'equalp)
+                    :accessor objects)
+     (%game-assets :initarg :assets
+                   :type hash-table
+                   :initform (make-hash-table :test #'equalp)
+                   :accessor assets)
+     (%gc :initarg :gc
+          :type boolean
+          :accessor gc))))
 
 (defun load-scene (scene &rest names)
   (dolist (asset names)
@@ -26,48 +27,6 @@
                               (member (car kv) names))
                             (alexandria:hash-table-alist (assets scene))))
     (load-asset (cdr asset))))
-
-(defun unload-scene (scene &rest names)
-  (dolist (thing names)
-    (free (gethash thing (assets scene)))
-    (free (gethash thing (objects scene)))))
-
-(defun unload-scene-all (scene)
-  (dolist (asset (alexandria:hash-table-values (assets scene)))
-    (free asset))
-  (dolist (obj (alexandria:hash-table-values (objects scene)))
-    (free obj)))
-
-(defun unload-scene-except (scene &rest names)
-  (dolist (asset (remove-if (lambda (kv)
-                              (member (car kv) names))
-                            (alexandria:hash-table-alist (assets scene))))
-    (free (cdr asset)))
-  (dolist (obj (remove-if (lambda (kv)
-                            (member (car kv) names))
-                          (alexandria:hash-table-alist (objects scene))))
-    (free (cdr obj))))
-
-(defun unload-scene-later (scene &rest names)
-  (dolist (thing names)
-    (free-later (gethash thing (assets scene)))
-    (free-later (gethash thing (objects scene)))))
-
-(defun unload-scene-all-later (scene)
-  (dolist (asset (alexandria:hash-table-values (assets scene)))
-    (free-later asset))
-  (dolist (obj (alexandria:hash-table-values (objects scene)))
-    (free-later obj)))
-
-(defun unload-scene-except-later (scene &rest names)
-  (dolist (asset (remove-if (lambda (kv)
-                              (member (car kv) names))
-                            (alexandria:hash-table-alist (assets scene))))
-    (free-later (cdr asset)))
-  (dolist (obj (remove-if (lambda (kv)
-                            (member (car kv) names))
-                          (alexandria:hash-table-alist (objects scene))))
-    (free-later (cdr obj))))
 
 (defun draw-scene (scene &rest names)
   "Draw the objects in SCENE referred to by the symbols in NAMES."
@@ -99,20 +58,7 @@ This is handy when the objects are in scope already, for example via WITH-SCENE-
         when (cl-ppcre:scan regex (symbol-name (car kv)))
           do (draw-object (cdr kv))))
 
-(defmacro defscene (name assets objects)
-  ;; TODO: free old scene when reloading
-  `(progn
-;     (unintern ',name)
-     (defvar ,name
-       ,(let ((sym (gensym)))
-          `(let ((,sym (make-instance 'game-scene)))
-             (dolist (asset ,assets)
-               (setf (gethash (car asset) (assets ,sym)) (cadr asset)))
-             (dolist (object ,objects)
-               (setf (gethash (car object) (objects ,sym)) (cadr object)))
-             ,sym)))))
-
-(defmacro make-scene (assets objects &key (free :now) (defer-init t))
+(defmacro make-scene (assets objects &key (gc t) (defer-init t))
   "Make a GAME-SCENE.
 
 DEFER-INIT will defer initialization of the scene's OBJECTS until later (usually via WITH-SCENES or
@@ -123,14 +69,14 @@ an OpenGL context before being loaded into the GPU."
                      (loop for (binding val) in objects
                            collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy)))
                      objects)))
-    `(let ((,scene (make-instance 'game-scene :free ,free)))
+    `(let ((,scene (make-instance 'game-scene :gc ,gc)))
        (let* (,@assets ,@objects)
          (declare (ignorable ,@(mapcar #'car (append assets objects))))
          (progn
            ,@(loop for (binding val) in assets
-                   collect `(setf (gethash ',binding (assets ,scene)) ,val))
+                   collect `(setf (gethash ',binding (assets ,scene)) ,binding))
            ,@(loop for (binding val) in objects
-                   collect `(setf (gethash ',binding (objects ,scene)) ,val))))
+                   collect `(setf (gethash ',binding (objects ,scene)) ,binding))))
        ,scene)))
 
 (defun scene-object (scene object)
@@ -143,15 +89,19 @@ an OpenGL context before being loaded into the GPU."
                                        `(,obj (gethash ',obj (objects ,scene)))))
      ,@body))
 
-(defmacro with-scenes (scenes &body body)
+(defmacro with-scenes (scenes (&key (gc nil gc-supplied-p)) &body body)
   "Execute BODY after loading & initializing SCENES, tearing them down afterwards.
+Pass :GC (T or NIL) to force/unforce garbage collection, overriding what the scenes request.
 
-Note: additional scenes can be loaded/freed at any point using {SET-UP,TEAR-DOWN}-SCENE."
+Note: additional scenes can be loaded/GC'd at any point using {SET-UP,TEAR-DOWN}-SCENE."
   (unless (listp scenes) (setf scenes `(list ,scenes)))
   `(progn
      (mapcar #'set-up-scene ,scenes)
      ,@body
-     (mapcar #'tear-down-scene ,scenes)))
+     ,(cond
+        ((and gc-supplied-p gc) `(tg:gc :full t))
+        ((not gc-supplied-p) `(mapcar #'tear-down-scene ,scenes))
+        (t nil))))
 
 (defmethod set-up-scene ((scene game-scene))
   (load-scene-all scene)
@@ -164,12 +114,6 @@ Note: additional scenes can be loaded/freed at any point using {SET-UP,TEAR-DOWN
 (defmethod set-up-scene ((scene null)) ())
 
 (defmethod tear-down-scene ((scene game-scene))
-  (case (free scene)
-    (:now (progn
-            (unload-scene-all scene)
-            (collect-garbage)))
-    (:later (unload-scene-all-later scene))
-    (:never nil)
-    (t (error "%FREE must be :NOW, :LATER, or :NEVER"))))
+  (when (gc scene) (tg:gc :full t)))
 
 (defmethod tear-down-scene ((scene null)) ())

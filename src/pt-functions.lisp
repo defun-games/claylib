@@ -91,10 +91,13 @@ postion and dimensions to the reflect the result."
   (image rl-image nil (make-instance 'rl-image))
   (texture rl-texture nil))
 
-(defun-pt export-image claylib/ll:export-image
-  "Export image data to FILENAME."
-  (image rl-image nil)
-  (filename string))
+(defun export-image (image filepath &key)
+  "Export image data to FILEPATH."
+  (check-type image rl-image)
+  (check-type filepath (or pathname string))
+  (claylib/ll:export-image (c-struct image)
+                           (namestring filepath))
+  image)
 
 ;; Image generation functions
 
@@ -153,11 +156,11 @@ postion and dimensions to the reflect the result."
   (unless (slot-boundp rt '%texture)
     (setf (slot-value rt '%texture) (make-instance 'texture)
           (c-struct (texture rt)) (claylib/ll:render-texture.texture (c-struct rt))))
-  (set-slot :texture rt (texture rt) :free :never)
+  (set-slot :texture rt (texture rt))
   (unless (slot-boundp rt '%depth)
     (setf (slot-value rt '%depth) (make-instance 'texture)
           (c-struct (texture rt)) (claylib/ll:render-texture.texture (c-struct rt))))
-  (set-slot :depth rt (make-instance 'texture) :free :never)
+  (set-slot :depth rt (make-instance 'texture))
   rt)
 
 ;; Color/pixel related functions
@@ -212,7 +215,41 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   (height number float)
   (length number float))
 
+;; Material loading/unloading functions
+
+(defun-pt-void set-material-texture claylib/ll:set-material-texture
+  "Set texture for a material map type (+MATERIAL-MAP-DIFFUSE+, +MATERIAL-MAP-SPECULAR+...)"
+  (material rl-material)
+  (map-type integer)
+  (texture rl-texture))
+
+;; Model animations loading/unloading functions
+
+(defun update-model-animation (model frame)
+  "Returns an RL-VECTOR2 with the width (x) and height (y) of the TEXT object accounting for its
+font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
+  (check-type model model)
+  (check-type frame (integer 0 *))
+  (when (not (animations model))
+    (error "~a has no associated animations." model))
+  (claylib/ll:update-model-animation (c-struct model)
+                                     (c-struct (elt (animations model) 0))
+                                     frame))
+
 ;; Collision detection functions
+
+(defun-pt-bool check-collision-boxes claylib/ll:check-collision-boxes
+  "Check collision between two bounding boxes."
+  (box1 rl-bounding-box)
+  (box2 rl-bounding-box))
+
+(defun check-collision-box-sphere (box sphere)
+  "Check collision between bounding box and a sphere."
+  (check-type box rl-bounding-box)
+  (check-type sphere sphere)
+  (= 1 (claylib/ll:check-collision-box-sphere (c-struct box)
+                                              (c-struct (pos sphere))
+                                              (radius sphere))))
 
 (defun-pt get-ray-collision-box claylib/ll:get-ray-collision-box
   "Gets a collision box for the passed ray and bounding box.

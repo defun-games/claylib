@@ -1,10 +1,11 @@
 (in-package #:claylib)
 
-(defclass plane (3d-shape)
-  ((%height :initform 0.0)
-   (%size :initarg :size
-          :type rl-vector2
-          :accessor size)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass plane (3d-shape)
+    ((%height :initform 0.0)
+     (%size :initarg :size
+            :type rl-vector2
+            :accessor size))))
 
 (defreader width plane x size)
 (defreader len plane y size)
@@ -12,12 +13,8 @@
 (defwriter width plane x size number)
 (defwriter len plane y size number)
 
-(definitializer plane (size rl-vector2 nil))
-
-(defmethod free ((obj plane))
-  (free (size obj))
-  (when (next-method-p)
-    (call-next-method)))
+(definitializer plane
+  :lisp-slots ((%size)))
 
 (defun make-plane (x y z width length color)
   (make-instance 'plane

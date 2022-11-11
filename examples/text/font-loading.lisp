@@ -41,7 +41,7 @@ opqrstuvwxyz{|}~¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓ
 
 (defun main ()
   (with-window (:title "raylib [text] example - font loading")
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (do-game-loop (:livesupport t)
         (with-drawing ()
           (if (is-key-down-p +key-space+)

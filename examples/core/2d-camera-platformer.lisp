@@ -220,7 +220,7 @@
                                   :zoom 1.0)))
       (dolist (item env-items)
         (setf (gethash (gensym "ENV-ITEM") (objects scene)) item))
-      (with-scenes scene
+      (with-scenes scene ()
         (do-game-loop (:livesupport t)
           (let ((delta (get-frame-time))
                 (player (scene-object scene 'player)))

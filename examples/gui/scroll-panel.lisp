@@ -84,7 +84,7 @@
           (panel-scroll (make-vector2 99 -20))
           (show-content-area t)
           (view (make-simple-rec 0 0 0 0)))
-      (with-scenes *scene*
+      (with-scenes *scene* ()
         (do-game-loop (:livesupport t)
           ;; TODO: Update logic???
           (with-drawing ()

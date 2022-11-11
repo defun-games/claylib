@@ -1,13 +1,15 @@
 (in-package #:claylib)
 
-(defclass rl-glyph-info ()
-  ((%image :initarg :image
-           :type rl-image
-           :reader image)
-   (%c-struct
-    :type claylib/ll:glyph-info
-    :initform (autowrap:alloc 'claylib/ll:glyph-info)
-    :accessor c-struct)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-glyph-info ()
+    ((%image :initarg :image
+             :type rl-image
+             :reader image)
+     (%c-struct
+      :type claylib/ll:glyph-info
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:glyph-info))))
 
 (defcreader value rl-glyph-info value glyph-info)
 (defcreader offset-x rl-glyph-info offset-x glyph-info)
@@ -22,29 +24,68 @@
   data width height mipmaps data-format)
 
 (definitializer rl-glyph-info
-    (value integer) (offset-x integer) (offset-y integer) (advance-x integer) (image rl-image))
-
-(default-free rl-glyph-info)
-;; TODO: I think UNLOAD-FONT-DATA should be used here somehow.
-(default-free-c claylib/ll:glyph-info)
-
-
+  :struct-slots ((%image))
+  :pt-accessors ((value integer)
+                 (offset-x integer)
+                 (offset-y integer)
+                 (advance-x integer)))
 
 
-(defclass rl-font ()
-  ((%texture :initarg :texture
-             :type rl-texture
-             :reader texture)
-   (%recs :initarg :recs
-          ; :type TODO - pointer
-          :reader recs)
-   (%glyphs :initarg :glyphs
-            ; :type TODO - pointer
-            :reader glyphs)
-   (%c-struct
-    :type claylib/ll:font
-    :initform (autowrap:alloc 'claylib/ll:font)
-    :accessor c-struct)))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass glyph-info (rl-glyph-info) ()))
+
+
+
+(defconstant +foreign-glyph-info-size+ (autowrap:sizeof 'claylib/ll:glyph-info))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-glyphs (rl-sequence)
+    ((%cl-array :type (array rl-glyph-info 1)))))
+
+(defmethod make-rl-*-array ((c-struct claylib/ll:glyph-info) num)
+  (let ((contents (loop for i below num
+                        for glyph = (make-instance 'rl-glyph-info)
+                        for c-elt = (autowrap:c-aref c-struct i 'claylib/ll:glyph-info)
+                        do (setf (slot-value glyph '%c-struct)
+                                 c-elt
+
+                                 (slot-value glyph '%image)
+                                 (let ((img (make-instance 'rl-image)))
+                                   (setf (c-struct img) (glyph-info.image c-elt))))
+                        collect glyph)))
+    (make-array num
+                :element-type 'rl-glyph-info
+                :initial-contents contents)))
+
+(defmethod (setf sequences:elt) (value (sequence rl-glyphs) index)
+  (check-type value rl-glyph-info)
+  (cffi:foreign-funcall "memcpy"
+                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
+                        :pointer (autowrap:ptr (c-struct value))
+                        :int +foreign-glyph-info-size+
+                        :void))
+
+
+
+(default-unload claylib/ll:font unload-font t)
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-font ()
+    ((%texture :initarg :texture
+               :type rl-texture
+               :reader texture)
+     (%recs :initarg :recs
+            :type rl-rectangles
+            :accessor recs)
+     (%glyphs :initarg :glyphs
+              :type rl-glyphs
+              :accessor glyphs)
+     (%c-struct
+      :type claylib/ll:font
+      :accessor c-struct))
+    (:default-initargs
+     :c-struct (autowrap:calloc 'claylib/ll:font))))
 
 (defcreader size rl-font base-size font)
 (defcreader glyph-count rl-font glyph-count font)
@@ -55,65 +96,38 @@
 (defcwriter glyph-padding rl-font glyph-padding font integer)
 (defcwriter-struct texture rl-font texture font texture
   id width height mipmaps data-format)
-(defcwriter-struct recs rl-font recs font rectangle ; pointer
-  x y width height)
-(defcwriter-struct glyphs rl-font glyphs font glyph-info ; pointer
-  value offset-x offset-y advance-x)
 
 (definitializer rl-font
-    (size integer) (glyph-count integer) (glyph-padding integer)
-  (texture rl-texture) (recs t) (glyphs t))
-
-(default-free rl-font)
-(default-free-c claylib/ll:font unload-font)
-
-
+  :lisp-slots ((%recs) (%glyphs))
+  :struct-slots ((%texture))
+  :pt-accessors ((size integer)
+                 (glyph-count integer)
+                 (glyph-padding integer)))
 
 
-(defclass font (rl-font game-asset)
-  ((%chars :initarg :chars
-           :type integer
-           :accessor chars)))
 
-(defun make-font (path
-                  &key (size 10) (chars 0) (glyph-count 224) (glyph-padding 0) texture recs glyphs)
-  (make-instance 'font
-                 :path path
-                 :size size
-                 :chars chars
-                 :glyph-count glyph-count
-                 :glyph-padding glyph-padding
-                 :texture texture
-                 :recs recs
-                 :glyphs glyphs))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass font (rl-font) ()))
 
-(defclass default-font (font) ())
+(defun make-font (asset-or-path
+                  &rest args
+                  &key size chars glyph-count glyph-padding texture recs glyphs (load-now nil))
+  (declare (ignorable size chars glyph-count glyph-padding texture recs glyphs load-now))
+  (let ((asset (if (typep asset-or-path asset-or-path)
+                   asset-or-path
+                   (apply #'make-font-asset asset-or-path args))))
+    (apply #'make-instance 'font
+           :size (or size (size asset))
+           :glyph-count (or glyph-count (glyph-count asset))
+           args)))
 
-(defmethod initialize-instance :around ((font default-font) &key)
-  (c-let ((c-font claylib/ll:font))
-    (claylib/ll:get-font-default c-font)
-;    (let ((c-tex (claylib/ll:font.texture c-font))))
-    (setf (c-struct font) c-font
-          (path font) #p"default-font-has-no-path"
-          (chars font) 0
-          (size font) (claylib/ll:font.base-size c-font)
-          (glyph-count font) (claylib/ll:font.glyph-count c-font)
-          (glyph-padding font) (claylib/ll:font.glyph-padding c-font)
-          #|
-          (slot-value font '%texture) (make-instance 'rl-texture
-          :id (claylib/ll:texture.id c-tex)
-          :width (claylib/ll:texture.width c-tex)
-          :height (claylib/ll:texture.height c-tex)
-          :mipmaps (claylib/ll:texture.mipmaps c-tex)
-          :data-format (claylib/ll:texture.format c-tex))
-          (c-struct (texture font)) c-tex
-          (texture font) (texture font)|#
-          ))
-  (trivial-garbage:finalize font
-                            (let ((c (c-struct font)))
-                              (lambda ()
-                                (when (autowrap:valid-p c)
-                                  (autowrap:free c))))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass default-font (font) ()))
+
+(defmethod initialize-instance :around ((font default-font) &rest initargs &key &allow-other-keys)
+  (setf (c-struct font) (getf initargs :c-struct))
+  (claylib/ll:get-font-default (c-struct font))
+  font)
 
 (defparameter +default-font+ nil)
 

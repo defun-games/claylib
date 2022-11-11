@@ -17,7 +17,7 @@
 (defun main ()
   (with-window (:title "raylib [shapes] example - cubic-bezier lines"
                 :flags (list +flag-msaa-4x-hint+))
-    (with-scenes *scene*
+    (with-scenes *scene* ()
       (with-scene-objects (line) *scene*
         (do-game-loop (:livesupport t)
           (if (is-mouse-button-down-p +mouse-button-left+)
