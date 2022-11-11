@@ -24,9 +24,6 @@
 (definitializer rl-transform
   :struct-slots ((%translation) (%rotation) (%scale)))
 
-(default-free rl-transform %translation %rotation %scale)
-(default-free-c claylib/ll:transform)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -34,20 +31,7 @@
 
 
 
-(cffi:defcstruct vector3
-  (x :float)
-  (y :float)
-  (z :float))
-(cffi:defcstruct vector4
-  (x :float)
-  (y :float)
-  (z :float)
-  (w :float))
-(cffi:defcstruct transform
-  (translation (:struct vector3))
-  (rotation (:struct vector4))
-  (scale (:struct vector3)))
-(defconstant +foreign-transform-size+ (cffi:foreign-type-size '(:struct transform)))
+(defconstant +foreign-transform-size+ (autowrap:sizeof 'claylib/ll:transform))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-transforms (rl-sequence)

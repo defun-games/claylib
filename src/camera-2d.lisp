@@ -29,9 +29,6 @@
   :pt-accessors ((rot number float)
                  (zoom number float)))
 
-(default-free rl-camera-2d %offset %target)
-(default-free-c claylib/ll:camera2d)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)

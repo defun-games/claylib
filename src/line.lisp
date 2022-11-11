@@ -25,8 +25,6 @@
 (definitializer line
   :lisp-slots ((%start) (%end) (%color)))
 
-(default-free line %start %end %color)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -56,8 +54,6 @@
                (%bezier)
                (%control-pt)
                (%control-pt2)))
-
-(default-free line-2d %start %end %control-pt %control-pt2)
 
 (defun make-line-2d (x1 y1 x2 y2 color
                      &rest args &key thickness bezier control-pt control-pt2)

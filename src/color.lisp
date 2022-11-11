@@ -15,9 +15,6 @@
 
 (definitializer rl-color)
 
-;; Default RL-COLOR objects are not meant to be freed.
-(defmethod free ((obj rl-color)) nil)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -35,16 +32,6 @@
                  (g integer)
                  (b integer)
                  (a integer)))
-
-(defmethod free ((obj color))
-  (when (and (slot-boundp obj '%c-struct)
-             (c-struct obj)
-             (autowrap:valid-p (c-struct obj)))
-    (free (c-struct obj))
-    (slot-makunbound obj '%c-struct))
-  (trivial-garbage:cancel-finalization obj))
-
-(default-free-c claylib/ll:color)
 
 (defun make-color (r g b &optional (a 255))
   (make-instance 'color :r r :g g :b b :a a))

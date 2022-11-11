@@ -254,39 +254,6 @@ COERCE-TYPE will usually be float, when applicable."
                                    `(when ,name (setf (,name ,obj) ,val))))))
            ,obj)))))
 
-(defmacro default-free (class &rest slot-names)
-  "Define a FREE method that is sane for most Lisp classes. You do not need to specify %C-STRUCT
-in the slot names -- it is included by default when applicable."
-  (let ((obj (gensym)))
-    `(defmethod free ((,obj ,class))
-       ,@(loop for name in slot-names
-               collect `(when (slot-boundp ,obj ',name)
-                          (free (slot-value ,obj ',name))
-                          (slot-makunbound ,obj ',name)))
-       ,(when (rl-class-p class)
-          `(when (and (slot-boundp ,obj '%c-struct)
-                      (typep (c-struct ,obj) 'autowrap:wrapper)
-                      (autowrap:valid-p (c-struct ,obj)))
-             (free (c-struct ,obj))
-             (slot-makunbound ,obj '%c-struct)))
-       ,(when (rl-class-p class) `(tg:cancel-finalization ,obj))
-       (when (next-method-p)
-         (call-next-method)))))
-
-(defmacro default-free-c (type &optional fn window-required-p)
-  "Define a FREE method that is sane for most C types."
-  ;; TODO: Is there a better way of ensuring we don't free a child wrapper?
-  (let ((validity-fn (intern (remove #\' (format nil "~:@a-VALIDITY" type)) 'claylib/wrap))
-        (obj (gensym)))
-    `(defmethod free ((,obj ,type))
-       (when (eql (,validity-fn ,obj) t)
-         ,(when fn
-            `(when (and (or (and ,window-required-p (is-window-ready-p))
-                            ,(and fn (not window-required-p)))
-                        (data-valid-p ,obj))
-               (,fn ,obj)))
-         (autowrap:free ,obj)))))
-
 (defmacro default-unload (type fn &optional window-required-p)
   "Define an initializer for a C wrapper type which will add a UNLOAD-* function to its finalizer."
   (let ((obj (gensym))

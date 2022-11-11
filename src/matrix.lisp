@@ -60,9 +60,6 @@
                  (m14 number float)
                  (m15 number float)))
 
-(default-free rl-matrix)
-(default-free-c claylib/ll:matrix)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)

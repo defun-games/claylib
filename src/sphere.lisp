@@ -15,8 +15,6 @@
 (definitializer cube
   :lisp-slots ((%radius) (%rings) (%slices)))
 
-(default-free sphere %radius %rings %slices)
-
 (defun make-sphere (x y z radius color &rest args &key filled rings slices)
   (declare (ignorable filled rings slices))
   ;; (and (not filled)

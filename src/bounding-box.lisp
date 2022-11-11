@@ -21,9 +21,6 @@
   :struct-slots ((%low nil min)
                  (%high nil max)))
 
-(default-free rl-bounding-box %low %high)
-(default-free-c claylib/ll:bounding-box)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)

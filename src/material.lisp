@@ -32,9 +32,6 @@
   :pt-accessors ((id integer)
                  (locs sequence)))
 
-(default-free rl-shader)
-(default-free-c claylib/ll:shader unload-shader)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -69,9 +66,6 @@
                  (%color color))
   :pt-accessors ((value number float)))
 
-(default-free rl-material-map %texture %color)
-(default-free-c claylib/ll:material-map)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -79,22 +73,7 @@
 
 
 
-(cffi:defcstruct texture-2d
-  (id :uint)
-  (width :int)
-  (height :int)
-  (mipmaps :int)
-  (format :int))
-(cffi:defcstruct color
-  (r :unsigned-char)
-  (g :unsigned-char)
-  (b :unsigned-char)
-  (a :unsigned-char))
-(cffi:defcstruct material-map
-  (texture (:struct texture-2d))
-  (color (:struct color))
-  (value :float))
-(defconstant +foreign-material-map-size+ (cffi:foreign-type-size '(:struct material-map)))
+(defconstant +foreign-material-map-size+ (autowrap:sizeof 'claylib/ll:material-map))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-material-maps (rl-sequence)
@@ -187,9 +166,6 @@
   :struct-slots ((%shader))
   :pt-accessors ((params sequence)))
 
-(default-free rl-material %shader %maps)
-(default-free-c claylib/ll:material unload-material)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -197,14 +173,7 @@
 
 
 
-(cffi:defcstruct shader
-  (id :uint)
-  (locs :pointer))
-(cffi:defcstruct material
-  (shader (:struct shader))
-  (maps :pointer)
-  (params :float :count 4))
-(defconstant +foreign-material-size+ (cffi:foreign-type-size '(:struct material)))
+(defconstant +foreign-material-size+ (autowrap:sizeof 'claylib/ll:material))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-materials (rl-sequence)

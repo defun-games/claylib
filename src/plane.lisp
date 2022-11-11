@@ -16,8 +16,6 @@
 (definitializer plane
   :lisp-slots ((%size)))
 
-(default-free plane %size)
-
 (defun make-plane (x y z width length color)
   (make-instance 'plane
                  :pos (make-vector3 x y z)

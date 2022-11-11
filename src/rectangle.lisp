@@ -24,9 +24,6 @@
                  (width number float)
                  (height number float)))
 
-(default-free rl-rectangle)
-(default-free-c claylib/ll:rectangle)
-
 (defun make-simple-rec (x y width height)
   "Make an RL-RECTANGLE for non-drawable uses such as defining a source or dest rectangle."
   (make-instance 'rl-rectangle :x x :y y :width width :height height))
@@ -88,8 +85,6 @@
                (%rotation t)
                (%thickness t)
                (%gradient-style)))
-
-(default-free rectangle)
 
 (defun make-rectangle (x y width height color
                        &rest args &key color2 filled rotation thickness origin gradient-style)

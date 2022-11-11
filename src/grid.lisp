@@ -15,8 +15,6 @@
   :lisp-slots ((%slices)
                (%spacing t)))
 
-(default-free grid)
-
 (defun make-grid (slices spacing)
   (make-instance 'grid :slices slices :spacing spacing))
 

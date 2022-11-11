@@ -27,9 +27,6 @@
 (definitializer rl-ray
   :struct-slots ((%position) (%direction)))
 
-(default-free rl-ray %position %direction)
-(default-free-c claylib/ll:ray)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -40,8 +37,6 @@
 
 (definitializer ray
   :lisp-slots ((%color)))
-
-(default-free ray %color)
 
 (defun make-ray (pos-x pos-y pos-z dir-x dir-y dir-z color)
   (make-instance 'ray

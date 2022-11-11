@@ -39,9 +39,6 @@
   :pt-accessors ((fovy number float)
                  (projection integer)))
 
-(default-free rl-camera-3d %position %target %up)
-(default-free-c claylib/ll:camera3d)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)

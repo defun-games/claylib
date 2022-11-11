@@ -42,8 +42,6 @@ camera).")
 (definitializer billboard
   :lisp-slots ((%asset) (%camera) (%size) (%source) (%rot-axis) (%rot-angle) (%origin) (%tint)))
 
-(default-free billboard %size %source %rot-axis %origin %tint)
-
 (defun make-billboard (texture-asset camera x y z x-scale y-scale source
                        &rest args &key up rot-angle origin tint)
   (declare (ignore up rot-angle origin tint))

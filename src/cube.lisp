@@ -37,8 +37,6 @@
                (%texture t)
                (%source)))
 
-(default-free cube %size %texture %source)
-
 (defmethod slot-unbound (_ (obj cube) (slot (eql '%source)))
   (setf (slot-value obj slot) (make-instance 'rl-rectangle
                                              :x 0 :y 0

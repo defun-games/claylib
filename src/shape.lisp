@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass shape (game-object)
+  (defclass shape ()
     ((%color :initarg :color
              :type rl-color
              :accessor color)
@@ -13,8 +13,6 @@
 
 (definitializer shape
   :lisp-slots ((%color) (%filled)))
-
-(default-free shape %color)
 
 
 

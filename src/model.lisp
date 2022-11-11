@@ -44,51 +44,7 @@
 (defcwriter bone-count rl-model bone-count model integer)
 (defcwriter-struct transform rl-model transform model matrix
   m0 m1 m2 m3 m4 m5 m6 m7 m8 m9 m10 m11 m12 m13 m14 m15)
-;; Shouldn't need these cwriters when using lisp sequences
-;; nor the SETFs (sequence methods or regular accessors should handle that)
-#| (defcwriter-struct meshes rl-model meshes model mesh  ; TODO: Array/pointer
-  vertex-count triangle-count vertices texcoords texcoords2 normals tangents colors
-  indices anim-vertices anim-normals bone-ids bone-weights vao-id vbo-id)
-(defcwriter-struct materials rl-model materials model material  ; TODO: Array/pointer
-  shader maps params)
-(defcwriter-struct bones rl-model bones model bone-info ; TODO: Array/pointer
-  name parent)
-(defcwriter-struct bind-pose rl-model bind-pose model transform ; pointer
-  trans rot scale)
-(defmethod (setf mesh) ((value rl-mesh) (model rl-model) (index integer))
-  (when (and (< index (mesh-count model))
-             (>= index 0))
-    (cffi:foreign-funcall "memcpy"
-                          :pointer (autowrap:c-aptr (model.meshes (c-struct model))
-                                                    index
-                                                    'claylib/ll:mesh)
-                          :pointer (autowrap:ptr (c-struct value))
-                          :int +foreign-mesh-size+
-                          :void)))
-(defmethod (setf meshes) ((value rl-meshes) (model rl-model))
-  (when (cffi-sys:null-pointer-p (model.meshes (c-struct model)))
-    (setf (model.meshes (c-struct model))
-          (autowrap:ptr (autowrap:calloc 'claylib/ll:mesh (length value)))))
-  ;(set-slot :meshes model value)
-  (dotimes (i (mesh-count model))
-    (setf (mesh model i) (elt value i))))
-(defmethod (setf material) ((value rl-material) (model rl-model) (index integer))
-  (when (and (< index (material-count model))
-             (>= index 0))
-    (cffi:foreign-funcall "memcpy"
-                          :pointer (autowrap:c-aptr (model.materials (c-struct model))
-                                                    index
-                                                    'claylib/ll:material)
-                          :pointer (autowrap:ptr (c-struct value))
-                          :int +foreign-material-size+
-                          :void)))
-(defmethod (setf materials) ((value rl-materials) (model rl-model))
-  (when (cffi-sys:null-pointer-p (model.materials (c-struct model)))
-    (setf (model.materials (c-struct model))
-          (autowrap:ptr (autowrap:calloc 'claylib/ll:material (length value)))))
-  (dotimes (i (material-count model))
-    (setf (material model i) (elt value i))))
-|#
+
 (defmethod (setf mesh-material) ((value integer) (model rl-model) (index integer))
   (when (and (< index (mesh-count model))
              (>= index 0)
@@ -128,9 +84,6 @@
                  (material-count integer)
                  (mesh-materials sequence)
                  (bone-count integer)))
-
-(default-free rl-model %transform %meshes %materials %bones %bind-pose)
-(default-free-c claylib/ll:model unload-model t)
 
 
 
@@ -207,12 +160,6 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
     (when animation-asset
       (setf (animations model) (asset animation-asset)))
     model))
-
-;(default-free model %scale %tint)
-(defmethod free ((obj model))
-  (dolist (slot '(%scale %tint %position %rot-axis %transform %meshes %materials %bones %bind-pose))
-    (free (slot-value obj slot))
-    (slot-makunbound obj slot)))
 
 (defmethod draw-object ((obj model))
   (claylib/ll:draw-model-ex (c-struct obj)

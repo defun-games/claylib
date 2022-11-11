@@ -61,9 +61,6 @@
                  (vao-id integer)
                  (vbo-id integer)))
 
-(default-free rl-mesh)
-(default-free-c claylib/ll:mesh unload-mesh t)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -71,24 +68,6 @@
 
 
 
-;; TODO: Does autowrap give me something like this already? I need to know the size for memcpy later
-#|
-(cffi:defcstruct mesh
-  (vertex-count :int)
-  (triangle-count :int)
-  (vertices :pointer)
-  (tex-coords :pointer)
-  (tex-coords2 :pointer)
-  (normals :pointer)
-  (tangents :pointer)
-  (colors :pointer)
-  (indices :pointer)
-  (anim-vertices :pointer)
-  (anim-normals :pointer)
-  (bone-ids :pointer)
-  (bone-weights :pointer)
-  (vao-id :uint)
-  (vbo-id :pointer))|#
 (defconstant +foreign-mesh-size+ (autowrap:sizeof 'claylib/ll:mesh))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -123,25 +102,3 @@ nth element of the underlying c-struct.\""
                         :pointer (autowrap:ptr (c-struct value))
                         :int +foreign-mesh-size+
                         :void))
-
-;; TODO: Necessary? Can we safely leave this unimplemented?
-;; (defmethod sequences:adjust-sequence ((sequence rl-meshes) length
-;;                                       &key initial-contents initial-element)
-;; ;; Cannot meaningfully change length
-;;   (unless (= length (length rl-meshes))
-;;     (error "Cannot change the length of a C array."))
-;;   (cond
-;;     ((and initial-contents initial-element)
-;;      (error "Cannot give both INITIAL-CONTENTS and INITIAL-ELEMENT"))
-
-;;     (initial-contents
-;;      (loop for rl-mesh in initial-contents
-;;            do ; copy each mesh in
-;;            ))
-
-;;     (initial-element
-;;      )))
-
-;; TODO: Necessary? Can we safely leave this unimplemented?
-;; (defmethod sequences:make-sequence-like ((sequence rl-meshes) length
-;;                                          &key initial-contents initial-ellement))

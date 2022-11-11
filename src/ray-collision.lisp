@@ -27,9 +27,6 @@
   :pt-accessors ((hit boolean)
                  (distance number float)))
 
-(default-free rl-ray-collision %point %normal)
-(default-free-c claylib/ll:ray-collision)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)

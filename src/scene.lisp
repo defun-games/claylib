@@ -92,7 +92,7 @@ an OpenGL context before being loaded into the GPU."
 (defmacro with-scenes (scenes &body body)
   "Execute BODY after loading & initializing SCENES, tearing them down afterwards.
 
-Note: additional scenes can be loaded/freed at any point using {SET-UP,TEAR-DOWN}-SCENE."
+Note: additional scenes can be loaded/GC'd at any point using {SET-UP,TEAR-DOWN}-SCENE."
   (unless (listp scenes) (setf scenes `(list ,scenes)))
   `(progn
      (mapcar #'set-up-scene ,scenes)

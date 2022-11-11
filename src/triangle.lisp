@@ -29,8 +29,6 @@
 (definitializer triangle
   :lisp-slots ((%v1) (%v2) (%v3)))
 
-(default-free triangle %v1 %v2 %v3)
-
 (defun make-triangle (x1 y1 x2 y2 x3 y3 color
                       &rest args &key filled)
   (declare (ignorable filled))

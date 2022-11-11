@@ -18,9 +18,6 @@
   :pt-accessors ((name string)
                  (parent integer)))
 
-(default-free rl-bone-info)
-(default-free-c claylib/ll:bone-info)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -55,14 +52,6 @@
   :pt-accessors ((bone-count integer)
                  (frame-count integer)))
 
-(default-free rl-model-animation %bones %frame-poses)
-
-(defmethod free ((anim claylib/ll:model-animation))
-  ;; TODO: Access the num somehow and use UNLOAD-MODEL-ANIMATIONS to unload all of them
-  (when (autowrap:valid-p anim)
-    (unload-model-animation anim)
-    (autowrap:free anim)))
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -70,10 +59,7 @@
 
 
 
-(cffi:defcstruct bone-info
-  (name :char :count 32)
-  (parent :int))
-(defconstant +foreign-bone-info-size+ (cffi:foreign-type-size '(:struct bone-info)))
+(defconstant +foreign-bone-info-size+ (autowrap:sizeof 'claylib/ll:bone-info))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-bones (rl-sequence)
@@ -99,12 +85,7 @@
 
 
 
-(cffi:defcstruct model-animation
-  (bone-count :int)
-  (frame-count :int)
-  (bones :pointer)
-  (frame-poses :pointer))
-(defconstant +foreign-animation-size+ (cffi:foreign-type-size '(:struct model-animation)))
+(defconstant +foreign-animation-size+ (autowrap:sizeof 'claylib/ll:model-animation))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-animations (rl-sequence)

@@ -30,10 +30,6 @@
                  (offset-y integer)
                  (advance-x integer)))
 
-(default-free rl-glyph-info %image)
-;; TODO: I think UNLOAD-FONT-DATA should be used here somehow.
-(default-free-c claylib/ll:glyph-info)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -107,9 +103,6 @@
   :pt-accessors ((size integer)
                  (glyph-count integer)
                  (glyph-padding integer)))
-
-(default-free rl-font %texture %recs %glyphs)
-(default-free-c claylib/ll:font unload-font)
 
 
 

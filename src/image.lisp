@@ -29,11 +29,6 @@
                  (mipmaps integer)
                  (data-format integer)))
 
-(default-free rl-image)
-(default-free-c claylib/ll:image)
-;; TODO: For some reason UNLOAD-IMAGE is broken now and I'm too tired to figure out why.
-;(default-free-c claylib/ll:image unload-image)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -52,8 +47,6 @@
 
 (definitializer image
   :lisp-slots ((%source) (%dest) (%tint)))
-
-(default-free image %source %dest %tint)
 
 (defun make-image (asset source dest
                    &rest args &key tint (copy-asset nil))

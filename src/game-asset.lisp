@@ -12,14 +12,6 @@
 (defreader c-asset game-asset c-struct asset)
 (defwriter c-asset game-asset c-struct asset)
 
-(defmethod free ((asset game-asset))
-  (when (and (slot-boundp asset '%asset)
-             (asset asset))
-    (free (asset asset)))
-  (setf (slot-value asset '%asset) nil)
-  (when (next-method-p)
-    (call-next-method)))
-
 (defmethod initialize-instance :after ((asset game-asset) &key load-now)
   (when load-now (load-asset asset)))
 
@@ -256,18 +248,6 @@
 (defun make-animation-asset (path &key (load-now nil))
   "Make an animation asset from a PATH. This does not load the model unless LOAD-NOW is non-nil."
   (make-instance 'animation-asset :path path :load-now load-now))
-
-;; TODO update free to work with rl-animations sequence
-(defmethod free ((asset animation-asset))
-  (when (and (asset asset)
-             (autowrap:valid-p (c-struct (elt (asset asset) 0))))
-    (claylib/ll:unload-model-animations (c-struct (elt (asset asset) 0)) (length (asset asset)))
-    (autowrap:free (c-struct (elt (asset asset) 0))))
-  (setf (slot-value asset '%asset) nil)
-  (when (next-method-p)
-    (call-next-method)))
-
-
 
 (defmethod load-asset ((asset list) &key force-reload)
   (dolist (ass asset)

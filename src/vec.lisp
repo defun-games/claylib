@@ -23,9 +23,6 @@
   :pt-accessors ((x number float)
                  (y number float)))
 
-(default-free rl-vector2)
-(default-free-c claylib/ll:vector2)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -56,9 +53,6 @@
   :pt-accessors ((x number float)
                  (y number float)
                  (z number float)))
-
-(default-free rl-vector3)
-(default-free-c claylib/ll:vector3)
 
 
 
@@ -93,9 +87,6 @@
                  (y number float)
                  (z number float)
                  (w number float)))
-
-(default-free rl-vector4)
-(default-free-c claylib/ll:vector4)
 
 
 

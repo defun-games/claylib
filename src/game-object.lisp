@@ -1,15 +1,7 @@
 (in-package #:claylib)
 
-;; I moved the %position slot out because of the way DEFINITIALIZER is written;
-;; it's easier to rely on direct slot info than inherited slot info.
-;; This class is probably useless now... emphasis on *probably*.
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass game-object () ()))
-
-
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass 2d-object (game-object)
+  (defclass 2d-object ()
     ((%position :initarg :pos
                 :type rl-vector2
                 :accessor pos))))
@@ -23,12 +15,10 @@
 (definitializer 2d-object
   :lisp-slots ((%position)))
 
-(default-free 2d-object %position)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass 3d-object (game-object)
+  (defclass 3d-object ()
     ((%position :initarg :pos
                 :type rl-vector3
                 :accessor pos)
@@ -55,5 +45,3 @@
   :lisp-slots ((%position)
                (%rot-axis)
                (%rot-angle t)))
-
-(default-free 3d-object %position %rot-axis)

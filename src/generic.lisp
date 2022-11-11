@@ -44,10 +44,6 @@
 (defgeneric (setf z2) (value line)
   (:documentation "Set the Z value of the end point of a 3D line."))
 
-(defgeneric free (thing)
-  (:documentation "Free a C object, or free all C objects backing a CLOS object. If Claylib does its
-job, the user may never need to call this directly."))
-
 (defgeneric width (shape)
   (:documentation "Get the width (X dimension) of any shape."))
 (defgeneric height (shape)

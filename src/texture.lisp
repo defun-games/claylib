@@ -29,9 +29,6 @@
                  (mipmaps integer)
                  (data-format integer)))
 
-(default-free rl-texture)
-(default-free-c claylib/ll:texture unload-texture t)
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -64,8 +61,6 @@
                (%origin)
                (%rotation t)
                (%tint)))
-
-(default-free tex %source %dest %origin %tint)
 
 
 
@@ -213,9 +208,6 @@
 (definitializer rl-render-texture
   :struct-slots ((%texture) (%depth))
   :pt-accessors ((id integer)))
-
-(default-free rl-render-texture %texture %depth)
-(default-free-c claylib/ll:render-texture unload-render-texture)
 
 
 
