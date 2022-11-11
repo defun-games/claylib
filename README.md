@@ -4,7 +4,7 @@ A Common Lisp 2D/3D game toolkit built on top of [Raylib](https://www.raylib.com
 ## Quick Start
 Claylib is not yet in Quicklisp. Load claylib.asd and run `(ql:quickload :claylib/examples)` or similar to load all of the available packages. See the next section for what those packages are and how you might use them.
 
-To see the [examples](/examples) in action, just run e.g. `(claylib/examples/basic-window:main)`. Hit Escape to exit. At the time of this writing, most of the core examples are done, as well as a handful of shape and texture examples. GUI examples are very **work-in-progress**.
+To see the [examples](/examples) in action, just run e.g. `(claylib/examples/basic-window:main)`. Hit Escape to exit. At the time of this writing, most of the core examples are done, as well as a handful from other categories. GUI examples are very **work-in-progress**.
 
 Tested only on Linux, so far. There's no obvious reason it can't work on other platforms, but you might need to build Raylib and Raygui yourself.
 
