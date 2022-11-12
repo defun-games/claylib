@@ -215,6 +215,12 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   (height number float)
   (length number float))
 
+(defun-pt gen-mesh-cubicmap claylib/ll:gen-mesh-cubicmap
+  "Generate cubes-based map mesh from image data. Allocates a new RL-MESH unless you pass one."
+  (mesh rl-mesh nil (make-instance 'rl-mesh))
+  (cubicmap rl-image)
+  (cube-size rl-vector3))
+
 ;; Material loading/unloading functions
 
 (defun-pt-void set-material-texture claylib/ll:set-material-texture

@@ -39,7 +39,8 @@
    :fade :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw :with-drawing
    :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex
-   :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere)
+   :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere
+   :gen-mesh-cubicmap)
 
 
 
@@ -149,7 +150,7 @@
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw
    :copy-asset-to-object :set-window-position :check-collision-recs :get-collision-rec
    :check-collision-point-circle :measure-text-ex :update-model-animation :set-material-texture
-   :check-collision-boxes :check-collision-box-sphere
+   :check-collision-boxes :check-collision-box-sphere :gen-mesh-cubicmap
 
    ;;; Raygui
 
