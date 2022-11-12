@@ -65,10 +65,9 @@
 
           ;; Collisions
           (cube-bbox player :bbox pbbox)
-          (setf collision
-                (or (check-collision-boxes pbbox ebbox)
-                    (check-collision-box-sphere pbbox enemy-sphere)))
-          (setf (color player) (if collision +red+ +green+))
+          (setf collision (or (check-collision-boxes pbbox ebbox)
+                              (check-collision-box-sphere pbbox enemy-sphere))
+                (color player) (if collision +red+ +green+))
 
           (with-drawing ()
             (with-3d-mode camera
