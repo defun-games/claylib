@@ -50,7 +50,7 @@
           (update-camera camera)
           (when (is-key-down-p +key-space+)
             (incf anim-frame-counter)
-            (update-model-animation model anim-frame-counter)
+            (update-model-animation model 0 anim-frame-counter)
             (when (>= anim-frame-counter (frame-count (elt (animations model) 0)))
               (setf anim-frame-counter 0)))
           (with-drawing ()

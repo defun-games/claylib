@@ -231,15 +231,15 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
 
 ;; Model animations loading/unloading functions
 
-(defun update-model-animation (model frame)
-  "Returns an RL-VECTOR2 with the width (x) and height (y) of the TEXT object accounting for its
-font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
+(defun update-model-animation (model anim-index frame)
+  "Updates MODEL's animation pose based on the ANIM-INDEX and FRAME."
   (check-type model model)
   (check-type frame (integer 0 *))
+  (check-type anim-index (integer 0 *))
   (when (not (animations model))
     (error "~a has no associated animations." model))
   (claylib/ll:update-model-animation (c-struct model)
-                                     (c-struct (elt (animations model) 0))
+                                     (c-struct (elt (animations model) anim-index))
                                      frame))
 
 ;; Collision detection functions
