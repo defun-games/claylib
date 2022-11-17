@@ -55,12 +55,13 @@
               (setf anim-frame-counter 0)))
           (with-drawing ()
             (with-3d-mode camera
-              ;; TODO doesn't work because the frame-poses are actually a 2d array or something???
-              ;; (loop for i below (length (bones model))
-              ;;       ;; Sometimes it makes sense to call on claylib/ll
-              ;;       do (claylib/ll:draw-cube
-              ;;             (claylib::trans (elt (claylib::frame-poses (elt (animations model) 0)) i))
-              ;;           0.2 0.2 0.2
-              ;;           (claylib::c-struct +red+)))
+              (loop for i below (length (bones model))
+                    ;; Sometimes it makes sense to call on claylib/ll
+                    do (claylib/ll:draw-cube
+                        (claylib::trans (elt (elt (claylib::frame-poses (elt (animations model) 0))
+                                                  anim-frame-counter)
+                                             i))
+                        0.2 0.2 0.2
+                        (claylib::c-struct +red+)))
               (draw-scene *scene* 'model 'grid))
             (draw-scene *scene* 'instructions 'copyright)))))))
