@@ -147,7 +147,8 @@
                   :components
                   ((:file "animation")
                    (:file "billboard")
-                   (:file "box-collisions")))
+                   (:file "box-collisions")
+                   (:file "cubicmap")))
                  (:module "text"
                   :components
                   ((:file "raylib-fonts")
