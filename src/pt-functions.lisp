@@ -199,6 +199,33 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   (model rl-model nil (make-instance 'rl-model))
   (mesh rl-mesh))
 
+;; TODO generalize for all functions that do model creation
+(defun load-model-from-mesh (mesh &key (model (make-instance 'model)))
+  "Load a model from a passed-in mesh. Allocates a new RL-MODEL unless you pass one."
+  (check-type mesh rl-mesh)
+  (check-type model rl-model)
+  (claylib/ll:load-model-from-mesh (c-struct model) (c-struct mesh))
+  (let ((c-meshes (autowrap:c-aref (model.meshes (c-struct model)) 0 'claylib/ll:mesh))
+        (c-bones (autowrap:c-aref (model.bones (c-struct model)) 0 'claylib/ll:bone-info))
+        (c-materials (autowrap:c-aref (model.materials (c-struct model)) 0 'claylib/ll:material))
+        (c-poses (autowrap:c-aref (model.bind-pose (c-struct model)) 0 'claylib/ll:transform)))
+    (set-slot :transform model (transform model))
+    (setf (meshes model)
+          (make-instance 'rl-meshes :cl-array (make-rl-*-array c-meshes (mesh-count model)))
+
+          (materials model)
+          (make-instance 'rl-materials
+                         :cl-array (make-rl-*-array c-materials (material-count model)))
+
+          ;; (bones model)
+          ;; (make-instance 'rl-bones :cl-array (make-rl-*-array c-bones (bone-count model)))
+
+          ;; (bind-pose model)
+          ;; (make-instance 'rl-transforms :cl-array (make-rl-*-array c-poses (bone-count model)))
+          )
+    model))
+
+
 ;; Mesh generation functions
 
 (defun-pt gen-mesh-cylinder claylib/ll:gen-mesh-cylinder
