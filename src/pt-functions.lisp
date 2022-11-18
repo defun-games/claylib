@@ -194,11 +194,6 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
 
 ;; Model loading/unloading functions
 
-(defun-pt load-model-from-mesh claylib/ll:load-model-from-mesh
-  "Load a model from a passed-in mesh. Allocates a new RL-MODEL unless you pass one."
-  (model rl-model nil (make-instance 'rl-model))
-  (mesh rl-mesh))
-
 ;; TODO generalize for all functions that do model creation
 (defun load-model-from-mesh (mesh &key (model (make-instance 'model)))
   "Load a model from a passed-in mesh. Allocates a new RL-MODEL unless you pass one."
