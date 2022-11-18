@@ -15,13 +15,12 @@
 (defparameter *scene*
   (make-scene ((model-asset (car *assets*))
                (model-texture (cadr *assets*))
-               (model-anims (caddr *assets*))  ; TODO: This line causes a hang on quit
-               )
+               (model-anims (caddr *assets*)))
               ((camera (make-camera-3d 10 10 10
                                        0 0 0
                                        0 1 0
                                        :mode +camera-free+))
-               (model (let ((m (make-model model-asset  ; TODO: This form causes a double free on quit
+               (model (let ((m (make-model model-asset
                                            0 0 0
                                            :animation-asset model-anims
                                            :rot-axis (make-vector3 1 0 0)
