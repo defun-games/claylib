@@ -26,11 +26,9 @@
                                   (elt (maps (elt (materials m) 0)) +material-map-diffuse+)
                                   (asset texture))
 
-                        (setf (pos m) (make-vector3 -16 0 -8))
-                        ;; TODO Why doesn't this work?
-                        ;; (setf (x m) -16
-                        ;;       (y m) 0
-                        ;;       (z m) -8)
+                        (setf (x m) -16
+                              (y m) 0
+                              (z m) -8)
                         m))
                (camera (make-camera-3d 16 14 16
                                        0 0 0
