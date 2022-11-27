@@ -90,9 +90,6 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
 (defmethod draw-object ((obj list))
   (mapc #'draw-object obj))
 
-(defmethod free ((obj list))
-  (mapc #'free obj))
-
 (defmacro with-audio-device (&body body)
   "Initialize audio device & context for use during the execution of BODY, closing them afterwards.
 

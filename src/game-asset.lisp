@@ -268,13 +268,6 @@
 (defun make-music-asset (path &key (load-now nil))
   (make-instance 'music-asset :path path :load-now load-now))
 
-(defmethod free ((asset music-asset))
-  (when (asset asset)
-    (free (asset asset))
-    (setf (slot-value asset '%asset) nil))
-  (when (next-method-p)
-    (call-next-method)))
-
 
 
 (defmethod load-asset ((asset list) &key force-reload)
