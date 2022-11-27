@@ -1,8 +1,8 @@
 (in-package #:cl-user)
-(defpackage claylib/examples/audio-1
+(defpackage claylib/examples/module-playing
   (:use :cl :claylib)
   (:export :main))
-(in-package #:claylib/examples/audio-1)
+(in-package #:claylib/examples/module-playing)
 
 (defclass circle-wave (circle)
   ((%velocity :initarg :velocity

@@ -1,8 +1,8 @@
 (in-package #:cl-user)
-(defpackage claylib/examples/audio-2
+(defpackage claylib/examples/music-stream
   (:use :cl :claylib)
   (:export :main))
-(in-package #:claylib/examples/audio-2)
+(in-package #:claylib/examples/music-stream)
 
 (defparameter *scene*
   (make-scene ((music-ass (make-music-asset (claylib/examples:claylib-path
