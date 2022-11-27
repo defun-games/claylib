@@ -23,8 +23,9 @@
 (defvar *colors* (list +orange+ +red+ +gold+ +lime+ +blue+ +violet+ +brown+ +lightgray+ +pink+
                       +yellow+ +green+ +skyblue+ +purple+ +beige+))
 
-(defun random-radius ()
-  (+ 10 (random 30.0)))
+(defun random-bounded (lower upper)
+  "Return a random value ∈ [LOWER, UPPER] (inclusive)."
+  (+ lower (random (1+ (- upper lower)))))
 
 (defun random-x (radius)
   "Return a random valid X position for a circle with RADIUS."
@@ -45,7 +46,7 @@
     (make-scene ((music (make-music-asset (claylib/examples:claylib-path
                                            "examples/audio/resources/mini1111.xm"))))
                 ((circles (loop for i from 63 downto 0
-                                collect (let* ((r (random-radius))
+                                collect (let* ((r (random-bounded 10 30))
                                                (x (random-x r))
                                                (y (random-y r))
                                                (color (copy-color (alexandria:random-elt *colors*)))
@@ -98,7 +99,7 @@
                             (setf v (- v)))
                            ((<= a 0)
                             (setf a 0
-                                  r (random-radius)
+                                  r (random-bounded 10 30)
                                   x (random-x r)
                                   y (random-y r)
                                   v (random-velocity))
