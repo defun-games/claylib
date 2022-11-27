@@ -12,18 +12,16 @@
            :type number
            :accessor alpha)))
 
-(defvar *colors* (list +orange+ +red+ +gold+ +lime+ +blue+ +violet+ +brown+ +lightgray+ +pink+
-                      +yellow+ +green+ +skyblue+ +purple+ +beige+))
-
-(defun make-circle-wave (x y radius color velocity &key color2 (filled t) (alpha 0))
+(defun make-circle-wave (x y radius color velocity &key (alpha 0))
   (make-instance 'circle-wave
                  :pos (make-vector2 x y)
                  :radius radius
                  :color color
-                 :color2 color2
-                 :filled filled
                  :velocity velocity
                  :alpha alpha))
+
+(defvar *colors* (list +orange+ +red+ +gold+ +lime+ +blue+ +violet+ +brown+ +lightgray+ +pink+
+                      +yellow+ +green+ +skyblue+ +purple+ +beige+))
 
 (defun random-radius ()
   (+ 10 (random 30.0)))
@@ -61,7 +59,7 @@
   (with-window (:title "raylib [audio] example - module playing (streaming)"
                 :flags (list +flag-msaa-4x-hint+))
     (with-audio-device
-      (with-scenes *scene*
+      (with-scenes *scene* ()
         ;; FIXME find a better way to refer to the rl-music, without making it a scene object.
         ;; Perhaps a candidate for "scene parameter" stuff?
         (let ((music (asset (gethash 'music (claylib::assets *scene*)))))
@@ -103,9 +101,8 @@
                                   r (random-radius)
                                   x (random-x r)
                                   y (random-y r)
-                                  ;; FIXME sadly allocating new colors here, can we avoid this?
-                                  c (copy-color (alexandria:random-elt *colors*))
-                                  v (random-velocity))))
+                                  v (random-velocity))
+                            (copy-color (alexandria:random-elt *colors*) c)))
                      (fade c a)))
 
               (with-drawing ()

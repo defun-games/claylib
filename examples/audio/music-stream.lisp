@@ -24,7 +24,7 @@
   (with-window (:title "raylib [audio] example - music playing (streaming)"
                 :fps 30)
     (with-audio-device
-      (with-scenes *scene*
+      (with-scenes *scene* ()
         (let ((music (asset (gethash 'music-ass (claylib::assets *scene*)))))
           (play music)
           (do-game-loop (:livesupport t

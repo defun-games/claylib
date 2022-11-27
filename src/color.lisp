@@ -36,13 +36,20 @@
 (defun make-color (r g b &optional (a 255))
   (make-instance 'color :r r :g g :b b :a a))
 
-(defun copy-color (color)
-  (if (typep color 'rl-color)
-      (make-color (r color) (g color) (b color) (a color))
-      (make-color (claylib/ll:color.r color)
-                  (claylib/ll:color.g color)
-                  (claylib/ll:color.b color)
-                  (claylib/ll:color.a color))))
+(defun copy-color (color &optional into)
+  "Copy a given COLOR by allocating a new one unless an existing rl-color, INTO, is given."
+  (if into
+      ;; TODO handle case where color is not an rl-color (∴ cannot use rgba accessors)
+      (setf (r into) (r color)
+            (g into) (g color)
+            (b into) (b color)
+            (a into) (a color))
+      (if (typep color 'rl-color)
+          (make-color (r color) (g color) (b color) (a color))
+          (make-color (claylib/ll:color.r color)
+                      (claylib/ll:color.g color)
+                      (claylib/ll:color.b color)
+                      (claylib/ll:color.a color)))))
 
 (defun copy-color-constant (color)
   (make-instance 'rl-color :c-struct color))

@@ -1,15 +1,16 @@
 (in-package #:claylib)
 
-(defclass rl-music ()
-  ((%c-struct :type claylib/ll:music
-              :initform (autowrap:alloc 'claylib/ll:music)
-              :accessor c-struct)
-   (%pitch :initarg :pitch
-           :type float
-           :reader pitch)
-   (%volume :initarg :volume
-            :type float
-            :reader volume)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass rl-music ()
+    ((%c-struct :type claylib/ll:music
+                :initform (autowrap:alloc 'claylib/ll:music)
+                :accessor c-struct)
+     (%pitch :initarg :pitch
+             :type float
+             :reader pitch)
+     (%volume :initarg :volume
+              :type float
+              :reader volume))))
 
 (defcreader astream      rl-music stream      music)
 (defcreader frame-count  rl-music frame-count music)
@@ -30,13 +31,11 @@
                                (coerce new-value 'single-float)))
 
 (definitializer rl-music
-    (frame-count integer) (looping boolean) (pitch number float))
+  :lisp-slots ((%pitch) (%volume))
+  :pt-accessors ((frame-count integer) (looping boolean) (ctx-type integer) #|(ctx-data pointer)|#))
 
 (default-slot-value rl-music %pitch 1.0)
 (default-slot-value rl-music %volume 1.0)
-
-(default-free rl-music)
-(default-free-c claylib/ll:music claylib/ll:unload-music-stream)
 
 (defmethod update ((object rl-music))
   (claylib/ll:update-music-stream (c-struct object)))
