@@ -65,18 +65,30 @@ DEFER-INIT will defer initialization of the scene's OBJECTS until later (usually
 SET-UP-SCENE directly). This is useful when your scene contains objects like TEXTURES which require
 an OpenGL context before being loaded into the GPU."
   (let ((scene (gensym))
-        (objects (if defer-init
-                     (loop for (binding val) in objects
-                           collect `(,binding (eager-future2:pcall (lambda () ,val) :lazy)))
-                     objects)))
-    `(let ((,scene (make-instance 'game-scene :gc ,gc)))
-       (let* (,@assets ,@objects)
-         (declare (ignorable ,@(mapcar #'car (append assets objects))))
-         (progn
-           ,@(loop for (binding val) in assets
-                   collect `(setf (gethash ',binding (assets ,scene)) ,binding))
-           ,@(loop for (binding val) in objects
-                   collect `(setf (gethash ',binding (objects ,scene)) ,binding))))
+        (syms (when defer-init
+                (alexandria:make-gensym-list (length objects)))))
+    `(let ((,scene (make-instance 'game-scene :gc ,gc))
+           ,@syms)
+       (declare (ignorable ,@syms))
+       (symbol-macrolet (,@assets)
+         ,@(loop for (binding val) in assets
+                 collect `(setf (gethash ',binding (assets ,scene)) ,binding))
+         ,(if defer-init
+              `(symbol-macrolet (,@(loop for sym in syms
+                                         for obj in objects
+                                         collect `(,(car obj) (eager-future2:touch ,sym))))
+                 (let* (,@(loop for sym in syms
+                                for obj in objects
+                                collect `(,sym (eager-future2:pcall
+                                                (lambda () ,(cadr obj))
+                                                :lazy))))
+                   ,@(loop for sym in syms
+                           for obj in objects
+                           collect `(setf (gethash ',(car obj) (objects ,scene))
+                                          ,sym))))
+              `(symbol-macrolet (,@objects)
+                 ,@(loop for (binding val) in objects
+                         collect `(setf (gethash ',binding (objects ,scene)) ,binding)))))
        ,scene)))
 
 (defun scene-object (scene object)
