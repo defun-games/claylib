@@ -12,13 +12,16 @@
              :reader pitch)
      (%volume :initarg :volume
               :type float
-              :reader volume))))
+              :reader volume))
+    (:default-initargs
+     :pitch 1.0
+     :volume 1.0)))
 
-(defcreader astream      rl-music stream      music)
-(defcreader frame-count  rl-music frame-count music)
-(defcreader ctx-type     rl-music ctx-type    music)
-(defcreader ctx-data     rl-music ctx-data    music)
-(defcreader-bool looping rl-music looping music)
+(defcreader      astream     rl-music stream      music)
+(defcreader      frame-count rl-music frame-count music)
+(defcreader      ctx-type    rl-music ctx-type    music)
+(defcreader      ctx-data    rl-music ctx-data    music)
+(defcreader-bool looping     rl-music looping     music)
 
 (defcwriter-bool looping rl-music looping music)
 
@@ -36,9 +39,6 @@
 (definitializer rl-music
   :lisp-slots ((%pitch) (%volume))
   :pt-accessors ((frame-count integer) (looping boolean) (ctx-type integer) #|(ctx-data pointer)|#))
-
-(default-slot-value rl-music %pitch 1.0)
-(default-slot-value rl-music %volume 1.0)
 
 (defmethod update ((object rl-music))
   (claylib/ll:update-music-stream (c-struct object)))
