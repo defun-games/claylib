@@ -1,5 +1,7 @@
 (in-package #:claylib)
 
+(default-unload claylib/ll:music unload-music-stream t)
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-music ()
     ((%c-struct :type claylib/ll:music
@@ -16,16 +18,17 @@
 (defcreader frame-count  rl-music frame-count music)
 (defcreader ctx-type     rl-music ctx-type    music)
 (defcreader ctx-data     rl-music ctx-data    music)
-
 (defcreader-bool looping rl-music looping music)
+
 (defcwriter-bool looping rl-music looping music)
 
 (defwriter-float pitch rl-music)
+(defwriter-float volume rl-music)
+
 (defmethod (setf pitch) :after (new-value (class rl-music))
   (claylib/ll:set-music-pitch (c-struct class)
                               (coerce new-value 'single-float)))
 
-(defwriter-float volume rl-music)
 (defmethod (setf volume) :after (new-value (class rl-music))
   (claylib/ll:set-music-volume (c-struct class)
                                (coerce new-value 'single-float)))
