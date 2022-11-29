@@ -23,28 +23,27 @@
 (defun main ()
   (with-window (:title "raylib [audio] example - music playing (streaming)"
                 :fps 30)
-    (with-audio-device
-      (with-scenes *scene* ()
-        (let ((music (asset (gethash 'music-ass (claylib::assets *scene*)))))
-          (play music)
-          (do-game-loop (:livesupport t
-                         :vars ((time-played 0)
-                                (pause nil)))
-            (update music)
+    (with-scenes *scene* ()
+      (let ((music (asset (gethash 'music-ass (claylib::assets *scene*)))))
+        (play music)
+        (do-game-loop (:livesupport t
+                       :vars ((time-played 0)
+                              (pause nil)))
+          (update music)
 
-            (when (is-key-pressed-p +key-space+)
-              (stop music)
-              (play music))
+          (when (is-key-pressed-p +key-space+)
+            (stop music)
+            (play music))
 
-            (when (is-key-pressed-p +key-p+)
-              (if (setf pause (not pause))
-                  (pause music)
-                  (resume music)))
+          (when (is-key-pressed-p +key-p+)
+            (if (setf pause (not pause))
+                (pause music)
+                (resume music)))
 
-            (setf time-played (min (/ (get-music-time-played music)
-                                      (get-music-time-length music))
-                                   1)
-                  (width (scene-object *scene* 'timebar-fill)) (* time-played 400))
+          (setf time-played (min (/ (get-music-time-played music)
+                                    (get-music-time-length music))
+                                 1)
+                (width (scene-object *scene* 'timebar-fill)) (* time-played 400))
 
-            (with-drawing ()
-              (draw-scene-all *scene*))))))))
+          (with-drawing ()
+            (draw-scene-all *scene*)))))))
