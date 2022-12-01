@@ -190,7 +190,21 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
 
 
 
-;;; Models
+;;; Basic 3d Shapes Drawing Functions (Module: models)
+
+;; Basic geometric 3D shapes drawing functions
+
+(defun-pt-void draw-cube claylib/ll:draw-cube
+  "Draw a cube from given properties (not a cube object)."
+  (position rl-vector3)
+  (width number float)
+  (height number float)
+  (length number float)
+  (color rl-color))
+
+
+
+;;; Models 3d Loading and Drawing Functions (Module: models)
 
 ;; Model loading/unloading functions
 

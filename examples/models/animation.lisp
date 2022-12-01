@@ -56,11 +56,10 @@
             (with-3d-mode camera
               (loop for i below (length (bones model))
                     ;; Sometimes it makes sense to call on low-level claylib (claylib/ll)
-                    do (claylib/ll:draw-cube
-                        (trans (elt (elt (frame-poses (elt (animations model) 0))
-                                         anim-frame-counter)
-                                    i))
-                        0.2 0.2 0.2
-                        (claylib::c-struct +red+)))
+                    do (draw-cube (trans (elt (elt (frame-poses (elt (animations model) 0))
+                                                   anim-frame-counter)
+                                              i))
+                                  0.2 0.2 0.2
+                                  +red+))
               (draw-scene *scene* 'model 'grid))
             (draw-scene *scene* 'instructions 'copyright)))))))

@@ -151,7 +151,7 @@
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw
    :copy-asset-to-object :set-window-position :check-collision-recs :get-collision-rec
    :check-collision-point-circle :measure-text-ex :update-model-animation :set-material-texture
-   :check-collision-boxes :check-collision-box-sphere :gen-mesh-cubicmap
+   :check-collision-boxes :check-collision-box-sphere :gen-mesh-cubicmap :draw-cube
 
    ;;; Raygui
 
