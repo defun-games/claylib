@@ -118,8 +118,9 @@
    :make-model :make-animation-asset :make-sphere :make-sphere-from-vec
 
    ;; Scenes
-   :draw-scene-all :scene-object :load-scene-all :unload-scene-all :draw-scene :draw-scene-except
-   :make-scene :objects :draw-scene-regex :with-scenes :set-up-scene :tear-down-scene :draw-objects
+   :draw-scene-all :scene-object :scene-asset :scene-param :load-scene-all :unload-scene-all
+   :draw-scene :draw-scene-except :make-scene :make-scene-pro :params :assets :objects
+   :draw-scene-regex :with-scenes :set-up-scene :tear-down-scene :draw-objects
 
    ;; Generic functions/methods
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
