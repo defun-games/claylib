@@ -33,7 +33,7 @@
              :type rl-bones
              :reader bones)
      (%frame-poses :initarg :frame-poses
-                   :type rl-transforms
+                   :type (array rl-transforms)
                    :reader frame-poses)
      (%c-struct
       :type claylib/ll:model-animation
@@ -92,32 +92,44 @@
     ((%cl-array :type (array rl-model-animation 1)))))
 
 (defmethod make-rl-*-array ((c-struct claylib/wrap:model-animation) num)
-  (let ((contents (loop for i below num
-                        for anim = (make-instance 'rl-model-animation)
-                        for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:model-animation)
-                        for c-bones = (autowrap:c-aref (model-animation.bones c-elt)
-                                                       0
-                                                       'claylib/wrap:bone-info)
-                        for c-frame-poses = (autowrap:c-aref (model-animation.frame-poses c-elt)
-                                                             0
-                                                             'claylib/wrap:transform)
-                        for bone-count = (model-animation.bone-count c-elt)
-                        for frame-count = (model-animation.frame-count c-elt)
-                        do (setf (slot-value anim '%c-struct)
-                                 c-elt
+  (make-array
+   num
+   :element-type 'rl-model-animation
+   :initial-contents
+   (loop for i below num
+         for anim = (make-instance 'rl-model-animation)
+         for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:model-animation)
+         for c-bones = (autowrap:c-aref (model-animation.bones c-elt)
+                                        0
+                                        'claylib/wrap:bone-info)
+         for bone-count = (model-animation.bone-count c-elt)
+         for frame-count = (model-animation.frame-count c-elt)
+         do (setf
+             (slot-value anim '%c-struct)
+             c-elt
 
-                                 (slot-value anim '%bones)
-                                 (make-instance 'rl-bones
-                                                :cl-array (make-rl-*-array c-bones bone-count))
+             (slot-value anim '%bones)
+             (make-instance 'rl-bones
+                            :cl-array (make-rl-*-array c-bones bone-count))
 
-                                 (slot-value anim '%frame-poses)
-                                 (make-instance 'rl-transforms
-                                                :cl-array (make-rl-*-array c-frame-poses
-                                                                           frame-count)))
-                        collect anim)))
-    (make-array num
-                :element-type 'rl-model-animation
-                :initial-contents contents)))
+             ;; Sadly, this is a 1D lisp array of rl-transforms arrays (not proper 2D array) so
+             ;; we don't get to take advantage of aref. But this is probably not a user-facing
+             ;; issue.
+             (slot-value anim '%frame-poses)
+             (make-array frame-count
+                         :element-type 'rl-transforms
+                         :initial-contents
+                         (loop
+                           for i below frame-count
+                           ;; Dereference the Transform double pointer
+                           for p = (autowrap:c-aref
+                                    (autowrap:c-aref
+                                     (model-animation.frame-poses c-elt) i :pointer)
+                                    0
+                                    'claylib/ll:transform)
+                           collect (make-instance 'rl-transforms
+                                                  :cl-array (make-rl-*-array p bone-count)))))
+         collect anim)))
 
 (defmethod (setf sequences:elt) (value (sequence rl-animations) index)
   (check-type value rl-model-animation)

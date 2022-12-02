@@ -52,7 +52,8 @@
 
                                  (slot-value glyph '%image)
                                  (let ((img (make-instance 'rl-image)))
-                                   (setf (c-struct img) (glyph-info.image c-elt))))
+                                   (setf (c-struct img) (glyph-info.image c-elt))
+                                   img))
                         collect glyph)))
     (make-array num
                 :element-type 'rl-glyph-info

@@ -190,14 +190,44 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
 
 
 
-;;; Models
+;;; Basic 3d Shapes Drawing Functions (Module: models)
+
+;; Basic geometric 3D shapes drawing functions
+
+(defun-pt-void draw-cube claylib/ll:draw-cube
+  "Draw a cube from given properties (not a cube object)."
+  (position rl-vector3)
+  (width number float)
+  (height number float)
+  (length number float)
+  (color rl-color))
+
+
+
+;;; Models 3d Loading and Drawing Functions (Module: models)
 
 ;; Model loading/unloading functions
 
-(defun-pt load-model-from-mesh claylib/ll:load-model-from-mesh
+;; TODO generalize for all functions that do model creation
+(defun load-model-from-mesh (mesh &key (model (make-instance 'model)))
   "Load a model from a passed-in mesh. Allocates a new RL-MODEL unless you pass one."
-  (model rl-model nil (make-instance 'rl-model))
-  (mesh rl-mesh))
+  (check-type mesh rl-mesh)
+  (check-type model rl-model)
+  (claylib/ll:load-model-from-mesh (c-struct model) (c-struct mesh))
+  (let ((c-meshes (autowrap:c-aref (model.meshes (c-struct model)) 0 'claylib/ll:mesh))
+        (c-materials (autowrap:c-aref (model.materials (c-struct model)) 0 'claylib/ll:material)))
+    (set-slot :transform model (transform model))
+    (setf (meshes model)
+          (make-instance 'rl-meshes :cl-array (make-rl-*-array c-meshes (mesh-count model)))
+
+          (materials model)
+          (make-instance 'rl-materials
+                         :cl-array (make-rl-*-array c-materials (material-count model)))
+
+          (pos model)
+          (make-vector3 0 0 0))
+    model))
+
 
 ;; Mesh generation functions
 
@@ -215,6 +245,12 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   (height number float)
   (length number float))
 
+(defun-pt gen-mesh-cubicmap claylib/ll:gen-mesh-cubicmap
+  "Generate cubes-based map mesh from image data. Allocates a new RL-MESH unless you pass one."
+  (mesh rl-mesh nil (make-instance 'rl-mesh))
+  (cubicmap rl-image)
+  (cube-size rl-vector3))
+
 ;; Material loading/unloading functions
 
 (defun-pt-void set-material-texture claylib/ll:set-material-texture
@@ -225,15 +261,15 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
 
 ;; Model animations loading/unloading functions
 
-(defun update-model-animation (model frame)
-  "Returns an RL-VECTOR2 with the width (x) and height (y) of the TEXT object accounting for its
-font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
+(defun update-model-animation (model anim-index frame)
+  "Updates MODEL's animation pose based on the ANIM-INDEX and FRAME."
   (check-type model model)
   (check-type frame (integer 0 *))
+  (check-type anim-index (integer 0 *))
   (when (not (animations model))
     (error "~a has no associated animations." model))
   (claylib/ll:update-model-animation (c-struct model)
-                                     (c-struct (elt (animations model) 0))
+                                     (c-struct (elt (animations model) anim-index))
                                      frame))
 
 ;; Collision detection functions

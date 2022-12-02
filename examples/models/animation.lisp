@@ -15,13 +15,12 @@
 (defparameter *scene*
   (make-scene ((model-asset (car *assets*))
                (model-texture (cadr *assets*))
-               (model-anims (caddr *assets*))  ; TODO: This line causes a hang on quit
-               )
+               (model-anims (caddr *assets*)))
               ((camera (make-camera-3d 10 10 10
                                        0 0 0
                                        0 1 0
                                        :mode +camera-free+))
-               (model (let ((m (make-model model-asset  ; TODO: This form causes a double free on quit
+               (model (let ((m (make-model model-asset
                                            0 0 0
                                            :animation-asset model-anims
                                            :rot-axis (make-vector3 1 0 0)
@@ -50,10 +49,17 @@
           (update-camera camera)
           (when (is-key-down-p +key-space+)
             (incf anim-frame-counter)
-            (update-model-animation model anim-frame-counter)
+            (update-model-animation model 0 anim-frame-counter)
             (when (>= anim-frame-counter (frame-count (elt (animations model) 0)))
               (setf anim-frame-counter 0)))
           (with-drawing ()
             (with-3d-mode camera
+              (loop for i below (length (bones model))
+                    ;; Sometimes it makes sense to call on low-level claylib (claylib/ll)
+                    do (draw-cube (trans (elt (elt (frame-poses (elt (animations model) 0))
+                                                   anim-frame-counter)
+                                              i))
+                                  0.2 0.2 0.2
+                                  +red+))
               (draw-scene *scene* 'model 'grid))
             (draw-scene *scene* 'instructions 'copyright)))))))

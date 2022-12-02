@@ -39,7 +39,8 @@
    :fade :check-collision-point-rec :clear-background :export-image :load-image-from-texture
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw :with-drawing
    :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex
-   :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere)
+   :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere
+   :gen-mesh-cubicmap)
 
 
 
@@ -125,7 +126,7 @@
    :x :y :z :color :target :rot :zoom :x1 :y1 :x2 :y2 :width :height :len :offset :pos :draw-object
    :hit :low :high :r :g :b :a :dest :filter :origin :source :tint :radius :x3 :y3 :v1 :v2 :v3
    :load-asset :filled :font :size :spacing :asset :start :end :bezier :up :x-scale :y-scale
-   :frame-count :animations :bones :materials
+   :frame-count :animations :bones :materials :trans :frame-poses :maps
 
    ;; Math
    :vector2-subtract :vector2-add :vector2-scale :vector2-length
@@ -150,7 +151,7 @@
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw
    :copy-asset-to-object :set-window-position :check-collision-recs :get-collision-rec
    :check-collision-point-circle :measure-text-ex :update-model-animation :set-material-texture
-   :check-collision-boxes :check-collision-box-sphere
+   :check-collision-boxes :check-collision-box-sphere :gen-mesh-cubicmap :draw-cube
 
    ;;; Raygui
 
