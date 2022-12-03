@@ -75,31 +75,35 @@ This can be overridden in WITH-SCENES.
 ASSETS and OBJECTS are lists of items of the form (BINDING VALUE). In a nutshell: assets are
 things that get loaded, and objects are things that get drawn. Values can reference previous
 bindings but will be initialized in the order they are declared."
-  (let ((scene (gensym))
-        (syms (when defer-init
-                (alexandria:make-gensym-list (length objects)))))
+  (let* ((scene (gensym))
+         (items (append assets objects))
+         (syms (when defer-init
+                 (alexandria:make-gensym-list (length items)))))
     `(let ((,scene (make-instance 'game-scene :gc ,gc))
            ,@syms)
        (declare (ignorable ,@syms))
-       (symbol-macrolet (,@assets)
-         ,@(loop for (binding val) in assets
-                 collect `(setf (gethash ',binding (assets ,scene)) ,binding))
-         ,(if defer-init
-              `(symbol-macrolet (,@(loop for sym in syms
-                                         for obj in objects
-                                         collect `(,(car obj) (eager-future2:touch ,sym))))
-                 (let* (,@(loop for sym in syms
-                                for obj in objects
-                                collect `(,sym (eager-future2:pcall
-                                                (lambda () ,(cadr obj))
-                                                :lazy))))
-                   ,@(loop for sym in syms
-                           for obj in objects
-                           collect `(setf (gethash ',(car obj) (objects ,scene))
-                                          ,sym))))
-              `(symbol-macrolet (,@objects)
-                 ,@(loop for (binding val) in objects
-                         collect `(setf (gethash ',binding (objects ,scene)) ,binding)))))
+       ,(if defer-init
+            `(symbol-macrolet (,@(loop for sym in syms
+                                       for item in items
+                                       collect `(,(car item) (eager-future2:touch ,sym))))
+               (let* (,@(loop for sym in syms
+                              for item in items
+                              collect `(,sym (eager-future2:pcall
+                                              (lambda () ,(cadr item))
+                                              :lazy))))
+                 ,@(loop for sym in syms
+                         for asset in assets
+                         collect `(setf (gethash ',(car asset) (assets ,scene))
+                                        ,sym))
+                 ,@(loop for sym in (nthcdr (length assets) syms)
+                         for obj in objects
+                         collect `(setf (gethash ',(car obj) (objects ,scene))
+                                        ,sym))))
+            `(symbol-macrolet (,@items)
+               ,@(loop for (binding val) in assets
+                       collect `(setf (gethash ',binding (assets ,scene)) ,binding))
+               ,@(loop for (binding val) in objects
+                       collect `(setf (gethash ',binding (objects ,scene)) ,binding))))
        ,scene)))
 
 (defmacro make-scene-pro ((&rest components) &key (gc t) (defer-init t))
