@@ -368,6 +368,7 @@ sense to set this in your own code."))
   (:documentation "Color Picker control (multiple color controls), sets COLOR to chosen color"))
 (defmethod draw-object ((obj gui-color-picker))
   (gui-color-picker (bounds obj)
+                    (text obj)
                     (color obj)
                     :col (color obj)))
 
@@ -375,6 +376,7 @@ sense to set this in your own code."))
   (:documentation "Color Panel control, sets COLOR to chosen color"))
 (defmethod draw-object ((obj gui-color-panel))
   (gui-color-panel (bounds obj)
+                   (text obj)
                    (color obj)
                    :col (color obj)))
 
@@ -386,7 +388,9 @@ sense to set this in your own code."))
 (defwriter-float alpha gui-color-bar-alpha)
 (defmethod draw-object ((obj gui-color-bar-alpha))
   (setf (alpha obj)
-        (gui-color-bar-alpha (bounds obj) (alpha obj))))
+        (gui-color-bar-alpha (bounds obj)
+                             (text obj)
+                             (alpha obj))))
 
 (defclass gui-color-bar-hue (gui-object text-label)
   ((%value :initarg :value
@@ -396,7 +400,9 @@ sense to set this in your own code."))
 (defwriter-float value gui-color-bar-hue)
 (defmethod draw-object ((obj gui-color-bar-hue))
   (setf (value obj)
-        (gui-color-bar-hue (bounds obj) (value obj))))
+        (gui-color-bar-hue (bounds obj)
+                           (text obj)
+                           (value obj))))
 
 
 
@@ -490,15 +496,6 @@ sense to set this in your own code."))
   (bounds rl-rectangle)
   (text string)
   (active integer)
-  (edit-mode boolean))
-
-(defun-pt-bool gui-spinner claylib/ll:gui-spinner
-  "Spinner control, returns selected value"
-  (bounds rl-rectangle)
-  (text string)
-  (value integer)
-  (min-value integer)
-  (max-value integer)
   (edit-mode boolean))
 
 (defun gui-spinner (bounds text value min-value max-value edit-mode)
@@ -631,22 +628,26 @@ sense to set this in your own code."))
   "Color Picker control (multiple color controls). Allocates a new RL-COLOR unless you pass one."
   (col rl-color nil (make-color 0 0 0))
   (bounds rl-rectangle)
+  (text string)
   (color rl-color))
 
 (defun-pt gui-color-panel claylib/ll:gui-color-panel
   "Color Panel control. Allocates a new RL-COLOR unless you pass one."
   (col rl-color nil (make-color 0 0 0))
   (bounds rl-rectangle)
+  (text string)
   (color rl-color))
 
 (defun-pt-num gui-color-bar-alpha claylib/ll:gui-color-bar-alpha
   "Color Bar Alpha control"
   (bounds rl-rectangle)
+  (text string)
   (alpha number float))
 
 (defun-pt-num gui-color-bar-hue claylib/ll:gui-color-bar-hue
   "Color Bar Hue control"
   (bounds rl-rectangle)
+  (text string)
   (value number float))
 
 

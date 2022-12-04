@@ -64,7 +64,7 @@
           (when (not mouse-on-text-p)
             ;; Update values
             (set-mouse-cursor +mouse-cursor-default+)
-            (setf frames-conter 0
+            (setf frames-counter 0
                   (color box-line) +darkgray+))
 
           (with-drawing ()

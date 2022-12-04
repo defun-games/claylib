@@ -37,10 +37,6 @@
                                    (y m) 0
                                    (z m) -8)
                              m))
-                    (camera (make-camera-3d 16 14 16
-                                            0 0 0
-                                            0 1 0
-                                            :mode +camera-orbital+))
                     (rec (make-rectangle (- (get-screen-width)
                                             (* 4 (width cubicmap))
                                             20)
