@@ -44,7 +44,7 @@
    :set-target-fps :get-fps :get-frame-time :get-time
 
    ;; Misc. functions
-   :get-random-value :set-random-seed :take-screenshot :set-config-flags :trace-log :set-trace-log
+   :get-random-value :set-random-seed :take-screenshot :set-config-flags :trace-log :set-trace-log-level
    :mem-alloc :mem-realloc :mem-free :open-url
 
    ;; Set custom callbacks

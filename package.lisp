@@ -49,18 +49,28 @@
    ;;; Core
 
    ;; Window-related functions
-   :window-should-close-p :close-window :is-window-state-p :set-window-state :clear-window-state
-   :toggle-fullscreen :maximize-window :minimize-window :restore-window :set-window-position
-   :get-screen-width :get-screen-height
+   :init-window :window-should-close-p :close-window :is-window-ready-p :is-window-fullscreen-p
+   :is-window-hidden-p :is-window-minimized-p :is-window-maximized-p :is-window-focused-p
+   :is-window-resized-p :is-window-state-p :set-window-state :clear-window-state :toggle-fullscreen
+   :maximize-window :minimize-window :restore-window :set-window-title
+   :set-window-position :set-window-monitor :set-window-min-size :set-window-size :set-window-opacity
+   :get-screen-width :get-screen-height :get-render-width :get-render-height
+   :get-monitor-count :get-current-monitor :get-monitor-width :get-monitor-height
+   :get-monitor-physical-width :get-monitor-physical-height :get-monitor-refresh-rate
+   :get-monitor-name :set-clipboard-text :get-clipboard-text
+   :enable-event-waiting :disable-event-waiting
 
    ;; Custom frame control functions
    ;; Raylib must be specifically compiled to support these (the one we distribute is not)
    :swap-screen-buffer :wait-time
 
    ;; Cursor-related functions
+   :show-cursor :hide-cursor :is-cursor-hidden-p :enable-cursor :disable-cursor :is-cursor-on-screen-p
 
    ;; Drawing-related functions
-   :clear-background
+   :clear-background :begin-drawing :end-drawing
+   :begin-blend-mode
+   :end-blend-mode :begin-scissor-mode :end-scissor-mode
 
    ;; VR stereo config functions for VR simulator
 
@@ -70,34 +80,48 @@
    :get-mouse-ray :get-world-to-screen-3d :get-screen-to-world-2d :get-world-to-screen-2d
 
    ;; Timing-related functions
-   :get-frame-time :get-time
+   :set-target-fps :get-fps :get-frame-time :get-time
 
    ;; Misc. functions
-   :get-random-value :set-random-seed
+   :get-random-value :set-random-seed :take-screenshot :set-config-flags :trace-log :set-trace-log-level
+   :open-url
 
    ;; Set custom callbacks
 
    ;; Files management functions
+   :save-file-data :export-data-as-code :load-file-text
+   :unload-file-text :save-file-text :file-exists-p :directory-exists-p :is-file-extension-p
+   :get-file-length :get-file-extension :get-file-name :get-file-name-without-ext :get-directory-path
+   :get-prev-directory-path :get-working-directory :get-application-directory :change-directory
+   :is-path-file-p
+   :is-file-dropped-p :get-file-mod-time
 
    ;; Compression/Encoding functionality
 
    ;; Input-related functions: keyboard
-   :is-key-pressed-p :is-key-down-p :is-key-released-p :is-key-up-p :get-key-pressed :get-char-pressed
+   :is-key-pressed-p :is-key-down-p :is-key-released-p :is-key-up-p :set-exit-key :get-key-pressed
+   :get-char-pressed
 
    ;; Input-related functions: gamepads
+   :is-gamepad-available-p :get-gamepad-name :is-gamepad-button-pressed-p :is-gamepad-button-down-p
+   :is-gamepad-button-released-p :is-gamepad-button-up-p :get-gamepad-button-pressed
+   :get-gamepad-axis-count :get-gamepad-axis-movement :set-gamepad-mappings
 
    ;; Input-related functions: mouse
    :is-mouse-button-pressed-p :is-mouse-button-down-p :is-mouse-button-released-p :is-mouse-button-up-p
-   :get-mouse-x :get-mouse-y :get-mouse-position :set-mouse-offset :set-mouse-scale :get-mouse-wheel-move
-   :set-mouse-cursor
+   :get-mouse-x :get-mouse-y :get-mouse-position :set-mouse-position :set-mouse-offset
+   :set-mouse-scale :get-mouse-wheel-move :set-mouse-cursor
 
    ;; Input-related functions: touch
+   :get-touch-x :get-touch-y :get-touch-point-id :get-touch-point-count
 
    ;; Gestures and Touch Handling Functions (Module: rgestures)
-   :is-gesture-detected-p :get-gesture-detected
+   :set-gestures-enabled :is-gesture-detected-p :get-gesture-detected :get-gesture-hold-duration
+   :get-gesture-drag-angle :get-gesture-pinch-angle
 
    ;; Camera System Functions (Module: rcamera)
-   :update-camera
+   :update-camera :set-camera-pan-control :set-camera-alt-control
+   :set-camera-smooth-zoom-control :set-camera-move-controls
 
 
 
@@ -134,7 +158,8 @@
    ;; Texture drawing functions
 
    ;; Color/pixel related functions
-   :fade :copy-color
+   :fade
+   :get-pixel-data-size
 
 
 
@@ -149,8 +174,12 @@
    :measure-text :measure-text-ex
 
    ;; Text codepoints management functions
+   :load-codepoints :unload-codepoints :get-codepoint-count :get-codepoint :codepoint-to-utf8
+   :text-codepoints-to-utf8
 
    ;; Text string management functions
+   :text-copy :text-is-equal-p :text-length :text-format :text-subtext
+   :text-find-index :text-to-upper :text-to-lower :text-to-pascal :text-to-integer
 
 
 
@@ -158,6 +187,7 @@
 
    ;; Basic genmetric 3D shapes drawing functions
    :draw-cube
+   :draw-grid
 
    ;; Model loading/unloading functions
    :load-model-from-mesh
@@ -183,14 +213,17 @@
    ;;; Audio
 
    ;; Audio device management functions
+   :init-audio-device :close-audio-device :is-audio-device-ready-p :set-master-volume
 
    ;; Wave/Sound loading/unloading functions
 
    ;; Wave/Sound management functions
+   :get-sounds-playing
 
    ;; Music management functions
 
    ;; AudioStream management functions
+   :set-audio-stream-buffer-size-default
 
 
 
@@ -320,6 +353,7 @@
    ;;; Math (pass-throughs to Raymath)
 
    ;; Utils
+   :clamp :lerp :normalize :remap :float-equals
 
    ;; Vector2
    :vector2-add :vector2-length :vector2-scale :vector2-subtract
@@ -492,9 +526,12 @@
    :make-vector3 :make-vector4 :make-zero-matrix
 
    ;; Scenes/assets
-   :assets :copy-asset-to-object :draw-objects :draw-scene :draw-scene-all :draw-scene-except
-   :draw-scene-regex :load-scene-all :make-scene :make-scene-pro :objects :params :scene-asset
-   :scene-object :scene-param :set-up-scene :tear-down-scene :unload-scene-all :with-scenes
+   :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex :load-scene-all
+   :make-scene :make-scene-pro :objects :params :scene-asset :scene-object :scene-param :set-up-scene
+   :tear-down-scene :unload-scene-all :with-scenes
+
+   ;; Copy functions
+   :copy-color :copy-asset-to-object
 
    ;; Generic functions/methods
    :x :y :z
