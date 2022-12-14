@@ -9,10 +9,16 @@
    :is-window-hidden-p :is-window-minimized-p :is-window-maximized-p :is-window-focused-p
    :is-window-resized-p :is-window-state-p :set-window-state :clear-window-state :toggle-fullscreen
    :maximize-window :minimize-window :restore-window :set-window-icon :set-window-title
-   :set-window-position :set-window-min-size :set-window-size :get-window-handle :get-screen-width
-   :get-screen-height :get-monitor-count :get-current-monitor :get-monitor-position :get-monitor-width
-   :get-monitor-height :get-monitor-physical-width :get-monitor-physical-height :get-monitor-refresh-rate
+   :set-window-position :set-window-monitor :set-window-min-size :set-window-size :set-window-opacity
+   :get-window-handle :get-screen-width :get-screen-height :get-render-width :get-render-height
+   :get-monitor-count :get-current-monitor :get-monitor-position :get-monitor-width :get-monitor-height
+   :get-monitor-physical-width :get-monitor-physical-height :get-monitor-refresh-rate
    :get-window-position :get-window-scale-dpi :get-monitor-name :set-clipboard-text :get-clipboard-text
+   :enable-event-waiting :disable-event-waiting
+
+   ;; Custom frame control functions
+   ;; Raylib must be specifically compiled to support these (the one we distribute is not)
+   :swap-screen-buffer :poll-input-events :wait-time
 
    ;; Cursor-related functions
    :show-cursor :hide-cursor :is-cursor-hidden-p :enable-cursor :disable-cursor :is-cursor-on-screen-p
@@ -21,7 +27,6 @@
    :clear-background :begin-drawing :end-drawing :begin-mode2d :end-mode2d :begin-mode3d :end-mode3d
    :begin-texture-mode :end-texture-mode :begin-shader-mode :end-shader-mode :begin-blend-mode
    :end-blend-mode :begin-scissor-mode :end-scissor-mode :begin-vr-stereo-mode :end-vr-stereo-mode
-   :swap-screen-buffer
 
    ;; VR stereo config functions for VR simulator
    :load-vr-stereo-config :unload-vr-stereo-config
@@ -32,35 +37,30 @@
    :unload-shader
 
    ;; Screen-space-related functions
-   :get-mouse-ray :get-camera-matrix :get-camera-matrix-2d :get-world-to-screen :get-world-to-screen-ex
-   :get-world-to-screen2d :get-screen-to-world2d
+   :get-mouse-ray :get-camera-matrix :get-camera-matrix-2d :get-world-to-screen :get-screen-to-world2d
+   :get-world-to-screen-ex :get-world-to-screen2d
 
    ;; Timing-related functions
-   :set-target-fps :get-fps :get-frame-time :get-time :wait-time
+   :set-target-fps :get-fps :get-frame-time :get-time
 
    ;; Misc. functions
-   :get-random-value :set-random-seed :take-screenshot :set-config-flags :trage-log :set-trace-log
-   :mem-alloc :mem-realloc :mem-free
+   :get-random-value :set-random-seed :take-screenshot :set-config-flags :trace-log :set-trace-log
+   :mem-alloc :mem-realloc :mem-free :open-url
 
    ;; Set custom callbacks
    :set-trace-log-callback :set-load-file-data-callback :set-save-file-data-callback
    :set-load-file-text-callback :set-save-file-text-callback
 
    ;; Files management functions
-   :load-file-data :unload-file-data :save-file-data :load-file-text :unload-file-text :save-file-text
-   :file-exists-p :directory-exists-p :is-file-extension-p :get-file-extension :get-file-name
-   :get-file-name-without-ext :get-directory-path :get-prev-directory-path :get-working-directory
-   :get-directory-files :clear-directory-files :change-directory :is-file-dropped-p :get-dropped-files
-   :clear-dropped-files :get-file-mod-time
+   :load-file-data :unload-file-data :save-file-data :export-data-as-code :load-file-text
+   :unload-file-text :save-file-text :file-exists-p :directory-exists-p :is-file-extension-p
+   :get-file-length :get-file-extension :get-file-name :get-file-name-without-ext :get-directory-path
+   :get-prev-directory-path :get-working-directory :get-application-directory :change-directory
+   :is-path-file-p :load-directory-files :load-directory-files-ex :unload-directory-files
+   :is-file-dropped-p :load-dropped-files :unload-dropped-files :get-file-mod-time
 
    ;; Compression/Encoding functionality
    :compress-data :decompress-data :encode-data-base64 :decode-data-base64
-
-   ;; Persistent storage management
-   :save-storage-value :load-storage-value
-
-   ;; Misc.
-   :open-url
 
    ;; Input-related functions: keyboard
    :is-key-pressed-p :is-key-down-p :is-key-released-p :is-key-up-p :set-exit-key :get-key-pressed
@@ -74,7 +74,7 @@
    ;; Input-related functions: mouse
    :is-mouse-button-pressed-p :is-mouse-button-down-p :is-mouse-button-released-p :is-mouse-button-up-p
    :get-mouse-x :get-mouse-y :get-mouse-position :get-mouse-delta :set-mouse-position :set-mouse-offset
-   :set-mouse-scale :get-mouse-wheel-move :set-mouse-cursor
+   :set-mouse-scale :get-mouse-wheel-move :get-mouse-wheel-move-v :set-mouse-cursor
 
    ;; Input-related functions: touch
    :get-touch-x :get-touch-y :get-touch-position :get-touch-point-id :get-touch-point-count
@@ -86,6 +86,8 @@
    ;; Camera System Functions (Module: rcamera)
    :set-camera-mode :update-camera :set-camera-pan-control :set-camera-alt-control
    :set-camera-smooth-zoom-control :set-camera-move-controls
+
+
 
    ;;; Shapes
 
@@ -107,6 +109,8 @@
    :check-collision-point-circle :check-collision-point-triangle :check-collision-lines
    :check-collision-point-line :get-collision-rec
 
+
+
    ;;; Textures
 
    ;; Image loading functions
@@ -114,8 +118,8 @@
    :load-image-from-screen :unload-image :export-image :export-image-as-code
 
    ;; Image generation functions
-   :gen-image-color :gen-image-gradient :gen-image-gradient-v :gen-image-gradient-h
-   :gen-image-gradient-radial :gen-image-checked :gen-image-white-noise :gen-image-cellular
+   :gen-image-color :gen-image-gradient-v :gen-image-gradient-h :gen-image-gradient-radial
+   :gen-image-checked :gen-image-white-noise :gen-image-cellular
 
    ;; Image manipulation functions
    :image-copy :image-from-image :image-text :image-text-ex :image-format :image-to-pot :image-crop
@@ -147,14 +151,16 @@
    :fade :color-to-int :color-normalize :color-from-normalized :color-to-hsv :color-from-hsv
    :color-alpha :color-alpha-blend :get-color :get-pixel-color :set-pixel-color :get-pixel-data-size
 
+
+
    ;;; Text
 
    ;; Font loading/unloading functions
    :get-font-default :load-font :load-font-ex :load-font-from-image :load-font-from-memory
-   :load-font-data :gen-image-font-atlas :unload-font-data :unload-font
+   :load-font-data :gen-image-font-atlas :unload-font-data :unload-font :export-font-as-code
 
    ;; Text-drawing functions
-   :draw-fps :draw-text :draw-text-ex :draw-text-pro :draw-text-codepoint
+   :draw-fps :draw-text :draw-text-ex :draw-text-pro :draw-text-codepoint :draw-text-codepoints
 
    ;; Text misc. functions
    :measure-text :measure-text-ex :get-glyph-index :get-glyph-info :get-glyph-atlas-rec
@@ -167,6 +173,8 @@
    :text-copy :text-is-equal-p :text-length :text-format :text-subtext :text-replace :text-insert
    :text-join :text-split :text-append :text-find-index :text-to-upper :text-to-lower :text-to-pascal
    :text-to-integer
+
+
 
    ;;; Models
 
@@ -185,7 +193,7 @@
 
    ;; Mesh management functions
    :upload-mesh :update-mesh-buffer :unload-mesh :draw-mesh :draw-mesh-instanced :export-mesh
-   :get-mesh-bounding-box :gen-mesh-tangents :gen-mesh-binormals
+   :get-mesh-bounding-box :gen-mesh-tangents
 
    ;; Mesh generation functions
    :gen-mesh-poly :gen-mesh-plane :gen-mesh-cube :gen-mesh-sphere :gen-mesh-hemisphere
@@ -201,8 +209,9 @@
 
    ;; Collision detection functions
    :check-collision-spheres :check-collision-boxes :check-collision-box-sphere :get-ray-collision-sphere
-   :get-ray-collision-box :get-ray-collision-model :get-ray-collision-mesh :get-ray-collision-triangle
-   :get-ray-collision-quad
+   :get-ray-collision-box :get-ray-collision-mesh :get-ray-collision-triangle :get-ray-collision-quad
+
+
 
    ;;; Audio
 
@@ -215,20 +224,23 @@
 
    ;; Wave/Sound management functions
    :play-sound :stop-sound :pause-sound :resume-sound :play-sound-multi :stop-sound-multi
-   :get-sounds-playing :is-sound-playing-p :set-sound-volume :set-sound-pitch :wave-format :wave-copy
-   :wave-crop :load-wave-samples :unload-wave-samples
+   :get-sounds-playing :is-sound-playing-p :set-sound-volume :set-sound-pitch :set-sound-pan
+   :wave-copy :wave-crop :wave-format :load-wave-samples :unload-wave-samples
 
    ;; Music management functions
    :load-music-stream :load-music-stream-from-memory :unload-music-stream :play-music-stream
    :is-music-stream-playing-p :update-music-stream :stop-music-stream :pause-music-stream
-   :resume-music-stream :seek-music-stream :set-music-volume :set-music-pitch :get-music-time-length
-   :get-music-time-played
+   :resume-music-stream :seek-music-stream :set-music-volume :set-music-pitch :set-music-pan
+   :get-music-time-length :get-music-time-played
 
    ;; AudioStream management functions
-   :init-audio-stream :update-audio-stream :close-audio-stream :is-audio-stream-processed-p
+   :load-audio-stream :unload-audio-stream :update-audio-stream :is-audio-stream-processed-p
    :play-audio-stream :pause-audio-stream :resume-audio-stream :is-audio-stream-playing-p
-   :stop-audio-stream :set-audio-stream-volume :set-audio-stream-pitch
-   :set-audio-stream-buffer-size-default
+   :stop-audio-stream :set-audio-stream-volume :set-audio-stream-pitch :set-audio-stream-pan
+   :set-audio-stream-buffer-size-default :set-audio-stream-callback :attach-audio-stream-processor
+   :detach-audio-stream-processor
+
+
 
    ;;; Structs
 
@@ -284,6 +296,8 @@
    :vr-stereo-config.left-screen-center :vr-stereo-config.right-screen-center :vr-stereo-config.scale
    :vr-stereo-config.scale-in
 
+
+
    ;;; Constants
 
    ;; Colors
@@ -293,29 +307,29 @@
 
    ;; Blending
    :+blend-alpha+ :+blend-additive+ :+blend-multiplied+ :+blend-add-colors+ :+blend-subtract-colors+
-   :+blend-custom+
+   :+blend-alpha-premultiply+ :+blend-custom+
 
    ;; Keys
-   :+key-a+ :+key-b+ :+key-c+ :+key-d+ :+key-e+ :+key-f+ :+key-g+ :+key-h+ :+key-i+ :+key-j+
-   :+key-k+ :+key-l+ :+key-m+ :+key-n+ :+key-o+ :+key-p+ :+key-q+ :+key-r+ :+key-s+ :+key-t+
-   :+key-u+ :+key-v+ :+key-w+ :+key-x+ :+key-y+ :+key-z+ :+key-f1+ :+key-f2+ :+key-f3+ :+key-f4+
-   :+key-f5+ :+key-f6+ :+key-f7+ :+key-f8+ :+key-f9+ :+key-f10+ :+key-f11+ :+key-f12+ :+key-one+
-   :+key-two+ :+key-three+ :+key-four+ :+key-five+ :+key-six+ :+key-seven+ :+key-eight+ :+key-nine+
-   :+key-zero+ :+key-backslash+ :+key-comma+ :+key-delete+ :+key-end+ :+key-equal+ :+key-grave+
-   :+key-home+ :+key-insert+ :+key-kp-0+ :+key-kp-1+ :+key-kp-2+ :+key-kp-3+ :+key-kp-4+ :+key-kp-5+
-   :+key-kp-6+ :+key-kp-7+ :+key-kp-8+ :+key-kp-9+ :+key-kp-add+ :+key-kp-decimal+ :+key-kp-divide+
-   :+key-kp-enter+ :+key-kp-equal+ :+key-kp-multiply+ :+key-kp-subtract+ :+key-left+ :+key-right+
-   :+key-up+ :+key-down+ :+key-left-bracket+ :+key-right-bracket+ :+key-left-shift+ :+key-right-shift+
-   :+key-left-alt+ :+key-right-alt+ :+key-left-control+ :+key-right-control+ :+key-left-super+
-   :+key-right-super+ :+key-minus+ :+key-num-lock+ :+key-page-down+ :+key-page-up+ :+key-pause+
-   :+key-print-screen+ :+key-scroll-lock+ :+key-slash+ :+key-volume-up+ :+key-volume-down+
-   :+key-apostrophe+ :+key-back+ :+key-backspace+ :+key-caps-lock+ :+key-enter+ :+key-escape+
-   :+key-kb-menu+ :+key-menu+ :+key-null+ :+key-period+ :+key-semicolon+ :+key-space+ :+key-tab+
+   :+key-null+ :+key-back+ :+key-volume-up+ :+key-volume-down+ :+key-space+ :+key-apostrophe+
+   :+key-comma+ :+key-minus+ :+key-period+ :+key-slash+ :+key-zero+ :+key-one+ :+key-two+ :+key-three+
+   :+key-four+ :+key-five+ :+key-six+ :+key-seven+ :+key-eight+ :+key-nine+ :+key-semicolon+
+   :+key-equal+ :+key-a+ :+key-b+ :+key-c+ :+key-d+ :+key-e+ :+key-f+ :+key-g+ :+key-h+ :+key-i+
+   :+key-j+ :+key-k+ :+key-l+ :+key-m+ :+key-n+ :+key-o+ :+key-p+ :+key-q+ :+key-r+ :+key-s+ :+key-t+
+   :+key-u+ :+key-v+ :+key-w+ :+key-x+ :+key-y+ :+key-z+ :+key-left-bracket+ :+key-backslash+
+   :+key-right-bracket+ :+key-grave+ :+key-escape+ :+key-enter+ :+key-tab+ :+key-backspace+ :+key-insert+
+   :+key-delete+ :+key-right+ :+key-left+ :+key-down+ :+key-up+ :+key-page-up+ :+key-page-down+
+   :+key-home+ :+key-end+ :+key-caps-lock+ :+key-scroll-lock+ :+key-num-lock+ :+key-print-screen+
+   :+key-pause+ :+key-f1+ :+key-f2+ :+key-f3+ :+key-f4+ :+key-f5+ :+key-f6+ :+key-f7+ :+key-f8+
+   :+key-f9+ :+key-f10+ :+key-f11+ :+key-f12+ :+key-kp-0+ :+key-kp-1+ :+key-kp-2+ :+key-kp-3+ :+key-kp-4+
+   :+key-kp-5+ :+key-kp-6+ :+key-kp-7+ :+key-kp-8+ :+key-kp-9+ :+key-kp-decimal+ :+key-kp-divide+
+   :+key-kp-multiply+ :+key-kp-subtract+ :+key-kp-add+ :+key-kp-enter+ :+key-kp-equal+ :+key-left-shift+
+   :+key-left-control+ :+key-left-alt+ :+key-left-super+ :+key-right-shift+ :+key-right-control+
+   :+key-right-alt+ :+key-right-super+ :+key-kb-menu+
 
    ;; Gestures
-   :+gesture-tap+ :+gesture-drag+ :+gesture-hold+ :+gesture-none+ :+gesture-doubletap+
-   :+gesture-pinch-in+ :+gesture-pinch-out+ :+gesture-swipe-down+ :+gesture-swipe-left+
-   :+gesture-swipe-right+ :+gesture-swipe-up+
+   :+gesture-none+ :+gesture-tap+ :+gesture-doubletap+ :+gesture-hold+ :+gesture-drag+
+   :+gesture-swipe-right+ :+gesture-swipe-left+ :+gesture-swipe-up+ :+gesture-swipe-down+
+   :+gesture-pinch-in+ :+gesture-pinch-out+
 
    ;; Mouse
    :+mouse-button-left+ :+mouse-button-right+ :+mouse-button-middle+ :+mouse-button-side+
@@ -329,13 +343,13 @@
 
    ;; Gamepad
    :+gamepad-axis-left-x+ :+gamepad-axis-left-y+ :+gamepad-axis-right-x+ :+gamepad-axis-right-y+
-   :+gamepax-axis-left-trigger+ :+gamepad-axis-right-trigger+ :+gamepad-button-left-face-up+
-   :+gamepad-button-left-face-right+ :+gamepad-button-left-face-down+ :+gamepad-button-left-face-left+
-   :+gamepad-button-right-face-up+ :+gamepad-button-right-face-right :+gamepad-button-right-face-down+
-   :+gamepad-button-right-face-left+ :+gamepad-button-left-trigger-1+ :+gamepad-button-left-trigger-2+
-   :+gamepad-button-right-trigger-1+ :+gamepad-button-right-trigger-2+ :+gamepad-button-middle-left+
-   :+gamepad-button-middle+ :+gamepad-button-middle-right+ :+gamepad-button-left-thumb+
-   :+gamepad-button-right-thumb+ :+gamepad-button-unknown+
+   :+gamepad-axis-left-trigger+ :+gamepad-axis-right-trigger+ :+gamepad-button-unknown+
+   :+gamepad-button-left-face-up+ :+gamepad-button-left-face-right+ :+gamepad-button-left-face-down+
+   :+gamepad-button-left-face-left+ :+gamepad-button-right-face-up+ :+gamepad-button-right-face-right+
+   :+gamepad-button-right-face-down+ :+gamepad-button-right-face-left+ :+gamepad-button-left-trigger-1+
+   :+gamepad-button-left-trigger-2+ :+gamepad-button-right-trigger-1+ :+gamepad-button-right-trigger-2+
+   :+gamepad-button-middle-left+ :+gamepad-button-middle+ :+gamepad-button-middle-right+
+   :+gamepad-button-left-thumb+ :+gamepad-button-right-thumb+
 
    ;; Shader
    :+shader-loc-vertex-position+ :+shader-loc-vertex-texcoord01+ :+shader-loc-vertex-texcoord02+
@@ -357,15 +371,14 @@
    :+shader-uniform-sampler2d+
 
    ;; Material maps
-   :+material-map-albedo+ :+material-map-brdf+ :+material-map-cubemap+ :+material-map-emission+
-   :+material-map-height+ :+material-map-irradiance+ :+material-map-metalness+ :+material-map-normal+
-   :+material-map-occlusion+ :+material-map-prefilter+ :+material-map-roughness+
-   :+material-map-diffuse+ :+material-map-specular+
+   :+material-map-albedo+ :+material-map-diffuse+ :+material-map-metalness+ :+material-map-specular+
+   :+material-map-normal+ :+material-map-roughness+ :+material-map-occlusion+ :+material-map-emission+
+   :+material-map-height+ :+material-map-cubemap+ :+material-map-irradiance+ :+material-map-prefilter+
+   :+material-map-brdf+
 
    ;; Cubemap layouts
    :+cubemap-layout-auto-detect+ :+cubemap-layout-line-vertical+ :+cubemap-layout-line-horizontal+
-   :+cubemap-layout-cross-three-by-four+ :+cubemap-layout-cross-four-by-three+
-   :+cubemap-layout-panorama+
+   :+cubemap-layout-cross-three-by-four+ :+cubemap-layout-cross-four-by-three+ :+cubemap-layout-panorama+
 
    ;; Texture filters
    :+texture-filter-point+ :+texture-filter-bilinear+ :+texture-filter-trilinear+
@@ -394,47 +407,56 @@
    :+font-default+ :+font-bitmap+ :+font-sdf+
 
    ;; Camera
-   :+camera-perspective+ :+camera-orthographic+ :+camera-free+ :+camera-orbital+ :+camera-first-person+
-   :+camera-third-person+ :+camera-custom+
+   :+camera-custom+ :+camera-perspective+ :+camera-free+ :+camera-orthographic+ :+camera-orbital+
+   :+camera-first-person+ :+camera-third-person+
 
    ;; Window flags
    :+flag-fullscreen-mode+ :+flag-window-resizable+ :+flag-window-undecorated+ :+flag-window-transparent+
    :+flag-msaa-4x-hint+ :+flag-vsync-hint+ :+flag-window-hidden+ :+flag-window-always-run+
    :+flag-window-minimized+ :+flag-window-maximized+ :+flag-window-unfocused+ :+flag-window-topmost+
-   :+flag-window-highdpi+ :+flag-interlaced-hint+
+   :+flag-window-highdpi+ :+flag-window-mouse-passthrough+ :+flag-interlaced-hint+
 
    ;; Logging
    :+log-all+ :+log-trace+ :+log-debug+ :+log-info+ :+log-warning+ :+log-error+ :+log-fatal+ :+log-none+
 
+
+
    ;;; Raymath
 
+   ;; Utils
+   :clamp :lerp :normalize :remap :wrap :float-equals
+
    ;; Vector2
-   :vector2-add :vector2-add-value :vector2-angle :vector2-distance :vector2-divide :vector2-dot-product
+   :vector2-add :vector2-add-value :vector2-angle :vector2-clamp :vector2-clamp-value :vector2-distance
+   :vector2-distance-sqr :vector2-divide :vector2-dot-product :vector2-equals :vector2-invert
    :vector2-length :vector2-length-sqr :vector2-lerp :vector2-move-towards :vector2-multiply
    :vector2-negate :vector2-normalize :vector2-one :vector2-reflect :vector2-rotate :vector2-scale
-   :vector2-subtract :vector2-subtract-value :vector2-zero
+   :vector2-subtract :vector2-subtract-value :vector2-transform :vector2-zero
 
    ;; Vector3
-   :vector3-add :vector3-add-value :vector3-angle :vector3-barycenter :vector3-cross-product
-   :vector3-distance :vector3-divide :vector3-dot-product :vector3-length :vector3-length-sqr
-   :vector3-lerp :vector3-max :vector3-min :vector3-multiply :vector3-negate :vector3-normalize
-   :vector3-one :vector3-ortho-normalize :vector3-perpendicular :vector3-reflect
-   :vector3-rotate-by-quaternion :vector3-scale :vector3-subtract :vector3-subtract-value
-   :vector3-to-float-v :vector3-transform :vector3-unproject :vector3-zero
+   :vector3-add :vector3-add-value :vector3-angle :vector3-barycenter :vector3-clamp :vector3-clamp-value
+   :vector3-cross-product :vector3-distance :vector3-distance-sqr :vector3-divide :vector3-dot-product
+   :vector3-equals :vector3-invert :vector3-length :vector3-length-sqr :vector3-lerp :vector3-max
+   :vector3-min :vector3-multiply :vector3-negate :vector3-normalize :vector3-one
+   :vector3-ortho-normalize :vector3-perpendicular :vector3-reflect :vector3-refract
+   :vector3-rotate-by-axis-angle :vector3-rotate-by-quaternion :vector3-scale :vector3-subtract
+   :vector3-subtract-value :vector3-to-float-v :vector3-transform :vector3-unproject :vector3-zero
 
    ;; Quaternion
-   :quaternion-from-euler :quaternion-from-matrix :quaternion-to-euler :quaternion-to-matrix
-   :quaternion-add :quaternion-add-value :quaternion-divide :quaternion-from-axis-angle
-   :quaternion-from-vector3-to-vector3 :quaternion-identity :quaternion-invert :quaternion-length
-   :quaternion-lerp :quaternion-multiply :quaternion-nlerp :quaternion-normalize :quaternion-scale
-   :quaternion-slerp :quaternion-subtract :quaternion-subtract-value :quaternion-to-axis-angle
+   :quaternion-add :quaternion-add-value :quaternion-divide :quaternion-equals :quaternion-from-axis-angle
+   :quaternion-from-euler :quaternion-from-matrix :quaternion-from-vector3-to-vector3 :quaternion-identity
+   :quaternion-invert :quaternion-length :quaternion-lerp :quaternion-multiply :quaternion-nlerp
+   :quaternion-normalize :quaternion-scale :quaternion-slerp :quaternion-subtract
+   :quaternion-subtract-value :quaternion-to-axis-angle :quaternion-to-euler :quaternion-to-matrix
    :quaternion-transform
 
    ;; Matrix
-   :matrix-rotate-zyx :matrix-add :matrix-determinant :matrix-frustum :matrix-identity :matrix-invert
-   :matrix-look-at :matrix-multiply :matrix-normalize :matrix-ortho :matrix-perspective :matrix-rotate
-   :matrix-rotate-x :matrix-rotate-xyz :matrix-rotate-y :matrix-rotate-z :matrix-scale :matrix-subtract
-   :matrix-to-float-v :matrix-trace :matrix-translate :matrix-transpose
+   :matrix-add :matrix-determinant :matrix-frustum :matrix-identity :matrix-invert :matrix-look-at
+   :matrix-multiply :matrix-ortho :matrix-perspective :matrix-rotate :matrix-rotate-x :matrix-rotate-xyz
+   :matrix-rotate-y :matrix-rotate-z :matrix-rotate-zyx :matrix-scale :matrix-subtract :matrix-to-float-v
+   :matrix-trace :matrix-translate :matrix-transpose
+
+
 
    ;;; Raygui
 
@@ -453,7 +475,7 @@
    ;; Basic controls set
    :gui-label :gui-button :gui-label-button :gui-toggle :gui-toggle-group :gui-checkbox :gui-combo-box
    :gui-dropdown-box :gui-spinner :gui-value-box :gui-text-box :gui-text-box-multi :gui-slider
-   :gui-slider-bar :gui-progress-bar :gui-status-bar :gui-dummy-rec :gui-scroll-bar :gui-grid
+   :gui-slider-bar :gui-progress-bar :gui-status-bar :gui-dummy-rec :gui-grid
 
    ;; Advance controls set
    :gui-list-view :gui-list-view-ex :gui-message-box :gui-text-input-box :gui-color-picker :gui-color-panel
@@ -463,13 +485,114 @@
    :gui-load-style :gui-load-style-default
 
    ;; Icons functionality
-   :gui-icon-text :gui-draw-icon :gui-get-icons :gui-get-icon-data :gui-set-icon-data :gui-set-icon-pixel
-   :gui-clear-icon-pixel :gui-check-icon-pixel
+   :gui-icon-text :gui-draw-icon :gui-get-icons :gui-get-icon-data :gui-set-icon-data :gui-set-icon-scale
+   :gui-set-icon-pixel :gui-clear-icon-pixel :gui-check-icon-pixel
 
-   ;; Constants
-   :+scrollbar+ :+border-width+ :+arrows-size+ :+slider-padding+ :+arrows-visible+ :+slider-width+
-   :+listview+ :+scrollbar-side+ :+scrollbar-left-side+ :+scrollbar-right-side+ :+scrollbar-width+
-   :+default+
+
+
+   ;;; Raygui constants
+
+   ;; Gui control state
+   :+state-normal+ :+state-focused+ :+state-pressed+ :+state-disabled+
+
+   ;; Gui control text alignment
+   :+text-align-left+ :+text-align-center+ :+text-align-right+
+
+   ;; Gui controls
+   :+default+ :+label+ :+button+ :+toggle+ :+slider+ :+progress-bar+ :+checkbox+ :+combo-box+
+   :+dropdown-box+ :+text-box+ :+value-box+ :+spinner+ :+list-view+ :+color-picker+ :+scrollbar+
+   :+status-bar+
+
+   ;; Gui base properties for every control
+   :+border-color-normal+ :+base-color-normal+ :+text-color-normal+ :+border-color-focused+
+   :+base-color-focused+ :+text-color-focused+ :+border-color-pressed+ :+base-color-pressed+
+   :+text-color-pressed+ :+border-color-disabled+ :+base-color-disabled+ :+text-color-disabled+
+   :+border-width+ :+text-padding+ :+text-alignment+ :+reserved+
+
+   ;; Default extended properties
+   :+text-size+ :+text-spacing+ :+line-color+ :+background-color+
+
+   ;; Toggle/ToggleGroup
+   :+group-padding+
+
+   ;; Slider/SliderBar
+   :+slider-width+ :+slider-padding+
+
+   ;; ProgressBar
+   :+progress-padding+
+
+   ;; ScrollBar
+   :+arrows-size+ :+arrows-visible+ :+scroll-slider-padding+ :+scroll-slider-size+ :+scroll-padding+
+   :+scroll-speed+
+
+   :+scrollbar-left-side+ :+scrollbar-right-side+
+
+   ;; CheckBox
+   :+check-padding+
+
+   ;; ComboBox
+   :+combo-button-width+ :+combo-button-spacing+
+
+   ;; DropdownBox
+   :+arrow-padding+ :+dropdown-items-spacing+
+
+   ;; TextBox/TextBoxMulti/ValueBox/Spinner
+   :+text-inner-padding+ :+text-lines-spacing+
+
+   ;; Spinner
+   :+spin-button-width+ :+spin-button-scaling+
+
+   ;; ListView
+   :+list-items-height+ :+list-items-spacing+ :+scrollbar-width+ :+scrollbar-side+
+
+   ;; ColorPicker
+   :+color-selector-size+ :+huebar-width+ :+huebar-padding+ :+huebar-selector-height+
+   :+huebar-selector-overflow+
+
+   ;; Icons
+   :+icon-none+ :+icon-folder-file-open+ :+icon-file-save-classic+ :+icon-folder-open+ :+icon-folder-save+
+   :+icon-file-open+ :+icon-file-save+ :+icon-file-export+ :+icon-file-add+ :+icon-file-delete+
+   :+icon-filetype-text+ :+icon-filetype-audio+ :+icon-filetype-image+ :+icon-filetype-play+
+   :+icon-filetype-video+ :+icon-filetype-info+ :+icon-file-copy+ :+icon-file-cut+ :+icon-file-paste+
+   :+icon-cursor-hand+ :+icon-cursor-pointer+ :+icon-cursor-classic+ :+icon-pencil+ :+icon-pencil-big+
+   :+icon-brush-classic+ :+icon-brush-painter+ :+icon-water-drop+ :+icon-color-picker+ :+icon-rubber+
+   :+icon-color-bucket+ :+icon-text-t+ :+icon-text-a+ :+icon-scale+ :+icon-resize+ :+icon-filter-point+
+   :+icon-filter-bilinear+ :+icon-crop+ :+icon-crop-alpha+ :+icon-square-toggle+ :+icon-symmetry+
+   :+icon-symmetry-horizontal+ :+icon-symmetry-vertical+ :+icon-lens+ :+icon-lens-big+ :+icon-eye-on+
+   :+icon-eye-off+ :+icon-filter-top+ :+icon-filter+ :+icon-target-point+ :+icon-target-small+
+   :+icon-target-big+ :+icon-target-move+ :+icon-cursor-move+ :+icon-cursor-scale+ :+icon-cursor-scale-right+
+   :+icon-cursor-scale-left+ :+icon-undo+ :+icon-redo+ :+icon-reredo+ :+icon-mutate+ :+icon-rotate+
+   :+icon-repeat+ :+icon-shuffle+ :+icon-emptybox+ :+icon-target+ :+icon-target-small-fill+
+   :+icon-target-big-fill+ :+icon-target-move-fill+ :+icon-cursor-move-fill+ :+icon-cursor-scale-fill+
+   :+icon-cursor-scale-right-fill+ :+icon-cursor-scale-left-fill+ :+icon-undo-fill+ :+icon-redo-fill+
+   :+icon-reredo-fill+ :+icon-mutate-fill+ :+icon-rotate-fill+ :+icon-repeat-fill+ :+icon-shuffle-fill+
+   :+icon-emptybox-small+ :+icon-box+ :+icon-box-top+ :+icon-box-top-right+ :+icon-box-right+
+   :+icon-box-bottom-right+ :+icon-box-bottom+ :+icon-box-bottom-left+ :+icon-box-left+ :+icon-box-top-left+
+   :+icon-box-center+ :+icon-box-circle-mask+ :+icon-pot+ :+icon-alpha-multiply+ :+icon-alpha-clear+
+   :+icon-dithering+ :+icon-mipmaps+ :+icon-box-grid+ :+icon-grid+ :+icon-box-corners-small+
+   :+icon-box-corners-big+ :+icon-four-boxes+ :+icon-grid-fill+ :+icon-box-multisize+ :+icon-zoom-small+
+   :+icon-zoom-medium+ :+icon-zoom-big+ :+icon-zoom-all+ :+icon-zoom-center+ :+icon-box-dots-small+
+   :+icon-box-dots-big+ :+icon-box-concentric+ :+icon-box-grid-big+ :+icon-ok-tick+ :+icon-cross+
+   :+icon-arrow-left+ :+icon-arrow-right+ :+icon-arrow-down+ :+icon-arrow-up+ :+icon-arrow-left-fill+
+   :+icon-arrow-right-fill+ :+icon-arrow-down-fill+ :+icon-arrow-up-fill+ :+icon-audio+ :+icon-fx+
+   :+icon-wave+ :+icon-wave-sinus+ :+icon-wave-square+ :+icon-wave-triangular+ :+icon-cross-small+
+   :+icon-player-previous+ :+icon-player-play-back+ :+icon-player-play+ :+icon-player-pause+
+   :+icon-player-stop+ :+icon-player-next+ :+icon-player-record+ :+icon-magnet+ :+icon-lock-close+
+   :+icon-lock-open+ :+icon-clock+ :+icon-tools+ :+icon-gear+ :+icon-gear-big+ :+icon-bin+
+   :+icon-hand-pointer+ :+icon-laser+ :+icon-coin+ :+icon-explosion+ :+icon-1up+ :+icon-player+
+   :+icon-player-jump+ :+icon-key+ :+icon-demon+ :+icon-text-popup+ :+icon-gear-ex+ :+icon-crack+
+   :+icon-crack-points+ :+icon-star+ :+icon-door+ :+icon-exit+ :+icon-mode-2d+ :+icon-mode-3d+ :+icon-cube+
+   :+icon-cube-face-top+ :+icon-cube-face-left+ :+icon-cube-face-front+ :+icon-cube-face-bottom+
+   :+icon-cube-face-right+ :+icon-cube-face-back+ :+icon-camera+ :+icon-special+ :+icon-link-net+
+   :+icon-link-boxes+ :+icon-link-multi+ :+icon-link+ :+icon-link-broke+ :+icon-text-notes+
+   :+icon-notebook+ :+icon-suitcase+ :+icon-suitcase-zip+ :+icon-mailbox+ :+icon-monitor+ :+icon-printer+
+   :+icon-photo-camera+ :+icon-photo-camera-flash+ :+icon-house+ :+icon-heart+ :+icon-corner+
+   :+icon-vertical-bars+ :+icon-vertical-bars-fill+ :+icon-life-bars+ :+icon-info+ :+icon-crossline+
+   :+icon-help+ :+icon-filetype-alpha+ :+icon-filetype-home+ :+icon-layers-visible+ :+icon-layers+
+   :+icon-window+ :+icon-hidpi+ :+icon-filetype-binary+ :+icon-hex+ :+icon-shield+ :+icon-file-new+
+   :+icon-folder-add+ :+icon-alarm+
+
+
 
    ;;; claylib/ll extras
 

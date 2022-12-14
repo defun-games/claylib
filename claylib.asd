@@ -104,7 +104,6 @@
                                            (:file "message-box")
                                            (:file "panel")
                                            (:file "progress-bar")
-                                           (:file "scroll-bar")
                                            (:file "scroll-panel")
                                            (:file "slider")
                                            (:file "slider-bar")

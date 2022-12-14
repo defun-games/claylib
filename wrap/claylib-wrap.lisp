@@ -54,8 +54,16 @@
                                         ("sqrt" . "C-SQRT")
                                         ("floor" . "C-FLOOR")
                                         ("round" . "C-ROUND")
-                                        ;; This one just goofed.
-                                        ("GuiCheckBox" . "GUI-CHECKBOX")))
+                                        ;; Some of them just goofed.
+                                        ("GuiCheckBox" . "GUI-CHECKBOX")
+                                        ("PROGRESSBAR" . "+PROGRESS-BAR+")
+                                        ("COMBOBOX" . "+COMBO-BOX+")
+                                        ("DROPDOWNBOX" . "+DROPDOWN-BOX+")
+                                        ("TEXTBOX" . "+TEXT-BOX+")
+                                        ("VALUEBOX" . "+VALUE-BOX+")
+                                        ("LISTVIEW" . "+LIST-VIEW+")
+                                        ("COLORPICKER" . "+COLOR-PICKER+")
+                                        ("STATUSBAR" . "+STATUS-BAR+")))
 
 (autowrap:c-include '(claylib/wrap wrap lib "raymath.h")
                     :release-p t

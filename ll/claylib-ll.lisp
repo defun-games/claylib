@@ -28,6 +28,7 @@
 (lisp-bool file-exists file-name)
 (lisp-bool directory-exists dir-path)
 (lisp-bool is-file-extension file-name ext)
+(lisp-bool is-path-file path)
 (lisp-bool is-file-dropped)
 
 (lisp-bool is-key-pressed key)
