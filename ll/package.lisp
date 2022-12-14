@@ -424,7 +424,7 @@
    ;;; Raymath
 
    ;; Utils
-   :clamp :lerp :normalize :remap :wrap :float-equals
+   :normalize :remap :float-equals
 
    ;; Vector2
    :vector2-add :vector2-add-value :vector2-angle :vector2-clamp :vector2-clamp-value :vector2-distance

@@ -353,7 +353,7 @@
    ;;; Math (pass-throughs to Raymath)
 
    ;; Utils
-   :clamp :lerp :normalize :remap :float-equals
+   :normalize :remap :float-equals
 
    ;; Vector2
    :vector2-add :vector2-length :vector2-scale :vector2-subtract
