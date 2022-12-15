@@ -32,6 +32,9 @@
    :gui-list-view :gui-list-view-ex :gui-message-box :gui-text-input-box :gui-color-picker :gui-color-panel
    :gui-color-bar-alpha :gui-color-bar-hue :gui-draw-icon :gui-check-icon-pixel
 
+   ;; Music management
+   :is-music-stream-playing-p :seek-music-stream :get-music-time-length :get-music-time-played
+
    ;; Misc.
    :get-mouse-position :get-mouse-ray :get-ray-collision-box :load-render-texture :with-texture-mode
    :draw-grid :draw-text :draw-rectangle :draw-circle :draw-cube :update-camera :gen-mesh-cylinder
@@ -221,6 +224,9 @@
    :get-sounds-playing
 
    ;; Music management functions
+   :is-music-stream-playing-p
+   :seek-music-stream
+   :get-music-time-length :get-music-time-played
 
    ;; AudioStream management functions
    :set-audio-stream-buffer-size-default
@@ -556,5 +562,5 @@
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps* :+claylib-directory+
 
    ;; Convenience macros
-   :do-game-loop :with-2d-mode :with-3d-mode :with-drawing :with-scene-objects :with-scissor-mode
-   :with-texture-mode :with-window))
+   :do-game-loop :with-2d-mode :with-3d-mode :with-audio-device :with-drawing :with-scene-objects
+   :with-scissor-mode :with-texture-mode :with-window))

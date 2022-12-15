@@ -74,6 +74,7 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
                        &body body)
   `(progn
      (claylib/ll:init-window ,width ,height ,title)
+     (unless (is-audio-device-ready-p) (claylib/ll:init-audio-device))
      (claylib/ll:set-target-fps ,fps)
      (setf +default-font+ (load-font-default))
      (gui-load-style-default)
@@ -84,8 +85,19 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
      ,(when exit-key
         `(claylib/ll:set-exit-key ,exit-key))
      ,@body
+     (when (is-audio-device-ready-p)
+       (claylib/ll:close-audio-device))
      (when (is-window-ready-p)
        (close-window))))
 
 (defmethod draw-object ((obj list))
   (mapc #'draw-object obj))
+
+(defmacro with-audio-device (&body body)
+  "Initialize audio device & context for use during the execution of BODY, closing them afterwards.
+
+Note: this must occur before loading music streams. e.g. before setting up a Claylib SCENE which
+contains a MUSIC-ASSET (via WITH-SCENES or SET-UP-SCENE)."
+  `(unwind-protect (progn (claylib/ll:init-audio-device)
+                          ,@body)
+     (claylib/ll:close-audio-device)))

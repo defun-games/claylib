@@ -80,6 +80,7 @@
                              (:file "mesh")
                              (:file "model")
                              (:file "billboard")
+                             (:file "music")
                              (:file "claylib")
                              (:file "scene")
                              (:file "pt-functions")
@@ -187,4 +188,8 @@
                    (:file "font-spritefont")
                    (:file "font-loading")
                    (:file "format-text")
-                   (:file "input-box")))))))
+                   (:file "input-box")))
+                 (:module "audio"
+                  :components
+                  ((:file "module-playing")
+                   (:file "music-stream")))))))

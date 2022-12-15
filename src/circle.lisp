@@ -30,8 +30,8 @@
                                       (c-struct (color2 obj))))
     ((filled obj)
      (claylib/ll:draw-circle-v (c-struct (pos obj))
-                                (radius obj)
-                                (c-struct (color obj))))
+                               (radius obj)
+                               (c-struct (color obj))))
     (t
      ;; There's no DRAW-CIRCLE-LINES-V, so we have to use ints :-(
       (claylib/ll:draw-circle-lines (truncate (x obj))
