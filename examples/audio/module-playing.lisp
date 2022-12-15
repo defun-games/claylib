@@ -39,30 +39,31 @@
   (/ (1+ (random 100)) 2000.0))
 
 (defparameter *scene*
-  (let ((bar-x 20)
-        (bar-y (- (get-screen-height) 32))
-        (bar-w (- (get-screen-width) 40))
-        (bar-h 12))
-    (make-scene ((music (make-music-asset (claylib/examples:claylib-path
-                                           "examples/audio/resources/mini1111.xm"))))
-                ((circles (loop for i from 63 downto 0
-                                collect (let* ((r (random-bounded 10 30))
-                                               (x (random-x r))
-                                               (y (random-y r))
-                                               (color (copy-color (alexandria:random-elt *colors*)))
-                                               (velocity (random-velocity)))
-                                          (make-circle-wave x y r color velocity))))
-                 (timebar-bg   (make-rectangle bar-x bar-y bar-w bar-h +lightgray+))
-                 (timebar-fill (make-rectangle bar-x bar-y 0     bar-h +maroon+))
-                 (timebar-line (make-rectangle bar-x bar-y bar-w bar-h +gray+ :filled nil))))))
+  (make-scene-pro ((:assets (music-ass (make-music-asset (claylib/examples::claylib-path
+                                                          "examples/audio/resources/mini1111.xm"))))
+                   (:params (bar-x 20)
+                            (bar-y (- (get-screen-height) 32))
+                            (bar-w (- (get-screen-width) 40))
+                            (bar-h 12)
+                            (music (asset music-ass)))
+                   (:objects (circles (loop for i from 63 downto 0
+                                            collect (let* ((r (random-bounded 10 30))
+                                                           (x (random-x r))
+                                                           (y (random-y r))
+                                                           (color (copy-color
+                                                                   (alexandria:random-elt *colors*)))
+                                                           (velocity (random-velocity)))
+                                                      (make-circle-wave x y r color velocity))))
+                             (timebar-bg   (make-rectangle bar-x bar-y bar-w bar-h +lightgray+))
+                             (timebar-fill (make-rectangle bar-x bar-y 0     bar-h +maroon+))
+                             (timebar-line
+                              (make-rectangle bar-x bar-y bar-w bar-h +gray+ :filled nil))))))
 
 (defun main ()
   (with-window (:title "raylib [audio] example - module playing (streaming)"
                 :flags (list +flag-msaa-4x-hint+))
     (with-scenes *scene* ()
-      ;; FIXME find a better way to refer to the rl-music, without making it a scene object.
-      ;; Perhaps a candidate for "scene parameter" stuff?
-      (let ((music (asset (gethash 'music (claylib::assets *scene*)))))
+      (let ((music (scene-param *scene* 'music)))
         (play music)
         (setf (looping music) nil)
         (with-scene-objects (circles timebar-fill) *scene*
@@ -85,9 +86,12 @@
                 (when (is-key-down-p +key-up+) (incf pitch 0.01)))
             (setf (pitch music) pitch)
 
-            (setf (width timebar-fill) (* (/ (get-music-time-played music)
-                                             (get-music-time-length music))
-                                          (- (get-screen-width) 40)))
+            ;; FIXME: GET-MUSIC-TIME-PLAYED does not reset to 0 when a .xm file is restarted.
+            ;; Unknown if this is a bug in Raylib or simply unsupported for that format.
+            (setf (width timebar-fill) (* (min (/ (get-music-time-played music)
+                                                  (get-music-time-length music))
+                                               1)
+                                          (scene-param *scene* 'bar-w)))
 
             (loop
               for circle in circles
