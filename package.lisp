@@ -526,10 +526,10 @@
    :make-animation-asset :make-billboard :make-camera-2d :make-camera-2d-from-vecs :make-camera-3d
    :make-camera-3d-from-vecs :make-circle :make-color :make-cube :make-cube-from-vecs :make-empty-texture
    :make-font :make-font-asset :make-grid :make-image :make-image-asset :make-line-2d :make-model
-   :make-model-asset :make-pixel :make-plane :make-polygon :make-ray :make-ray-collision :make-rectangle
-   :make-rectangle-from-vecs :make-simple-rec :make-sphere :make-sphere-from-vec :make-text :make-texture
-   :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs :make-vector2
-   :make-vector3 :make-vector4 :make-zero-matrix
+   :make-model-asset :make-music-asset :make-pixel :make-plane :make-polygon :make-ray :make-ray-collision
+   :make-rectangle :make-rectangle-from-vecs :make-simple-rec :make-sphere :make-sphere-from-vec :make-text
+   :make-texture :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs
+   :make-vector2 :make-vector3 :make-vector4 :make-zero-matrix
 
    ;; Scenes/assets
    :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex :load-scene-all
@@ -557,6 +557,7 @@
    :asset :load-asset
    :draw-object
    :set-slot
+   :looping :pause :pitch :play :resume :stop :update :volume
 
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps* :+claylib-directory+
