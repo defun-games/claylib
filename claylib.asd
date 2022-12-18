@@ -34,7 +34,8 @@
                 :components
                 ((:file "package")
                  (:file "claylib-ll")
-                 (:file "validate")))))
+                 (:file "validate")
+                 (:file "copy")))))
 
 (asdf:defsystem #:claylib
   :description "Lispy game toolkit built on top of Raylib"
