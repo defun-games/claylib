@@ -95,7 +95,8 @@ Optional INTO if you already have an object to put the data in."))
     (full-copy (material.shader obj) (material.shader new))
     (setf (material.maps new) (autowrap:c-aptr new-maps 0 'material-map))
     (dotimes (i 4)
-      (setf (material.params[] new i) (material.params[] obj i)))
+      (setf (c-ref new material :params i)
+            (c-ref obj material :params i)))
     new))
 
 (defmethod full-copy ((obj model) &optional into)
@@ -178,17 +179,30 @@ any CFFI type or wrapper type."
                              (cond
                                ;; Fixed-length array
                                ((and count fixed)
-                                (let ((fun (alexandria:symbolicate fun "[]")))
-                                  `(cond
-                                     ((member ',fname copy-fields)
-                                      (dotimes (i ,count)
-                                        (setf (,fun i ,new) (,fun i obj))))
-                                     ((member ',fname reuse-fields)
-                                      ,(if (autowrap:builtin-type-p ftype)
-                                           `(error "Reuse of fixed array type ~A not supported for field ~A. You must copy or ignore."
-                                                   ,ftype ',fname)
-                                           `(dotimes (i ,count)
-                                              (setf (,fun i ,new) (,fun i obj))))))))
+                                `(cond
+                                   ((member ',fname copy-fields)
+                                    (dotimes (i ,count)
+                                      (setf (c-ref ,new
+                                                   ,type
+                                                   ,(alexandria:make-keyword fname)
+                                                   i)
+                                            (c-ref obj
+                                                   ,type
+                                                   ,(alexandria:make-keyword fname)
+                                                   i))))
+                                   ((member ',fname reuse-fields)
+                                    ,(if (autowrap:builtin-type-p ftype)
+                                         `(error "Reuse of fixed array type ~A not supported for field ~A. You must copy or ignore."
+                                                 ,ftype ',fname)
+                                         `(dotimes (i ,count)
+                                            (setf (c-ref ,new
+                                                         ,type
+                                                         ,(alexandria:make-keyword fname)
+                                                         i)
+                                                  (c-ref obj
+                                                         ,type
+                                                         ,(alexandria:make-keyword fname)
+                                                         i)))))))
                                
                                ;; Variable-length array
                                (count
@@ -212,7 +226,7 @@ any CFFI type or wrapper type."
                                (t
                                 `(cond
                                    ((member ',fname copy-fields)
-                                    (full-copy (,fun ,new) (,fun obj)))
+                                    (full-copy (,fun obj) (,fun ,new)))
                                    ((member ',fname reuse-fields)
                                     (error "Reuse of wrapper type ~A not supported for field ~A. You must copy or ignore."
                                            ,ftype ',fname))))))))
