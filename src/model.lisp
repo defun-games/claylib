@@ -112,54 +112,88 @@
 (defun make-model (model-asset x y z
                    &rest args &key scale tint rot-angle rot-axis filled transform mesh-count
                                 meshes material-count materials mesh-materials bone-count bones
-                                bind-pose animation-asset)
+                                bind-pose animation-asset instance-meshes-p instance-materials-p)
   "Make a Claylib model.
 
 Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASSET."
   (declare (ignorable scale tint rot-angle rot-axis filled))
   (load-asset model-asset)
   (when animation-asset (load-asset animation-asset))
-  (let ((model (apply #'make-instance 'model
-                      :allow-other-keys t
-                      :asset model-asset
-                      :pos (make-vector3 x y z)
-                      args))
-        (c-meshes (autowrap:c-aref (model.meshes (c-asset model-asset)) 0 'claylib/ll:mesh))
-        (c-bones (autowrap:c-aref (model.bones (c-asset model-asset)) 0 'claylib/ll:bone-info))
-        (c-materials (autowrap:c-aref (model.materials (c-asset model-asset)) 0 'claylib/ll:material))
-        (c-poses (autowrap:c-aref (model.bind-pose (c-asset model-asset)) 0 'claylib/ll:transform)))
-    (set-slot :transform model (or transform (transform model-asset))) ; TODO (make-zero-matrix) here?
-    (setf (mesh-count model)
-          (or mesh-count (mesh-count model-asset))
-
-          (meshes model)
+  (let* ((c-model (c-asset model-asset))
+         (model (apply #'make-instance 'model
+                       :allow-other-keys t
+                       :asset model-asset
+                       :pos (make-vector3 x y z)
+                       :c-struct (partial-copy c-model
+                                               (list (unless transform 'claylib/ll::transform)
+                                                     (unless mesh-count 'claylib/ll::mesh-count)
+                                                     (unless material-count 'claylib/ll::material-count)
+                                                     (unless bone-count 'claylib/ll::bone-count))
+                                               (list (unless bones 'claylib/ll::bones)
+                                                     (unless bind-pose 'claylib/ll::bind-pose)))
+                       args))
+         (c-meshes (model.meshes c-model))
+         (c-bones (autowrap:c-aref (model.bones c-model) 0 'claylib/ll:bone-info))
+         (c-materials (model.materials c-model))
+         (c-poses (autowrap:c-aref (model.bind-pose c-model) 0 'claylib/ll:transform)))
+    (when transform (set-slot :transform (transform model) transform))
+    (when mesh-count (setf (mesh-count model) mesh-count))
+    (when material-count (setf (material-count model) material-count))
+    (when bone-count (setf (bone-count model) bone-count))
+    (when bones (setf (bones model)
+                      (make-instance 'rl-bones
+                                     :cl-array (make-rl-*-array c-bones (bone-count model)))))
+    (when bind-pose (setf (bind-pose model)
+                          (make-instance 'rl-transforms
+                                         :cl-array (make-rl-*-array c-poses (bone-count model)))))
+    (setf (meshes model)
           (or meshes (make-instance 'rl-meshes
-                                    :cl-array (make-rl-*-array c-meshes (mesh-count model))))
-
-          (material-count model)
-          (or material-count (material-count model-asset))
+                                    :cl-array (make-rl-*-array
+                                               (if instance-meshes-p
+                                                   (autowrap:c-aref c-meshes 0 'claylib/ll:mesh)
+                                                   (copy-c-array 'claylib/ll:mesh
+                                                                 c-meshes
+                                                                 (mesh-count model)))
+                                               (mesh-count model))))
 
           (materials model)
-          (or materials (make-instance 'rl-materials
-                                       :cl-array (make-rl-*-array c-materials
-                                                                  (material-count model))))
-
-          (mesh-materials model)
-          (or mesh-materials (mesh-materials model-asset))
-
-          (bone-count model)
-          (or bone-count (bone-count model-asset))
-
-          (bones model)
-          (or bones (make-instance 'rl-bones
-                                   :cl-array (make-rl-*-array c-bones (bone-count model))))
-
-          (bind-pose model)
-          (or bind-pose (make-instance 'rl-transforms
-                                       ;; TODO Is bone-count the right number of bind-poses?
-                                       :cl-array (make-rl-*-array c-poses (bone-count model)))))
+          (or materials
+              (make-instance 'rl-materials
+                             :cl-array (make-rl-*-array
+                                        (if instance-materials-p
+                                            (autowrap:c-aref c-materials 0 'claylib/ll:material)
+                                            (let ((c-array
+                                                    (autowrap:calloc 'claylib/ll:material
+                                                                     (material-count model))))
+                                              (dotimes (i (material-count model))
+                                                (full-copy (autowrap:c-aref c-materials
+                                                                            i
+                                                                            'claylib/ll:material)
+                                                           (autowrap:c-aref c-array
+                                                                            i
+                                                                            'claylib/ll:material)))
+                                              c-array))
+                                        (material-count model)))))
+    (cond
+      (mesh-materials
+       (setf (mesh-materials model) mesh-materials))
+      (instance-materials-p
+       (setf (mesh-materials model) (mesh-materials model-asset)))
+      (t
+       (let ((mm (autowrap:calloc :int (mesh-count model))))
+         (copy-c-array :int
+                       (model.mesh-material c-model)
+                       (mesh-count model)
+                       mm)
+         (setf (model.mesh-material (c-struct model)) mm))))
     (when animation-asset
       (setf (animations model) (asset animation-asset)))
+    (unless (or instance-meshes-p meshes)
+      (dotimes (i (length (meshes model)))
+        (let ((c-mesh (c-struct (elt (meshes model) i))))
+          (setf (mesh.vao-id c-mesh) 0
+                (mesh.vbo-id c-mesh) (autowrap:calloc :unsigned-int 7))
+          (upload-mesh c-mesh 0))))
     model))
 
 (defmethod draw-object ((obj model))
