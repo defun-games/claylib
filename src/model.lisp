@@ -140,12 +140,6 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
     (when mesh-count (setf (mesh-count model) mesh-count))
     (when material-count (setf (material-count model) material-count))
     (when bone-count (setf (bone-count model) bone-count))
-    (when bones (setf (bones model)
-                      (make-instance 'rl-bones
-                                     :cl-array (make-rl-*-array c-bones (bone-count model)))))
-    (when bind-pose (setf (bind-pose model)
-                          (make-instance 'rl-transforms
-                                         :cl-array (make-rl-*-array c-poses (bone-count model)))))
     (setf (meshes model)
           (or meshes (make-instance 'rl-meshes
                                     :cl-array (make-rl-*-array
@@ -173,7 +167,17 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                                                                             i
                                                                             'claylib/ll:material)))
                                               c-array))
-                                        (material-count model)))))
+                                        (material-count model))))
+
+          (bones model)
+          (or bones
+              (make-instance 'rl-bones
+                             :cl-array (make-rl-*-array c-bones (bone-count model))))
+
+          (bind-pose model)
+          (or bind-pose
+              (make-instance 'rl-transforms
+                             :cl-array (make-rl-*-array c-poses (bone-count model)))))
     (cond
       (mesh-materials
        (setf (mesh-materials model) mesh-materials))
