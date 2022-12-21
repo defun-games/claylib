@@ -563,5 +563,6 @@
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps* :+claylib-directory+
 
    ;; Convenience macros
-   :do-game-loop :with-2d-mode :with-3d-mode :with-audio-device :with-drawing :with-scene-objects
-   :with-scissor-mode :with-texture-mode :with-window))
+   :do-game-loop :with-2d-mode :with-3d-mode :with-audio-device :with-drawing :with-scene-assets
+   :with-scene-bindings :with-scene-objects :with-scene-params :with-scissor-mode :with-texture-mode
+   :with-window))
