@@ -32,6 +32,9 @@
    :gui-list-view :gui-list-view-ex :gui-message-box :gui-text-input-box :gui-color-picker :gui-color-panel
    :gui-color-bar-alpha :gui-color-bar-hue :gui-draw-icon :gui-check-icon-pixel
 
+   ;; Music management
+   :is-music-stream-playing-p :seek-music-stream :get-music-time-length :get-music-time-played
+
    ;; Misc.
    :get-mouse-position :get-mouse-ray :get-ray-collision-box :load-render-texture :with-texture-mode
    :draw-grid :draw-text :draw-rectangle :draw-circle :draw-cube :update-camera :gen-mesh-cylinder
@@ -221,6 +224,9 @@
    :get-sounds-playing
 
    ;; Music management functions
+   :is-music-stream-playing-p
+   :seek-music-stream
+   :get-music-time-length :get-music-time-played
 
    ;; AudioStream management functions
    :set-audio-stream-buffer-size-default
@@ -520,10 +526,10 @@
    :make-animation-asset :make-billboard :make-camera-2d :make-camera-2d-from-vecs :make-camera-3d
    :make-camera-3d-from-vecs :make-circle :make-color :make-cube :make-cube-from-vecs :make-empty-texture
    :make-font :make-font-asset :make-grid :make-image :make-image-asset :make-line-2d :make-model
-   :make-model-asset :make-pixel :make-plane :make-polygon :make-ray :make-ray-collision :make-rectangle
-   :make-rectangle-from-vecs :make-simple-rec :make-sphere :make-sphere-from-vec :make-text :make-texture
-   :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs :make-vector2
-   :make-vector3 :make-vector4 :make-zero-matrix
+   :make-model-asset :make-music-asset :make-pixel :make-plane :make-polygon :make-ray :make-ray-collision
+   :make-rectangle :make-rectangle-from-vecs :make-simple-rec :make-sphere :make-sphere-from-vec :make-text
+   :make-texture :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs
+   :make-vector2 :make-vector3 :make-vector4 :make-zero-matrix
 
    ;; Scenes/assets
    :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex :load-scene-all
@@ -551,10 +557,12 @@
    :asset :load-asset
    :draw-object
    :set-slot
+   :looping :pause :pitch :play :resume :stop :update :volume
 
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps* :+claylib-directory+
 
    ;; Convenience macros
-   :do-game-loop :with-2d-mode :with-3d-mode :with-drawing :with-scene-objects :with-scissor-mode
-   :with-texture-mode :with-window))
+   :do-game-loop :with-2d-mode :with-3d-mode :with-audio-device :with-drawing :with-scene-assets
+   :with-scene-bindings :with-scene-objects :with-scene-params :with-scissor-mode :with-texture-mode
+   :with-window))

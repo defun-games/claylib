@@ -348,3 +348,22 @@ Allocates a new RAY-COLLISION unless you pass one."
   "Get ZYX rotation matrix from a RL-VECTOR3. Allocates a new RL-MATRIX unless you pass one."
   (matrix rl-matrix nil (make-zero-matrix))
   (ang rl-vector3))
+
+;; Music management
+
+(defun-pt-bool is-music-stream-playing-p claylib/ll:is-music-stream-playing-p
+  "Check is MUSIC is playing."
+  (music rl-music))
+
+(defun-pt-void seek-music-stream claylib/ll:seek-music-stream
+  "Seek MUSIC to a position (in seconds)."
+  (music rl-music)
+  (position number float))
+
+(defun-pt-num get-music-time-length claylib/ll:get-music-time-length
+  "Get MUSIC time length (in seconds)."
+  (music rl-music))
+
+(defun-pt-num get-music-time-played claylib/ll:get-music-time-played
+  "Get MUSIC time played (in seconds)."
+  (music rl-music))

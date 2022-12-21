@@ -166,12 +166,62 @@ reference previous bindings but will be initialized in the order they are declar
 (defun scene-param (scene param)
   (gethash param (params scene)))
 
+(defmacro with-scene-assets (assets scene &body body)
+  "Define local symbol macros to conveniently access specific scene assets. ASSETS is a list;
+each element is either the name of an asset or a symbol/value pair, a la WITH-SLOTS."
+  `(symbol-macrolet ,(loop for ass in assets
+                           collect (if (listp ass)
+                                       `(,(car ass) (gethash ,(cadr ass) (assets ,scene)))
+                                       `(,ass (gethash ',ass (assets ,scene)))))
+     ,@body))
+
 (defmacro with-scene-objects (objects scene &body body)
+  "Define local symbol macros to conveniently access specific scene objects. OBJECTS is a list;
+each element is either the name of an object or a symbol/value pair, a la WITH-SLOTS."
   `(symbol-macrolet ,(loop for obj in objects
                            collect (if (listp obj)
                                        `(,(car obj) (gethash ,(cadr obj) (objects ,scene)))
                                        `(,obj (gethash ',obj (objects ,scene)))))
      ,@body))
+
+(defmacro with-scene-params (params scene &body body)
+  "Define local symbol macros to conveniently access specific scene parameters. PARAMS is a list;
+each element is either the name of a parameter or a symbol/value pair, a la WITH-SLOTS."
+  `(symbol-macrolet ,(loop for param in params
+                           collect (if (listp param)
+                                       `(,(car param) (gethash ,(cadr param) (params ,scene)))
+                                       `(,param (gethash ',param (params ,scene)))))
+     ,@body))
+
+(defun dynamic-bindings (scene what body)
+  (let ((bindings (concatenate 'list
+                               (when (member :assets what)
+                                 (loop for k in (alexandria:hash-table-keys (assets scene))
+                                       collect `(,k (scene-asset ,scene ',k))))
+                               (when (member :objects what)
+                                 (loop for k in (alexandria:hash-table-keys (objects scene))
+                                       collect `(,k (scene-object ,scene ',k))))
+                               (when (member :params what)
+                                 (loop for k in (alexandria:hash-table-keys (params scene))
+                                       collect `(,k (scene-param ,scene ',k)))))))
+    (funcall (compile nil `(lambda ()
+                             (symbol-macrolet (,@bindings)
+                               ,@body))))))
+
+(defmacro with-scene-bindings ((&rest what) scene &body body)
+  "Evaluate BODY within the context of a scene, using symbol macros bound to the same names
+used as keys. WHAT is any/all of: (:ASSETS :OBJECTS :PARAMS) -- the default is all three.
+
+This has two important limitations!
+
+1) You lose access to the lexical context outside of WITH-SCENE-BINDINGS.
+
+2) Any new objects added to the scene within this context will not automatically get bindings.
+
+If the first limitation is undesirable, you may want to try WITH-SCENE-ASSETS/OBJECTS/PARAMS
+instead. If the second limitation is undesirable, you're welcome to add that feature yourself."
+  (let ((what (or what '(:assets :objects :params))))
+    `(dynamic-bindings ,scene ',what ',body)))
 
 (defmacro with-scenes (scenes (&key (gc nil gc-supplied-p)) &body body)
   "Execute BODY after loading & initializing SCENES, tearing them down afterwards.
