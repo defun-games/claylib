@@ -20,7 +20,7 @@
         (texass (make-texture-asset
                  (claylib/examples:claylib-path
                   "examples/shaders/resources/models/watermill_diffuse.png")))
-        (shdass (claylib::make-shader-asset
+        (shdass (make-shader-asset
                  :fspath
                  (claylib/examples:claylib-path
                   (format nil "examples/shaders/resources/shaders/glsl~d/grayscale.fs" +glsl-vsn+)))))
