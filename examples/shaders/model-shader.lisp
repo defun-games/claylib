@@ -26,12 +26,9 @@
        (:objects
         (model (let ((m (make-model modass 0 0 0)))
                  (set-slot :shader (elt (materials m) 0) (asset shdass))
-                 (print (texture (elt (maps (elt (materials m) 0)) +material-map-diffuse+)))
-                 (print (asset texass))
-                 (setf ;; (claylib::shader (elt (materials m) 0))
-                       ;; (asset shdass)
-                       (texture (elt (maps (elt (materials m) 0)) +material-map-diffuse+))
-                       (asset texass))
+                 (set-slot :texture
+                           (elt (maps (elt (materials m) 0)) +material-map-diffuse+)
+                           (asset texass))
                  m))
         (grid (make-grid 10 1))
         (txt (make-text "(c) Watermill 3D model by Alberto Cano"
