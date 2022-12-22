@@ -21,10 +21,13 @@
                  (claylib/examples:claylib-path
                   "examples/shaders/resources/models/watermill_diffuse.png")))
         (shdass (claylib::make-shader-asset
+                 :fspath
                  (claylib/examples:claylib-path
                   (format nil "examples/shaders/resources/shaders/glsl~d/grayscale.fs" +glsl-vsn+)))))
        (:objects
-        (model (let ((m (make-model modass 0 0 0)))
+        (model (let ((m (make-model modass 0 0 0
+                                    :scale (make-vector3 0.2 0.2 0.2)
+                                    :tint +white+)))
                  (set-slot :shader (elt (materials m) 0) (asset shdass))
                  (set-slot :texture
                            (elt (maps (elt (materials m) 0)) +material-map-diffuse+)
@@ -41,11 +44,12 @@
   (with-window (:title "raylib [shaders] example - model shader"
                 :flags (list +flag-msaa-4x-hint+))
     (with-scenes *scene* ()
-      (with-scene-objects (model grid text) *scene*
+      (with-scene-objects (model grid txt) *scene*
         (let ((cam (scene-param *scene* 'cam)))
           (do-game-loop (:livesupport t)
             (update-camera cam)
             (with-drawing ()
               (with-3d-mode cam
                 (draw-objects model grid))
+              (draw-object txt)
               (draw-fps 10 10))))))))
