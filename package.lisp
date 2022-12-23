@@ -508,6 +508,16 @@
    :+icon-window+ :+icon-hidpi+ :+icon-filetype-binary+ :+icon-hex+ :+icon-shield+ :+icon-file-new+
    :+icon-folder-add+ :+icon-alarm+
 
+   ;; Others
+   :+raygui-colorbaralpha-checked-size+ :+raygui-grid-alpha+ :+raygui-groupbox-line-thick+
+   :+raygui-icon-data-elements+ :+raygui-icon-max-icons+ :+raygui-icon-max-name-length+
+   :+raygui-icon-size+ :+raygui-line-margin-text+ :+raygui-line-text-padding+ :+raygui-max-controls+
+   :+raygui-max-props-base+ :+raygui-max-props-extended+ :+raygui-messagebox-button-height+
+   :+raygui-messagebox-button-padding+ :+raygui-panel-border-width+ :+raygui-textinputbox-button-height+
+   :+raygui-textinputbox-button-padding+ :+raygui-textinputbox-height+ :+raygui-textsplit-max-items+
+   :+raygui-textsplit-max-text-size+ :+raygui-togglegroup-max-items+ :+raygui-valuebox-max-chars+
+   :+raygui-version+ :+raygui-windowbox-statusbar-height+
+
 
 
    ;;; Claylib extensions
