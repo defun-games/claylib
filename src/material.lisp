@@ -14,9 +14,10 @@
 (defmethod loc ((shader rl-shader) (index integer))
   (when (and (< index 32) (>= index 0))
     (autowrap:c-aref (shader.locs (c-struct shader)) index :int)))
-(defmethod locs ((shader rl-shader))
-  (loop for i below 32
-        collect (loc shader i)))
+;; (defmethod locs ((shader rl-shader))
+;;   (loop for i below 32
+;;         collect (loc shader i)))
+(defcreader locs rl-shader locs shader)
 
 (defcwriter id rl-shader id shader integer)
 (defmethod (setf loc) ((value integer) (shader rl-shader) (index integer))

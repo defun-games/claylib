@@ -148,6 +148,11 @@
        (claylib/ll:load-shader (c-asset asset) vpath fpath))))
   asset)
 
+(defun make-shader-asset (&key vspath fspath (load-now nil))
+  "Make a shader asset from files VSPATH and FSPATH. This does not load the model unless LOAD-NOW is
+non-nil."
+  (make-instance 'shader-asset :vspath vspath :fspath fspath :load-now load-now))
+
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
