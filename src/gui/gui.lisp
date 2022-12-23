@@ -1,11 +1,5 @@
 (in-package #:claylib)
 
-;;;; Raygui Lispification
-;;;; Obligatory disclaimer: Everything in this file is in flux and will probably get moved.
-;;;; I don't fully know what direction this will go yet.
-
-
-
 ;;; Mixin classes
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -24,7 +18,12 @@
   (defclass text-box ()
     ((%text-size :initarg :text-size
                  :type integer
-                 :accessor text-size)))
+                 :reader text-size)
+     (%text :initarg :text
+            :type cffi:foreign-pointer))
+    (:default-initargs
+     :text-size 0
+     :text ""))
 
   (defclass pressable ()
     ((%pressed
@@ -79,6 +78,38 @@ sense to set this in your own code.")))
     ((%color :initarg :color
              :type rl-color
              :accessor color))))
+
+(defmethod text ((text-box text-box))
+  (plus-c:c-ref (slot-value text-box '%text) :char string))
+
+(defmethod (setf text) ((value string) (text-box text-box))
+  (let ((oldptr (slot-value text-box '%text)))
+    (if (or (not (cffi:pointerp oldptr))
+            (>= (length value) (text-size text-box)))
+        (let ((ptr (autowrap:alloc-string value)))
+          (when (cffi:pointerp oldptr) (autowrap:free oldptr))
+          (setf (slot-value text-box '%text) ptr))
+        (cffi:lisp-string-to-foreign value
+                                     oldptr
+                                     (text-size text-box)))))
+
+(defmethod (setf text-size) ((value integer) (text-box text-box))
+  (when (/= value (text-size text-box))
+    (let ((ptr (autowrap:calloc :char (1+ value))))
+      (cffi:lisp-string-to-foreign (if (< value (length (text text-box)))
+                                       (subseq (text text-box) 0 value)
+                                       (text text-box))
+                                   ptr
+                                   (1+ value))
+      (autowrap:free (slot-value text-box '%text))
+      (setf (text text-box) ptr))
+    value))
+
+(defmethod initialize-instance :after ((text-box text-box)
+                                       &key text-size text &allow-other-keys)
+  (setf (text-size text-box) text-size
+        (text text-box) text)
+  text-box)
 
 
 

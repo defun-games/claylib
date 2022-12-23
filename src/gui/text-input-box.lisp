@@ -1,11 +1,8 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass gui-text-input-box (gui-message-box text-label)
-    ((%text-max-size :initarg :text-max-size
-                     :type integer
-                     :accessor text-max-size)
-     (%secret-view-active :initarg :secret-view-active
+  (defclass gui-text-input-box (gui-message-box text-box)
+    ((%secret-view-active :initarg :secret-view-active
                           :type cffi:foreign-pointer))
     (:default-initargs
      :secret-view-active nil)
@@ -35,8 +32,8 @@
   (title string)
   (message string)
   (buttons string)
-  (text string)
-  (text-max-size integer)
+  (text cffi:foreign-pointer)
+  (text-size integer)
   (secret-view-active cffi:foreign-pointer))
 
 (defmethod draw-object ((obj gui-text-input-box))
@@ -45,14 +42,14 @@
                             (title obj)
                             (message obj)
                             (buttons obj)
-                            (text obj)
-                            (text-max-size obj)
+                            (slot-value obj '%text)
+                            (text-size obj)
                             (slot-value obj '%secret-view-active))))
 
-(defun make-gui-text-input-box (x y width height text-max-size
+(defun make-gui-text-input-box (x y width height text-size
                                 &rest args &key text title message buttons secret-view-active)
   (declare (ignorable text title message buttons secret-view-active))
   (apply #'make-instance 'gui-text-input-box
          :bounds (make-simple-rec x y width height)
-         :text-max-size text-max-size
+         :text-size text-size
          args))

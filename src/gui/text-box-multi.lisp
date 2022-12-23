@@ -7,14 +7,14 @@
 (defun-pt-bool gui-text-box-multi claylib/ll:gui-text-box-multi
   "Text Box control with multiple lines"
   (bounds rl-rectangle)
-  (text string)
+  (text cffi:foreign-pointer)
   (text-size integer)
   (edit-mode boolean))
 
 (defmethod draw-object ((obj gui-text-box-multi))
   (setf (slot-value obj '%pressed)
         (gui-text-box-multi (bounds obj)
-                            (text obj)
+                            (slot-value obj '%text)
                             (text-size obj)
                             (edit-mode obj))))
 
