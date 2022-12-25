@@ -84,31 +84,37 @@ sense to set this in your own code.")))
 
 (defmethod (setf text) ((value string) (text-box text-box))
   (let ((oldptr (slot-value text-box '%text)))
-    (if (or (not (cffi:pointerp oldptr))
-            (>= (length value) (text-size text-box)))
+    (if (>= (length value) (text-size text-box))
         (let ((ptr (autowrap:alloc-string value)))
-          (when (cffi:pointerp oldptr) (autowrap:free oldptr))
-          (setf (slot-value text-box '%text) ptr))
+          (setf (slot-value text-box '%text) ptr
+                (slot-value text-box '%text-size) (1+ (length value)))
+          (autowrap:free oldptr))
         (cffi:lisp-string-to-foreign value
                                      oldptr
                                      (text-size text-box)))))
 
 (defmethod (setf text-size) ((value integer) (text-box text-box))
   (when (/= value (text-size text-box))
-    (let ((ptr (autowrap:calloc :char (1+ value))))
-      (cffi:lisp-string-to-foreign (if (< value (length (text text-box)))
-                                       (subseq (text text-box) 0 value)
+    (let ((ptr (autowrap:calloc :char value))
+          (old (slot-value text-box '%text)))
+      (cffi:lisp-string-to-foreign (if (<= value (length (text text-box)))
+                                       (subseq (text text-box) 0 (1- value))
                                        (text text-box))
                                    ptr
-                                   (1+ value))
-      (autowrap:free (slot-value text-box '%text))
-      (setf (text text-box) ptr))
+                                   value)
+      (setf (slot-value text-box '%text-size) value
+            (slot-value text-box '%text) ptr)
+      (autowrap:free old))
     value))
 
 (defmethod initialize-instance :after ((text-box text-box)
                                        &key text-size text &allow-other-keys)
-  (setf (text-size text-box) text-size
-        (text text-box) text)
+  (let* ((len (max (1+ (length text))
+                   text-size))
+         (ptr (autowrap:calloc :char len)))
+    (cffi:lisp-string-to-foreign text ptr len)
+    (setf (slot-value text-box '%text) ptr
+          (slot-value text-box '%text-size) len))
   text-box)
 
 
