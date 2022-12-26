@@ -576,8 +576,8 @@
    :set-slot
    :looping :pause :pitch :play :resume :stop :update :volume
    :active :alpha :bounds :buttons :checked :content :edit-mode :focus :icon-id :max-value :message
-   :min-value :num :pixel-size :pressed :scroll :scroll-index :selected :subdivs :text-left :text-right
-   :text-size :title :value :view
+   :min-value :num :pixel-size :pressed :scroll :scroll-index :secret-view-active :selected :subdivs
+   :text-left :text-right :text-size :title :value :view
 
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps* :+claylib-directory+
