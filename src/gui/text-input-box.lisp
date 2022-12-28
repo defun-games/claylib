@@ -14,17 +14,15 @@
     (1 t)))
 
 (defmethod (setf secret-view-active) (value (input-box gui-text-input-box))
-  (if (slot-value input-box '%secret-view-active)
-      (setf (plus-c:c-ref (slot-value input-box '%secret-view-active) :int)
-            (if value 1 0))
-      (let ((ptr (autowrap:calloc :int)))
-        (setf (plus-c:c-ref ptr :int) (if value 1 0)
-              (slot-value input-box '%secret-view-active) ptr))))
+  (setf (plus-c:c-ref (slot-value input-box '%secret-view-active) :int)
+        (if value 1 0)))
 
 (defmethod initialize-instance :after ((input-box gui-text-input-box)
                                        &key secret-view-active &allow-other-keys)
-  (setf (secret-view-active input-box) secret-view-active)
-  input-box)
+  (let ((ptr (autowrap:calloc :int)))
+    (setf (plus-c:c-ref ptr :int) (if secret-view-active 1 0)
+          (slot-value input-box '%secret-view-active) ptr)
+    input-box))
 
 (defun-pt-num gui-text-input-box claylib/ll:gui-text-input-box
   "Text Input Box control, ask for text"

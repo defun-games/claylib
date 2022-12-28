@@ -537,16 +537,17 @@
    :make-camera-3d-from-vecs :make-circle :make-color :make-cube :make-cube-from-vecs
    :make-empty-texture :make-font :make-font-asset :make-grid :make-gui-button :make-gui-checkbox
    :make-gui-color-bar-alpha :make-gui-color-bar-hue :make-gui-color-panel :make-gui-color-picker
-   :make-gui-combo-box :make-gui-dropdown-box :make-gui-grid :make-gui-group-box :make-gui-icon
-   :make-gui-label :make-gui-label-button :make-gui-line :make-gui-list-view :make-gui-message-box
-   :make-gui-panel :make-gui-progress-bar :make-gui-scroll-panel :make-gui-scroll-panel-from-recs
-   :make-gui-slider :make-gui-slider-bar :make-gui-spinner :make-gui-status-bar :make-gui-text-box
-   :make-gui-text-box-multi :make-gui-text-input-box :make-gui-toggle :make-gui-toggle-group
-   :make-gui-value-box :make-gui-window-box :make-image :make-image-asset :make-line-2d :make-model
-   :make-model-asset :make-music-asset :make-pixel :make-plane :make-polygon :make-ray :make-ray-collision
-   :make-rectangle :make-rectangle-from-vecs :make-shader-asset :make-simple-rec :make-sphere
-   :make-sphere-from-vec :make-text :make-texture :make-texture-asset :make-texture-from-rec
-   :make-triangle :make-triangle-from-vecs :make-vector2 :make-vector3 :make-vector4 :make-zero-matrix
+   :make-gui-combo-box :make-gui-dropdown-box :make-gui-dummy-rec :make-gui-grid :make-gui-group-box
+   :make-gui-icon :make-gui-label :make-gui-label-button :make-gui-line :make-gui-list-view
+   :make-gui-message-box :make-gui-panel :make-gui-progress-bar :make-gui-scroll-panel
+   :make-gui-scroll-panel-from-recs :make-gui-slider :make-gui-slider-bar :make-gui-spinner
+   :make-gui-status-bar :make-gui-text-box :make-gui-text-box-multi :make-gui-text-input-box
+   :make-gui-toggle :make-gui-toggle-group :make-gui-value-box :make-gui-window-box :make-image
+   :make-image-asset :make-line-2d :make-model :make-model-asset :make-music-asset :make-pixel
+   :make-plane :make-polygon :make-ray :make-ray-collision :make-rectangle :make-rectangle-from-vecs
+   :make-shader-asset :make-simple-rec :make-sphere :make-sphere-from-vec :make-text :make-texture
+   :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs :make-vector2
+   :make-vector3 :make-vector4 :make-zero-matrix
 
    ;; Scenes/assets
    :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex :load-scene-all
@@ -576,7 +577,7 @@
    :set-slot
    :looping :pause :pitch :play :resume :stop :update :volume
    :active :alpha :bounds :buttons :checked :content :edit-mode :focus :icon-id :max-value :message
-   :min-value :num :pixel-size :pressed :scroll :scroll-index :secret-view-active :selected :subdivs
+   :min-value :pixel-size :pressed :scroll :scroll-index :secret-view-active :selected :subdivs
    :text-left :text-right :text-size :title :value :view
 
    ;; Globals

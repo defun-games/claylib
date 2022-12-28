@@ -42,8 +42,7 @@ sense to set this in your own code.")))
 
   (defclass int-values ()
     ((%value :initarg :value
-             :type integer  ; TODO: pointer
-             :accessor value)
+             :type cffi:foreign-pointer)
      (%min-value :initarg :min-value
                  :type integer
                  :accessor min-value)
@@ -116,6 +115,19 @@ sense to set this in your own code.")))
     (setf (slot-value text-box '%text) ptr
           (slot-value text-box '%text-size) len))
   text-box)
+
+(defmethod value ((range int-values))
+  (plus-c:c-ref (slot-value range '%value) :int))
+
+(defmethod (setf value) (value (range int-values))
+  (setf (plus-c:c-ref (slot-value range '%value) :int) value))
+
+(defmethod initialize-instance :after ((range int-values)
+                                       &key value &allow-other-keys)
+  (let ((ptr (autowrap:calloc :int)))
+    (setf (plus-c:c-ref ptr :int) value
+          (slot-value range '%value) ptr)
+    range))
 
 
 
