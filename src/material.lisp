@@ -14,10 +14,9 @@
 (defmethod loc ((shader rl-shader) (index integer))
   (when (and (< index 32) (>= index 0))
     (autowrap:c-aref (shader.locs (c-struct shader)) index :int)))
-;; (defmethod locs ((shader rl-shader))
-;;   (loop for i below 32
-;;         collect (loc shader i)))
-(defcreader locs rl-shader locs shader)
+(defmethod locs ((shader rl-shader))
+  (loop for i below 32
+        collect (loc shader i)))
 
 (defcwriter id rl-shader id shader integer)
 (defmethod (setf loc) ((value integer) (shader rl-shader) (index integer))
@@ -135,7 +134,7 @@
         collect (param material i)))
 
 (defcwriter-struct shader rl-material shader material shader
-  id locs)
+  id shader.locs)
 (defcwriter-struct maps rl-material maps material material-map ; Array/pointer
   texture color value)
 (defmethod (setf matmap) ((value rl-material-map) (material rl-material) (index integer))

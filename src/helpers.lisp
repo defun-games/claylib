@@ -117,7 +117,9 @@ backing it.'"
                           (,value ,(intern (format nil "RL-~:@a" struct-type))))
        (,struct-setter (,c-writer (c-struct ,obj))
                        ,@(loop for reader in readers
-                               collect `(,reader ,value)))
+                               collect (if (find #\. (symbol-name reader))
+                                           `(,reader (c-struct ,value))
+                                           `(,reader ,value))))
        (handler-case (,lisp-slot ,obj)
          (unbound-slot ()
            (setf (slot-value ,obj ',(intern (format nil "%~:@a" lisp-slot))) ,value)))
