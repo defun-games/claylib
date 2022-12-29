@@ -81,6 +81,7 @@
                              (:file "mesh")
                              (:file "model")
                              (:file "billboard")
+                             (:file "sound")
                              (:file "music")
                              (:file "claylib")
                              (:file "scene")
@@ -193,7 +194,8 @@
                  (:module "audio"
                   :components
                   ((:file "module-playing")
-                   (:file "music-stream")))
+                   (:file "music-stream")
+                   (:file "multichannel-sound")))
                  (:module "shaders"
                   :components
                   ((:file "model-shader")))))))

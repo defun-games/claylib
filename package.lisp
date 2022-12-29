@@ -10,7 +10,7 @@
    ;; Structs
    :model :texture :shader :model-animation :font :rectangle :color :ray :ray-collision :matrix
    :vector2 :vector3 :vector4 :bounding-box :image :glyph-info :material-map :material :mesh
-   :render-texture :transform
+   :render-texture :transform :music :sound
 
    ;; Colors
    :+lightgray+ :+gray+ :+darkgray+ :+yellow+ :+gold+ :+orange+ :+pink+ :+red+ :+maroon+
@@ -221,7 +221,7 @@
    ;; Wave/Sound loading/unloading functions
 
    ;; Wave/Sound management functions
-   :get-sounds-playing
+   :stop-sound-multi :get-sounds-playing
 
    ;; Music management functions
    :is-music-stream-playing-p
@@ -529,8 +529,8 @@
 
    ;; Claylib classes
    :animation-asset :camera-3d :circle :cube :font-asset :game-scene :glyph-info :grid :image :image-asset
-   :line-2d :material :material-map :mesh :model :model-asset :pixel :plane :ray :rectangle :render-texture
-   :shader-asset :sphere :text :texture :texture-asset :transform :triangle
+   :line-2d :material :material-map :mesh :model :model-asset :music :pixel :plane :ray :rectangle
+   :render-texture :shader-asset :sound :sphere :text :texture :texture-asset :transform :triangle
 
    ;; Constructors
    :make-animation-asset :make-billboard :make-camera-2d :make-camera-2d-from-vecs :make-camera-3d
@@ -545,9 +545,9 @@
    :make-gui-toggle :make-gui-toggle-group :make-gui-value-box :make-gui-window-box :make-image
    :make-image-asset :make-line-2d :make-model :make-model-asset :make-music-asset :make-pixel
    :make-plane :make-polygon :make-ray :make-ray-collision :make-rectangle :make-rectangle-from-vecs
-   :make-shader-asset :make-simple-rec :make-sphere :make-sphere-from-vec :make-text :make-texture
-   :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs :make-vector2
-   :make-vector3 :make-vector4 :make-zero-matrix
+   :make-shader-asset :make-simple-rec :make-sphere :make-sphere-from-vec :make-sound-asset :make-text
+   :make-texture :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs
+   :make-vector2 :make-vector3 :make-vector4 :make-zero-matrix
 
    ;; Scenes/assets
    :add-to-scene :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex
@@ -575,7 +575,7 @@
    :asset :load-asset
    :draw-object
    :set-slot
-   :looping :pause :pitch :play :resume :stop :update :volume
+   :looping :pan :pause :pitch :play :resume :stop :update :volume
    :active :alpha :bounds :buttons :checked :content :edit-mode :focus :icon-id :max-value :message
    :min-value :pixel-size :pressed :scroll :scroll-index :secret-view-active :selected :subdivs
    :text-left :text-right :text-size :title :value :view
