@@ -367,3 +367,12 @@ Allocates a new RAY-COLLISION unless you pass one."
 (defun-pt-num get-music-time-played claylib/ll:get-music-time-played
   "Get MUSIC time played (in seconds)."
   (music rl-music))
+
+
+
+;;; Raygui
+
+(defun gui-load-style (path)
+  "Load a new GUI style from PATH. PATH must be the name of a .rgs binary file."
+  (check-type path (or pathname string))
+  (claylib/ll:gui-load-style (namestring path)))

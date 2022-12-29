@@ -30,7 +30,7 @@
    :gui-dropdown-box :gui-spinner :gui-value-box :gui-text-box :gui-text-box-multi :gui-slider
    :gui-slider-bar :gui-progress-bar :gui-status-bar :gui-dummy-rec :gui-scroll-bar :gui-grid
    :gui-list-view :gui-list-view-ex :gui-message-box :gui-text-input-box :gui-color-picker :gui-color-panel
-   :gui-color-bar-alpha :gui-color-bar-hue :gui-draw-icon :gui-check-icon-pixel
+   :gui-color-bar-alpha :gui-color-bar-hue :gui-draw-icon :gui-check-icon-pixel :gui-load-style
 
    ;; Music management
    :is-music-stream-playing-p :seek-music-stream :get-music-time-length :get-music-time-played
@@ -508,6 +508,16 @@
    :+icon-window+ :+icon-hidpi+ :+icon-filetype-binary+ :+icon-hex+ :+icon-shield+ :+icon-file-new+
    :+icon-folder-add+ :+icon-alarm+
 
+   ;; Others
+   :+raygui-colorbaralpha-checked-size+ :+raygui-grid-alpha+ :+raygui-groupbox-line-thick+
+   :+raygui-icon-data-elements+ :+raygui-icon-max-icons+ :+raygui-icon-max-name-length+
+   :+raygui-icon-size+ :+raygui-line-margin-text+ :+raygui-line-text-padding+ :+raygui-max-controls+
+   :+raygui-max-props-base+ :+raygui-max-props-extended+ :+raygui-messagebox-button-height+
+   :+raygui-messagebox-button-padding+ :+raygui-panel-border-width+ :+raygui-textinputbox-button-height+
+   :+raygui-textinputbox-button-padding+ :+raygui-textinputbox-height+ :+raygui-textsplit-max-items+
+   :+raygui-textsplit-max-text-size+ :+raygui-togglegroup-max-items+ :+raygui-valuebox-max-chars+
+   :+raygui-version+ :+raygui-windowbox-statusbar-height+
+
 
 
    ;;; Claylib extensions
@@ -524,17 +534,25 @@
 
    ;; Constructors
    :make-animation-asset :make-billboard :make-camera-2d :make-camera-2d-from-vecs :make-camera-3d
-   :make-camera-3d-from-vecs :make-circle :make-color :make-cube :make-cube-from-vecs :make-empty-texture
-   :make-font :make-font-asset :make-grid :make-image :make-image-asset :make-line-2d :make-model
-   :make-model-asset :make-music-asset :make-pixel :make-plane :make-polygon :make-ray :make-ray-collision
-   :make-rectangle :make-rectangle-from-vecs :make-simple-rec :make-sphere :make-sphere-from-vec :make-text
-   :make-texture :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs
-   :make-vector2 :make-vector3 :make-vector4 :make-zero-matrix
+   :make-camera-3d-from-vecs :make-circle :make-color :make-cube :make-cube-from-vecs
+   :make-empty-texture :make-font :make-font-asset :make-grid :make-gui-button :make-gui-checkbox
+   :make-gui-color-bar-alpha :make-gui-color-bar-hue :make-gui-color-panel :make-gui-color-picker
+   :make-gui-combo-box :make-gui-dropdown-box :make-gui-dummy-rec :make-gui-grid :make-gui-group-box
+   :make-gui-icon :make-gui-label :make-gui-label-button :make-gui-line :make-gui-list-view
+   :make-gui-message-box :make-gui-panel :make-gui-progress-bar :make-gui-scroll-panel
+   :make-gui-scroll-panel-from-recs :make-gui-slider :make-gui-slider-bar :make-gui-spinner
+   :make-gui-status-bar :make-gui-text-box :make-gui-text-box-multi :make-gui-text-input-box
+   :make-gui-toggle :make-gui-toggle-group :make-gui-value-box :make-gui-window-box :make-image
+   :make-image-asset :make-line-2d :make-model :make-model-asset :make-music-asset :make-pixel
+   :make-plane :make-polygon :make-ray :make-ray-collision :make-rectangle :make-rectangle-from-vecs
+   :make-shader-asset :make-simple-rec :make-sphere :make-sphere-from-vec :make-text :make-texture
+   :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs :make-vector2
+   :make-vector3 :make-vector4 :make-zero-matrix
 
    ;; Scenes/assets
-   :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex :load-scene-all
-   :make-scene :make-scene-pro :objects :params :scene-asset :scene-object :scene-param :set-up-scene
-   :tear-down-scene :unload-scene-all :with-scenes
+   :add-to-scene :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex
+   :load-scene-all :make-scene :make-scene-pro :objects :params :remove-from-scene :scene-asset
+   :scene-object :scene-param :set-up-scene :tear-down-scene :unload-scene-all :with-scenes
 
    ;; Copy functions
    :copy-color :copy-asset-to-object
@@ -558,6 +576,9 @@
    :draw-object
    :set-slot
    :looping :pause :pitch :play :resume :stop :update :volume
+   :active :alpha :bounds :buttons :checked :content :edit-mode :focus :icon-id :max-value :message
+   :min-value :pixel-size :pressed :scroll :scroll-index :secret-view-active :selected :subdivs
+   :text-left :text-right :text-size :title :value :view
 
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps* :+claylib-directory+

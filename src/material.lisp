@@ -134,7 +134,7 @@
         collect (param material i)))
 
 (defcwriter-struct shader rl-material shader material shader
-  id locs)
+  id shader.locs)
 (defcwriter-struct maps rl-material maps material material-map ; Array/pointer
   texture color value)
 (defmethod (setf matmap) ((value rl-material-map) (material rl-material) (index integer))

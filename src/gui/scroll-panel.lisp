@@ -6,7 +6,7 @@
                :type rl-rectangle
                :accessor content)
      (%scroll :initarg :scroll
-              :type rl-vector2  ; TODO: pointer
+              :type rl-vector2
               :accessor scroll)
      (%view
       :initform (make-simple-rec 0 0 1 1)
@@ -14,6 +14,8 @@
       :reader view
       :documentation "The GUI-SCROLL-PANEL view rectangle is a libffi return value only. It rarely makes sense to
 set this in your own code."))
+    (:default-initargs
+     :scroll (make-vector2 0 0))
     (:documentation "Scroll Panel control")))
 
 (defun-pt gui-scroll-panel claylib/ll:gui-scroll-panel
@@ -22,13 +24,13 @@ set this in your own code."))
   (bounds rl-rectangle)
   (text string)
   (content rl-rectangle)
-  (scroll rl-vector2))
+  (scroll autowrap:wrapper))
 
 (defmethod draw-object ((obj gui-scroll-panel))
   (gui-scroll-panel (bounds obj)
                     (text obj)
                     (content obj)
-                    (scroll obj)
+                    (c-struct (scroll obj))
                     :rec (view obj)))
 
 (defun make-gui-scroll-panel (bounds-x bounds-y bounds-width bounds-height

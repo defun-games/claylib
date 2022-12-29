@@ -193,4 +193,7 @@
                  (:module "audio"
                   :components
                   ((:file "module-playing")
-                   (:file "music-stream")))))))
+                   (:file "music-stream")))
+                 (:module "shaders"
+                  :components
+                  ((:file "model-shader")))))))

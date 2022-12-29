@@ -12,7 +12,7 @@
 (defmethod draw-object ((obj gui-dummy-rec))
   (gui-dummy-rec (bounds obj) (text obj)))
 
-(defun make-dummy-rec (x y width height &rest args &key text)
+(defun make-gui-dummy-rec (x y width height &rest args &key text)
   (declare (ignorable text))
   (apply #'make-instance 'gui-dummy-rec
          :bounds (make-simple-rec x y width height)

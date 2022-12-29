@@ -16,7 +16,11 @@
                    :accessor assets)
      (%gc :initarg :gc
           :type boolean
-          :accessor gc))))
+          :accessor gc)
+     (%active
+      :initform nil
+      :type boolean
+      :accessor active))))
 
 (defun load-scene (scene &rest names)
   (dolist (asset names)
@@ -229,13 +233,16 @@ Pass :GC (T or NIL) to force/unforce garbage collection, overriding what the sce
 
 Note: additional scenes can be loaded/GC'd at any point using {SET-UP,TEAR-DOWN}-SCENE."
   (unless (listp scenes) (setf scenes `(list ,scenes)))
-  `(progn
-     (mapcar #'set-up-scene ,scenes)
-     ,@body
-     ,(cond
-        ((and gc-supplied-p gc) `(tg:gc :full t))
-        ((not gc-supplied-p) `(mapcar #'tear-down-scene ,scenes))
-        (t nil))))
+  (let ((sym (gensym)))
+    `(progn
+       (mapcar #'set-up-scene ,scenes)
+       (mapcar #'(lambda (,sym) (setf (active ,sym) t)) ,scenes)
+       ,@body
+       (mapcar #'(lambda (,sym) (setf (active ,sym) nil)) ,scenes)
+       ,(cond
+          ((and gc-supplied-p gc) `(tg:gc :full t))
+          ((not gc-supplied-p) `(mapcar #'tear-down-scene ,scenes))
+          (t nil)))))
 
 (defmethod set-up-scene ((scene game-scene))
   (flet ((yield-things (ht)
@@ -255,3 +262,30 @@ Note: additional scenes can be loaded/GC'd at any point using {SET-UP,TEAR-DOWN}
   (when (gc scene) (tg:gc :full t)))
 
 (defmethod tear-down-scene ((scene null)) ())
+
+(defun add-to-scene (scene what key value &optional (defer (not (active scene))))
+  "Add another element to a scene. WHAT is one of: :ASSET, :OBJECT, or :PARAM.
+KEY and VALUE are a hash table key and form to be evaluated, respectively.
+
+If DEFER is NIL, the element will be evaluated immediately. Otherwise, it gets
+added as a future as if defined in MAKE-SCENE. You must set DEFER correctly or
+your scene will break. When in doubt, trust the default."
+  (let ((ht (ecase what
+              (:asset (assets scene))
+              (:object (objects scene))
+              (:param (params scene)))))
+    (if defer
+        (setf (gethash key ht) (eager-future2:pcall
+                                (lambda () value)
+                                :lazy))
+        (progn
+          (setf (gethash key ht) value)
+          (when (eql what :asset)
+            (load-asset value))))))
+
+(defun remove-from-scene (scene what key)
+  "Remove an element from a scene. WHAT is one of: :ASSET, :OBJECT, or :PARAM."
+  (remhash key (ecase what
+                 (:asset (assets scene))
+                 (:object (objects scene))
+                 (:param (params scene)))))

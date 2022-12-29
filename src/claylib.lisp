@@ -70,6 +70,7 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
                           (fps *target-fps*)
                           (flags ())
                           (min-size ())
+                          (gui-style nil)
                           exit-key)
                        &body body)
   `(progn
@@ -79,7 +80,11 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
      (unless (is-audio-device-ready-p) (claylib/ll:init-audio-device))
      (claylib/ll:set-target-fps ,fps)
      (setf +default-font+ (load-font-default))
-     (gui-load-style-default)
+     ,(if (not gui-style)
+         `(gui-load-style-default)
+         `(gui-load-style
+           (asdf:system-relative-pathname :claylib
+                                          ,(format nil "gui-styles/~A/~:*~A.rgs" gui-style))))
      ,(when min-size
         `(claylib/ll:set-window-min-size ,(car min-size) ,(cadr min-size)))
      ,(when exit-key
