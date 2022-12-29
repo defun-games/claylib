@@ -550,9 +550,9 @@
    :make-vector3 :make-vector4 :make-zero-matrix
 
    ;; Scenes/assets
-   :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex :load-scene-all
-   :make-scene :make-scene-pro :objects :params :scene-asset :scene-object :scene-param :set-up-scene
-   :tear-down-scene :unload-scene-all :with-scenes
+   :add-to-scene :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex
+   :load-scene-all :make-scene :make-scene-pro :objects :params :remove-from-scene :scene-asset
+   :scene-object :scene-param :set-up-scene :tear-down-scene :unload-scene-all :with-scenes
 
    ;; Copy functions
    :copy-color :copy-asset-to-object
