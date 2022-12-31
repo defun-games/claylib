@@ -9,6 +9,9 @@
      :active 0)
     (:documentation "Toggle Group control, sets ACTIVE to active toggle index")))
 
+(defmethod (setf active) :before (value (obj gui-toggle-group))
+  (set-linked-children 'active obj value))
+
 (defun-pt-num gui-toggle-group claylib/ll:gui-toggle-group
   "Toggle Group control, returns active toggle index"
   (bounds rl-rectangle)

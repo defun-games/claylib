@@ -12,6 +12,7 @@
   (plus-c:c-ref (slot-value dropdown '%active) :int))
 
 (defmethod (setf active) (value (dropdown gui-dropdown-box))
+  (set-linked-children 'active dropdown value)
   (setf (plus-c:c-ref (slot-value dropdown '%active) :int) value))
 
 (defmethod initialize-instance :after ((dropdown gui-dropdown-box)

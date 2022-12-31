@@ -3,7 +3,7 @@
 (default-unload claylib/ll:music unload-music-stream t)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-music ()
+  (defclass rl-music (linkable)
     ((%c-struct
       :type claylib/ll:music
       :accessor c-struct))

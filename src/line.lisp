@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass line ()
+  (defclass line (linkable)
     ((%start :initarg :start
              :type vec
              :accessor start)

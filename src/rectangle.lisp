@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-rectangle ()
+  (defclass rl-rectangle (linkable)
     ((%c-struct
       :type claylib/ll:rectangle
       :accessor c-struct))

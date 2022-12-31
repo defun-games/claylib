@@ -50,6 +50,7 @@
                 :components ((:file "generic")
                              (:file "helpers")
                              (:file "sequence")
+                             (:file "linking")
                              (:file "vec")
                              (:file "color")
                              (:file "bounding-box")

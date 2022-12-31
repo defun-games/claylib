@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-ray-collision ()
+  (defclass rl-ray-collision (linkable)
     ((%point :initarg :point
              :type rl-vector3
              :reader point)

@@ -20,6 +20,9 @@ set this in your own code."))
 
 (defwriter-float spacing gui-grid)
 
+(defmethod (setf subdivs) :before (value (obj gui-grid))
+  (set-linked-children 'subdivs obj value))
+
 (definitializer gui-grid
   :lisp-slots ((%spacing nil float)))
 

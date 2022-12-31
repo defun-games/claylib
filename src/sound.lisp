@@ -3,7 +3,7 @@
 (default-unload claylib/ll:sound unload-sound t)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-sound ()
+  (defclass rl-sound (linkable)
     ((%c-struct
       :type claylib/ll:sound
       :accessor c-struct))

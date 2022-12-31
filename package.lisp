@@ -554,6 +554,9 @@
    :load-scene-all :make-scene :make-scene-pro :objects :params :remove-from-scene :scene-asset
    :scene-object :scene-param :set-up-scene :tear-down-scene :unload-scene-all :with-scenes
 
+   ;; Linking
+   :link-objects :unlink-objects
+
    ;; Copy functions
    :copy-color :copy-asset-to-object
 
@@ -579,6 +582,7 @@
    :active :alpha :bounds :buttons :checked :content :edit-mode :focus :icon-id :max-value :message
    :min-value :pixel-size :pressed :scroll :scroll-index :secret-view-active :selected :subdivs
    :text-left :text-right :text-size :title :value :view
+   :children
 
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps* :+claylib-directory+

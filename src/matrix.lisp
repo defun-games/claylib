@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-matrix ()
+  (defclass rl-matrix (linkable)
     ((%c-struct
       :type claylib/ll:matrix
       :accessor c-struct))

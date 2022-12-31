@@ -3,7 +3,7 @@
 (default-unload claylib/ll:model unload-model t)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-model ()
+  (defclass rl-model (linkable)
     ((%transform :initarg :transform
                  :type rl-matrix
                  :reader transform)

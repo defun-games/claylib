@@ -3,7 +3,7 @@
 ;;; Mixin classes
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass gui-object ()
+  (defclass gui-object (linkable)
     ((%bounds :initarg :bounds
               :type rl-rectangle
               :accessor bounds)))
@@ -78,6 +78,11 @@ sense to set this in your own code.")))
              :type rl-color
              :accessor color))))
 
+(defmethod (setf min-value) :before (value (obj int-values))
+  (set-linked-children 'min-value obj value))
+(defmethod (setf max-value) :before (value (obj int-values))
+  (set-linked-children 'max-value obj value))
+
 (defmethod text ((text-box text-box))
   (plus-c:c-ref (slot-value text-box '%text) :char string))
 
@@ -91,6 +96,9 @@ sense to set this in your own code.")))
         (cffi:lisp-string-to-foreign value
                                      oldptr
                                      (text-size text-box)))))
+
+(defmethod (setf text-size) :before ((value integer) (text-box text-box))
+  (set-linked-children 'text-size text-box value))
 
 (defmethod (setf text-size) ((value integer) (text-box text-box))
   (when (/= value (text-size text-box))
@@ -120,6 +128,7 @@ sense to set this in your own code.")))
   (plus-c:c-ref (slot-value range '%value) :int))
 
 (defmethod (setf value) (value (range int-values))
+  (set-linked-children 'value range value)
   (setf (plus-c:c-ref (slot-value range '%value) :int) value))
 
 (defmethod initialize-instance :after ((range int-values)

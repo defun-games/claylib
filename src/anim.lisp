@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-bone-info ()
+  (defclass rl-bone-info (linkable)
     ((%c-struct
       :type claylib/ll:bone-info
       :accessor c-struct))

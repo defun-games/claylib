@@ -3,7 +3,7 @@
 (default-unload claylib/ll:texture unload-texture t)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-texture ()
+  (defclass rl-texture (linkable)
     ((%c-struct
       :type claylib/ll:texture
       :accessor c-struct))
@@ -110,7 +110,7 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass texture-object (tex)
+  (defclass texture-object (tex linkable)
     ((%asset :initarg :asset
              :type texture-asset
              :accessor asset))))

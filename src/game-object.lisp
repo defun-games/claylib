@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass 2d-object ()
+  (defclass 2d-object (linkable)
     ((%position :initarg :pos
                 :type rl-vector2
                 :accessor pos))))
@@ -18,7 +18,7 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass 3d-object ()
+  (defclass 3d-object (linkable)
     ((%position :initarg :pos
                 :type rl-vector3
                 :accessor pos)

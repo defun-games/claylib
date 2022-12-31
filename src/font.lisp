@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-glyph-info ()
+  (defclass rl-glyph-info (linkable)
     ((%image :initarg :image
              :type rl-image
              :reader image)
@@ -72,7 +72,7 @@
 (default-unload claylib/ll:font unload-font t)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-font ()
+  (defclass rl-font (linkable)
     ((%texture :initarg :texture
                :type rl-texture
                :reader texture)

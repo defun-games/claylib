@@ -12,6 +12,13 @@
               :type (integer 0 *)
               :accessor slices))))
 
+(defmethod (setf radius) :before (value (obj sphere))
+  (set-linked-children 'radius obj value))
+(defmethod (setf rings) :before (value (obj sphere))
+  (set-linked-children 'rings obj value))
+(defmethod (setf slices) :before (value (obj sphere))
+  (set-linked-children 'slices obj value))
+
 (definitializer cube
   :lisp-slots ((%radius) (%rings) (%slices)))
 
