@@ -87,8 +87,8 @@
                (%gradient-style)))
 
 (defun make-rectangle (x y width height color
-                       &rest args &key color2 filled rotation thickness origin gradient-style)
-  (declare (ignorable color2 filled rotation thickness origin gradient-style))
+                       &rest args &key color2 filled rot thickness origin gradient-style)
+  (declare (ignorable color2 filled rot thickness origin gradient-style))
   (apply #'make-instance 'rectangle
          :x x
          :y y
