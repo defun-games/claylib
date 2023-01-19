@@ -10,7 +10,7 @@
    ;; Structs
    :model :texture :shader :model-animation :font :rectangle :color :ray :ray-collision :matrix
    :vector2 :vector3 :vector4 :bounding-box :image :glyph-info :material-map :material :mesh
-   :render-texture :transform
+   :render-texture :transform :music :sound
 
    ;; Colors
    :+lightgray+ :+gray+ :+darkgray+ :+yellow+ :+gold+ :+orange+ :+pink+ :+red+ :+maroon+
@@ -43,7 +43,8 @@
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw :with-drawing
    :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex
    :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere
-   :gen-mesh-cubicmap)
+   :gen-mesh-cubicmap :get-color :check-collision-circles :check-collision-circle-rec
+   :check-collision-point-triangle :check-collision-lines :check-collision-point-line)
 
 
 
@@ -135,7 +136,9 @@
    ;; Basic shapes drawing functions
 
    ;; Basic shapes collision detection functions
-   :check-collision-recs :check-collision-point-rec :check-collision-point-circle :get-collision-rec
+   :check-collision-recs :check-collision-circles :check-collision-circle-rec :check-collision-point-rec
+   :check-collision-point-circle :check-collision-point-triangle :check-collision-lines
+   :check-collision-point-line :get-collision-rec
 
 
 
@@ -162,7 +165,7 @@
 
    ;; Color/pixel related functions
    :fade
-   :get-pixel-data-size
+   :get-color :get-pixel-data-size
 
 
 
@@ -221,7 +224,7 @@
    ;; Wave/Sound loading/unloading functions
 
    ;; Wave/Sound management functions
-   :get-sounds-playing
+   :stop-sound-multi :get-sounds-playing
 
    ;; Music management functions
    :is-music-stream-playing-p
@@ -401,8 +404,8 @@
    :gui-load-style :gui-load-style-default
 
    ;; Icons functionality
-   :gui-icon-text :gui-draw-icon :gui-get-icons :gui-get-icon-data :gui-set-icon-data :gui-set-icon-pixel
-   :gui-clear-icon-pixel :gui-check-icon-pixel
+   :gui-icon-text :gui-draw-icon :gui-icon :gui-get-icons :gui-get-icon-data :gui-set-icon-data
+   :gui-set-icon-pixel :gui-clear-icon-pixel :gui-check-icon-pixel
 
 
 
@@ -529,8 +532,8 @@
 
    ;; Claylib classes
    :animation-asset :camera-3d :circle :cube :font-asset :game-scene :glyph-info :grid :image :image-asset
-   :line-2d :material :material-map :mesh :model :model-asset :pixel :plane :ray :rectangle :render-texture
-   :shader-asset :sphere :text :texture :texture-asset :transform :triangle
+   :line-2d :material :material-map :mesh :model :model-asset :music :pixel :plane :ray :rectangle
+   :render-texture :shader-asset :sound :sphere :text :texture :texture-asset :transform :triangle
 
    ;; Constructors
    :make-animation-asset :make-billboard :make-camera-2d :make-camera-2d-from-vecs :make-camera-3d
@@ -545,14 +548,17 @@
    :make-gui-toggle :make-gui-toggle-group :make-gui-value-box :make-gui-window-box :make-image
    :make-image-asset :make-line-2d :make-model :make-model-asset :make-music-asset :make-pixel
    :make-plane :make-polygon :make-ray :make-ray-collision :make-rectangle :make-rectangle-from-vecs
-   :make-shader-asset :make-simple-rec :make-sphere :make-sphere-from-vec :make-text :make-texture
-   :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs :make-vector2
-   :make-vector3 :make-vector4 :make-zero-matrix
+   :make-shader-asset :make-simple-rec :make-sphere :make-sphere-from-vec :make-sound-asset :make-text
+   :make-texture :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs
+   :make-vector2 :make-vector3 :make-vector4 :make-zero-matrix
 
    ;; Scenes/assets
    :add-to-scene :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex
    :load-scene-all :make-scene :make-scene-pro :objects :params :remove-from-scene :scene-asset
    :scene-object :scene-param :set-up-scene :tear-down-scene :unload-scene-all :with-scenes
+
+   ;; Linking
+   :link-objects :unlink-objects
 
    ;; Copy functions
    :copy-color :copy-asset-to-object
@@ -575,10 +581,11 @@
    :asset :load-asset
    :draw-object
    :set-slot
-   :looping :pause :pitch :play :resume :stop :update :volume
+   :looping :pan :pause :pitch :play :resume :stop :update :volume
    :active :alpha :bounds :buttons :checked :content :edit-mode :focus :icon-id :max-value :message
    :min-value :pixel-size :pressed :scroll :scroll-index :secret-view-active :selected :subdivs
    :text-left :text-right :text-size :title :value :view
+   :children
 
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps* :+claylib-directory+

@@ -3,7 +3,7 @@
 (default-unload claylib/ll:image unload-image)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-image ()
+  (defclass rl-image (linkable)
     ((%c-struct
       :type claylib/ll:image
       :accessor c-struct))

@@ -254,6 +254,8 @@ non-nil."
   "Make an animation asset from a PATH. This does not load the model unless LOAD-NOW is non-nil."
   (make-instance 'animation-asset :path path :load-now load-now))
 
+
+
 (defclass music-asset (game-asset)
   ((%asset :type (or rl-music null))))
 
@@ -263,7 +265,7 @@ non-nil."
 (defmethod load-asset ((asset music-asset) &key force-reload)
   (cond
     ((null (asset asset))
-     (let ((music (make-instance 'rl-music)))
+     (let ((music (make-instance 'music)))
        (claylib/ll:load-music-stream (c-struct music) (namestring (path asset)))
        (setf (asset asset) music)))
     (force-reload
@@ -272,6 +274,24 @@ non-nil."
 
 (defun make-music-asset (path &key (load-now nil))
   (make-instance 'music-asset :path path :load-now load-now))
+
+
+
+(defclass sound-asset (game-asset)
+  ((%asset :type (or rl-sound null))))
+
+(defmethod load-asset ((asset sound-asset) &key force-reload)
+  (cond
+    ((null (asset asset))
+     (let ((sound (make-instance 'sound)))
+       (claylib/ll:load-sound (c-struct sound) (namestring (path asset)))
+       (setf (asset asset) sound)))
+    (force-reload
+     (claylib/ll:load-sound (c-asset asset) (namestring (path asset)))))
+  asset)
+
+(defun make-sound-asset (path &key (load-now nil))
+  (make-instance 'sound-asset :path path :load-now load-now))
 
 
 

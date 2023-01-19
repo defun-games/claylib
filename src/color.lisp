@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-color ()
+  (defclass rl-color (linkable)
     ((%c-struct
       :type claylib/ll:color
       :reader c-struct))

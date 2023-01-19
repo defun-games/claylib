@@ -9,6 +9,9 @@
      :active 0)
     (:documentation "Combo Box control, sets ACTIVE to selected item index")))
 
+(defmethod (setf active) :before (value (obj gui-combo-box))
+  (set-linked-children 'active obj value))
+
 (defun-pt-num gui-combo-box claylib/ll:gui-combo-box
   "Combo Box control, returns selected item index"
   (bounds rl-rectangle)

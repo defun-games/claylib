@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass gui-icon (gui-color)
+  (defclass gui-icon (gui-color linkable)
     ((%icon-id :initarg :icon-id
                :type integer
                :accessor icon-id)
@@ -14,6 +14,15 @@
      (%pixel-size :initarg :pixel-size
                   :type integer
                   :accessor pixel-size))))
+
+(defmethod (setf icon-id) :before (value (obj gui-icon))
+  (set-linked-children 'icon-id obj value))
+(defmethod (setf x) :before (value (obj gui-icon))
+  (set-linked-children 'x obj value))
+(defmethod (setf y) :before (value (obj gui-icon))
+  (set-linked-children 'y obj value))
+(defmethod (setf pixel-size) :before (value (obj gui-icon))
+  (set-linked-children 'pixel-size obj value))
 
 (defun-pt-void gui-draw-icon claylib/ll:gui-draw-icon
   "Draw a gui icon"

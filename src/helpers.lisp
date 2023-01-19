@@ -45,6 +45,8 @@ DEFCWRITER-VEC."
                                    `(,value ,value-type)
                                    value)
                               (,obj ,type))
+       (when (numberp ,value)
+         (set-linked-children ',slot ,obj ,value))
        (setf (,sub-writer (,sub-slot ,obj)) ,value))))
 
 (defmacro defcwriter (lisp-slot lisp-type c-slot c-type &optional value-type coerce-type)
@@ -62,6 +64,8 @@ Oh yeah, and make sure it's a float.' If CAMERA2D is a CLOS object, you need DEF
                                         `(,value ,value-type)
                                         value)
                                    (,obj ,lisp-type))
+       (when (numberp ,value)
+         (set-linked-children ',lisp-slot ,obj ,value))
        (setf (,c-writer (c-struct ,obj))
              ,(if coerce-type
                   `(coerce ,value ',coerce-type)
@@ -86,6 +90,7 @@ For something more complex, try DEFWRITER or DEFCWRITER."
         (obj (gensym))
         (%slot (intern (format nil "%~:@a" writer-name) 'claylib)))
     `(defmethod (setf ,writer-name) (,value (,obj ,type))
+       (set-linked-children ',writer-name ,obj ,value)
        (setf (slot-value ,obj ',(or slot-name %slot)) (coerce ,value 'float)))))
 
 (defmacro defcwriter-struct (lisp-slot lisp-type c-slot c-type struct-type &rest readers)

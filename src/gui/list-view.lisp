@@ -19,6 +19,9 @@
      :focus -1)
     (:documentation "List View control, sets ACTIVE to selected list item index")))
 
+(defmethod (setf active) :before (value (obj gui-list-view))
+  (set-linked-children 'active obj value))
+
 (defmethod scroll-index ((list-view gui-list-view))
   (plus-c:c-ref (slot-value list-view '%scroll-index) :int))
 
@@ -26,9 +29,11 @@
   (plus-c:c-ref (slot-value list-view '%focus) :int))
 
 (defmethod (setf scroll-index) (value (list-view gui-list-view))
+  (set-linked-children 'scroll-index list-view value)
   (setf (plus-c:c-ref (slot-value list-view '%scroll-index) :int) value))
 
 (defmethod (setf focus) (value (list-view gui-list-view))
+  (set-linked-children 'focus list-view value)
   (setf (plus-c:c-ref (slot-value list-view '%focus) :int) value))
 
 (defmethod initialize-instance :after ((list-view gui-list-view)

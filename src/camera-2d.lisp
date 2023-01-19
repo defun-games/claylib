@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-camera-2d ()
+  (defclass rl-camera-2d (linkable)
     ((%offset :initarg :offset
               :type rl-vector2
               :reader offset)

@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass grid ()
+  (defclass grid (linkable)
     ((%slices :initarg :slices
               :type integer
               :accessor slices)
@@ -10,6 +10,9 @@
                :reader spacing))))
 
 (defwriter-float spacing grid)
+
+(defmethod (setf slices) :before (value (obj grid))
+  (set-linked-children 'slices obj value))
 
 (definitializer grid
   :lisp-slots ((%slices)

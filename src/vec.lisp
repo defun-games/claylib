@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass vec () ()))
+  (defclass vec (linkable) ()))
 
 
 
