@@ -26,7 +26,7 @@
         (pos pupil) (get-mouse-position)
         (pos collision-circle) (pos sclera))
 
-  (when (check-collision-point-circle (pos iris) collision-circle)
+  (when (not (check-collision-point-circle (pos iris) collision-circle))
     (let* ((dx (- (x iris) (x sclera)))
            (dy (- (y iris) (y sclera)))
            (angle (atan dy dx))

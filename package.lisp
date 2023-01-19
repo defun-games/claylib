@@ -43,7 +43,8 @@
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw :with-drawing
    :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex
    :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere
-   :gen-mesh-cubicmap :get-color)
+   :gen-mesh-cubicmap :get-color :check-collision-circles :check-collision-circle-rec
+   :check-collision-point-triangle :check-collision-lines :check-collision-point-line)
 
 
 
@@ -135,7 +136,9 @@
    ;; Basic shapes drawing functions
 
    ;; Basic shapes collision detection functions
-   :check-collision-recs :check-collision-point-rec :check-collision-point-circle :get-collision-rec
+   :check-collision-recs :check-collision-circles :check-collision-circle-rec :check-collision-point-rec
+   :check-collision-point-circle :check-collision-point-triangle :check-collision-lines
+   :check-collision-point-line :get-collision-rec
 
 
 
