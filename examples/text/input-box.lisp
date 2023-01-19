@@ -61,7 +61,7 @@
               (setf (text txt-chars) (format nil "INPUT CHARS ~d/9" letter-count)
                     (x cursor) (+ (x txt-input-size) (x box) 8))))
 
-          (when (not mouse-on-text-p)
+          (unless mouse-on-text-p
             ;; Update values
             (set-mouse-cursor +mouse-cursor-default+)
             (setf frames-counter 0

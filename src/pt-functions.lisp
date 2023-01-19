@@ -321,7 +321,7 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   (check-type model model)
   (check-type frame (integer 0 *))
   (check-type anim-index (integer 0 *))
-  (when (not (animations model))
+  (unless (animations model)
     (error "~a has no associated animations." model))
   (claylib/ll:update-model-animation (c-struct model)
                                      (c-struct (elt (animations model) anim-index))
