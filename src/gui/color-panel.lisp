@@ -4,6 +4,9 @@
   (defclass gui-color-panel (gui-object text-label gui-color) ()
     (:documentation "Color Panel control, sets COLOR to chosen color")))
 
+(define-print-object gui-color-panel
+    ())
+
 (defun-pt gui-color-panel claylib/ll:gui-color-panel
   "Color Panel control. Allocates a new RL-COLOR unless you pass one."
   (col rl-color nil (make-color 0 0 0))

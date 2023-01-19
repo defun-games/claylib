@@ -18,6 +18,9 @@
 (defreader y rl-ray y pos)
 (defreader z rl-ray z pos)
 
+(define-print-object rl-ray
+    (pos dir))
+
 (defwriter x rl-ray x pos number)
 (defwriter y rl-ray y pos number)
 (defwriter z rl-ray z pos number)
@@ -34,6 +37,9 @@
     ((%color :initarg :color
              :type rl-color
              :accessor color))))
+
+(define-print-object ray
+    (color))
 
 (definitializer ray
   :lisp-slots ((%color)))

@@ -4,6 +4,9 @@
   (defclass gui-text-box-multi (gui-text-box) ()
     (:documentation "Text Box control with multiple lines")))
 
+(define-print-object gui-text-box-multi
+    ())
+
 (defun-pt-bool gui-text-box-multi claylib/ll:gui-text-box-multi
   "Text Box control with multiple lines"
   (bounds rl-rectangle)

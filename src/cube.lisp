@@ -16,6 +16,9 @@
 (defreader height cube y size)
 (defreader len cube z size)
 
+(define-print-object cube
+    (size texture source))
+
 (defwriter width cube x size number)
 (defwriter height cube y size number)
 (defwriter len cube z size number)

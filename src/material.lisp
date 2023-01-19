@@ -11,6 +11,10 @@
      :c-struct (autowrap:calloc 'claylib/ll:shader))))
 
 (defcreader id rl-shader id shader)
+
+(define-print-object rl-shader
+    (id))
+
 (defmethod loc ((shader rl-shader) (index integer))
   (when (and (< index 32) (>= index 0))
     (autowrap:c-aref (shader.locs (c-struct shader)) index :int)))
@@ -37,6 +41,8 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass shader (rl-shader) ()))
 
+(define-print-object shader
+    ())
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -55,6 +61,9 @@
 
 (defcreader value rl-material-map value material-map)
 
+(define-print-object rl-material-map
+    (texture color value))
+
 (defcwriter value rl-material-map value material-map number float)
 (defcwriter-struct texture rl-material-map texture material-map texture
   id width height mipmaps data-format)
@@ -71,6 +80,8 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass material-map (rl-material-map) ()))
 
+(define-print-object material-map
+    ())
 
 
 (defconstant +foreign-material-map-size+ (autowrap:sizeof 'claylib/ll:material-map))
@@ -78,6 +89,9 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-material-maps (rl-sequence)
     ((%cl-array :type (array rl-material-map 1)))))
+
+(define-print-object rl-material-maps
+    ())
 
 (defmethod make-rl-*-array ((c-struct claylib/wrap:material-map) num)
   (let ((contents (loop for i below num
@@ -126,6 +140,9 @@
     (:default-initargs
      :c-struct (autowrap:calloc 'claylib/ll:material))))
 
+(define-print-object rl-material
+    (shader maps))
+
 (defmethod param ((material rl-material) (index integer))
   (when (and (< index 4) (>= index 0))
     (material.params[] (c-struct material) index)))
@@ -171,6 +188,8 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass material (rl-material) ()))
 
+(define-print-object material
+    ())
 
 
 (defconstant +foreign-material-size+ (autowrap:sizeof 'claylib/ll:material))
@@ -178,6 +197,9 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-materials (rl-sequence)
     ((%cl-array :type (array rl-material 1)))))
+
+(define-print-object rl-materials
+    ())
 
 (defmethod make-rl-*-array ((c-struct claylib/wrap:material) num)
   (let ((contents

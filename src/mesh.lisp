@@ -27,6 +27,9 @@
 (defcreader vao-id rl-mesh vao-id mesh)
 (defcreader vbo-id rl-mesh vbo-id mesh)  ; pointer
 
+(define-print-object rl-mesh
+  (vertex-count triangle-count vertices texcoords texcoords2 normals tangents colors indices anim-vertices anim-normals bone-ids bone-weights vao-id vbo-id))
+
 (defcwriter vertex-count rl-mesh vertex-count mesh integer)
 (defcwriter triangle-count rl-mesh triangle-count mesh integer)
 ;; TODO: All of the below fields except vao-id/vbo-id are array/pointers
@@ -66,6 +69,8 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass mesh (rl-mesh) ()))
 
+(define-print-object mesh
+    ())
 
 
 (defconstant +foreign-mesh-size+ (autowrap:sizeof 'claylib/ll:mesh))
@@ -73,6 +78,9 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-meshes (rl-sequence)
     ((%cl-array :type (array rl-mesh 1)))))
+
+(define-print-object rl-meshes
+    ())
 
 (defmethod make-rl-*-array ((c-struct claylib/wrap:mesh) num)
   (let ((contents (loop for i below num

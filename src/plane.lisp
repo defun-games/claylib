@@ -10,6 +10,9 @@
 (defreader width plane x size)
 (defreader len plane y size)
 
+(define-print-object plane
+    (size width len))
+
 (defwriter width plane x size number)
 (defwriter len plane y size number)
 

@@ -9,6 +9,9 @@
      :checked nil)
     (:documentation "Checkbox control, sets CHECKED when active")))
 
+(define-print-object gui-checkbox
+    (checked))
+
 (defun-pt-bool gui-checkbox claylib/ll:gui-checkbox
   "Checkbox control, returns T when active"
   (bounds rl-rectangle)

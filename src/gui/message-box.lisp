@@ -23,6 +23,9 @@ sense to set this in your own code."))
      :buttons "")
     (:documentation "Message Box control, displays a message, sets SELECTED to clicked button from list")))
 
+(define-print-object gui-message-box
+    (title message buttons selected))
+
 (defun-pt-num gui-message-box claylib/ll:gui-message-box
   "Message Box control, displays a message"
   (bounds rl-rectangle)

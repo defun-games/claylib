@@ -9,6 +9,9 @@
 (defreader x 2d-object x pos)
 (defreader y 2d-object y pos)
 
+(define-print-object 2d-object
+    (pos))
+
 (defwriter x 2d-object x pos number)
 (defwriter y 2d-object y pos number)
 
@@ -35,6 +38,9 @@
 (defreader x 3d-object x pos)
 (defreader y 3d-object y pos)
 (defreader z 3d-object z pos)
+
+(define-print-object 3d-object
+    (pos rot-axis rot-angle))
 
 (defwriter x 3d-object x pos number)
 (defwriter y 3d-object y pos number)

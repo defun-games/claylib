@@ -8,6 +8,9 @@
 
 (defwriter-float radius circle)
 
+(define-print-object circle
+    (radius))
+
 (definitializer circle
   :lisp-slots ((%radius t)))
 

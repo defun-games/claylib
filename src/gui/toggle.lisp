@@ -9,6 +9,9 @@
      :active nil)
     (:documentation "Toggle Button control, sets ACTIVE when active")))
 
+(define-print-object gui-toggle
+  (active))
+
 (defun-pt-bool gui-toggle claylib/ll:gui-toggle
   "Toggle Button control, returns T when active"
   (bounds rl-rectangle)

@@ -22,6 +22,9 @@
       :type boolean
       :accessor active))))
 
+(define-print-object game-scene
+    (params objects assets gc active))
+
 (defun load-scene (scene &rest names)
   (dolist (asset names)
     (load-asset (gethash asset (assets scene)))))

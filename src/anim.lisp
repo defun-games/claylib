@@ -11,6 +11,9 @@
 (defcreader name rl-bone-info name bone-info)  ; TODO: Array/string
 (defcreader parent rl-bone-info parent bone-info)
 
+(define-print-object rl-bone-info
+    (name parent))
+
 (defcwriter name rl-bone-info name bone-info string)  ; TODO: Array/string
 (defcwriter parent rl-bone-info parent bone-info integer)
 
@@ -23,6 +26,8 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass bone (rl-bone-info) ()))
 
+(define-print-object bone
+    ())
 
 
 (default-unload claylib/ll:model-animation unload-model-animation t)
@@ -44,6 +49,9 @@
 (defcreader bone-count rl-model-animation bone-count model-animation)
 (defcreader frame-count rl-model-animation frame-count model-animation)
 
+(define-print-object rl-model-animation
+    (bones frame-poses bone-count frame-count))
+
 (defcwriter bone-count rl-model-animation bone-count model-animation integer)
 (defcwriter frame-count rl-model-animation frame-count model-animation integer)
 
@@ -57,6 +65,8 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass model-animation (rl-model-animation) ()))
 
+(define-print-object model-animation
+    ())
 
 
 (defconstant +foreign-bone-info-size+ (autowrap:sizeof 'claylib/ll:bone-info))
@@ -64,6 +74,9 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-bones (rl-sequence)
     ((%cl-array :type (array rl-bone-info 1)))))
+
+(define-print-object rl-bones
+    ())
 
 (defmethod make-rl-*-array ((c-struct claylib/wrap:bone-info) num)
   (let ((contents (loop for i below num
@@ -90,6 +103,9 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-animations (rl-sequence)
     ((%cl-array :type (array rl-model-animation 1)))))
+
+(define-print-object rl-animations
+    ())
 
 (defmethod make-rl-*-array ((c-struct claylib/wrap:model-animation) num)
   (make-array

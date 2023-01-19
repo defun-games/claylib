@@ -4,6 +4,9 @@
   (defclass gui-line (gui-object text-label) ()
     (:documentation "Line separator control, could contain text")))
 
+(define-print-object gui-line
+    ())
+
 (defun-pt-void gui-line claylib/ll:gui-line
   "Line separator control, could contain text"
   (bounds rl-rectangle)

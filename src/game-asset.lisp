@@ -10,6 +10,10 @@
       :accessor asset))))
 
 (defreader c-asset game-asset c-struct asset)
+
+(define-print-object game-asset
+    (path asset))
+
 (defwriter c-asset game-asset c-struct asset)
 
 (defmethod initialize-instance :after ((asset game-asset) &key load-now)
@@ -26,6 +30,9 @@
 (defreader height image-asset height asset)
 (defreader mipmaps image-asset mipmaps asset)
 (defreader data-format image-asset data-format asset)
+
+(define-print-object image-asset
+    (data width height mipmaps data-format))
 
 (defmethod load-asset ((asset image-asset) &key force-reload)
   (cond
@@ -58,6 +65,9 @@
 (defreader mipmaps texture-asset mipmaps asset)
 (defreader data-format texture-asset data-format asset)
 
+(define-print-object texture-asset
+    (id width height mipmaps data-format))
+
 (defmethod load-asset ((asset texture-asset) &key force-reload)
   (cond
     ((null (asset asset))
@@ -87,6 +97,10 @@
 (defreader mesh-materials model-asset mesh-materials asset)
 (defreader bones model-asset bones asset)
 (defreader bind-pose model-asset bind-pose asset)
+
+(define-print-object model-asset
+    (mesh-count material-count bone-count transform meshes materials mesh-materials bones bind-pose))
+
 (defmethod mesh-material ((masset model-asset) (index integer))
   (mesh-material (asset masset) index))
 
@@ -133,6 +147,9 @@
 
 (defreader id shader-asset id asset)
 (defreader locs shader-asset locs asset)
+
+(define-print-object shader-asset
+    (id vspath fspath locs))
 
 (defmethod load-asset ((asset shader-asset) &key force-reload)
   (let ((vpath (when (vspath asset)
@@ -182,6 +199,9 @@ non-nil."
 (defreader texture font-asset texture asset)
 (defreader recs font-asset recs asset)
 (defreader glyphs font-asset glyphs asset)
+
+(define-print-object font-asset
+    (chars size glyph-count glyph-padding texture recs glyphs))
 
 (default-slot-value font-asset %font-size 10)
 (default-slot-value font-asset %font-chars nil)
@@ -234,6 +254,9 @@ non-nil."
 ;; (defreader bones animation-asset bones asset)
 ;; (defreader frame-poses animation-asset frame-poses asset)
 
+(define-print-object animation-asset
+  ())
+
 (defmethod load-asset ((asset animation-asset) &key force-reload)
   (cond
     ((null (asset asset))
@@ -258,6 +281,9 @@ non-nil."
 
 (defclass music-asset (game-asset)
   ((%asset :type (or rl-music null))))
+
+(define-print-object music-asset
+  ())
 
 ;; Don't really need this
 ;; (defreader pitch music-asset pitch asset)
