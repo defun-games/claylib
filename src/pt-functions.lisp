@@ -171,6 +171,11 @@ in which case create a new COLOR object as the return value."
   (color rl-color)
   (alpha number float))
 
+(defun-pt get-color claylib/ll:get-color
+  "Get a color object from a hex value. Allocates a new COLOR unless you pass one."
+  (color rl-color nil (make-instance 'color))
+  (hex-value number))
+
 
 
 ;;; Font Loading and Text Drawing Functions (Module: text)

@@ -43,7 +43,7 @@
    :image-flip-vertical :image-flip-horizontal :image-crop :image-resize :image-draw :with-drawing
    :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex
    :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere
-   :gen-mesh-cubicmap)
+   :gen-mesh-cubicmap :get-color)
 
 
 
@@ -162,7 +162,7 @@
 
    ;; Color/pixel related functions
    :fade
-   :get-pixel-data-size
+   :get-color :get-pixel-data-size
 
 
 
@@ -401,8 +401,8 @@
    :gui-load-style :gui-load-style-default
 
    ;; Icons functionality
-   :gui-icon-text :gui-draw-icon :gui-get-icons :gui-get-icon-data :gui-set-icon-data :gui-set-icon-pixel
-   :gui-clear-icon-pixel :gui-check-icon-pixel
+   :gui-icon-text :gui-draw-icon :gui-icon :gui-get-icons :gui-get-icon-data :gui-set-icon-data
+   :gui-set-icon-pixel :gui-clear-icon-pixel :gui-check-icon-pixel
 
 
 
