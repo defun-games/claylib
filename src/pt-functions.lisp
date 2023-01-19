@@ -60,18 +60,18 @@ unless ALLOCATE-P is T."
   "Check collision between two circles."
   (check-type circle1 circle)
   (check-type circle2 circle)
-  (not (= 0 (claylib/ll:check-collision-circles (c-struct (pos circle1))
-                                                (float (radius circle1))
-                                                (c-struct (pos circle2))
-                                                (float (radius circle2))))))
+  (/= 0 (claylib/ll:check-collision-circles (c-struct (pos circle1))
+                                            (float (radius circle1))
+                                            (c-struct (pos circle2))
+                                            (float (radius circle2)))))
 
 (defun check-collision-circle-rec (circle rec)
   "Check collision between CIRCLE and RECTANGLE."
   (check-type circle circle)
   (check-type rec rl-rectangle)
-  (not (= 0 (claylib/ll:check-collision-circle-rec (c-struct (pos circle))
-                                                   (float (radius circle))
-                                                   (c-struct rec)))))
+  (/= 0 (claylib/ll:check-collision-circle-rec (c-struct (pos circle))
+                                               (float (radius circle))
+                                               (c-struct rec))))
 
 (defun-pt-bool check-collision-point-rec claylib/ll:check-collision-point-rec
   "Check if POINT is inside RECTANGLE."
@@ -82,18 +82,18 @@ unless ALLOCATE-P is T."
   "Check if POINT is inside CIRCLE."
   (check-type point rl-vector2)
   (check-type circle circle)
-  (not (= 0 (claylib/ll:check-collision-point-circle (c-struct point)
-                                                     (c-struct (pos circle))
-                                                     (float (radius circle))))))
+  (/= 0 (claylib/ll:check-collision-point-circle (c-struct point)
+                                                 (c-struct (pos circle))
+                                                 (float (radius circle)))))
 
 (defun check-collision-point-triangle (point triangle)
   "Check if POINT is inside TRIANGLE."
   (check-type point rl-vector2)
   (check-type triangle triangle)
-  (not (= 0 (claylib/ll:check-collision-point-triangle (c-struct point)
-                                                       (c-struct (v1 triangle))
-                                                       (c-struct (v2 triangle))
-                                                       (c-struct (v3 triangle))))))
+  (/= 0 (claylib/ll:check-collision-point-triangle (c-struct point)
+                                                   (c-struct (v1 triangle))
+                                                   (c-struct (v2 triangle))
+                                                   (c-struct (v3 triangle)))))
 
 (defun check-collision-lines (line1 line2 &optional (retval (make-vector2 0 0)))
   "Check the collision between two straight lines. Allocates a new VECTOR2 unless you pass one.
@@ -114,10 +114,10 @@ Returns the vector if a collision exists, otherwise NIL."
   (check-type point rl-vector2)
   (check-type line line)
   (check-type threshold integer)
-  (not (= 0 (claylib/ll:check-collision-point-line (c-struct point)
-                                                   (c-struct (start line))
-                                                   (c-struct (end line))
-                                                   threshold))))
+  (/= 0 (claylib/ll:check-collision-point-line (c-struct point)
+                                               (c-struct (start line))
+                                               (c-struct (end line))
+                                               threshold)))
 
 (defun get-collision-rec (rec1 rec2 &key (result-rec nil))
   "Get the collision rectangle for the collision of two rectangles REC1 and REC2.
