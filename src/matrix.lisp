@@ -25,6 +25,9 @@
 (defcreader m14 rl-matrix m14 matrix)
 (defcreader m15 rl-matrix m15 matrix)
 
+(define-print-object rl-matrix
+    ())
+
 (defcwriter m0 rl-matrix m0 matrix number float)
 (defcwriter m1 rl-matrix m1 matrix number float)
 (defcwriter m2 rl-matrix m2 matrix number float)
@@ -64,6 +67,9 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass matrix (rl-matrix) ()))
+
+(define-print-object matrix
+    ())
 
 (defun make-zero-matrix ()
   (make-instance 'matrix

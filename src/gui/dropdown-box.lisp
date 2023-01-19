@@ -8,6 +8,9 @@
      :active 0)
     (:documentation "Dropdown Box control, sets PRESSED when clicked")))
 
+(define-print-object gui-dropdown-box
+    ())
+
 (defmethod active ((dropdown gui-dropdown-box))
   (plus-c:c-ref (slot-value dropdown '%active) :int))
 

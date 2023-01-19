@@ -4,6 +4,9 @@
   (defclass gui-status-bar (gui-object text-label) ()
     (:documentation "Status Bar control, shows info text")))
 
+(define-print-object gui-status-bar
+    ())
+
 (defun-pt-void gui-status-bar claylib/ll:gui-status-bar
   "Status Bar control, shows info text"
   (bounds rl-rectangle)

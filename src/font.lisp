@@ -16,6 +16,9 @@
 (defcreader offset-y rl-glyph-info offset-y glyph-info)
 (defcreader advance-x rl-glyph-info advance-x glyph-info)
 
+(define-print-object rl-glyph-info
+    (image value offset-x offset-y advance-x))
+
 (defcwriter value rl-glyph-info value glyph-info integer)
 (defcwriter offset-x rl-glyph-info offset-x glyph-info integer)
 (defcwriter offset-y rl-glyph-info offset-y glyph-info integer)
@@ -35,6 +38,8 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass glyph-info (rl-glyph-info) ()))
 
+(define-print-object glyph-info
+    ())
 
 
 (defconstant +foreign-glyph-info-size+ (autowrap:sizeof 'claylib/ll:glyph-info))
@@ -42,6 +47,9 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-glyphs (rl-sequence)
     ((%cl-array :type (array rl-glyph-info 1)))))
+
+(define-print-object rl-glyphs
+    ())
 
 (defmethod make-rl-*-array ((c-struct claylib/ll:glyph-info) num)
   (let ((contents (loop for i below num
@@ -92,6 +100,9 @@
 (defcreader glyph-count rl-font glyph-count font)
 (defcreader glyph-padding rl-font glyph-padding font)
 
+(define-print-object rl-font
+    (texture recs glyphs size glyph-count glyph-padding))
+
 (defcwriter size rl-font base-size font integer)
 (defcwriter glyph-count rl-font glyph-count font integer)
 (defcwriter glyph-padding rl-font glyph-padding font integer)
@@ -110,6 +121,9 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass font (rl-font) ()))
 
+(define-print-object font
+    ())
+
 (defun make-font (asset-or-path
                   &rest args
                   &key size chars glyph-count glyph-padding texture recs glyphs (load-now nil))
@@ -124,6 +138,9 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass default-font (font) ()))
+
+(define-print-object default-font
+    ())
 
 (defmethod initialize-instance :around ((font default-font) &rest initargs &key &allow-other-keys)
   (setf (c-struct font) (getf initargs :c-struct))

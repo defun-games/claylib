@@ -19,6 +19,9 @@
      :focus -1)
     (:documentation "List View control, sets ACTIVE to selected list item index")))
 
+(define-print-object gui-list-view
+    (active))
+
 (defmethod (setf active) :before (value (obj gui-list-view))
   (set-linked-children 'active obj value))
 

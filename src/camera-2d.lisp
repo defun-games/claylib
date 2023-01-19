@@ -19,6 +19,9 @@
 (defcreader rot rl-camera-2d rotation camera2d)
 (defcreader zoom rl-camera-2d zoom camera2d)
 
+(define-print-object rl-camera-2d
+    (offset target rot zoom))
+
 (defcwriter rot rl-camera-2d rotation camera2d number float)
 (defcwriter zoom rl-camera-2d zoom camera2d number float)
 (defcwriter-struct offset rl-camera-2d offset camera2d vector2 x y)
@@ -33,6 +36,9 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass camera-2d (rl-camera-2d) ()))
+
+(define-print-object camera-2d
+    ())
 
 (defun make-camera-2d (offset-x offset-y target-x target-y
                        &rest args &key rot zoom)

@@ -12,6 +12,9 @@
               :type (integer 0 *)
               :accessor slices))))
 
+(define-print-object sphere
+    (radius rings slices))
+
 (defmethod (setf radius) :before (value (obj sphere))
   (set-linked-children 'radius obj value))
 (defmethod (setf rings) :before (value (obj sphere))

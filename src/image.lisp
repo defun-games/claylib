@@ -16,6 +16,9 @@
 (defcreader mipmaps rl-image mipmaps image)
 (defcreader data-format rl-image format image)
 
+(define-print-object rl-image
+    (data width height mipmaps data-format))
+
 (defcwriter data rl-image data image) ; pointer
 (defcwriter width rl-image width image integer)
 (defcwriter height rl-image height image integer)
@@ -44,6 +47,9 @@
             :accessor tint))
     (:default-initargs
      :tint +white+)))
+
+(define-print-object image
+    (source dest tint))
 
 (definitializer image
   :lisp-slots ((%source) (%dest) (%tint)))

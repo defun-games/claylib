@@ -36,6 +36,9 @@ camera).")
 (defreader x-scale billboard x size)
 (defreader y-scale billboard y size)
 
+(define-print-object billboard
+    (asset camera size source up origin tint c-asset x-scale y-scale))
+
 (defwriter x-scale billboard x size number)
 (defwriter y-scale billboard y size number)
 

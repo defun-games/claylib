@@ -17,6 +17,9 @@
 (defcreader-bool hit rl-ray-collision hit ray-collision)
 (defcreader distance rl-ray-collision distance ray-collision)
 
+(define-print-object rl-ray-collision
+    (point normal hit distance))
+
 (defcwriter-bool hit rl-ray-collision hit ray-collision)
 (defcwriter distance rl-ray-collision distance ray-collision number float)
 (defcwriter-struct point rl-ray-collision point ray-collision vector3 x y z)
@@ -31,6 +34,9 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass ray-collision (rl-ray-collision) ()))
+
+(define-print-object ray-collision
+    ())
 
 (defun make-ray-collision (point-x point-y point-z normal-x normal-y normal-z)
   (make-instance 'ray-collision

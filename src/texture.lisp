@@ -16,6 +16,9 @@
 (defcreader mipmaps rl-texture mipmaps texture)
 (defcreader data-format rl-texture format texture)
 
+(define-print-object rl-texture
+    (id width height mipmaps data-format))
+
 (defcwriter id rl-texture id texture integer)
 (defcwriter width rl-texture width texture integer)
 (defcwriter height rl-texture height texture integer)
@@ -53,6 +56,9 @@
      :rot 0.0
      :tint +white+)))
 
+(define-print-object tex
+    (source dest origin rot tint))
+
 (defwriter-float rot tex %rotation)
 
 (definitializer tex
@@ -75,6 +81,9 @@
     (:default-initargs
      :filter +texture-filter-point+
      :wrap +texture-wrap-repeat+)))
+
+(define-print-object texture
+  (filter wrap))
 
 (defmethod (setf filter) ((value integer) (texture texture))
   (claylib/ll:set-texture-filter (c-struct texture) value)
@@ -121,6 +130,10 @@
 (defreader y texture-object y dest)
 (defreader width texture-object width dest)
 (defreader height texture-object height dest)
+
+(define-print-object texture-object
+    (asset c-asset x y width height))
+
 (defwriter x texture-object x dest)
 (defwriter y texture-object y dest)
 (defwriter width texture-object width dest)
@@ -199,6 +212,9 @@
 
 (defcreader id rl-render-texture id render-texture)
 
+(define-print-object rl-render-texture
+    (id texture depth))
+
 (defcwriter id rl-render-texture id render-texture integer)
 (defcwriter-struct texture rl-render-texture texture render-texture texture
   id width height mipmaps data-format)
@@ -213,3 +229,6 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass render-texture (rl-render-texture) ()))
+
+(define-print-object render-texture
+    ())

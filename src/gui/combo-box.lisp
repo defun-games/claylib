@@ -9,6 +9,9 @@
      :active 0)
     (:documentation "Combo Box control, sets ACTIVE to selected item index")))
 
+(define-print-object gui-combo-box
+    (active))
+
 (defmethod (setf active) :before (value (obj gui-combo-box))
   (set-linked-children 'active obj value))
 

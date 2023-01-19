@@ -9,6 +9,9 @@
      :alpha 1.0)
     (:documentation "Color Bar Alpha control, sets ALPHA to alpha value")))
 
+(define-print-object gui-color-bar-alpha
+  (alpha))
+
 (defwriter-float alpha gui-color-bar-alpha)
 
 (definitializer gui-color-bar-alpha

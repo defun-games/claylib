@@ -16,8 +16,12 @@
 (defcreader      ctx-data    rl-music ctx-data    music)
 (defcreader-bool looping     rl-music looping     music)
 
+(define-print-object rl-music
+  (pitch volume astream frame-count ctx-type ctx-data looping))
+
 (defcwriter frame-count rl-music frame-count music integer)
 (defcwriter ctx-type rl-music ctx-type music integer)
+
 (defcwriter-bool looping rl-music looping music)
 
 (definitializer rl-music

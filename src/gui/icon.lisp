@@ -15,6 +15,9 @@
                   :type integer
                   :accessor pixel-size))))
 
+(define-print-object gui-icon
+    (icon-id x y pixel-size))
+
 (defmethod (setf icon-id) :before (value (obj gui-icon))
   (set-linked-children 'icon-id obj value))
 (defmethod (setf x) :before (value (obj gui-icon))

@@ -4,6 +4,9 @@
   (defclass gui-dummy-rec (gui-object text-label) ()
     (:documentation "Dummy control for placeholders")))
 
+(define-print-object gui-dummy-rec
+    ())
+
 (defun-pt-void gui-dummy-rec claylib/ll:gui-dummy-rec
   "Dummy control for placeholders"
   (bounds rl-rectangle)

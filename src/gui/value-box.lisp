@@ -4,6 +4,9 @@
   (defclass gui-value-box (gui-spinner) ()
     (:documentation "Value Box control, sets PRESSED when clicked")))
 
+(define-print-object gui-value-box
+    ())
+
 (defun-pt-bool gui-value-box claylib/ll:gui-value-box
   "Value Box control, updates input text with numbers"
   (bounds rl-rectangle)

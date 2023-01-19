@@ -11,6 +11,9 @@
     (:default-initargs
      :filled t)))
 
+(define-print-object shape
+    (color filled))
+
 (definitializer shape
   :lisp-slots ((%color) (%filled)))
 
@@ -23,5 +26,11 @@
               :accessor color2
               :documentation "The 2nd color to use for a shape drawn with a gradient."))))
 
+(define-print-object 2d-shape
+    (color2))
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass 3d-shape (shape 3d-object) ()))
+
+(define-print-object 3d-shape
+    ())

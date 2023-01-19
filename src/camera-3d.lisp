@@ -25,6 +25,9 @@
 (defcreader fovy rl-camera-3d fovy camera3d)
 (defcreader projection rl-camera-3d projection camera3d)
 
+(define-print-object rl-camera-3d
+    (pos target up fovy projection))
+
 (defwriter x rl-camera-3d x pos number)
 (defwriter y rl-camera-3d y pos number)
 (defwriter z rl-camera-3d z pos number)
@@ -48,6 +51,9 @@
             :reader mode))
     (:default-initargs
      :mode +camera-custom+)))
+
+(define-print-object camera-3d
+    (mode))
 
 (defmethod (setf mode) ((value integer) (camera camera-3d))
   (claylib/ll:set-camera-mode (c-struct camera) value)

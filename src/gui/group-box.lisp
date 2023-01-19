@@ -4,6 +4,9 @@
   (defclass gui-group-box (gui-object text-label) ()
     (:documentation "Group Box control with text name")))
 
+(define-print-object gui-group-box
+    ())
+
 (defun-pt-void gui-group-box claylib/ll:gui-group-box
   "Group Box control with text name"
   (bounds rl-rectangle)

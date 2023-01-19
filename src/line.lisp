@@ -17,6 +17,9 @@
 (defreader x2 line x end)
 (defreader y2 line y end)
 
+(define-print-object line
+    (start end color))
+
 (defwriter x1 line x start number)
 (defwriter y1 line y start number)
 (defwriter x2 line x end number)
@@ -46,6 +49,9 @@
     (:default-initargs
      :thickness 1.0
      :bezier nil)))
+
+(define-print-object line-2d
+    (thickness bezier control-pt control-pt2))
 
 (defwriter-float thickness line-2d)
 

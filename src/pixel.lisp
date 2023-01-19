@@ -3,6 +3,9 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass pixel (2d-shape) ()))
 
+(define-print-object pixel
+    ())
+
 (defun make-pixel (x y color)
   (make-instance 'pixel
                  :pos (make-vector2 x y)

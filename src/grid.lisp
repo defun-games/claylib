@@ -9,6 +9,9 @@
                :type number
                :reader spacing))))
 
+(define-print-object grid
+    (slices spacing))
+
 (defwriter-float spacing grid)
 
 (defmethod (setf slices) :before (value (obj grid))

@@ -18,6 +18,9 @@ set this in your own code."))
      :spacing 1.0)
     (:documentation "Grid control, sets POSITION to mouse cell position")))
 
+(define-print-object gui-grid
+    (spacing subdivs pos))
+
 (defwriter-float spacing gui-grid)
 
 (defmethod (setf subdivs) :before (value (obj gui-grid))

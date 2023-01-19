@@ -4,6 +4,9 @@
   (defclass gui-spinner (gui-object text-label pressable editable int-values) ()
     (:documentation "Spinner control, sets PRESSED when clicked")))
 
+(define-print-object gui-spinner
+    ())
+
 (defun gui-spinner (bounds text value min-value max-value edit-mode)
   "Spinner control, returns selected value"
   (check-type bounds rl-rectangle)
