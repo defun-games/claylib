@@ -23,6 +23,9 @@
      :spacing 1.0
      :color +gray+)))
 
+(define-print-object text
+    (text font size spacing color))
+
 (defwriter-float size text %font-size)
 (defwriter-float spacing text)
 

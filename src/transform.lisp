@@ -17,6 +17,9 @@
     (:default-initargs
      :c-struct (autowrap:calloc 'claylib/ll:transform))))
 
+(define-print-object rl-transform
+    (trans rot scale c-struct))
+
 (defcwriter-struct trans rl-transform translation transform vector3 x y z)
 (defcwriter-struct rot rl-transform rotation transform vector4 x y z w)
 (defcwriter-struct scale rl-transform scale transform vector3 x y z)
@@ -29,6 +32,8 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass transform (rl-transform) ()))
 
+(define-print-object transform
+    ())
 
 
 (defconstant +foreign-transform-size+ (autowrap:sizeof 'claylib/ll:transform))
@@ -36,6 +41,9 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-transforms (rl-sequence)
     ((%cl-array :type (array rl-transform 1)))))
+
+(define-print-object rl-transforms
+    ())
 
 (defmethod make-rl-*-array ((c-struct claylib/wrap:transform) num)
   (let ((contents (loop for i below num

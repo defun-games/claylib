@@ -7,6 +7,9 @@
                 :reader cl-array
                 :documentation "An array of RL-* objects tracking C array elements underneath."))))
 
+(define-print-object rl-sequence
+    (cl-array))
+
 (defmethod sequences:length ((sequence rl-sequence))
   (length (cl-array sequence)))
 

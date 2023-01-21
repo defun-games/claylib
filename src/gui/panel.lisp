@@ -4,6 +4,9 @@
   (defclass gui-panel (gui-object text-label) ()
     (:documentation "Panel control, useful to group controls")))
 
+(define-print-object gui-panel
+  ())
+
 (defun-pt-void gui-panel claylib/ll:gui-panel
   "Panel control, useful to group controls"
   (bounds rl-rectangle)

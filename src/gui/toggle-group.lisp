@@ -9,6 +9,9 @@
      :active 0)
     (:documentation "Toggle Group control, sets ACTIVE to active toggle index")))
 
+(define-print-object gui-toggle-group
+    (active))
+
 (defmethod (setf active) :before (value (obj gui-toggle-group))
   (set-linked-children 'active obj value))
 

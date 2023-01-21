@@ -18,6 +18,9 @@
      :thickness 1.0
      :rot 0.0)))
 
+(define-print-object polygon
+    (sides radius rot thickness))
+
 (defwriter-float radius polygon)
 (defwriter-float rot polygon %rotation)
 (defwriter-float thickness polygon)

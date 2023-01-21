@@ -9,6 +9,9 @@
      :title "")
     (:documentation "Window Box control, shows a window that can be closed")))
 
+(define-print-object gui-window-box
+    (title))
+
 (defun-pt-bool gui-window-box claylib/ll:gui-window-box
   "Window Box control, shows a window that can be closed"
   (bounds rl-rectangle)

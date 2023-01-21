@@ -386,3 +386,32 @@ expected to have the following format:
        (,c-fn (c-struct retval)
               ,@(expand-c-fun-args args))
        retval)))
+
+(defmacro define-print-object (type methods)
+  "Defines PRINT-OBJECT for TYPE. METHODS should contain function names which
+will be called with the object as the parameter. The name of the method and
+it's result will be printed in the output as `:METHOD (method obj)`. The first
+call to PRINT-OBJECT will use PRINT-UNREADABLE-OBJECT, while next-methods will
+only print to the same object.
+
+E.g. (define-print-object sometype (x y)) will print something like `#<SOMETYPE :x 10 :y 20>`"
+  `(defmethod print-object ((obj ,type) out)
+     (let* ((class (find-class ',type))
+            (hierarchy (closer-mop:compute-class-precedence-list (find-class (type-of obj))))
+            (top (car hierarchy))
+            ;; Last class we want to print, i.e. the last class before STANDARD-OBJECT
+            ;; Skip STANDARD-OBJECT, SLOT-CLASS and T
+            (last (cadddr (reverse hierarchy)))
+            (print-methods (lambda () (dolist (method ',methods)
+                                   (let ((value (handler-case (funcall (symbol-function method) obj)
+                                                  (unbound-slot () "#<unbound-slot>"))))
+                                     (format out ":~A ~A " method value))))))
+       (if (eq top class)
+           (print-unreadable-object (obj out :type t)
+             (funcall print-methods)
+             (unless (eq last class)
+               (call-next-method)))
+           (progn
+             (funcall print-methods)
+             (unless (eq last class)
+               (call-next-method)))))))

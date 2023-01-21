@@ -13,6 +13,9 @@
 (defcreader b rl-color b color)
 (defcreader a rl-color a color)
 
+(define-print-object rl-color
+    (r g b a))
+
 (definitializer rl-color)
 
 
@@ -21,6 +24,9 @@
   (defclass color (rl-color)
     ((%c-struct
       :accessor c-struct))))
+
+(define-print-object color
+    ())
 
 (defcwriter r color r color integer)
 (defcwriter g color g color integer)

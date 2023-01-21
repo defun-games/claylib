@@ -4,6 +4,9 @@
   (defclass gui-text-box (gui-object text-box pressable editable) ()
     (:documentation "Text Box control, updates input text, sets PRESSED when entered")))
 
+(define-print-object gui-text-box
+    ())
+
 (defun-pt-bool gui-text-box claylib/ll:gui-text-box
   "Text Box control, updates input text"
   (bounds rl-rectangle)

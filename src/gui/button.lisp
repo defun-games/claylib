@@ -4,6 +4,9 @@
   (defclass gui-button (gui-object text-label pressable) ()
     (:documentation "Button control, sets PRESSED when clicked")))
 
+(define-print-object gui-button
+    ())
+
 (defun-pt-bool gui-button claylib/ll:gui-button
   "Button control, returns T when clicked"
   (bounds rl-rectangle)

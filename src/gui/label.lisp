@@ -4,6 +4,9 @@
   (defclass gui-label (gui-object text-label) ()
     (:documentation "Label control, shows text")))
 
+(define-print-object gui-label
+    ())
+
 (defun-pt-void gui-label claylib/ll:gui-label
   "Label control, shows text"
   (bounds rl-rectangle)

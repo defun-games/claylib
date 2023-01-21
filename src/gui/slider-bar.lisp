@@ -4,6 +4,9 @@
   (defclass gui-slider-bar (gui-object value-bar) ()
     (:documentation "Slider Bar control, sets VALUE to selected value")))
 
+(define-print-object gui-slider-bar
+    ())
+
 (defun-pt-num gui-slider-bar claylib/ll:gui-slider-bar
   "Slider Bar control, returns selected value"
   (bounds rl-rectangle)

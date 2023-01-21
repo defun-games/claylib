@@ -4,6 +4,9 @@
   (defclass gui-progress-bar (gui-object value-bar) ()
     (:documentation "Progress Bar control, sets VALUE to current progress value")))
 
+(define-print-object gui-progress-bar
+    ())
+
 (defun-pt-num gui-progress-bar claylib/ll:gui-progress-bar
   "Progress Bar control, shows current progress value"
   (bounds rl-rectangle)

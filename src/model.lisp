@@ -39,6 +39,9 @@
   (loop for i below (mesh-count model)
         collect (mesh-material model i)))
 
+(define-print-object rl-model
+    (transform meshes materials bones bind-pose animations mesh-count material-count bone-count mesh-materials))
+
 (defcwriter mesh-count rl-model mesh-count model integer)
 (defcwriter material-count rl-model material-count model integer)
 (defcwriter bone-count rl-model bone-count model integer)
@@ -105,6 +108,9 @@
      :scale (make-vector3 1 1 1)
      :tint +white+
      :filled t)))
+
+(define-print-object model
+    (scale tint filled asset))
 
 (definitializer model
   :lisp-slots ((%scale) (%tint) (%filled) (%asset)))

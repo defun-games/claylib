@@ -9,6 +9,9 @@
     (:documentation "Add a %children slot for linking purposes. Any potentially drawn class containing
 a numerical writer should inherit from this class.")))
 
+(define-print-object linkable
+  (children))
+
 (defun link-objects (parent writer &rest children)
   "Link a PARENT's WRITER with CHILDREN so that children will be modified whenever the parent is.
 Numerical values only. Uses INCF, not SETF. Each child is a cons of the form (OBJECT . WRITER)."

@@ -11,6 +11,9 @@
 
 (defwriter-float value gui-color-bar-hue)
 
+(define-print-object gui-color-bar-hue
+    (value))
+
 (definitializer gui-color-bar-hue
   :lisp-slots ((%value nil float)))
 

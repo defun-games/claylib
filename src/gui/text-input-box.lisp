@@ -8,6 +8,9 @@
      :secret-view-active nil)
     (:documentation "Text Input Box control, ask for text, supports secret")))
 
+(define-print-object gui-text-input-box
+    ())
+
 (defmethod secret-view-active ((input-box gui-text-input-box))
   (ecase (plus-c:c-ref (slot-value input-box '%secret-view-active) :int)
     (0 nil)

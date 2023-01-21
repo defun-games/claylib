@@ -14,6 +14,9 @@
     (:default-initargs
      :c-struct (autowrap:calloc 'claylib/ll:bounding-box))))
 
+(define-print-object rl-bounding-box
+    (low high))
+
 (defcwriter-struct low rl-bounding-box min bounding-box vector3 x y z)
 (defcwriter-struct high rl-bounding-box max bounding-box vector3 x y z)
 

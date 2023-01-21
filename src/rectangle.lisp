@@ -13,6 +13,9 @@
 (defcreader width rl-rectangle width rectangle)
 (defcreader height rl-rectangle height rectangle)
 
+(define-print-object rl-rectangle
+    (x y width height))
+
 (defcwriter x rl-rectangle x rectangle number float)
 (defcwriter y rl-rectangle y rectangle number float)
 (defcwriter width rl-rectangle width rectangle number float)
@@ -35,6 +38,9 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-rectangles (rl-sequence)
     ((%cl-array :type (array rl-rectangle 1)))))
+
+(define-print-object rl-rectangles
+    ())
 
 (defmethod make-rl-*-array ((c-struct claylib/ll:rectangle) num)
   (let ((contents (loop for i below num
@@ -76,6 +82,9 @@
      :rot 0.0
      :thickness 1.0
      :origin (make-vector2 0 0))))
+
+(define-print-object rectangle
+    (origin rot thickness gradient-style))
 
 (defwriter-float rot rectangle %rotation)
 (defwriter-float thickness rectangle)

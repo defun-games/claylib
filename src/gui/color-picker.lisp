@@ -4,6 +4,9 @@
   (defclass gui-color-picker (gui-object text-label gui-color) ()
     (:documentation "Color Picker control (multiple color controls), sets COLOR to chosen color")))
 
+(define-print-object gui-color-picker
+    ())
+
 (defun-pt gui-color-picker claylib/ll:gui-color-picker
   "Color Picker control (multiple color controls). Allocates a new RL-COLOR unless you pass one."
   (col rl-color nil (make-color 0 0 0))

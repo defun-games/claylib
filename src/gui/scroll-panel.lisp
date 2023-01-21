@@ -18,6 +18,9 @@ set this in your own code."))
      :scroll (make-vector2 0 0))
     (:documentation "Scroll Panel control")))
 
+(define-print-object gui-scroll-panel
+  (content scroll view))
+
 (defun-pt gui-scroll-panel claylib/ll:gui-scroll-panel
   "Scroll Panel control. Allocates a new RL-RECTANGLE unless you pass one."
   (rec rl-rectangle nil (make-instance 'rl-rectangle))
