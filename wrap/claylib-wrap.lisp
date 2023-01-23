@@ -1,13 +1,17 @@
 (in-package #:claylib/wrap)
 
-(dolist (dir '(#p"./lib/"
-               #p"./lib-patched/"))
-  (pushnew dir cffi:*foreign-library-directories* :test #'equal))
-
-(pushnew (uiop:unix-namestring
-          (uiop:with-current-directory ((asdf:system-source-directory :claylib/wrap))
-            (uiop:merge-pathnames* "wrap/lib/")))
-         cffi:*foreign-library-directories* :test #'equal)
+;; Only use local libraries if we cannot detect a direnv environment.
+(let* ((parent (truename (merge-pathnames "..")))
+       (direnv (truename (uiop:getenv "DIRENV_FILE")))
+       (is-direnv (uiop:enough-pathname parent direnv)))
+  (unless is-direnv
+    (dolist (dir '(#p"./lib/"
+                   #p"./lib-patched/"))
+      (pushnew dir cffi:*foreign-library-directories* :test #'equal)
+      (pushnew (uiop:unix-namestring
+                (uiop:with-current-directory ((asdf:system-source-directory :claylib/wrap))
+                  (uiop:merge-pathnames* "wrap/lib/")))
+               cffi:*foreign-library-directories* :test #'equal))))
 
 (cffi:define-foreign-library libraylib
   (:unix "libraylib.so")
