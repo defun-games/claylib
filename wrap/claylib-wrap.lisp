@@ -1,13 +1,14 @@
 (in-package #:claylib/wrap)
 
-(dolist (dir '(#p"./lib/"
-               #p"./lib-patched/"))
-  (pushnew dir cffi:*foreign-library-directories* :test #'equal))
+(unless (uiop:getenv "CLAYLIB_USE_SYSTEM_RAYLIB_LIBRARIES")
+  (dolist (dir '(#p"./lib/"
+                 #p"./lib-patched/"))
+    (pushnew dir cffi:*foreign-library-directories* :test #'equal))
 
-(pushnew (uiop:unix-namestring
-          (uiop:with-current-directory ((asdf:system-source-directory :claylib/wrap))
-            (uiop:merge-pathnames* "wrap/lib/")))
-         cffi:*foreign-library-directories* :test #'equal)
+  (pushnew (uiop:unix-namestring
+            (uiop:with-current-directory ((asdf:system-source-directory :claylib/wrap))
+              (uiop:merge-pathnames* "wrap/lib/")))
+           cffi:*foreign-library-directories* :test #'equal))
 
 (cffi:define-foreign-library libraylib
   (:unix "libraylib.so")
