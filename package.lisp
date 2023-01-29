@@ -44,7 +44,7 @@
    :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex
    :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere
    :gen-mesh-cubicmap :get-color :check-collision-circles :check-collision-circle-rec
-   :check-collision-point-triangle :check-collision-lines :check-collision-point-line)
+   :check-collision-point-triangle :check-collision-lines :check-collision-point-line :get-glyph-index)
 
 
 
@@ -176,8 +176,8 @@
    ;; Text-drawing functions
    :draw-fps
 
-   ;; Text misc. functions
-   :measure-text :measure-text-ex
+   ;; Text font info functions
+   :measure-text :measure-text-ex :get-glyph-index
 
    ;; Text codepoints management functions
    :load-codepoints :unload-codepoints :get-codepoint-count :get-codepoint :codepoint-to-utf8

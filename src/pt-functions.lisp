@@ -243,6 +243,11 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
                               (spacing text))
   vector)
 
+(defun-pt-num get-glyph-index claylib/ll:get-glyph-index
+  "Get glyph index position in font for a codepoint (Unicode character). '?' if not found."
+  (font rl-font)
+  (codepoint integer))
+
 
 
 ;;; Basic 3d Shapes Drawing Functions (Module: models)
