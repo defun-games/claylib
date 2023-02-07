@@ -64,7 +64,8 @@ This is handy when the objects are in scope already, for example via WITH-SCENE-
     (draw-object (cdr obj))))
 
 (defun draw-scene-regex (scene regex)
-  "Draw the objects in the SCENE whose name matches the given Perl REGEX."
+  "Draw the objects in the SCENE whose name matches the given Perl REGEX. REGEX can also be a
+cl-ppcre scanner function, which is recommended for large scenes."
   (loop for kv in (nreverse (alexandria:hash-table-alist (objects scene)))
         when (cl-ppcre:scan regex (symbol-name (car kv)))
           do (draw-object (cdr kv))))
