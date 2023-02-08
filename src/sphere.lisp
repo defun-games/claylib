@@ -10,7 +10,10 @@
              :accessor rings)
      (%slices :initarg :slices
               :type (integer 0 *)
-              :accessor slices))))
+              :accessor slices))
+    (:default-initargs
+     :rings 16
+     :slices 16)))
 
 (define-print-object sphere
     (radius rings slices))
@@ -27,9 +30,6 @@
 
 (defun make-sphere (x y z radius color &rest args &key filled rings slices)
   (declare (ignorable filled rings slices))
-  ;; (and (not filled)
-  ;;      (or (not rings) (not slices))
-  ;;      (error "Must specify RINGS and SLICES when FILLED is NIL."))
   (apply #'make-instance 'sphere
          :pos (make-vector3 x y z)
          :radius radius
@@ -38,9 +38,6 @@
 
 (defun make-sphere-from-vec (pos radius color &rest args &key filled rings slices)
   (declare (ignorable filled rings slices))
-  (and (not filled)
-       (or (not rings) (not slices))
-       (error "Must specify RINGS and SLICES when FILLED is NIL."))
   (apply #'make-instance 'sphere
          :pos pos
          :radius radius
@@ -49,9 +46,11 @@
 
 (defmethod draw-object ((obj sphere))
   (if (filled obj)
-      (claylib/ll:draw-sphere (c-struct (pos obj))
-                              (radius obj)
-                              (c-struct (color obj)))
+      (claylib/ll:draw-sphere-ex (c-struct (pos obj))
+                                 (radius obj)
+                                 (rings obj)
+                                 (slices obj)
+                                 (c-struct (color obj)))
       (claylib/ll:draw-sphere-wires (c-struct (pos obj))
                                     (radius obj)
                                     (rings obj)
