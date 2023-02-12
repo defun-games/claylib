@@ -54,9 +54,9 @@ function has been running."
                                state :waiting))))
           (with-drawing ()
             (case state
-              (:waiting (draw-scene *scene* 'text-start 'border))
+              (:waiting (draw-scene *scene* '(text-start border)))
               (:loading (draw-scene *scene*
-                                    'progress-bar
-                                    (when (should-flash-p frames-counter) 'text-loading)
-                                    'border))
-              (:finished (draw-scene *scene* 'progress-bar 'text-loaded 'border)))))))))
+                                    `(progress-bar
+                                      ,(when (should-flash-p frames-counter) 'text-loading)
+                                      border)))
+              (:finished (draw-scene *scene* '(progress-bar text-loaded border))))))))))

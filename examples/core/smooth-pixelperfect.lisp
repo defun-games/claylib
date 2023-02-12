@@ -72,5 +72,5 @@
           (with-drawing (:bgcolor +red+)
             (with-2d-mode screen-space-camera
               (draw-scene scene 'tex))
-            (draw-scene scene 'text1 'text2)
+            (draw-scene scene '(text1 text2))
             (draw-fps (- (get-screen-width) 95) 10)))))))

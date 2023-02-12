@@ -50,6 +50,6 @@
             (update-camera cam)
             (with-drawing ()
               (with-3d-mode cam
-                (draw-objects model grid))
+                (draw-objects (list model grid)))
               (draw-object txt)
               (draw-fps 10 10))))))))

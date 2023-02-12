@@ -61,5 +61,5 @@
                                               i))
                                   0.2 0.2 0.2
                                   +red+))
-              (draw-scene *scene* 'model 'grid))
-            (draw-scene *scene* 'instructions 'copyright)))))))
+              (draw-scene *scene* '(model grid)))
+            (draw-scene *scene* '(instructions copyright))))))))

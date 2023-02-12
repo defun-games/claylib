@@ -149,6 +149,6 @@
                          (scene-object scene 'flag-msaa-4x-hint)
                          "FLAG_MSAA_4X_HINT")
 
-            (draw-scene scene 'ball 'rect 'mouse 'header 'subheader1 'subheader2)
+            (draw-scene scene '(ball rect mouse header subheader1 subheader2))
             (draw-fps 10 10)
             (draw-scene-regex scene "^FLAG-")))))))

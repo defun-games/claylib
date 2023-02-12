@@ -65,11 +65,11 @@
                   (progn
                     (setf (color (scene-object scene 'cube)) +red+
                           (color (scene-object scene 'outline)) +maroon+)
-                    (draw-scene scene 'cube 'outline 'indicator 'ray 'grid))
+                    (draw-scene scene '(cube outline indicator ray grid)))
                   (progn
                     (setf (color (scene-object scene 'cube)) +gray+
                           (color (scene-object scene 'outline)) +darkgray+)
-                    (draw-scene scene 'cube 'outline 'ray 'grid))))
+                    (draw-scene scene '(cube outline ray grid)))))
             (draw-scene scene 'text1)
             (when (hit collision) (draw-scene scene 'text2))
             (draw-fps 10 10)))))))

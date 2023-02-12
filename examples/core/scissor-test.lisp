@@ -36,6 +36,6 @@
             (if scissor-mode
                 (with-scissor-mode (truncate (x scissor-area)) (truncate (y scissor-area))
                     (truncate (width scissor-area)) (truncate (height scissor-area))
-                  (draw-scene scene 'rect 'text1))
-                (draw-scene scene 'rect 'text1))
-            (draw-scene scene 'outline 'text2)))))))
+                  (draw-scene scene '(rect text1)))
+                (draw-scene scene '(rect text1)))
+            (draw-scene scene '(outline text2))))))))

@@ -45,5 +45,5 @@ opqrstuvwxyz{|}~¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓ
       (do-game-loop (:livesupport t)
         (with-drawing ()
           (if (is-key-down-p +key-space+)
-              (draw-scene-except *scene* 'msg-bm 'title-bm)
-              (draw-scene-except *scene* 'msg-ttf 'title-ttf)))))))
+              (draw-scene-except *scene* '(msg-bm title-bm))
+              (draw-scene-except *scene* '(msg-ttf title-ttf))))))))

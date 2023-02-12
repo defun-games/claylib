@@ -76,5 +76,5 @@
               (setf mouse-scale-mode nil)))
 
           (with-drawing ()
-            (draw-scene-except *scene* 'mark-outline 'mark)
-            (when mouse-scale-ready (draw-scene *scene* 'mark-outline 'mark))))))))
+            (draw-scene-except *scene* '(mark-outline mark))
+            (when mouse-scale-ready (draw-scene *scene* '(mark-outline mark)))))))))

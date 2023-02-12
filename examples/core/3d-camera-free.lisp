@@ -49,7 +49,7 @@
                   (z (target camera)) 0))
           (with-drawing ()
             (with-3d-mode camera
-              (draw-scene scene 'cube 'wires 'grid))
+              (draw-scene scene '(cube wires grid)))
             (draw-scene scene
-                        'rect 'rect-border
-                        't1 't2 't3 't4 't5 't6)))))))
+                        '(rect rect-border
+                          t1 t2 t3 t4 t5 t6))))))))

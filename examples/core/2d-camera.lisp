@@ -79,7 +79,7 @@
             (with-2d-mode camera
               (draw-scene scene 'ground)
               (draw-scene-regex scene "^BUILDING")
-              (draw-scene scene 'player 'vline 'hline))
+              (draw-scene scene '(player vline hline)))
             (draw-scene scene
-                        'title 'r1 'r2 'r3 'r4 'r5 'r6
-                        't1 't2 't3 't4 't5)))))))
+                        '(title r1 r2 r3 r4 r5 r6
+                          t1 t2 t3 t4 t5))))))))

@@ -85,7 +85,7 @@
           (when (is-key-pressed-p +key-space+) (setf pause (not pause)))
 
           (with-drawing ()
-            (draw-objects collision-indicator box-a box-b)
+            (draw-objects (list collision-indicator box-a box-b))
             (when collision
-              (draw-objects box-collision collision-message collision-area))
+              (draw-objects (list box-collision collision-message collision-area)))
             (draw-fps 10 10)))))))

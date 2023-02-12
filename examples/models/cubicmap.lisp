@@ -64,5 +64,5 @@
             (with-drawing ()
               (with-3d-mode camera
                 (draw-object model))
-              (draw-objects cubicmap rec line1 line2)
+              (draw-objects (list cubicmap rec line1 line2))
               (draw-fps 10 10))))))))

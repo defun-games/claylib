@@ -52,6 +52,6 @@
           (update-camera camera)
           (with-drawing ()
             (with-3d-mode camera
-              (draw-scene scene 'ground 'blue 'green 'yellow)
+              (draw-scene scene '(ground blue green yellow))
               (draw-scene-regex scene "^COLUMN"))
-            (draw-scene scene 'rect 'rect-border 'text1 'text2 'text3)))))))
+            (draw-scene scene '(rect rect-border text1 text2 text3))))))))

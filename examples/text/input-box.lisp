@@ -68,7 +68,7 @@
                   (color box-line) +darkgray+))
 
           (with-drawing ()
-            (draw-scene-except *scene* 'cursor 'txt-del)
+            (draw-scene-except *scene* '(cursor txt-del))
             (when mouse-on-text-p
               (draw-scene *scene*
                           (if (< letter-count +max-input-chars+)

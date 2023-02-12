@@ -46,5 +46,5 @@
                 (y (scene-object scene 'text1)) (y outvec))
           (with-drawing ()
             (with-3d-mode camera
-              (draw-scene scene 'cube 'outline 'grid))
-            (draw-scene scene 'text1 'text2)))))))
+              (draw-scene scene '(cube outline grid)))
+            (draw-scene scene '(text1 text2))))))))

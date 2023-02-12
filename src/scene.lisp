@@ -39,36 +39,49 @@
                             (alexandria:hash-table-alist (assets scene))))
     (load-asset (cdr asset))))
 
-(defun draw-scene (scene &rest names)
-  "Draw the objects in SCENE referred to by the symbols in NAMES."
-  (dolist (obj names)
-    (draw-object (scene-object scene obj))))
+(defun draw-scene (scene names &key (draw-fn #'draw-object))
+  "Draw the objects in SCENE referred to by the symbols in NAMES.
 
-(defun draw-objects (&rest objects)
-  "Draw the given OBJECTS without having to specify a scene.
+For performance-sensitive drawing, you may pass a draw function. Otherwise, the default
+DRAW-OBJECT generic function will be used."
+  (dolist (obj (if (listp names) names (list names)))
+    (funcall draw-fn (scene-object scene obj))))
 
-This is handy when the objects are in scope already, for example via WITH-SCENE-OBJECTS."
-  (dolist (obj objects)
-    (draw-object obj)))
+(defun draw-objects (objects &key (draw-fn #'draw-object))
+  "Draw the given OBJECTS without having to specify a scene. This is handy when the objects are in scope already, for example via WITH-SCENE-OBJECTS.
 
-(defun draw-scene-all (scene)
-  "Draw all the objects in the given SCENE."
+For performance-sensitive drawing, you may pass a draw function. Otherwise, the default
+DRAW-OBJECT generic function will be used."
+  (dolist (obj (if (listp objects) objects (list objects)))
+    (funcall draw-fn obj)))
+
+(defun draw-scene-all (scene &key (draw-fn #'draw-object))
+  "Draw all the objects in the given SCENE.
+
+For performance-sensitive drawing, you may pass a draw function. Otherwise, the default
+DRAW-OBJECT generic function will be used."
   (dolist (obj (nreverse (alexandria:hash-table-values (objects scene))))
-    (draw-object obj)))
+    (funcall draw-fn obj)))
 
-(defun draw-scene-except (scene &rest names)
-  "Draw all the objects in the given SCENE except those specified as one of NAMES."
+(defun draw-scene-except (scene names &key (draw-fn #'draw-object))
+  "Draw all the objects in the given SCENE except those specified as one of NAMES.
+
+For performance-sensitive drawing, you may pass a draw function. Otherwise, the default
+DRAW-OBJECT generic function will be used."
   (dolist (obj (remove-if (lambda (kv)
-                            (member (car kv) names))
+                            (member (car kv) (if (listp names) names (list names))))
                           (nreverse (alexandria:hash-table-alist (objects scene)))))
-    (draw-object (cdr obj))))
+    (funcall draw-fn (cdr obj))))
 
-(defun draw-scene-regex (scene regex)
+(defun draw-scene-regex (scene regex &key (draw-fn #'draw-object))
   "Draw the objects in the SCENE whose name matches the given Perl REGEX. REGEX can also be a
-cl-ppcre scanner function, which is recommended for large scenes."
+cl-ppcre scanner function, which is recommended for large scenes.
+
+For performance-sensitive drawing, you may pass a draw function. Otherwise, the default
+DRAW-OBJECT generic function will be used."
   (loop for kv in (nreverse (alexandria:hash-table-alist (objects scene)))
         when (cl-ppcre:scan regex (symbol-name (car kv)))
-          do (draw-object (cdr kv))))
+          do (funcall draw-fn (cdr kv))))
 
 (defmacro make-scene (assets objects &key (gc t) (defer-init t))
   "Make a GAME-SCENE.

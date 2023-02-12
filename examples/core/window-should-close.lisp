@@ -35,5 +35,5 @@
 
         (with-drawing ()
           (if exit-window-requested
-              (draw-scene *scene* 'text-box 'text-confirmation)
+              (draw-scene *scene* '(text-box text-confirmation))
               (draw-scene *scene* 'text)))))))

@@ -84,8 +84,8 @@
               (case state
                 (0 (when (= 0 (mod (truncate frames-counter 15) 2))
                      (draw-object top-side-rec)))
-                (1 (draw-objects top-side-rec left-side-rec))
-                (2 (draw-objects top-side-rec left-side-rec right-side-rec bottom-side-rec))
-                (3 (draw-objects top-side-rec left-side-rec right-side-rec bottom-side-rec white-rec
-                                 text))
+                (1 (draw-objects (list top-side-rec left-side-rec)))
+                (2 (draw-objects (list top-side-rec left-side-rec right-side-rec bottom-side-rec)))
+                (3 (draw-objects (list top-side-rec left-side-rec right-side-rec bottom-side-rec
+                                       white-rec text)))
                 (4 (draw-object replay-text)))))))))

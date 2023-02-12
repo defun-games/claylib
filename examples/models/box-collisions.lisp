@@ -71,6 +71,6 @@
 
           (with-drawing ()
             (with-3d-mode camera
-              (draw-objects player enemy-box enemy-sphere box-wires sphere-wires grid))
+              (draw-objects (list player enemy-box enemy-sphere box-wires sphere-wires grid)))
             (draw-scene *scene* 'text)
             (draw-fps 10 10)))))))
