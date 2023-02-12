@@ -42,6 +42,8 @@
                  (pixel-size obj)
                  (color obj)))
 
+(static-draw draw-gui-icon-object gui-icon)
+
 (defun make-gui-icon (icon-id x y pixel-size color)
   (make-instance 'gui-icon
                  :icon-id icon-id

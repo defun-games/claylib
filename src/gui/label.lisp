@@ -15,6 +15,8 @@
 (defmethod draw-object ((obj gui-label))
   (gui-label (bounds obj) (text obj)))
 
+(static-draw draw-gui-label-object gui-label)
+
 (defun make-gui-label (x y width height text)
   (make-instance 'gui-label
                  :bounds (make-simple-rec x y width height)

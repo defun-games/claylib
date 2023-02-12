@@ -25,6 +25,8 @@
                           (min-value obj)
                           (max-value obj))))
 
+(static-draw draw-gui-progress-bar-object gui-progress-bar)
+
 (defun make-gui-progress-bar (x y width height min-value max-value
                               &rest args &key text-left text-right value)
   (declare (ignorable text-left text-right))

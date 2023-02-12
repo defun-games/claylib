@@ -44,6 +44,8 @@ set this in your own code."))
             (subdivs obj)
             :vec (pos obj)))
 
+(static-draw draw-gui-grid-object gui-grid)
+
 (defun make-gui-grid (x y width height subdivs &rest args &key text spacing)
   (declare (ignorable text spacing))
   (apply #'make-instance 'gui-grid

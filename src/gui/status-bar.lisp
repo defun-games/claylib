@@ -15,6 +15,8 @@
 (defmethod draw-object ((obj gui-status-bar))
   (gui-status-bar (bounds obj) (text obj)))
 
+(static-draw draw-gui-status-bar-object gui-status-bar)
+
 (defun make-gui-status-bar (x y width height &rest args &key text)
   (declare (ignorable text))
   (apply #'make-instance 'gui-status-bar

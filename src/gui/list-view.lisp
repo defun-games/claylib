@@ -70,6 +70,8 @@
                        :count (when (slot-boundp obj '%num) (num obj))
                        :focus (slot-value obj '%focus))))
 
+(static-draw draw-gui-list-view-object gui-list-view)
+
 (defun make-gui-list-view (x y width height &rest args &key text scroll-index active focus)
   (declare (ignorable text scroll-index active focus))
   (apply #'make-instance 'gui-list-view

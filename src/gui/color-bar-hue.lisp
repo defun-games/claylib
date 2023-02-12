@@ -29,6 +29,8 @@
                            (text obj)
                            (value obj))))
 
+(static-draw draw-gui-color-bar-hue-object gui-color-bar-hue)
+
 (defun make-gui-color-bar-hue (x y width height &rest args &key text value)
   (declare (ignorable text value))
   (apply #'make-instance 'gui-color-bar-hue

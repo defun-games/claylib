@@ -79,3 +79,5 @@
     (t (claylib/ll:draw-cube-wires-v (c-struct (pos obj))
                                      (c-struct (size obj))
                                      (c-struct (color obj))))))
+
+(static-draw draw-cube-object cube)

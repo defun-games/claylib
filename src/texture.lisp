@@ -116,6 +116,8 @@
                                (rot obj)
                                (c-struct (tint obj))))
 
+(static-draw draw-texture-non-object texture)
+
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -191,6 +193,8 @@
                                (c-struct (origin obj))
                                (rot obj)
                                (c-struct (tint obj))))
+
+(static-draw draw-texture-object texture-object)
 
 
 

@@ -15,6 +15,8 @@
 (defmethod draw-object ((obj gui-panel))
   (gui-panel (bounds obj) (text obj)))
 
+(static-draw draw-gui-panel-object gui-panel)
+
 (defun make-gui-panel (x y width height &rest args &key text)
   (declare (ignorable text))
   (apply #'make-instance 'gui-panel

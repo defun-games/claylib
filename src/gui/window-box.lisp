@@ -21,6 +21,8 @@
   (setf (slot-value obj '%pressed)
         (gui-window-box (bounds obj) (title obj))))
 
+(static-draw draw-gui-window-box-object gui-window-box)
+
 (defun make-gui-window-box (x y width height &rest args &key title)
   (declare (ignorable title))
   (apply #'make-instance 'gui-window-box

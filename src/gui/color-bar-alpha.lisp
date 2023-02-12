@@ -29,6 +29,8 @@
                              (text obj)
                              (alpha obj))))
 
+(static-draw draw-gui-color-bar-alpha-object gui-color-bar-alpha)
+
 (defun make-gui-color-bar-alpha (x y width height &rest args &key text alpha)
   (declare (ignorable text alpha))
   (apply #'make-instance 'gui-color-bar-alpha

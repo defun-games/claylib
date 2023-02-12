@@ -56,3 +56,5 @@
                                     (rings obj)
                                     (slices obj)
                                     (c-struct (color obj)))))
+
+(static-draw draw-sphere-object sphere)

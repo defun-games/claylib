@@ -15,6 +15,8 @@
 (defmethod draw-object ((obj gui-group-box))
   (gui-group-box (bounds obj) (text obj)))
 
+(static-draw draw-gui-group-box-object gui-group-box)
+
 (defun make-gui-group-box (x y width height &rest args &key text)
   (declare (ignorable text))
   (apply #'make-instance 'gui-group-box

@@ -40,6 +40,8 @@ sense to set this in your own code."))
                          (message obj)
                          (buttons obj))))
 
+(static-draw draw-gui-message-box-object gui-message-box)
+
 (defun make-gui-message-box (x y width height &rest args &key title message buttons)
   (declare (ignorable title message buttons))
   (apply #'make-instance 'gui-message-box

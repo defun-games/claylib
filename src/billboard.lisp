@@ -68,3 +68,5 @@ camera).")
                                  (c-struct (origin obj))
                                  (rot-angle obj)
                                  (c-struct (tint obj))))
+
+(static-draw draw-billboard-object billboard)

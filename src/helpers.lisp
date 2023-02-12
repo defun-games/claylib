@@ -403,9 +403,9 @@ E.g. (define-print-object sometype (x y)) will print something like `#<SOMETYPE 
             ;; Skip STANDARD-OBJECT, SLOT-CLASS and T
             (last (cadddr (reverse hierarchy)))
             (print-methods (lambda () (dolist (method ',methods)
-                                   (let ((value (handler-case (funcall (symbol-function method) obj)
-                                                  (unbound-slot () "#<unbound-slot>"))))
-                                     (format out ":~A ~A " method value))))))
+                                        (let ((value (handler-case (funcall (symbol-function method) obj)
+                                                       (unbound-slot () "#<unbound-slot>"))))
+                                          (format out ":~A ~A " method value))))))
        (if (eq top class)
            (print-unreadable-object (obj out :type t)
              (funcall print-methods)
@@ -415,3 +415,10 @@ E.g. (define-print-object sometype (x y)) will print something like `#<SOMETYPE 
              (funcall print-methods)
              (unless (eq last class)
                (call-next-method)))))))
+
+(defmacro static-draw (name type)
+  "Define a draw function for a specific type, enabling static dispatch on DRAW-OBJECT."
+  `(defun ,name (obj)
+     (declare (optimize (speed 3) (safety 0))
+              (type ,type obj))
+     (draw-object obj)))

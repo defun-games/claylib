@@ -214,3 +214,5 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                             (rot-angle obj)
                             (c-struct (scale obj))
                             (c-struct (tint obj))))
+
+(static-draw draw-model-object model)

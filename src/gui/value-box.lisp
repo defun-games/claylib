@@ -25,6 +25,8 @@
                        (max-value obj)
                        (edit-mode obj))))
 
+(static-draw draw-gui-value-box-object gui-value-box)
+
 (defun make-gui-value-box (x y width height min-value max-value &rest args &key text value edit-mode)
   (declare (ignorable text value edit-mode))
   (apply #'make-instance 'gui-value-box

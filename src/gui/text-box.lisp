@@ -21,6 +21,8 @@
                       (text-size obj)
                       (edit-mode obj))))
 
+(static-draw draw-gui-text-box-object gui-text-box)
+
 (defun make-gui-text-box (x y width height text-size &rest args &key text edit-mode)
   (declare (ignorable text edit-mode))
   (apply #'make-instance 'gui-text-box

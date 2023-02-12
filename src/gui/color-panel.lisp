@@ -20,6 +20,8 @@
                    (color obj)
                    :col (color obj)))
 
+(static-draw draw-gui-color-panel-object gui-color-panel)
+
 (defun make-gui-color-panel (x y width height color &rest args &key text)
   (declare (ignorable text))
   (apply #'make-instance 'gui-color-panel

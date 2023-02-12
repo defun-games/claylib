@@ -34,6 +34,8 @@
                      (max-value obj)
                      (edit-mode obj))))
 
+(static-draw draw-gui-spinner-object gui-spinner)
+
 (defun make-gui-spinner (x y width height min-value max-value &rest args &key text value edit-mode)
   (declare (ignorable text value edit-mode))
   (apply #'make-instance 'gui-spinner

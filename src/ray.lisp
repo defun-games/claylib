@@ -58,3 +58,5 @@
 
 (defmethod draw-object ((obj ray))
   (claylib/ll:draw-ray (c-struct obj) (c-struct (color obj))))
+
+(static-draw draw-ray-object ray)

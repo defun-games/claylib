@@ -26,3 +26,5 @@
 
 (defmethod draw-object ((obj grid))
   (claylib/ll:draw-grid (slices obj) (spacing obj)))
+
+(static-draw draw-grid-object grid)

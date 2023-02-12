@@ -22,6 +22,8 @@
   (setf (checked obj)
         (gui-checkbox (bounds obj) (text obj) (checked obj))))
 
+(static-draw draw-gui-checkbox-object gui-checkbox)
+
 (defun make-gui-checkbox (x y width height &rest args &key text checked)
   (declare (ignorable text checked))
   (apply #'make-instance 'gui-checkbox

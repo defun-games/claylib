@@ -1,6 +1,6 @@
 ;;;; package.lisp
 (defpackage #:claylib
-  (:use #:cl #:plus-c #:claylib/ll)
+  (:use #:static-dispatch-cl #:plus-c #:claylib/ll)
   (:local-nicknames (#:sequences #:org.shirakumo.trivial-extensible-sequences))
   (:shadow
 
@@ -556,6 +556,20 @@
    :add-to-scene :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex
    :load-scene-all :make-scene :make-scene-pro :objects :params :remove-from-scene :scene-asset
    :scene-object :scene-param :set-up-scene :tear-down-scene :unload-scene-all :with-scenes
+
+   ;; Static dispatch draw functions
+   :draw-billboard-object :draw-circle-object :draw-cube-object :draw-grid-object :draw-gui-button-object
+   :draw-gui-checkbox-object :draw-gui-color-bar-alpha-object :draw-gui-color-bar-hue-object
+   :draw-gui-color-panel-object :draw-gui-color-picker-object :draw-gui-combo-box-object
+   :draw-gui-dropdown-box-object :draw-gui-dummy-rec-object :draw-gui-grid-object :draw-gui-group-box-object
+   :draw-gui-icon-object :draw-gui-label-button-object :draw-gui-label-object :draw-gui-line-object
+   :draw-gui-list-view-object :draw-gui-progress-bar-object :draw-gui-scroll-panel-object
+   :draw-gui-slider-bar-object :draw-gui-slider-object :draw-gui-spinner-object :draw-gui-status-bar-object
+   :draw-gui-text-box-object :draw-text-box-multi-object :draw-gui-text-input-box-object
+   :draw-gui-toggle-group-object :draw-gui-toggle-object :draw-gui-value-box-object
+   :draw-gui-window-box-object :draw-line-object :draw-model-object :draw-pixel-object :draw-plane-object
+   :draw-polygon-object :draw-ray-object :draw-rectangle-object :draw-sphere-object :draw-text-object
+   :draw-texture-non-object :draw-texture-object :draw-triangle-object
 
    ;; Linking
    :link-objects :unlink-objects

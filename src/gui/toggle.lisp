@@ -22,6 +22,8 @@
   (setf (active obj)
         (gui-toggle (bounds obj) (text obj) (active obj))))
 
+(static-draw draw-gui-toggle-object gui-toggle)
+
 (defun make-gui-toggle (x y width height &rest args &key text active)
   (declare (ignorable text active))
   (apply #'make-instance 'gui-toggle

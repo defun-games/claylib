@@ -25,6 +25,8 @@
                     (min-value obj)
                     (max-value obj))))
 
+(static-draw draw-gui-slider-object gui-slider)
+
 (defun make-gui-slider (x y width height min-value max-value
                         &rest args &key text-left text-right value)
   (declare (ignorable text-left text-right))

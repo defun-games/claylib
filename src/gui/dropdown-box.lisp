@@ -39,6 +39,8 @@
                           (slot-value obj '%active)
                           (edit-mode obj))))
 
+(static-draw draw-gui-dropdown-box-object gui-dropdown-box)
+
 (defun make-gui-dropdown-box (x y width height &rest args &key text active edit-mode)
   (declare (ignorable text active edit-mode))
   (apply #'make-instance 'gui-dropdown-box

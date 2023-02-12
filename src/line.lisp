@@ -103,3 +103,5 @@
                                              thick color))
         (2 (claylib/ll:draw-line-bezier start end thick color))
         (3 (claylib/ll:draw-line-ex start end thick color))))))
+
+(static-draw draw-line-2d-object line-2d)

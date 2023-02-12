@@ -139,6 +139,8 @@
                                          (thickness obj)
                                          (c-struct (color obj))))))
 
+(static-draw draw-rectangle-object rectangle)
+
 (defmethod image-draw (image (obj rectangle))
   (claylib/ll:image-draw-rectangle (c-struct image)
                                    (truncate (x obj))

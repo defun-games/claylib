@@ -25,6 +25,8 @@
   (setf (active obj)
         (gui-combo-box (bounds obj) (text obj) (active obj))))
 
+(static-draw draw-gui-combo-box-object gui-combo-box)
+
 (defun make-gui-combo-box (x y width height &rest args &key text active)
   (declare (ignorable text active))
   (apply #'make-instance 'gui-combo-box

@@ -20,6 +20,8 @@
                     (color obj)
                     :col (color obj)))
 
+(static-draw draw-gui-color-picker-object gui-color-picker)
+
 (defun make-gui-color-picker (x y width height color &rest args &key text)
   (declare (ignorable text))
   (apply #'make-instance 'gui-color-picker

@@ -60,3 +60,5 @@
     (if (filled obj)
         (claylib/ll:draw-triangle v1 v2 v3 color)
         (claylib/ll:draw-triangle-lines v1 v2 v3 color))))
+
+(static-draw draw-triangle-object triangle)

@@ -25,6 +25,8 @@
   (setf (active obj)
         (gui-toggle-group (bounds obj) (text obj) (active obj))))
 
+(static-draw draw-gui-toggle-group-object gui-toggle-group)
+
 (defun make-gui-toggle-group (x y width height &rest args &key text active)
   (declare (ignorable text active))
   (apply #'make-instance 'gui-toggle-group

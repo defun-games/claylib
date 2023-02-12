@@ -47,6 +47,8 @@
                             (text-size obj)
                             (slot-value obj '%secret-view-active))))
 
+(static-draw draw-gui-text-input-box-object gui-text-input-box)
+
 (defun make-gui-text-input-box (x y width height text-size
                                 &rest args &key text title message buttons secret-view-active)
   (declare (ignorable text title message buttons secret-view-active))

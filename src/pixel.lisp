@@ -16,6 +16,8 @@
                          (truncate (y obj))
                          (c-struct (color obj))))
 
+(static-draw draw-pixel-object pixel)
+
 (defmethod image-draw (image (obj pixel))
   (claylib/ll:image-draw-pixel (c-struct image)
                                (truncate (x obj))

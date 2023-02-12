@@ -50,3 +50,5 @@
           (claylib/ll:draw-poly (c-struct center) sides radius rot (c-struct color))
           (claylib/ll:draw-poly-lines-ex
            (c-struct center) sides radius rot thickness (c-struct color)))))
+
+(static-draw draw-polygon-object polygon)

@@ -16,6 +16,8 @@
   (setf (slot-value obj '%pressed)
         (gui-button (bounds obj) (text obj))))
 
+(static-draw draw-gui-button-object gui-button)
+
 (defun make-gui-button (x y width height &rest args &key text)
   (declare (ignorable text))
   (apply #'make-instance 'gui-button

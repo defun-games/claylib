@@ -36,6 +36,8 @@ set this in your own code."))
                     (c-struct (scroll obj))
                     :rec (view obj)))
 
+(static-draw draw-gui-scroll-panel-object gui-scroll-panel)
+
 (defun make-gui-scroll-panel (bounds-x bounds-y bounds-width bounds-height
                               content-x content-y content-width content-height
                               &rest args &key text scroll)

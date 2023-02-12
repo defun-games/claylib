@@ -15,6 +15,8 @@
 (defmethod draw-object ((obj gui-line))
   (gui-line (bounds obj) (text obj)))
 
+(static-draw draw-gui-line-object gui-line)
+
 (defun make-gui-line (x y width height &rest args &key text)
   (declare (ignorable text))
   (apply #'make-instance 'gui-line
