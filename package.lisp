@@ -1,6 +1,6 @@
 ;;;; package.lisp
 (defpackage #:claylib
-  (:use #:static-dispatch-cl #:plus-c #:claylib/ll)
+  (:use #:static-dispatch-cl #:claylib/ll)
   (:local-nicknames (#:sequences #:org.shirakumo.trivial-extensible-sequences))
   (:shadow
 

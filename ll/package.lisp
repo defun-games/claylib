@@ -1,5 +1,5 @@
 (defpackage #:claylib/ll
-  (:use #:cl #:plus-c #:claylib/wrap)
+  (:use #:cl #:claylib/wrap)
   (:export
 
    ;;; Core

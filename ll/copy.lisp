@@ -3,14 +3,49 @@
 (defun copy-c-array (type src count &optional into)
   "Copy an entire C array. TYPE is an autowrapped type, SRC is the head of the source array, and COUNT
 is the number of elements in the array. Pass INTO as the head of a dest array if desired."
-  (let ((new (or into (autowrap:calloc type count))))
+  (let ((new (or into (cffi:foreign-funcall "calloc"
+                                            :unsigned-int count
+                                            :unsigned-int (cffi:foreign-type-size type)
+                                            :void))))
     (unless (cffi:null-pointer-p src)
-      (autowrap:memcpy (autowrap:c-aptr new 0 type)
-                       (autowrap:c-aptr src 0 type)
-                       :n count
-                       :type type))
+      (cffi:foreign-funcall "memcpy"
+                            :pointer (cffi:mem-aptr new type)
+                            :pointer (cffi:mem-aptr src type)
+                            :int (* (cffi:foreign-type-size type) count)
+                            :void))
     new))
 
+(defun full-copy-shader (shader &optional into)
+  (let ((new (or into (cffi:foreign-funcall "calloc"
+                                            :unsigned-int 1
+                                            :unsigned-int (cffi:foreign-type-size 'shader)
+                                            :void)))
+        (new-locs (copy-c-array :int
+                                (cffi:foreign-slot-value shader 'shader 'locs)
+                                32)))
+    (setf (cffi:foreign-slot-value new 'shader 'id) (cffi:foreign-slot-value shader 'shader 'id)
+          (cffi:foreign-slot-value new 'shader 'locs) (cffi:mem-aptr new-locs :int))
+    new))
+
+(defun full-copy-material (material &optional into)
+  (let ((new (or into (cffi:foreign-funcall "calloc"
+                                            :unsigned-int 1
+                                            :unsigned-int (cffi:foreign-type-size 'material)
+                                            :void)))
+        (new-maps (copy-c-array 'material-map
+                                (cffi:foreign-slot-value material 'material 'maps)
+                                11)))
+    (full-copy-shader (cffi:foreign-slot-value material 'material 'shader)
+                      (cffi:foreign-slot-value new 'material 'shader))
+    (setf (cffi:foreign-slot-value new 'material 'maps)
+          (cffi:mem-aptr new-maps 'material-map))
+    (copy-c-array :float
+                  (cffi:foreign-slot-value material 'material 'params)
+                  4
+                  (cffi:foreign-slot-value new 'material 'params))
+    new))
+
+#|
 (defgeneric full-copy (obj &optional into)
   (:documentation "Return a full copy of OBJ with all of its subfields and child structs copied as well.
 Optional INTO if you already have an object to put the data in."))
@@ -136,12 +171,13 @@ Optional INTO if you already have an object to put the data in."))
 
 (defmethod full-copy ((obj wave) &optional into)
   (wave-copy (or into (autowrap:calloc 'wave)) obj))
+|#
 
-
-
+#|
 (defgeneric partial-copy (obj copy-fields reuse-fields &optional into)
   (:documentation "Create a new OBJ. Copy the fields listed in COPY-FIELDS, reuse what's in REUSE-FIELDS.
 Fields not included in either list are ignored! Optional INTO if you have a dest object already."))
+|#
 
 (defmacro defpcopy (type field-defs)
   "Create a PARTIAL-COPY method for a wrapper type. FIELD-DEFS is a list containing of the form:
@@ -155,8 +191,12 @@ any CFFI type or wrapper type."
                      (loop for field in field-defs
                            count (and (third field)
                                       (not (fourth field)))))))
-    `(defmethod partial-copy ((obj ,type) copy-fields reuse-fields &optional into)
-       (let ((,new (or into (autowrap:calloc ',type)))
+    `(defmethod ,(alexandria:symbolicate "partial-copy-" type)
+         (obj copy-fields reuse-fields &optional into)
+       (let ((,new (or into (cffi:foreign-funcall "calloc"
+                                                  :unsigned-int 1
+                                                  :unsigned-int ,(cffi:foreign-type-size type)
+                                                  :void)))
              ,@(loop for field in field-defs
                      with n = -1
                      when (and (third field)
@@ -181,40 +221,36 @@ any CFFI type or wrapper type."
                                ((and count fixed)
                                 `(cond
                                    ((member ',fname copy-fields)
-                                    (dotimes (i ,count)
-                                      (setf (c-ref ,new
-                                                   ,type
-                                                   ,(alexandria:make-keyword fname)
-                                                   i)
-                                            (c-ref obj
-                                                   ,type
-                                                   ,(alexandria:make-keyword fname)
-                                                   i))))
+                                    (copy-c-array ,ftype
+                                                  (cffi:foreign-slot-value obj ',type ',fname)
+                                                  ,count
+                                                  (cffi:foreign-slot-value ,new ',type ',fname)))
                                    ((member ',fname reuse-fields)
-                                    ,(if (autowrap:builtin-type-p ftype)
+                                    ,(if (member ftype (append cffi:*built-in-float-types*
+                                                               cffi:*built-in-foreign-types*
+                                                               cffi:*built-in-integer-types*
+                                                               cffi:*other-builtin-types*))
                                          `(error "Reuse of fixed array type ~A not supported for field ~A. You must copy or ignore."
                                                  ,ftype ',fname)
-                                         `(dotimes (i ,count)
-                                            (setf (c-ref ,new
-                                                         ,type
-                                                         ,(alexandria:make-keyword fname)
-                                                         i)
-                                                  (c-ref obj
-                                                         ,type
-                                                         ,(alexandria:make-keyword fname)
-                                                         i)))))))
+                                         `(copy-c-array ,ftype
+                                                        (cffi:foreign-slot-value obj ',type ',fname)
+                                                        ,count
+                                                        (cffi:foreign-slot-value ,new ',type ',fname))))))
                                
                                ;; Variable-length array
                                (count
                                 (incf n)
                                 `(cond
                                    ((member ',fname copy-fields)
-                                    (setf (,fun ,new) (autowrap:c-aptr ,(elt new-arrays n) 0 ,ftype)))
+                                    (setf (,fun ,new) (cffi:mem-aptr ,(elt new-arrays n) ,ftype)))
                                    ((member ',fname reuse-fields)
                                     (setf (,fun ,new) (,fun obj)))))
                                
                                ;; CFFI type
-                               ((autowrap:builtin-type-p ftype)
+                               ((member ftype (append cffi:*built-in-float-types*
+                                                      cffi:*built-in-foreign-types*
+                                                      cffi:*built-in-integer-types*
+                                                      cffi:*other-builtin-types*))
                                 `(cond
                                    ((member ',fname copy-fields)
                                     (setf (,fun ,new) (,fun obj)))
@@ -247,8 +283,8 @@ any CFFI type or wrapper type."
 
 (defpcopy rectangle ((x :float) (y :float) (width :float) (height :float)))
 
-(defmethod partial-copy ((obj image) copy-fields reuse-fields &optional into)
-  (declare (ignorable obj copy-fields reuse-fields into))
+(defun partial-copy-image (image copy-fields reuse-fields &optional into)
+  (declare (ignorable image copy-fields reuse-fields into))
   (error "PARTIAL-COPY not supported on IMAGE. Only FULL-COPY makes sense."))
 
 (defpcopy texture ((id :unsigned-int) (width :int) (height :int) (mipmaps :int) (format :int)))
@@ -326,8 +362,8 @@ any CFFI type or wrapper type."
 
 (defpcopy bounding-box ((min 'vector3) (max 'vector3)))
 
-(defmethod partial-copy ((obj wave) copy-fields reuse-fields &optional into)
-  (declare (ignorable obj copy-fields reuse-fields into))
+(defun partial-copy-wave (wave copy-fields reuse-fields &optional into)
+  (declare (ignorable wave copy-fields reuse-fields into))
   (error "PARTIAL-COPY not supported on WAVE. Only FULL-COPY makes sense."))
 
 (defpcopy vr-device-info ((h-resolution :int)

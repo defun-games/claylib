@@ -149,6 +149,7 @@
      ,@body
      (end-scissor-mode)))
 
+#|
 (defmacro struct-setter (name &rest skip-fields)
   ;; TODO: Type checking/coercion
   (flet ((setter (name)
@@ -164,7 +165,7 @@
                                                (format nil "~a"
                                                        (autowrap:foreign-type-name field))))
                                      ,(autowrap:basic-foreign-type field)))
-                                (get-fields name))))
+                               (get-fields name))))
       `(defun ,(setter name) ,(append '(struct)
                                (remove-if #'(lambda (f)
                                               (member f skip-fields))
@@ -222,3 +223,4 @@
 (struct-setter vr-device-info chroma-ab-correction lens-distortion-values)
 ;(struct-setter vr-stereo-config left-lens-center left-screen-center projection right-lens-center right-screen-center scale scale-in view-offset)
 (struct-setter file-path-list)
+|#
