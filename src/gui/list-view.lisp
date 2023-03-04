@@ -26,25 +26,25 @@
   (set-linked-children 'active obj value))
 
 (defmethod scroll-index ((list-view gui-list-view))
-  (plus-c:c-ref (slot-value list-view '%scroll-index) :int))
+  (cffi:mem-ref (slot-value list-view '%scroll-index) :int))
 
 (defmethod focus ((list-view gui-list-view))
-  (plus-c:c-ref (slot-value list-view '%focus) :int))
+  (cffi:mem-ref (slot-value list-view '%focus) :int))
 
 (defmethod (setf scroll-index) (value (list-view gui-list-view))
   (set-linked-children 'scroll-index list-view value)
-  (setf (plus-c:c-ref (slot-value list-view '%scroll-index) :int) value))
+  (setf (cffi:mem-ref (slot-value list-view '%scroll-index) :int) value))
 
 (defmethod (setf focus) (value (list-view gui-list-view))
   (set-linked-children 'focus list-view value)
-  (setf (plus-c:c-ref (slot-value list-view '%focus) :int) value))
+  (setf (cffi:mem-ref (slot-value list-view '%focus) :int) value))
 
 (defmethod initialize-instance :after ((list-view gui-list-view)
                                        &key scroll-index focus &allow-other-keys)
-  (let ((ptr (autowrap:calloc :int))
-        (ptr2 (autowrap:calloc :int)))
-    (setf (plus-c:c-ref ptr :int) scroll-index
-          (plus-c:c-ref ptr2 :int) focus
+  (let ((ptr (calloc :int))
+        (ptr2 (calloc :int)))
+    (setf (cffi:mem-ref ptr :int) scroll-index
+          (cffi:mem-ref ptr2 :int) focus
           (slot-value list-view '%scroll-index) ptr
           (slot-value list-view '%focus) ptr2)
     list-view))
@@ -58,8 +58,8 @@
   (check-type count (or null integer))
   (check-type focus cffi:foreign-pointer)
   (if (and count focus)
-      (claylib/ll:gui-list-view-ex (c-struct bounds) text count focus scroll-index active)
-      (claylib/ll:gui-list-view (c-struct bounds) text scroll-index active)))
+      (claylib/ll:gui-list-view-ex (c-ptr bounds) text count focus scroll-index active)
+      (claylib/ll:gui-list-view (c-ptr bounds) text scroll-index active)))
 
 (defmethod draw-object ((obj gui-list-view))
   (setf (active obj)

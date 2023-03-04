@@ -1,9 +1,7 @@
 (in-package #:claylib)
 
-(default-unload claylib/ll:model unload-model t)
-
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-model (linkable)
+  (defclass rl-model (c-struct linkable)
     ((%transform :initarg :transform
                  :type rl-matrix
                  :reader transform)
@@ -21,12 +19,9 @@
                  :accessor bind-pose)
      (%animations :initarg :animations
                   :type rl-animations
-                  :accessor animations)
-     (%c-struct
-      :type claylib/ll:model
-      :accessor c-struct))
+                  :accessor animations))
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:model))))
+     :c-ptr (calloc 'claylib/ll:model))))
 
 (defcreader mesh-count rl-model mesh-count model)
 (defcreader material-count rl-model material-count model)
@@ -34,7 +29,9 @@
 (defmethod mesh-material ((model rl-model) (index integer))
   (when (and (< index (mesh-count model))
              (>= index 0))
-    (autowrap:c-aref (model.mesh-material (c-struct model)) index :int)))
+    (cffi:mem-aref (field-ptr (c-ptr model) 'model 'mesh-material)
+                   :int
+                   index)))
 (defmethod mesh-materials ((model rl-model))
   (loop for i below (mesh-count model)
         collect (mesh-material model i)))
@@ -53,11 +50,11 @@
              (>= index 0)
              (< value (material-count model))
              (>= value 0))
-    (claylib/ll:set-model-mesh-material (c-struct model) index value)))
+    (claylib/ll:set-model-mesh-material (c-ptr model) index value)))
 (defmethod (setf mesh-materials) ((value sequence) (model rl-model))
-  (when (cffi-sys:null-pointer-p (model.mesh-material (c-struct model)))
-    (setf (model.mesh-material (c-struct model))
-          (autowrap:ptr (autowrap:calloc :int (length value)))))
+  (when (cffi:null-pointer-p (field-ptr (c-ptr model) 'model 'mesh-material))
+    (setf (field-value (c-ptr model) 'model 'mesh-material)
+          (calloc :int (length value))))
   (dotimes (i (mesh-count model))
     (setf (mesh-material model i) (if (< i (length value))
                                       (elt value i)
@@ -67,16 +64,20 @@
 ;; slot in a Claylib model (e.g. %meshes)
 
 (defmethod (setf meshes) :after ((value rl-meshes) (model rl-model))
-  (setf (model.meshes (c-struct model)) (autowrap:ptr (c-struct (elt value 0)))))
+  (setf (field-value (c-ptr model) 'model 'meshes)
+        (c-ptr (elt value 0))))
 
 (defmethod (setf materials) :after ((value rl-materials) (model rl-model))
-  (setf (model.materials (c-struct model)) (autowrap:ptr (c-struct (elt value 0)))))
+  (setf (field-value (c-ptr model) 'model 'materials)
+        (c-ptr (elt value 0))))
 
 (defmethod (setf bones) :after ((value rl-bones) (model rl-model))
-  (setf (model.bones (c-struct model)) (autowrap:ptr (c-struct (elt value 0)))))
+  (setf (field-value (c-ptr model) 'model 'bones)
+        (c-ptr (elt value 0))))
 
 (defmethod (setf bind-pose) :after ((value rl-transforms) (model rl-model))
-  (setf (model.bind-pose (c-struct model)) (autowrap:ptr (c-struct (elt value 0)))))
+  (setf (field-value (c-ptr model) 'model 'bind-pose)
+        (c-ptr (elt value 0))))
 
 
 
@@ -87,6 +88,8 @@
                  (material-count integer)
                  (mesh-materials sequence)
                  (bone-count integer)))
+
+(default-unload rl-model unload-model t)
 
 
 
@@ -130,18 +133,18 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                        :allow-other-keys t
                        :asset model-asset
                        :pos (make-vector3 x y z)
-                       :c-struct (partial-copy c-model
-                                               (list (unless transform 'claylib/ll::transform)
-                                                     (unless mesh-count 'claylib/ll::mesh-count)
-                                                     (unless material-count 'claylib/ll::material-count)
-                                                     (unless bone-count 'claylib/ll::bone-count))
-                                               (list (unless bones 'claylib/ll::bones)
-                                                     (unless bind-pose 'claylib/ll::bind-pose)))
+                       :c-ptr (partial-copy c-model
+                                            (list (unless transform 'claylib/ll::transform)
+                                                  (unless mesh-count 'claylib/ll::mesh-count)
+                                                  (unless material-count 'claylib/ll::material-count)
+                                                  (unless bone-count 'claylib/ll::bone-count))
+                                            (list (unless bones 'claylib/ll::bones)
+                                                  (unless bind-pose 'claylib/ll::bind-pose)))
                        args))
-         (c-meshes (model.meshes c-model))
-         (c-bones (autowrap:c-aref (model.bones c-model) 0 'claylib/ll:bone-info))
-         (c-materials (model.materials c-model))
-         (c-poses (autowrap:c-aref (model.bind-pose c-model) 0 'claylib/ll:transform)))
+         (c-meshes (field-value c-model 'model 'meshes))
+         (c-bones (cffi:mem-aref (field-value c-model 'model 'bones) 'claylib/ll:bone-info))
+         (c-materials (field-value c-model 'model 'materials))
+         (c-poses (cffi:mem-aref (field-value c-model 'model 'bind-pose) 'claylib/ll:transform)))
     (when transform (set-slot :transform (transform model) transform))
     (when mesh-count (setf (mesh-count model) mesh-count))
     (when material-count (setf (material-count model) material-count))
@@ -150,7 +153,7 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
           (or meshes (make-instance 'rl-meshes
                                     :cl-array (make-rl-*-array
                                                (if instance-meshes-p
-                                                   (autowrap:c-aref c-meshes 0 'claylib/ll:mesh)
+                                                   (cffi:mem-aref c-meshes 'claylib/ll:mesh)
                                                    (copy-c-array 'claylib/ll:mesh
                                                                  c-meshes
                                                                  (mesh-count model)))
@@ -161,17 +164,17 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
               (make-instance 'rl-materials
                              :cl-array (make-rl-*-array
                                         (if instance-materials-p
-                                            (autowrap:c-aref c-materials 0 'claylib/ll:material)
+                                            (cffi:mem-aref c-materials 'claylib/ll:material)
                                             (let ((c-array
-                                                    (autowrap:calloc 'claylib/ll:material
-                                                                     (material-count model))))
+                                                    (calloc 'claylib/ll:material
+                                                            (material-count model))))
                                               (dotimes (i (material-count model))
-                                                (full-copy (autowrap:c-aref c-materials
-                                                                            i
-                                                                            'claylib/ll:material)
-                                                           (autowrap:c-aref c-array
-                                                                            i
-                                                                            'claylib/ll:material)))
+                                                (full-copy (cffi:mem-aref c-materials
+                                                                          'claylib/ll:material
+                                                                          i)
+                                                           (cffi:mem-aref c-array
+                                                                          'claylib/ll:material
+                                                                          i)))
                                               c-array))
                                         (material-count model)))))
 
@@ -191,28 +194,28 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
       (instance-materials-p
        (setf (mesh-materials model) (mesh-materials model-asset)))
       (t
-       (let ((mm (autowrap:calloc :int (mesh-count model))))
+       (let ((mm (calloc :int (mesh-count model))))
          (copy-c-array :int
                        (model.mesh-material c-model)
                        (mesh-count model)
                        mm)
-         (setf (model.mesh-material (c-struct model)) mm))))
+         (setf (model.mesh-material (c-ptr model)) mm))))
     (when animation-asset
       (setf (animations model) (asset animation-asset)))
     (unless (or instance-meshes-p meshes)
       (dotimes (i (length (meshes model)))
-        (let ((c-mesh (c-struct (elt (meshes model) i))))
-          (setf (mesh.vao-id c-mesh) 0
-                (mesh.vbo-id c-mesh) (autowrap:calloc :unsigned-int 7))
+        (let ((c-mesh (c-ptr (elt (meshes model) i))))
+          (setf (field-value c-mesh 'mesh 'vao-id) 0
+                (field-value c-mesh 'mesh 'vbo-id) (calloc :unsigned-int 7))
           (upload-mesh c-mesh 0))))
     model))
 
 (defmethod draw-object ((obj model))
-  (claylib/ll:draw-model-ex (c-struct obj)
-                            (c-struct (pos obj))
-                            (c-struct (rot-axis obj))
+  (claylib/ll:draw-model-ex (c-ptr obj)
+                            (c-ptr (pos obj))
+                            (c-ptr (rot-axis obj))
                             (rot-angle obj)
-                            (c-struct (scale obj))
-                            (c-struct (tint obj))))
+                            (c-ptr (scale obj))
+                            (c-ptr (tint obj))))
 
 (static-draw draw-model-object model)

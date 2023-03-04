@@ -613,7 +613,14 @@
    :set-glyph-info :set-font :set-camera3d :set-camera2d :set-mesh :set-shader :set-material-map
    :set-material :set-transform :set-bone-info :set-model :set-model-animation :set-ray :set-ray-collision
    :set-bounding-box :set-wave :set-audio-stream :set-sound :set-music :data-valid-p :array-valid-p
-   :full-copy :partial-copy :copy-c-array
+   :full-copy-shader :full-copy-material :partial-copy-vector2 :partial-copy-vector3 :partial-copy-vector4
+   :partial-copy-matrix :partial-copy-color :partial-copy-rectangle :partial-copy-texture
+   :partial-copy-render-texture :partial-copy-n-patch-info :partial-copy-glyph-info :partial-copy-font
+   :partial-copy-camera3d :partial-copy-camera2d :partial-copy-mesh :partial-copy-shader
+   :partial-copy-material-map :partial-copy-material :partial-copy-transform :partial-copy-bone-info
+   :partial-copy-model :partial-copy-model-animation :partial-copy-ray :partial-copy-ray-collision
+   :partial-copy-bounding-box :partial-copy-vr-device-info :partial-copy-vr-stereo-config :copy-c-array
+   :calloc :field-ptr :field-value
 
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps*))

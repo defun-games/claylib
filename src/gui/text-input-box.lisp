@@ -12,18 +12,18 @@
     ())
 
 (defmethod secret-view-active ((input-box gui-text-input-box))
-  (ecase (plus-c:c-ref (slot-value input-box '%secret-view-active) :int)
+  (ecase (cffi:mem-ref (slot-value input-box '%secret-view-active) :int)
     (0 nil)
     (1 t)))
 
 (defmethod (setf secret-view-active) (value (input-box gui-text-input-box))
-  (setf (plus-c:c-ref (slot-value input-box '%secret-view-active) :int)
+  (setf (cffi:mem-ref (slot-value input-box '%secret-view-active) :int)
         (if value 1 0)))
 
 (defmethod initialize-instance :after ((input-box gui-text-input-box)
                                        &key secret-view-active &allow-other-keys)
-  (let ((ptr (autowrap:calloc :int)))
-    (setf (plus-c:c-ref ptr :int) (if secret-view-active 1 0)
+  (let ((ptr (calloc :int)))
+    (setf (cffi:mem-ref ptr :int) (if secret-view-active 1 0)
           (slot-value input-box '%secret-view-active) ptr)
     input-box))
 

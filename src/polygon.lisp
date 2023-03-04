@@ -47,8 +47,8 @@
   (with-accessors ((center pos) (sides sides) (radius radius) (rot rot) (color color)
                    (thickness thickness)) obj
       (if (filled obj)
-          (claylib/ll:draw-poly (c-struct center) sides radius rot (c-struct color))
+          (claylib/ll:draw-poly (c-ptr center) sides radius rot (c-ptr color))
           (claylib/ll:draw-poly-lines-ex
-           (c-struct center) sides radius rot thickness (c-struct color)))))
+           (c-ptr center) sides radius rot thickness (c-ptr color)))))
 
 (static-draw draw-polygon-object polygon)

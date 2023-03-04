@@ -1,14 +1,10 @@
 (in-package #:claylib)
 
-(default-unload claylib/ll:music unload-music-stream t)
-
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-music (linkable)
-    ((%c-struct
-      :type claylib/ll:music
-      :accessor c-struct))
+  (defclass rl-music (c-struct linkable)
+    ()
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:music))))
+     :c-ptr (calloc 'claylib/ll:music))))
 
 (defcreader      astream     rl-music stream      music)
 (defcreader      frame-count rl-music frame-count music)
@@ -29,20 +25,22 @@
                  (looping boolean)
                  (ctx-type integer)))
 
+(default-unload rl-music unload-music-stream t)
+
 (defmethod update ((object rl-music))
-  (claylib/ll:update-music-stream (c-struct object)))
+  (claylib/ll:update-music-stream (c-ptr object)))
 
 (defmethod play ((audio rl-music))
-  (claylib/ll:play-music-stream (c-struct audio)))
+  (claylib/ll:play-music-stream (c-ptr audio)))
 
 (defmethod stop ((audio rl-music))
-  (claylib/ll:stop-music-stream (c-struct audio)))
+  (claylib/ll:stop-music-stream (c-ptr audio)))
 
 (defmethod pause ((audio rl-music))
-  (claylib/ll:pause-music-stream (c-struct audio)))
+  (claylib/ll:pause-music-stream (c-ptr audio)))
 
 (defmethod resume ((audio rl-music))
-  (claylib/ll:resume-music-stream (c-struct audio)))
+  (claylib/ll:resume-music-stream (c-ptr audio)))
 
 
 
@@ -67,15 +65,15 @@
 (defwriter-float pan music)
 
 (defmethod (setf pitch) :after (new-value (class music))
-  (claylib/ll:set-music-pitch (c-struct class)
+  (claylib/ll:set-music-pitch (c-ptr class)
                               (coerce new-value 'single-float)))
 
 (defmethod (setf volume) :after (new-value (class music))
-  (claylib/ll:set-music-volume (c-struct class)
+  (claylib/ll:set-music-volume (c-ptr class)
                                (coerce new-value 'single-float)))
 
 (defmethod (setf pan) :after (new-value (class music))
-  (claylib/ll:set-music-pan (c-struct class)
+  (claylib/ll:set-music-pan (c-ptr class)
                             (coerce new-value 'single-float)))
 
 (definitializer music

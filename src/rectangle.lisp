@@ -1,12 +1,10 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-rectangle (linkable)
-    ((%c-struct
-      :type claylib/ll:rectangle
-      :accessor c-struct))
+  (defclass rl-rectangle (c-struct linkable)
+    ()
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:rectangle))))
+     :c-ptr (calloc 'claylib/ll:rectangle))))
 
 (defcreader x rl-rectangle x rectangle)
 (defcreader y rl-rectangle y rectangle)
@@ -33,7 +31,7 @@
 
 
 
-(defconstant +foreign-rectangle-size+ (autowrap:sizeof 'claylib/ll:rectangle))
+(defconstant +foreign-rectangle-size+ (cffi:foreign-type-size 'claylib/ll:rectangle))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-rectangles (rl-sequence)
@@ -41,12 +39,11 @@
 
 (define-print-object rl-rectangles
     ())
-
-(defmethod make-rl-*-array ((c-struct claylib/ll:rectangle) num)
+(defun make-rl-rectangle-array (c-ptr num)
   (let ((contents (loop for i below num
                         for rect = (make-instance 'rl-rectangle)
-                        do (setf (slot-value rect '%c-struct)
-                                 (autowrap:c-aref c-struct i 'claylib/ll:rectangle))
+                        do (setf (slot-value rect '%c-ptr)
+                                 (cffi:mem-aref c-ptr 'claylib/ll:rectangle i))
                         collect rect)))
     (make-array num
                 :element-type 'rl-rectangle
@@ -55,8 +52,8 @@
 (defmethod (setf sequences:elt) (value (sequence rl-rectangles) index)
   (check-type value rl-rectangle)
   (cffi:foreign-funcall "memcpy"
-                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
-                        :pointer (autowrap:ptr (c-struct value))
+                        :pointer (c-ptr (elt sequence index))
+                        :pointer (c-ptr value)
                         :int +foreign-rectangle-size+
                         :void))
 
@@ -127,24 +124,24 @@
               (truncate (y obj))
               (truncate (width obj))
               (truncate (height obj))
-              (c-struct (color obj))
-              (c-struct (color2 obj))))
+              (c-ptr (color obj))
+              (c-ptr (color2 obj))))
     ((filled obj)
-     (claylib/ll:draw-rectangle-pro (c-struct obj)
-                                    (c-struct (origin obj))
+     (claylib/ll:draw-rectangle-pro (c-ptr obj)
+                                    (c-ptr (origin obj))
                                     (rot obj)
-                                    (c-struct (color obj))))
+                                    (c-ptr (color obj))))
     (t
-     (claylib/ll:draw-rectangle-lines-ex (c-struct obj)
+     (claylib/ll:draw-rectangle-lines-ex (c-ptr obj)
                                          (thickness obj)
-                                         (c-struct (color obj))))))
+                                         (c-ptr (color obj))))))
 
 (static-draw draw-rectangle-object rectangle)
 
 (defmethod image-draw (image (obj rectangle))
-  (claylib/ll:image-draw-rectangle (c-struct image)
+  (claylib/ll:image-draw-rectangle (c-ptr image)
                                    (truncate (x obj))
                                    (truncate (y obj))
                                    (truncate (width obj))
                                    (truncate (height obj))
-                                   (c-struct (color obj))))
+                                   (c-ptr (color obj))))

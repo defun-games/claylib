@@ -43,7 +43,7 @@ unless ALLOCATE-P is T."
 ;;; Camera System Functions (Module: rcamera)
 
 (defun update-camera (camera)
-  (claylib/ll:update-camera (c-struct camera)))
+  (claylib/ll:update-camera (c-ptr camera)))
 
 
 
@@ -60,18 +60,18 @@ unless ALLOCATE-P is T."
   "Check collision between two circles."
   (check-type circle1 circle)
   (check-type circle2 circle)
-  (/= 0 (claylib/ll:check-collision-circles (c-struct (pos circle1))
+  (/= 0 (claylib/ll:check-collision-circles (c-ptr (pos circle1))
                                             (float (radius circle1))
-                                            (c-struct (pos circle2))
+                                            (c-ptr (pos circle2))
                                             (float (radius circle2)))))
 
 (defun check-collision-circle-rec (circle rec)
   "Check collision between CIRCLE and RECTANGLE."
   (check-type circle circle)
   (check-type rec rl-rectangle)
-  (/= 0 (claylib/ll:check-collision-circle-rec (c-struct (pos circle))
+  (/= 0 (claylib/ll:check-collision-circle-rec (c-ptr (pos circle))
                                                (float (radius circle))
-                                               (c-struct rec))))
+                                               (c-ptr rec))))
 
 (defun-pt-bool check-collision-point-rec claylib/ll:check-collision-point-rec
   "Check if POINT is inside RECTANGLE."
@@ -82,18 +82,18 @@ unless ALLOCATE-P is T."
   "Check if POINT is inside CIRCLE."
   (check-type point rl-vector2)
   (check-type circle circle)
-  (/= 0 (claylib/ll:check-collision-point-circle (c-struct point)
-                                                 (c-struct (pos circle))
+  (/= 0 (claylib/ll:check-collision-point-circle (c-ptr point)
+                                                 (c-ptr (pos circle))
                                                  (float (radius circle)))))
 
 (defun check-collision-point-triangle (point triangle)
   "Check if POINT is inside TRIANGLE."
   (check-type point rl-vector2)
   (check-type triangle triangle)
-  (/= 0 (claylib/ll:check-collision-point-triangle (c-struct point)
-                                                   (c-struct (v1 triangle))
-                                                   (c-struct (v2 triangle))
-                                                   (c-struct (v3 triangle)))))
+  (/= 0 (claylib/ll:check-collision-point-triangle (c-ptr point)
+                                                   (c-ptr (v1 triangle))
+                                                   (c-ptr (v2 triangle))
+                                                   (c-ptr (v3 triangle)))))
 
 (defun check-collision-lines (line1 line2 &optional (retval (make-vector2 0 0)))
   "Check the collision between two straight lines. Allocates a new VECTOR2 unless you pass one.
@@ -101,11 +101,11 @@ Returns the vector if a collision exists, otherwise NIL."
   (check-type line1 line)
   (check-type line2 line)
   (check-type retval rl-vector2)
-  (if (= 0 (claylib/ll:check-collision-lines (c-struct (start line1))
-                                             (c-struct (end line1))
-                                             (c-struct (start line2))
-                                             (c-struct (end line2))
-                                             (c-struct retval)))
+  (if (= 0 (claylib/ll:check-collision-lines (c-ptr (start line1))
+                                             (c-ptr (end line1))
+                                             (c-ptr (start line2))
+                                             (c-ptr (end line2))
+                                             (c-ptr retval)))
       nil
       retval))
 
@@ -114,9 +114,9 @@ Returns the vector if a collision exists, otherwise NIL."
   (check-type point rl-vector2)
   (check-type line line)
   (check-type threshold integer)
-  (/= 0 (claylib/ll:check-collision-point-line (c-struct point)
-                                               (c-struct (start line))
-                                               (c-struct (end line))
+  (/= 0 (claylib/ll:check-collision-point-line (c-ptr point)
+                                               (c-ptr (start line))
+                                               (c-ptr (end line))
                                                threshold)))
 
 (defun get-collision-rec (rec1 rec2 &key (result-rec nil))
@@ -127,7 +127,7 @@ postion and dimensions to the reflect the result."
   (check-type rec1 rl-rectangle)
   (check-type rec2 rl-rectangle)
   (let ((retval (or result-rec (make-simple-rec 0 0 0 0))))
-    (claylib/ll:get-collision-rec (c-struct retval) (c-struct rec1) (c-struct rec2))
+    (claylib/ll:get-collision-rec (c-ptr retval) (c-ptr rec1) (c-ptr rec2))
     retval))
 
 
@@ -145,7 +145,7 @@ postion and dimensions to the reflect the result."
   "Export image data to FILEPATH."
   (check-type image rl-image)
   (check-type filepath (or pathname string))
-  (claylib/ll:export-image (c-struct image)
+  (claylib/ll:export-image (c-ptr image)
                            (namestring filepath))
   image)
 
@@ -167,7 +167,7 @@ postion and dimensions to the reflect the result."
   "Crop an image to a defined rectangle."
   (check-type image (or rl-image image))
   (check-type crop rl-rectangle)
-  (claylib/ll:image-crop (c-struct image) (c-struct crop)))
+  (claylib/ll:image-crop (c-ptr image) (c-ptr crop)))
 
 (defun image-resize (image new-width new-height &key (nn nil))
   "Resize image using the Bicubic scaling algorithm, or Nearest-Neighbor when NN is T."
@@ -177,18 +177,18 @@ postion and dimensions to the reflect the result."
   (funcall (if nn
                #'claylib/ll:image-resize-nn
                #'claylib/ll:image-resize)
-           (c-struct image) new-width new-height))
+           (c-ptr image) new-width new-height))
 
 (defun image-flip-vertical (image)
   "Flip IMAGE vertically."
   (check-type image (or rl-image image))
-  (claylib/ll:image-flip-vertical (c-struct image))
+  (claylib/ll:image-flip-vertical (c-ptr image))
   image)
 
 (defun image-flip-horizontal (image)
   "Flip IMAGE horizontally."
   (check-type image (or rl-image image))
-  (claylib/ll:image-flip-horizontal (c-struct image))
+  (claylib/ll:image-flip-horizontal (c-ptr image))
   image)
 
 ;; Texture loading functions
@@ -202,14 +202,14 @@ postion and dimensions to the reflect the result."
   (check-type width integer)
   (check-type height integer)
   (check-type rt rl-render-texture)
-  (claylib/ll:load-render-texture (c-struct rt) width height)
+  (claylib/ll:load-render-texture (c-ptr rt) width height)
   (unless (slot-boundp rt '%texture)
     (setf (slot-value rt '%texture) (make-instance 'texture)
-          (c-struct (texture rt)) (claylib/ll:render-texture.texture (c-struct rt))))
+          (c-ptr (texture rt)) (claylib/ll:render-texture.texture (c-ptr rt))))
   (set-slot :texture rt (texture rt))
   (unless (slot-boundp rt '%depth)
     (setf (slot-value rt '%depth) (make-instance 'texture)
-          (c-struct (texture rt)) (claylib/ll:render-texture.texture (c-struct rt))))
+          (c-ptr (texture rt)) (claylib/ll:render-texture.texture (c-ptr rt))))
   (set-slot :depth rt (make-instance 'texture))
   rt)
 
@@ -236,8 +236,8 @@ in which case create a new COLOR object as the return value."
   "Returns an RL-VECTOR2 with the width (x) and height (y) of the TEXT object accounting for its
 font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   (check-type text text)
-  (claylib/ll:measure-text-ex (c-struct vector)
-                              (c-struct (font text))
+  (claylib/ll:measure-text-ex (c-ptr vector)
+                              (c-ptr (font text))
                               (text text)
                               (size text)
                               (spacing text))
@@ -273,9 +273,11 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   "Load a model from a passed-in mesh. Allocates a new RL-MODEL unless you pass one."
   (check-type mesh rl-mesh)
   (check-type model rl-model)
-  (claylib/ll:load-model-from-mesh (c-struct model) (c-struct mesh))
-  (let ((c-meshes (autowrap:c-aref (model.meshes (c-struct model)) 0 'claylib/ll:mesh))
-        (c-materials (autowrap:c-aref (model.materials (c-struct model)) 0 'claylib/ll:material)))
+  (claylib/ll:load-model-from-mesh (c-ptr model) (c-ptr mesh))
+  (let ((c-meshes (cffi:mem-aref (field-value (c-ptr model) 'model 'meshes) 'claylib/ll:mesh))
+        (c-materials (cffi:mem-aref
+                      (field-value (c-ptr model) 'model 'materials)
+                      'claylib/ll:material)))
     (set-slot :transform model (transform model))
     (setf (meshes model)
           (make-instance 'rl-meshes :cl-array (make-rl-*-array c-meshes (mesh-count model)))
@@ -328,8 +330,8 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   (check-type anim-index (integer 0 *))
   (unless (animations model)
     (error "~a has no associated animations." model))
-  (claylib/ll:update-model-animation (c-struct model)
-                                     (c-struct (elt (animations model) anim-index))
+  (claylib/ll:update-model-animation (c-ptr model)
+                                     (c-ptr (elt (animations model) anim-index))
                                      frame))
 
 ;; Collision detection functions
@@ -343,8 +345,8 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   "Check collision between bounding box and a sphere."
   (check-type box rl-bounding-box)
   (check-type sphere sphere)
-  (= 1 (claylib/ll:check-collision-box-sphere (c-struct box)
-                                              (c-struct (pos sphere))
+  (= 1 (claylib/ll:check-collision-box-sphere (c-ptr box)
+                                              (c-ptr (pos sphere))
                                               (radius sphere))))
 
 (defun-pt get-ray-collision-box claylib/ll:get-ray-collision-box
@@ -376,7 +378,7 @@ Allocates a new RAY-COLLISION unless you pass one."
   (scale number float))
 
 (defun vector2-length (vec)
-  (claylib/ll:vector2-length (c-struct vec)))
+  (claylib/ll:vector2-length (c-ptr vec)))
 
 ;; Quaternion
 

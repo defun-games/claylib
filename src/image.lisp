@@ -1,14 +1,10 @@
 (in-package #:claylib)
 
-(default-unload claylib/ll:image unload-image)
-
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-image (linkable)
-    ((%c-struct
-      :type claylib/ll:image
-      :accessor c-struct))
+  (defclass rl-image (c-struct linkable)
+    ()
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:image))))
+     :c-ptr (calloc 'claylib/ll:image))))
 
 (defcreader data rl-image data image) ; pointer
 (defcreader width rl-image width image)
@@ -54,6 +50,8 @@
 (definitializer image
   :lisp-slots ((%source) (%dest) (%tint)))
 
+(default-unload rl-image unload-image)
+
 (defun make-image (asset source dest
                    &rest args &key tint (copy-asset nil))
   (declare (ignorable tint))
@@ -62,14 +60,14 @@
                     :source source
                     :dest dest
                     args)))
-    (setf (c-struct img) (if copy-asset
-                             (c-struct (copy-asset-to-object asset))
-                             (c-asset asset)))
+    (setf (c-ptr img) (if copy-asset
+                          (c-ptr (copy-asset-to-object asset))
+                          (c-asset asset)))
     img))
 
 (defmethod image-draw (image (obj image))
-  (claylib/ll:image-draw (c-struct image)
-                         (c-struct obj)
-                         (c-struct (source obj))
-                         (c-struct (dest obj))
-                         (c-struct (tint obj))))
+  (claylib/ll:image-draw (c-ptr image)
+                         (c-ptr obj)
+                         (c-ptr (source obj))
+                         (c-ptr (dest obj))
+                         (c-ptr (tint obj))))

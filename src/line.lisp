@@ -90,16 +90,16 @@
                          1)
                         (bezier 2)
                         (t 3)))
-          (start (c-struct (start obj)))
-          (end (c-struct (end obj)))
-          (color (c-struct (color obj))))
+          (start (c-ptr (start obj)))
+          (end (c-ptr (end obj)))
+          (color (c-ptr (color obj))))
       (case method
         (0 (claylib/ll:draw-line-bezier-cubic start end
-                                              (c-struct (control-pt obj))
-                                              (c-struct (control-pt2 obj))
+                                              (c-ptr (control-pt obj))
+                                              (c-ptr (control-pt2 obj))
                                               thick color))
         (1 (claylib/ll:draw-line-bezier-quad start end
-                                             (c-struct (control-pt obj))
+                                             (c-ptr (control-pt obj))
                                              thick color))
         (2 (claylib/ll:draw-line-bezier start end thick color))
         (3 (claylib/ll:draw-line-ex start end thick color))))))

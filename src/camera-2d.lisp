@@ -1,18 +1,15 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-camera-2d (linkable)
+  (defclass rl-camera-2d (c-struct linkable)
     ((%offset :initarg :offset
               :type rl-vector2
               :reader offset)
      (%target :initarg :target
               :type rl-vector2
-              :reader target)
-     (%c-struct
-      :type claylib/ll:camera2d
-      :accessor c-struct))
+              :reader target))
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:camera2d)
+     :c-ptr (calloc 'claylib/ll:camera2d)
      :rot 0.0
      :zoom 1.0)))
 

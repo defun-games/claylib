@@ -1,12 +1,10 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-bone-info (linkable)
-    ((%c-struct
-      :type claylib/ll:bone-info
-      :accessor c-struct))
+  (defclass rl-bone-info (c-struct linkable)
+    ()
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:bone-info))))
+     :c-ptr (calloc 'claylib/ll:bone-info))))
 
 (defcreader name rl-bone-info name bone-info)  ; TODO: Array/string
 (defcreader parent rl-bone-info parent bone-info)
@@ -30,21 +28,16 @@
     ())
 
 
-(default-unload claylib/ll:model-animation unload-model-animation t)
-
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-model-animation ()
+  (defclass rl-model-animation (c-struct)
     ((%bones :initarg :bones
              :type rl-bones
              :reader bones)
      (%frame-poses :initarg :frame-poses
                    :type (array rl-transforms)
-                   :reader frame-poses)
-     (%c-struct
-      :type claylib/ll:model-animation
-      :accessor c-struct))
+                   :reader frame-poses))
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:model-animation))))
+     :c-ptr (calloc 'claylib/ll:model-animation))))
 
 (defcreader bone-count rl-model-animation bone-count model-animation)
 (defcreader frame-count rl-model-animation frame-count model-animation)
@@ -60,6 +53,8 @@
   :pt-accessors ((bone-count integer)
                  (frame-count integer)))
 
+(default-unload rl-model-animation unload-model-animation t)
+
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -69,7 +64,7 @@
     ())
 
 
-(defconstant +foreign-bone-info-size+ (autowrap:sizeof 'claylib/ll:bone-info))
+(defconstant +foreign-bone-info-size+ (cffi:foreign-type-size 'claylib/ll:bone-info))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-bones (rl-sequence)
@@ -78,11 +73,11 @@
 (define-print-object rl-bones
     ())
 
-(defmethod make-rl-*-array ((c-struct claylib/wrap:bone-info) num)
+(defun make-rl-bone-info-array (c-ptr num)
   (let ((contents (loop for i below num
                         for bone = (make-instance 'rl-bone-info)
-                        do (setf (slot-value bone '%c-struct)
-                                 (autowrap:c-aref c-struct i 'claylib/wrap:bone-info))
+                        do (setf (slot-value bone '%c-ptr)
+                                 (cffi:mem-aref c-ptr 'claylib/ll:bone-info i))
                         collect bone)))
     (make-array num
                 :element-type 'rl-bone-info
@@ -91,14 +86,14 @@
 (defmethod (setf sequences:elt) (value (sequence rl-bones) index)
   (check-type value rl-bone-info)
   (cffi:foreign-funcall "memcpy"
-                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
-                        :pointer (autowrap:ptr (c-struct value))
+                        :pointer (c-ptr (elt sequence index))
+                        :pointer (c-ptr value)
                         :int +foreign-bone-info-size+
                         :void))
 
 
 
-(defconstant +foreign-animation-size+ (autowrap:sizeof 'claylib/ll:model-animation))
+(defconstant +foreign-animation-size+ (cffi:foreign-type-size 'claylib/ll:model-animation))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-animations (rl-sequence)
@@ -107,21 +102,20 @@
 (define-print-object rl-animations
     ())
 
-(defmethod make-rl-*-array ((c-struct claylib/wrap:model-animation) num)
+(defun make-rl-model-animation-array (c-ptr num)
   (make-array
    num
    :element-type 'rl-model-animation
    :initial-contents
    (loop for i below num
          for anim = (make-instance 'rl-model-animation)
-         for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:model-animation)
-         for c-bones = (autowrap:c-aref (model-animation.bones c-elt)
-                                        0
-                                        'claylib/wrap:bone-info)
+         for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:model-animation i)
+         for c-bones = (cffi:mem-aref (field-ptr c-elt 'model-animation 'bones)
+                                      'claylib/ll:bone-info)
          for bone-count = (model-animation.bone-count c-elt)
          for frame-count = (model-animation.frame-count c-elt)
          do (setf
-             (slot-value anim '%c-struct)
+             (slot-value anim '%c-ptr)
              c-elt
 
              (slot-value anim '%bones)
@@ -138,19 +132,20 @@
                          (loop
                            for i below frame-count
                            ;; Dereference the Transform double pointer
-                           for p = (autowrap:c-aref
-                                    (autowrap:c-aref
-                                     (model-animation.frame-poses c-elt) i :pointer)
-                                    0
+                           for p = (cffi:mem-aref
+                                    (cffi:mem-aref
+                                     (field-ptr c-elt 'model-animation 'frame-poses)
+                                     :pointer
+                                     i)
                                     'claylib/ll:transform)
                            collect (make-instance 'rl-transforms
-                                                  :cl-array (make-rl-*-array p bone-count)))))
+                                                  :cl-array (make-rl-transform-array p bone-count)))))
          collect anim)))
 
 (defmethod (setf sequences:elt) (value (sequence rl-animations) index)
   (check-type value rl-model-animation)
   (cffi:foreign-funcall "memcpy"
-                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
-                        :pointer (autowrap:ptr (c-struct value))
+                        :pointer (c-ptr (elt sequence index))
+                        :pointer (c-ptr value)
                         :int +foreign-animation-size+
                         :void))

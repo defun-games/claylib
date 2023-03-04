@@ -1,14 +1,10 @@
 (in-package #:claylib)
 
-(default-unload claylib/ll:mesh unload-mesh t)
-
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-mesh ()
-    ((%c-struct
-      :type claylib/ll:mesh
-      :accessor c-struct))
+  (defclass rl-mesh (c-struct)
+    ()
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:mesh))))
+     :c-ptr (calloc 'claylib/ll:mesh))))
 
 (defcreader vertex-count rl-mesh vertex-count mesh)
 (defcreader triangle-count rl-mesh triangle-count mesh)
@@ -64,6 +60,8 @@
                  (vao-id integer)
                  (vbo-id integer)))
 
+(default-unload rl-mesh unload-mesh t)
+
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -73,7 +71,7 @@
     ())
 
 
-(defconstant +foreign-mesh-size+ (autowrap:sizeof 'claylib/ll:mesh))
+(defconstant +foreign-mesh-size+ (cffi:foreign-type-size 'claylib/ll:mesh))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-meshes (rl-sequence)
@@ -82,11 +80,11 @@
 (define-print-object rl-meshes
     ())
 
-(defmethod make-rl-*-array ((c-struct claylib/wrap:mesh) num)
+(defun make-rl-mesh-array (c-ptr num)
   (let ((contents (loop for i below num
                         for mesh = (make-instance 'rl-mesh)
-                        do (setf (slot-value mesh '%c-struct)
-                                 (autowrap:c-aref c-struct i 'claylib/wrap:mesh))
+                        do (setf (slot-value mesh '%c-ptr)
+                                 (cffi:mem-aref c-ptr 'claylib/ll:mesh i))
                         collect mesh)))
     (make-array num
                 :element-type 'rl-mesh
@@ -106,7 +104,7 @@ Example:
 nth element of the underlying c-struct.\""
   (check-type value rl-mesh)
   (cffi:foreign-funcall "memcpy"
-                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
-                        :pointer (autowrap:ptr (c-struct value))
+                        :pointer (c-ptr (elt sequence index))
+                        :pointer (c-ptr value)
                         :int +foreign-mesh-size+
                         :void))

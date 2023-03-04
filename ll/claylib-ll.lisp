@@ -5,12 +5,45 @@
 (defvar *screen-height* 450)
 (defvar *target-fps* 60)
 
+(defun calloc (type &optional (count 1))
+  (cffi:foreign-funcall "calloc"
+                        :unsigned-int count
+                        :unsigned-int (cffi:foreign-type-size type)
+                        :pointer))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun builtin-type-p (type)
+    (find type (append cffi:*built-in-float-types*
+                       cffi:*built-in-foreign-types*
+                       cffi:*built-in-integer-types*
+                       cffi:*other-builtin-types*))))
+
+(defun field-ptr (ptr type field-name)
+  (cffi:foreign-slot-pointer ptr
+                             (intern (format nil "~A" type) :claylib/ll)
+                             (intern (format nil "~A" field-name) :claylib/ll)))
+
+(defun field-value (ptr type field-name)
+  (cffi:foreign-slot-value ptr
+                           (intern (format nil "~A" type) :claylib/ll)
+                           (intern (format nil "~A" field-name) :claylib/ll)))
+
+(defun set-field-value (ptr type field-name value)
+  (setf (cffi:foreign-slot-value ptr
+                                 (intern (format nil "~A" type) :claylib/ll)
+                                 (intern (format nil "~A" field-name) :claylib/ll))
+        value))
+
+(defsetf field-value set-field-value)
+
 (defmacro lisp-bool (name &rest args)
   (let ((c-fun (intern (remove #\' (format nil "~:@a" name)))) 
         (lisp-fun (intern (remove #\' (format nil "~:@a-P" name)))))
     `(defun ,lisp-fun (,@args)
        (declare (inline))
-       (= (,c-fun ,@args) 1))))
+       (,c-fun ,@args)
+;       (= (,c-fun ,@args) 1)
+       )))
 
 (lisp-bool window-should-close)
 (lisp-bool is-window-ready)
@@ -149,22 +182,14 @@
      ,@body
      (end-scissor-mode)))
 
-#|
 (defmacro struct-setter (name &rest skip-fields)
   ;; TODO: Type checking/coercion
   (flet ((setter (name)
            (alexandria:symbolicate (format nil "SET-~:@a" name)))
-         (getter (type field)
-           (alexandria:symbolicate (format nil "~:@a.~:@a" type field)))
          (get-fields (type)
-           (reverse (autowrap:foreign-record-fields
-                     (autowrap:find-type `(:struct (,type)))))))
+           (cffi:foreign-slot-names type)))
     (let ((field-specs (mapcar #'(lambda (field)
-                                   `(,(alexandria:symbolicate
-                                       (remove #\:
-                                               (format nil "~a"
-                                                       (autowrap:foreign-type-name field))))
-                                     ,(autowrap:basic-foreign-type field)))
+                                   `(,field ,(cffi:foreign-slot-type name field)))
                                (get-fields name))))
       `(defun ,(setter name) ,(append '(struct)
                                (remove-if #'(lambda (f)
@@ -172,15 +197,25 @@
                                 (mapcar #'car field-specs)))
          ,@(loop for field in field-specs
                  unless (member (car field) skip-fields)
-                   collect (let ((accessor (getter name (car field))))
-                             (if (typep (cadr field) 'autowrap:foreign-record)
-                                 (let ((ftype (autowrap:foreign-type-name (cadr field))))
-                                   `(,(setter ftype) (,accessor struct)
-                                     ,@(loop for subfield in (get-fields ftype)
-                                             collect `(,(getter ftype
-                                                                (autowrap:foreign-type-name subfield))
-                                                       ,(car field)))))
-                                 `(setf (,accessor struct) ,(car field)))))))))
+                   collect (cond ((builtin-type-p (cadr field))
+                                  `(setf (field-value struct ',name ',(car field))
+                                         ,(car field)))
+                                 ((listp (cadr field)) ; Field is a pointer
+                                  `(setf (field-value struct ',name ',(car field))
+                                         ,(car field)))
+                                 ((eql (cadr field) :bool)
+                                  `(setf (field-value struct ',name ',(car field))
+                                         (if ,(car field) 1 0)))
+                                 ((eql (cadr field) :string)
+                                  `(setf (field-value struct ',name ',(car field))
+                                         ,(car field)))
+                                 (t (let ((ftype (case (cadr field)
+                                                   (texture2d 'texture)
+                                                   (quaternion 'vector4)
+                                                   (t (cadr field)))))
+                                      `(,(setter ftype) (field-value struct ',name ',(car field))
+                                        ,@(loop for subfield in (get-fields ftype)
+                                                collect `(field-value ,(car field) ',ftype ',subfield)))))))))))
 
 (struct-setter vector2)
 (struct-setter vector3)
@@ -201,13 +236,14 @@
 (struct-setter material-map)
 
 (defun set-material (struct shader maps params)
-  (set-shader (material.shader struct)
-              (shader.id shader)
-              (shader.locs shader))
-  (setf (material.maps struct) maps)
-  (dotimes (i 4)
-    (when (nth i params)
-      (setf (material.params[] struct i) (nth i params)))))
+  (set-shader (field-value struct 'material 'shader)
+              (field-value shader 'shader 'id)
+              (field-value shader 'shader 'locs))
+  (setf (field-value struct 'material 'maps) maps)
+  (let ((ptr (field-ptr struct 'material 'params)))
+    (dotimes (i 4)
+      (when (nth i params)
+        (setf (cffi:mem-aref ptr :float i) (nth i params))))))
 
 (struct-setter transform)
 (struct-setter bone-info name)
@@ -223,4 +259,3 @@
 (struct-setter vr-device-info chroma-ab-correction lens-distortion-values)
 ;(struct-setter vr-stereo-config left-lens-center left-screen-center projection right-lens-center right-screen-center scale scale-in view-offset)
 (struct-setter file-path-list)
-|#

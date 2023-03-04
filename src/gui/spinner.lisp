@@ -15,10 +15,11 @@
   (check-type min-value integer)
   (check-type max-value integer)
   (check-type edit-mode boolean)
-  (c-with ((val :int :value value))
-    (if (= 0 (claylib/wrap:gui-spinner (c-struct bounds)
+  (cffi:with-foreign-object (val :int)
+    (setf (cffi:mem-ref val :int) value)
+    (if (= 0 (claylib/wrap:gui-spinner (c-ptr bounds)
                                        text
-                                       (val &)
+                                       val
                                        min-value
                                        max-value
                                        (if edit-mode 1 0)))

@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-camera-3d (linkable)
+  (defclass rl-camera-3d (c-struct linkable)
     ((%position :initarg :pos
                 :type rl-vector3
                 :reader pos)
@@ -10,12 +10,9 @@
               :reader target)
      (%up :initarg :up
           :type rl-vector3
-          :reader up)
-     (%c-struct
-      :type claylib/ll:camera3d
-      :accessor c-struct))
+          :reader up))
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:camera3d)
+     :c-ptr (calloc 'claylib/ll:camera3d)
      :fovy 45.0
      :projection +camera-perspective+)))
 
@@ -56,7 +53,7 @@
     (mode))
 
 (defmethod (setf mode) ((value integer) (camera camera-3d))
-  (claylib/ll:set-camera-mode (c-struct camera) value)
+  (claylib/ll:set-camera-mode (c-ptr camera) value)
   (setf (slot-value camera '%mode) value))
 
 (definitializer camera-3d

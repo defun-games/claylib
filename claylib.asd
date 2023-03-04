@@ -79,12 +79,13 @@ See https://github.com/borodust/claw for documentation."
   :license "zlib"
   :version "0.0.1"
   :serial t
-  :depends-on (#:claylib/ll #:trivial-garbage #:livesupport #:closer-mop
+  :depends-on (#:claylib/ll #:trivial-garbage #:livesupport #:closer-mop #:cl-ppcre
                #:eager-future2 #:static-dispatch #:trivial-extensible-sequences)
   :components ((:file "package")
                (:module "src"
                 :components ((:file "generic")
                              (:file "helpers")
+                             (:file "c-struct")
                              (:file "sequence")
                              (:file "linking")
                              (:file "vec")

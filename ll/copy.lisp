@@ -3,10 +3,7 @@
 (defun copy-c-array (type src count &optional into)
   "Copy an entire C array. TYPE is an autowrapped type, SRC is the head of the source array, and COUNT
 is the number of elements in the array. Pass INTO as the head of a dest array if desired."
-  (let ((new (or into (cffi:foreign-funcall "calloc"
-                                            :unsigned-int count
-                                            :unsigned-int (cffi:foreign-type-size type)
-                                            :void))))
+  (let ((new (or into (calloc type count))))
     (unless (cffi:null-pointer-p src)
       (cffi:foreign-funcall "memcpy"
                             :pointer (cffi:mem-aptr new type)
@@ -16,33 +13,27 @@ is the number of elements in the array. Pass INTO as the head of a dest array if
     new))
 
 (defun full-copy-shader (shader &optional into)
-  (let ((new (or into (cffi:foreign-funcall "calloc"
-                                            :unsigned-int 1
-                                            :unsigned-int (cffi:foreign-type-size 'shader)
-                                            :void)))
+  (let ((new (or into (calloc 'shader)))
         (new-locs (copy-c-array :int
-                                (cffi:foreign-slot-value shader 'shader 'locs)
+                                (field-value shader 'shader 'locs)
                                 32)))
-    (setf (cffi:foreign-slot-value new 'shader 'id) (cffi:foreign-slot-value shader 'shader 'id)
-          (cffi:foreign-slot-value new 'shader 'locs) (cffi:mem-aptr new-locs :int))
+    (setf (field-value new 'shader 'id) (field-value shader 'shader 'id)
+          (field-value new 'shader 'locs) (cffi:mem-aptr new-locs :int))
     new))
 
 (defun full-copy-material (material &optional into)
-  (let ((new (or into (cffi:foreign-funcall "calloc"
-                                            :unsigned-int 1
-                                            :unsigned-int (cffi:foreign-type-size 'material)
-                                            :void)))
+  (let ((new (or into (calloc 'material)))
         (new-maps (copy-c-array 'material-map
-                                (cffi:foreign-slot-value material 'material 'maps)
+                                (field-value material 'material 'maps)
                                 11)))
-    (full-copy-shader (cffi:foreign-slot-value material 'material 'shader)
-                      (cffi:foreign-slot-value new 'material 'shader))
-    (setf (cffi:foreign-slot-value new 'material 'maps)
+    (full-copy-shader (field-value material 'material 'shader)
+                      (field-value new 'material 'shader))
+    (setf (field-value new 'material 'maps)
           (cffi:mem-aptr new-maps 'material-map))
     (copy-c-array :float
-                  (cffi:foreign-slot-value material 'material 'params)
+                  (field-value material 'material 'params)
                   4
-                  (cffi:foreign-slot-value new 'material 'params))
+                  (field-value new 'material 'params))
     new))
 
 #|
@@ -193,10 +184,7 @@ any CFFI type or wrapper type."
                                       (not (fourth field)))))))
     `(defmethod ,(alexandria:symbolicate "partial-copy-" type)
          (obj copy-fields reuse-fields &optional into)
-       (let ((,new (or into (cffi:foreign-funcall "calloc"
-                                                  :unsigned-int 1
-                                                  :unsigned-int ,(cffi:foreign-type-size type)
-                                                  :void)))
+       (let ((,new (or into (calloc type)))
              ,@(loop for field in field-defs
                      with n = -1
                      when (and (third field)
@@ -222,20 +210,17 @@ any CFFI type or wrapper type."
                                 `(cond
                                    ((member ',fname copy-fields)
                                     (copy-c-array ,ftype
-                                                  (cffi:foreign-slot-value obj ',type ',fname)
+                                                  (field-value obj ',type ',fname)
                                                   ,count
-                                                  (cffi:foreign-slot-value ,new ',type ',fname)))
+                                                  (field-value ,new ',type ',fname)))
                                    ((member ',fname reuse-fields)
-                                    ,(if (member ftype (append cffi:*built-in-float-types*
-                                                               cffi:*built-in-foreign-types*
-                                                               cffi:*built-in-integer-types*
-                                                               cffi:*other-builtin-types*))
+                                    ,(if (builtin-type-p ftype)
                                          `(error "Reuse of fixed array type ~A not supported for field ~A. You must copy or ignore."
                                                  ,ftype ',fname)
                                          `(copy-c-array ,ftype
-                                                        (cffi:foreign-slot-value obj ',type ',fname)
+                                                        (field-value obj ',type ',fname)
                                                         ,count
-                                                        (cffi:foreign-slot-value ,new ',type ',fname))))))
+                                                        (field-value ,new ',type ',fname))))))
                                
                                ;; Variable-length array
                                (count
@@ -247,10 +232,7 @@ any CFFI type or wrapper type."
                                     (setf (,fun ,new) (,fun obj)))))
                                
                                ;; CFFI type
-                               ((member ftype (append cffi:*built-in-float-types*
-                                                      cffi:*built-in-foreign-types*
-                                                      cffi:*built-in-integer-types*
-                                                      cffi:*other-builtin-types*))
+                               ((builtin-type-p ftype)
                                 `(cond
                                    ((member ',fname copy-fields)
                                     (setf (,fun ,new) (,fun obj)))

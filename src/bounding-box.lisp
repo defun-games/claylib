@@ -7,12 +7,9 @@
            :reader low)
      (%high :initarg :high
             :type rl-vector3
-            :reader high)
-     (%c-struct
-      :type claylib/ll:bounding-box
-      :accessor c-struct))
+            :reader high))
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:bounding-box))))
+     :c-ptr (calloc 'claylib/ll:bounding-box))))
 
 (define-print-object rl-bounding-box
     (low high))

@@ -1,15 +1,12 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-glyph-info (linkable)
+  (defclass rl-glyph-info (c-struct linkable)
     ((%image :initarg :image
              :type rl-image
-             :reader image)
-     (%c-struct
-      :type claylib/ll:glyph-info
-      :accessor c-struct))
+             :reader image))
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:glyph-info))))
+     :c-ptr (calloc 'claylib/ll:glyph-info))))
 
 (defcreader value rl-glyph-info value glyph-info)
 (defcreader offset-x rl-glyph-info offset-x glyph-info)
@@ -42,7 +39,7 @@
     ())
 
 
-(defconstant +foreign-glyph-info-size+ (autowrap:sizeof 'claylib/ll:glyph-info))
+(defconstant +foreign-glyph-info-size+ (cffi:foreign-type-size 'claylib/ll:glyph-info))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-glyphs (rl-sequence)
@@ -51,16 +48,16 @@
 (define-print-object rl-glyphs
     ())
 
-(defmethod make-rl-*-array ((c-struct claylib/ll:glyph-info) num)
+(defun make-rl-glyph-info-array (c-ptr num)
   (let ((contents (loop for i below num
                         for glyph = (make-instance 'rl-glyph-info)
-                        for c-elt = (autowrap:c-aref c-struct i 'claylib/ll:glyph-info)
-                        do (setf (slot-value glyph '%c-struct)
+                        for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:glyph-info i)
+                        do (setf (slot-value glyph '%c-ptr)
                                  c-elt
 
                                  (slot-value glyph '%image)
                                  (let ((img (make-instance 'rl-image)))
-                                   (setf (c-struct img) (glyph-info.image c-elt))
+                                   (setf (c-ptr img) (glyph-info.image c-elt))
                                    img))
                         collect glyph)))
     (make-array num
@@ -70,17 +67,15 @@
 (defmethod (setf sequences:elt) (value (sequence rl-glyphs) index)
   (check-type value rl-glyph-info)
   (cffi:foreign-funcall "memcpy"
-                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
-                        :pointer (autowrap:ptr (c-struct value))
+                        :pointer (c-ptr (elt sequence index))
+                        :pointer (c-ptr value)
                         :int +foreign-glyph-info-size+
                         :void))
 
 
 
-(default-unload claylib/ll:font unload-font t)
-
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-font (linkable)
+  (defclass rl-font (c-struct linkable)
     ((%texture :initarg :texture
                :type rl-texture
                :reader texture)
@@ -89,12 +84,9 @@
             :accessor recs)
      (%glyphs :initarg :glyphs
               :type rl-glyphs
-              :accessor glyphs)
-     (%c-struct
-      :type claylib/ll:font
-      :accessor c-struct))
+              :accessor glyphs))
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:font))))
+     :c-ptr (calloc 'claylib/ll:font))))
 
 (defcreader size rl-font base-size font)
 (defcreader glyph-count rl-font glyph-count font)
@@ -115,6 +107,8 @@
   :pt-accessors ((size integer)
                  (glyph-count integer)
                  (glyph-padding integer)))
+
+(default-unload rl-font unload-font t)
 
 
 
@@ -143,8 +137,8 @@
     ())
 
 (defmethod initialize-instance :around ((font default-font) &rest initargs &key &allow-other-keys)
-  (setf (c-struct font) (getf initargs :c-struct))
-  (claylib/ll:get-font-default (c-struct font))
+  (setf (slot-value font '%c-ptr) (getf initargs :c-ptr))
+  (claylib/ll:get-font-default (c-ptr font))
   font)
 
 (defparameter +default-font+ nil)
