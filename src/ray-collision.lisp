@@ -11,13 +11,13 @@
     (:default-initargs
      :c-ptr (calloc 'claylib/ll:ray-collision))))
 
-(defcreader-bool hit rl-ray-collision hit ray-collision)
+(defcreader hit rl-ray-collision hit ray-collision)
 (defcreader distance rl-ray-collision distance ray-collision)
 
 (define-print-object rl-ray-collision
     (point normal hit distance))
 
-(defcwriter-bool hit rl-ray-collision hit ray-collision)
+(defcwriter hit rl-ray-collision hit ray-collision)
 (defcwriter distance rl-ray-collision distance ray-collision number float)
 (defcwriter-struct point rl-ray-collision point ray-collision vector3 x y z)
 (defcwriter-struct normal rl-ray-collision normal ray-collision vector3 x y z)

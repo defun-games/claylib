@@ -26,9 +26,8 @@
                  (width integer)
                  (height integer)
                  (mipmaps integer)
-                 (data-format integer)))
-
-(default-unload rl-texture unload-texture t)
+                 (data-format integer))
+  :unload (unload-texture t))
 
 
 
@@ -197,7 +196,7 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-render-texture ()
+  (defclass rl-render-texture (c-struct)
     ((%texture :initarg :texture
                :type texture
                :reader texture)
@@ -220,9 +219,8 @@
 
 (definitializer rl-render-texture
   :struct-slots ((%texture) (%depth))
-  :pt-accessors ((id integer)))
-
-(default-unload rl-render-texture unload-render-texture t)
+  :pt-accessors ((id integer))
+  :unload (unload-render-texture t))
 
 
 

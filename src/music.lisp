@@ -10,7 +10,7 @@
 (defcreader      frame-count rl-music frame-count music)
 (defcreader      ctx-type    rl-music ctx-type    music)
 (defcreader      ctx-data    rl-music ctx-data    music)
-(defcreader-bool looping     rl-music looping     music)
+(defcreader      looping     rl-music looping     music)
 
 (define-print-object rl-music
   (pitch volume astream frame-count ctx-type ctx-data looping))
@@ -18,14 +18,13 @@
 (defcwriter frame-count rl-music frame-count music integer)
 (defcwriter ctx-type rl-music ctx-type music integer)
 
-(defcwriter-bool looping rl-music looping music)
+(defcwriter looping rl-music looping music)
 
 (definitializer rl-music
   :pt-accessors ((frame-count integer)
                  (looping boolean)
-                 (ctx-type integer)))
-
-(default-unload rl-music unload-music-stream t)
+                 (ctx-type integer))
+  :unload (unload-music-stream t))
 
 (defmethod update ((object rl-music))
   (claylib/ll:update-music-stream (c-ptr object)))

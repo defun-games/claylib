@@ -33,9 +33,8 @@
 
 (definitializer rl-shader
   :pt-accessors ((id integer)
-                 (locs sequence)))
-
-(default-unload rl-shader unload-shader t)
+                 (locs sequence))
+  :unload (unload-shader t))
 
 
 
@@ -93,20 +92,17 @@
 
 (defun make-rl-material-map-array (c-ptr num)
   (let ((contents (loop for i below num
-                        for map = (make-instance 'rl-material-map)
                         for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:material-map i)
-                        do (setf (slot-value map '%c-ptr)
-                                 c-elt
-
-                                 (slot-value map '%texture)
-                                 (let ((tex (make-instance 'rl-texture)))
-                                   (setf (c-ptr tex) (material-map.texture c-elt))
-                                   tex)
+                        for map = (make-instance 'rl-material-map :c-ptr c-elt)
+                        do (setf (slot-value map '%texture)
+                                 (make-instance 'rl-texture
+                                                :c-ptr (field-value c-elt 'material-map 'texture)
+                                                :finalize (= i 0))
 
                                  (slot-value map '%color)
-                                 (let ((col (make-instance 'color)))
-                                   (setf (c-ptr col) (material-map.color c-elt))
-                                   col))
+                                 (make-instance 'color
+                                                :c-ptr (field-value c-elt 'material-map 'color)
+                                                :finalize (= i 0)))
                         collect map)))
     (make-array num
                 :element-type 'rl-material-map
@@ -146,7 +142,7 @@
         collect (param material i)))
 
 (defcwriter-struct shader rl-material shader material shader
-  id shader.locs)
+  id (shader locs))
 (defcwriter-struct maps rl-material maps material material-map ; Array/pointer
   texture color value)
 (defmethod (setf matmap) ((value rl-material-map) (material rl-material) (index integer))
@@ -179,9 +175,8 @@
 (definitializer rl-material
   :lisp-slots ((%maps))
   :struct-slots ((%shader))
-  :pt-accessors ((params sequence)))
-
-(default-unload rl-material unload-material t)
+  :pt-accessors ((params sequence))
+  :unload (unload-material t))
 
 
 
@@ -205,16 +200,12 @@
   (let ((contents
           (loop
             for i below num
-            for mat = (make-instance 'rl-material)
             for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:material i)
-            do (setf (slot-value mat '%c-ptr)
-                     c-elt
-
-                     (slot-value mat '%shader)
-                     (let ((shader (make-instance 'rl-shader)))
-                       (setf (c-ptr shader)
-                             (field-value c-elt 'material 'shader))
-                       shader)
+            for mat = (make-instance 'rl-material :c-ptr c-elt)
+            do (setf (slot-value mat '%shader)
+                     (make-instance 'rl-shader
+                                    :c-ptr (field-value c-elt 'material 'shader)
+                                    :finalize (= i 0))
 
                      (slot-value mat '%maps)
                      (let ((maps (make-instance 'rl-material-maps)))

@@ -48,22 +48,20 @@
     (source dest tint))
 
 (definitializer image
-  :lisp-slots ((%source) (%dest) (%tint)))
-
-(default-unload rl-image unload-image)
+  :lisp-slots ((%source) (%dest) (%tint))
+  :unload (unload-image nil))
 
 (defun make-image (asset source dest
                    &rest args &key tint (copy-asset nil))
   (declare (ignorable tint))
-  (let ((img (apply #'make-instance 'image
-                    :allow-other-keys t
-                    :source source
-                    :dest dest
-                    args)))
-    (setf (c-ptr img) (if copy-asset
-                          (c-ptr (copy-asset-to-object asset))
-                          (c-asset asset)))
-    img))
+  (apply #'make-instance 'image
+         :allow-other-keys t
+         :source source
+         :dest dest
+         :c-ptr (if copy-asset
+                    (c-ptr (copy-asset-to-object asset))
+                    (c-asset asset))
+         args))
 
 (defmethod image-draw (image (obj image))
   (claylib/ll:image-draw (c-ptr image)

@@ -58,9 +58,8 @@
                  (bone-ids integer)
                  (bone-weights number float)
                  (vao-id integer)
-                 (vbo-id integer)))
-
-(default-unload rl-mesh unload-mesh t)
+                 (vbo-id integer))
+  :unload (unload-mesh t))
 
 
 
@@ -82,10 +81,9 @@
 
 (defun make-rl-mesh-array (c-ptr num)
   (let ((contents (loop for i below num
-                        for mesh = (make-instance 'rl-mesh)
-                        do (setf (slot-value mesh '%c-ptr)
-                                 (cffi:mem-aref c-ptr 'claylib/ll:mesh i))
-                        collect mesh)))
+                        collect (make-instance 'rl-mesh
+                                               :c-ptr (cffi:mem-aref c-ptr 'claylib/ll:mesh i)
+                                               :finalize (= i 0)))))
     (make-array num
                 :element-type 'rl-mesh
                 :initial-contents contents)))

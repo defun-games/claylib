@@ -60,18 +60,18 @@ unless ALLOCATE-P is T."
   "Check collision between two circles."
   (check-type circle1 circle)
   (check-type circle2 circle)
-  (/= 0 (claylib/ll:check-collision-circles (c-ptr (pos circle1))
-                                            (float (radius circle1))
-                                            (c-ptr (pos circle2))
-                                            (float (radius circle2)))))
+  (claylib/ll:check-collision-circles (c-ptr (pos circle1))
+                                      (float (radius circle1))
+                                      (c-ptr (pos circle2))
+                                      (float (radius circle2))))
 
 (defun check-collision-circle-rec (circle rec)
   "Check collision between CIRCLE and RECTANGLE."
   (check-type circle circle)
   (check-type rec rl-rectangle)
-  (/= 0 (claylib/ll:check-collision-circle-rec (c-ptr (pos circle))
-                                               (float (radius circle))
-                                               (c-ptr rec))))
+  (claylib/ll:check-collision-circle-rec (c-ptr (pos circle))
+                                         (float (radius circle))
+                                         (c-ptr rec)))
 
 (defun-pt-bool check-collision-point-rec claylib/ll:check-collision-point-rec
   "Check if POINT is inside RECTANGLE."
@@ -82,18 +82,18 @@ unless ALLOCATE-P is T."
   "Check if POINT is inside CIRCLE."
   (check-type point rl-vector2)
   (check-type circle circle)
-  (/= 0 (claylib/ll:check-collision-point-circle (c-ptr point)
-                                                 (c-ptr (pos circle))
-                                                 (float (radius circle)))))
+  (claylib/ll:check-collision-point-circle (c-ptr point)
+                                           (c-ptr (pos circle))
+                                           (float (radius circle))))
 
 (defun check-collision-point-triangle (point triangle)
   "Check if POINT is inside TRIANGLE."
   (check-type point rl-vector2)
   (check-type triangle triangle)
-  (/= 0 (claylib/ll:check-collision-point-triangle (c-ptr point)
-                                                   (c-ptr (v1 triangle))
-                                                   (c-ptr (v2 triangle))
-                                                   (c-ptr (v3 triangle)))))
+  (claylib/ll:check-collision-point-triangle (c-ptr point)
+                                             (c-ptr (v1 triangle))
+                                             (c-ptr (v2 triangle))
+                                             (c-ptr (v3 triangle))))
 
 (defun check-collision-lines (line1 line2 &optional (retval (make-vector2 0 0)))
   "Check the collision between two straight lines. Allocates a new VECTOR2 unless you pass one.
@@ -101,23 +101,22 @@ Returns the vector if a collision exists, otherwise NIL."
   (check-type line1 line)
   (check-type line2 line)
   (check-type retval rl-vector2)
-  (if (= 0 (claylib/ll:check-collision-lines (c-ptr (start line1))
-                                             (c-ptr (end line1))
-                                             (c-ptr (start line2))
-                                             (c-ptr (end line2))
-                                             (c-ptr retval)))
-      nil
-      retval))
+  (when (claylib/ll:check-collision-lines (c-ptr (start line1))
+                                          (c-ptr (end line1))
+                                          (c-ptr (start line2))
+                                          (c-ptr (end line2))
+                                          (c-ptr retval))
+    retval))
 
 (defun check-collision-point-line (point line threshold)
   "Check if POINT belongs to a (straight) LINE with defined margin in pixels [threshold]."
   (check-type point rl-vector2)
   (check-type line line)
   (check-type threshold integer)
-  (/= 0 (claylib/ll:check-collision-point-line (c-ptr point)
-                                               (c-ptr (start line))
-                                               (c-ptr (end line))
-                                               threshold)))
+  (claylib/ll:check-collision-point-line (c-ptr point)
+                                         (c-ptr (start line))
+                                         (c-ptr (end line))
+                                         threshold))
 
 (defun get-collision-rec (rec1 rec2 &key (result-rec nil))
   "Get the collision rectangle for the collision of two rectangles REC1 and REC2.
@@ -204,12 +203,16 @@ postion and dimensions to the reflect the result."
   (check-type rt rl-render-texture)
   (claylib/ll:load-render-texture (c-ptr rt) width height)
   (unless (slot-boundp rt '%texture)
-    (setf (slot-value rt '%texture) (make-instance 'texture)
-          (c-ptr (texture rt)) (claylib/ll:render-texture.texture (c-ptr rt))))
+    (setf (slot-value rt '%texture)
+          (make-instance 'texture
+                         :c-ptr (field-value (c-ptr rt) 'render-texture 'texture)
+                         :finalize nil)))
   (set-slot :texture rt (texture rt))
   (unless (slot-boundp rt '%depth)
-    (setf (slot-value rt '%depth) (make-instance 'texture)
-          (c-ptr (texture rt)) (claylib/ll:render-texture.texture (c-ptr rt))))
+    (setf (slot-value rt '%depth)
+          (make-instance 'texture
+                         :c-ptr (field-value (c-ptr rt) 'render-texture 'texture)
+                         :finalize nil)))
   (set-slot :depth rt (make-instance 'texture))
   rt)
 
@@ -280,11 +283,11 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
                       'claylib/ll:material)))
     (set-slot :transform model (transform model))
     (setf (meshes model)
-          (make-instance 'rl-meshes :cl-array (make-rl-*-array c-meshes (mesh-count model)))
+          (make-instance 'rl-meshes :cl-array (make-rl-mesh-array c-meshes (mesh-count model)))
 
           (materials model)
           (make-instance 'rl-materials
-                         :cl-array (make-rl-*-array c-materials (material-count model)))
+                         :cl-array (make-rl-material-array c-materials (material-count model)))
 
           (pos model)
           (make-vector3 0 0 0))
@@ -345,9 +348,9 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   "Check collision between bounding box and a sphere."
   (check-type box rl-bounding-box)
   (check-type sphere sphere)
-  (= 1 (claylib/ll:check-collision-box-sphere (c-ptr box)
-                                              (c-ptr (pos sphere))
-                                              (radius sphere))))
+  (claylib/ll:check-collision-box-sphere (c-ptr box)
+                                         (c-ptr (pos sphere))
+                                         (radius sphere)))
 
 (defun-pt get-ray-collision-box claylib/ll:get-ray-collision-box
   "Gets a collision box for the passed ray and bounding box.

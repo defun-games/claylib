@@ -44,25 +44,22 @@
 
 (defun make-rl-transform-array (c-ptr num)
   (let ((contents (loop for i below num
-                        for trans = (make-instance 'rl-transform)
                         for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:transform i)
-                        do (setf (slot-value trans '%c-ptr)
-                                 c-elt
-
-                                 (slot-value trans '%translation)
-                                 (let ((v (make-instance 'rl-vector3)))
-                                   (setf (c-ptr v) (transform.translation c-elt))
-                                   v)
+                        for trans = (make-instance 'rl-transform :c-ptr c-elt)
+                        do (setf (slot-value trans '%translation)
+                                 (make-instance 'rl-vector3
+                                                :c-ptr (field-value c-elt 'transform 'translation)
+                                                :finalize (= i 0))
 
                                  (slot-value trans '%rotation)
-                                 (let ((v (make-instance 'rl-vector4)))
-                                   (setf (c-ptr v) (transform.rotation c-elt))
-                                   v)
+                                 (make-instance 'rl-vector4
+                                                :c-ptr (field-value c-elt 'transform 'rotation)
+                                                :finalize (= i 0))
 
                                  (slot-value trans '%scale)
-                                 (let ((v (make-instance 'rl-vector3)))
-                                   (setf (c-ptr v) (transform.scale c-elt))
-                                   v))
+                                 (make-instance 'rl-vector3
+                                                :c-ptr (field-value c-elt 'transform 'scale)
+                                                :finalize (= i 0)))
                         collect trans)))
     (make-array num
                 :element-type 'rl-transform

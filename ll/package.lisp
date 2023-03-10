@@ -1,5 +1,8 @@
 (defpackage #:claylib/ll
   (:use #:cl #:claylib/wrap)
+  (:shadowing-import-from :cl
+   ;; These are field names which are needed in claylib/wrap yet conflict with CL symbols.
+   :stream :count :format :max :position :min)
   (:export
 
    ;;; Core

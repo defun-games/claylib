@@ -23,12 +23,6 @@ If CAMERA2D is a CLOS object, you need DEFREADER."
     `(defmethod ,lisp-slot ((,obj ,lisp-type))
        (field-value (c-ptr ,obj) ',c-type ',c-slot))))
 
-(defmacro defcreader-bool (lisp-slot lisp-type c-slot c-type)
-  "A version of DEFCREADER that also converts C booleans to Lisp booleans."
-  (let ((obj (gensym)))
-    `(defmethod ,lisp-slot ((,obj ,lisp-type))
-       (= (field-value (c-ptr ,obj) ',c-type ',c-slot) 1))))
-
 (defmacro defwriter (slot type sub-writer sub-slot &optional value-type)
   "Define a pass-through slot writer for a Claylib CLOS object. Example usage:
 
@@ -68,15 +62,6 @@ Oh yeah, and make sure it's a float.' If CAMERA2D is a CLOS object, you need DEF
                   `(coerce ,value ',coerce-type)
                   value)))))
 
-(defmacro defcwriter-bool (lisp-slot lisp-type c-slot c-type)
-  "A version of DEFCWRITER that converts Lisp booleans to C booleans."
-  (let ((value (gensym))
-        (obj (gensym)))
-    `(defmethod (setf ,lisp-slot) (,value (,obj ,lisp-type))
-       (check-type ,value boolean)
-       (setf (field-value (c-ptr ,obj) ',c-type ',c-slot)
-             (if ,value 1 0)))))
-
 (defmacro defwriter-float (writer-name type &optional slot-name)
   "This just defines a simple slot writer to coerce the written value into a float.
 For something more complex, try DEFWRITER or DEFCWRITER."
@@ -115,14 +100,17 @@ backing it.'"
                           (,value ,(intern (format nil "RL-~:@a" struct-type))))
        (,struct-setter (field-value (c-ptr ,obj) ',c-type ',c-slot)
                        ,@(loop for reader in readers
-                               collect `(,reader ,value)))
+                               collect (if (listp reader)
+                                           `(field-value (c-ptr ,value) ',(car reader) ',(cadr reader))
+                                           `(,reader ,value))))
        (handler-case (,lisp-slot ,obj)
          (unbound-slot ()
            (setf (slot-value ,obj ',(intern (format nil "%~:@a" lisp-slot))) ,value)))
-       (unless (eq (c-ptr (,lisp-slot ,obj))
-                   (field-value (c-ptr ,obj) ',c-type ',c-slot))
+       (unless (cffi:pointer-eq (c-ptr (,lisp-slot ,obj))
+                                (field-value (c-ptr ,obj) ',c-type ',c-slot))
          (setf (c-ptr (,lisp-slot ,obj))
-               (field-value (c-ptr ,obj) ',c-type ',c-slot))))))
+               (make-instance 'c-ptr :finalize nil
+                                     :c-ptr (field-value (c-ptr ,obj) ',c-type ',c-slot)))))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun rl-subclass-p (type)
@@ -130,7 +118,7 @@ backing it.'"
 with 'RL-' and always have a direct or inherited '%C-PTR slot."
     (let ((class (find-class type)))
       (member-if #'(lambda (slot)
-                     (eql (closer-mop:slot-definition-name slot) '%ptr))
+                     (eql (closer-mop:slot-definition-name slot) '%c-ptr))
                  (handler-case
                      (closer-mop:class-slots class)
                    (error ()
@@ -148,7 +136,7 @@ with 'RL-' and always have a direct or inherited '%C-PTR slot."
                                                 `(or ,type null)
                                                 type))))))
 
-(defmacro definitializer (class &key lisp-slots struct-slots pt-accessors)
+(defmacro definitializer (class &key lisp-slots struct-slots pt-accessors unload)
   "Define an initialize-instance :after method for a passed class name.
 
 :lisp-slots is a list of CLOS slots that are *not* tied to a backing C struct. Expected format:
@@ -166,7 +154,10 @@ C-FIELD, when the C-FIELD name is something different from SLOT-NAME-WITHOUT-%.
 :pt-accessors is a list of pass-through accessors tied to a backing C struct. These are *not* CLOS
 slots, but they will have custom readers and probably writers. Expected format:
 (ACCESSOR-NAME TYPE &optional COERCE-TYPE)
-COERCE-TYPE will usually be float, when applicable."
+COERCE-TYPE will usually be float, when applicable.
+
+:unload is a two-element list: (FN WINDOW-REQUIRED-P). Pass this when an unload function should
+be run in the finalizer."
   (let ((obj (gensym))
         (class-slots (closer-mop:class-direct-slots
                       (find-class class))))
@@ -205,7 +196,8 @@ COERCE-TYPE will usually be float, when applicable."
            ,@(expand-check-types pt-accessors t)
            (when (and (slot-exists-p ,obj '%c-ptr)
                       (not (slot-boundp ,obj '%c-ptr)))
-              (setf (slot-value ,obj '%c-ptr) (getf initargs :c-ptr)))
+              (setf (c-ptr ,obj)
+                    (make-instance 'c-ptr :c-ptr (getf initargs :c-ptr))))
            ,@(loop for arg in lisp-slot-args
                    for type in lisp-slot-types
                    for slot in lisp-slots
@@ -226,14 +218,15 @@ COERCE-TYPE will usually be float, when applicable."
                                   (set-slot ,(alexandria:make-keyword arg) ,obj ,arg)
                                   (setf (slot-value ,obj ',name)
                                         (make-instance ',(or subclass type)
-                                                       :c-ptr (,(alexandria:symbolicate
-                                                                 (subseq (write-to-string class) 3)
-                                                                 "."
-                                                                 (or c-field
-                                                                     (subseq
-                                                                      (write-to-string name)
-                                                                      1)))
-                                                               (c-ptr ,obj)))))))
+                                                       :c-ptr (field-value
+                                                               (c-ptr ,obj)
+                                                               ',(alexandria:symbolicate
+                                                                  (subseq (write-to-string class) 3))
+                                                               ',(or c-field
+                                                                     (alexandria:symbolicate
+                                                                      (subseq
+                                                                       (write-to-string name)
+                                                                       1)))))))))
            ,@(loop for accessor in pt-accessors
                    collect (destructuring-bind (name type &optional coerce-type) accessor
                              (let ((val (if coerce-type
@@ -242,6 +235,16 @@ COERCE-TYPE will usually be float, when applicable."
                                (if (eql type 'boolean)
                                    `(setf (,name ,obj) ,val)
                                    `(when ,name (setf (,name ,obj) ,val))))))
+           ,(when unload
+              (let ((ptr (gensym)))
+                `(tg:finalize ,obj
+                              (let ((,ptr (c-ptr ,obj)))
+                                ;; TODO: This is holding a reference to obj
+                                ;; and thus will not unload a damn thing.
+                                (lambda ()
+                                  ,(if (cadr unload)
+                                       `(when (is-window-ready-p) (,(car unload) ,obj))
+                                       `(,(car unload) ,obj)))))))
            ,obj)))))
 
 (defmacro default-unload (type fn &optional window-required-p)
@@ -278,8 +281,6 @@ COERCE-TYPE will usually be float, when applicable."
                       ((and (subtypep type 'standard-object)
                             (rl-subclass-p type))
                        `(c-ptr ,accessor))
-                      ((eql type 'boolean)
-                       `(if ,accessor 1 0))
                       (t accessor))))))
 
 (defmacro defun-pt (name c-fn docstring &rest args)
@@ -315,9 +316,7 @@ is expected to have the following format:
                                               args)))
      ,docstring
      ,@(expand-check-types args)
-     (if (= 0 (,c-fn ,@(expand-c-fun-args args)))
-         nil
-         t)))
+     (,c-fn ,@(expand-c-fun-args args))))
 
 (defmacro defun-pt-void (name c-fn docstring &rest args)
   "Define a special 'pass-through' function for which the C function does not return anything. Each

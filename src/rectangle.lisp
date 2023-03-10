@@ -39,12 +39,13 @@
 
 (define-print-object rl-rectangles
     ())
+
 (defun make-rl-rectangle-array (c-ptr num)
-  (let ((contents (loop for i below num
-                        for rect = (make-instance 'rl-rectangle)
-                        do (setf (slot-value rect '%c-ptr)
-                                 (cffi:mem-aref c-ptr 'claylib/ll:rectangle i))
-                        collect rect)))
+  (let ((contents
+          (loop for i below num
+                collect (make-instance 'rl-rectangle
+                                       :c-ptr (cffi:mem-aref c-ptr 'claylib/ll:rectangle i)
+                                       :finalize (= i 0)))))
     (make-array num
                 :element-type 'rl-rectangle
                 :initial-contents contents)))

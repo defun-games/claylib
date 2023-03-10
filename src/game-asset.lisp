@@ -142,8 +142,8 @@
               :accessor fspath)
      (%asset :type (or rl-shader null)))
     (:default-initargs
-     :vspath nil
-     :fspath nil)))
+     :vspath ""
+     :fspath "")))
 
 (defreader id shader-asset id asset)
 (defreader locs shader-asset locs asset)
@@ -165,10 +165,16 @@
        (claylib/ll:load-shader (c-asset asset) vpath fpath))))
   asset)
 
-(defun make-shader-asset (&key vspath fspath (load-now nil))
+(defun make-shader-asset (&rest initargs &key vspath fspath (load-now nil))
   "Make a shader asset from files VSPATH and FSPATH. This does not load the model unless LOAD-NOW is
 non-nil."
-  (make-instance 'shader-asset :vspath vspath :fspath fspath :load-now load-now))
+  (declare (ignorable vspath fspath load-now))
+  (apply #'make-instance 'shader-asset initargs)
+  #|
+  (make-instance 'shader-asset
+                 :vspath vspath
+                 :fspath fspath
+                 :load-now load-now)|#)
 
 
 
@@ -263,14 +269,15 @@ non-nil."
      (let* ((i (calloc :int))
             (0th-anim (load-model-animations (namestring (path asset)) i))
             (anims (make-instance 'rl-animations
-                                  :cl-array (make-rl-*-array 0th-anim (cffi:mem-ref i :int)))))
+                                  :cl-array (make-rl-model-animation-array
+                                             0th-anim (cffi:mem-ref i :int)))))
        (setf (asset asset) anims)))
     ;; TODO how best to force-reload?
     (force-reload
      (let ((i (calloc :int)))
-       (setf (c-asset asset)
+       (setf (slot-value asset '%c-asset)
              (load-model-animations (namestring (path asset)) i)
-             ;(num asset) (cffi:mem-ref i :int)
+                                        ;(num asset) (cffi:mem-ref i :int)
              ))))
   asset)
 

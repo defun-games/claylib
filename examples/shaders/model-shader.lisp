@@ -29,9 +29,9 @@
                                     :scale (make-vector3 0.2 0.2 0.2)
                                     :tint +white+)))
                  (set-slot :shader (elt (materials m) 0) (asset shdass))
-                 (set-slot :texture
-                           (elt (maps (elt (materials m) 0)) +material-map-diffuse+)
-                           (asset texass))
+                 (set-material-texture (elt (materials m) 0)
+                                       +material-map-diffuse+
+                                       (asset texass))
                  m))
         (grid (make-grid 10 1))
         (txt (make-text "(c) Watermill 3D model by Alberto Cano"

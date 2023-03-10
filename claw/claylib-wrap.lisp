@@ -18,10 +18,16 @@
 
 (cffi:use-foreign-library libraygui)
 
-;;; Workaround for the color issue described above
+(cffi:define-foreign-library librayshim
+  ((:and :x86-64 :unix) "librayshim.x86_64-pc-linux-gnu.so")
+  (t (:default "librayshim")))
+
+(cffi:use-foreign-library librayshim)
+
+;;; Workaround for CLITERAL colors not being detected correctly by claw
 (cl:defmacro setcolor (name cl:&rest coords)
   `(cl:progn
-     (cl:setf ,name (cffi:foreign-alloc 'color))
+     (cl:defvar ,name (cffi:foreign-alloc 'color))
      ,(cl:append (cl:list 'cl:progn)
 	         (cl:loop for k in '(r g b a)
 		    for v in coords
@@ -53,3 +59,8 @@
 (setcolor +blank+ 0 0 0 0)
 (setcolor +magenta+ 255 0 255 255)
 (setcolor +raywhite+ 245 245 245 255)
+
+(cl:eval-when (:compile-toplevel :load-toplevel :execute)
+  (cl:export '(+lightgray+ +gray+ +darkgray+ +yellow+ +gold+ +orange+ +pink+ +red+ +maroon+
+               +green+ +lime+ +darkgreen+ +skyblue+ +blue+ +darkblue+ +purple+ +violet+
+               +darkpurple+ +beige+ +brown+ +darkbrown+ +white+ +black+ +blank+ +magenta+ +raywhite+)))

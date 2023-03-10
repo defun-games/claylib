@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-bounding-box ()
+  (defclass rl-bounding-box (c-struct)
     ((%low :initarg :low
            :type rl-vector3
            :reader low)

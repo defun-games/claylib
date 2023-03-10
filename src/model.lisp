@@ -87,9 +87,8 @@
   :pt-accessors ((mesh-count integer)
                  (material-count integer)
                  (mesh-materials sequence)
-                 (bone-count integer)))
-
-(default-unload rl-model unload-model t)
+                 (bone-count integer))
+  :unload (unload-model t))
 
 
 
@@ -133,13 +132,14 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                        :allow-other-keys t
                        :asset model-asset
                        :pos (make-vector3 x y z)
-                       :c-ptr (partial-copy c-model
-                                            (list (unless transform 'claylib/ll::transform)
-                                                  (unless mesh-count 'claylib/ll::mesh-count)
-                                                  (unless material-count 'claylib/ll::material-count)
-                                                  (unless bone-count 'claylib/ll::bone-count))
-                                            (list (unless bones 'claylib/ll::bones)
-                                                  (unless bind-pose 'claylib/ll::bind-pose)))
+                       :c-ptr (partial-copy-model
+                               c-model
+                               (list (unless transform 'claylib/ll::transform)
+                                     (unless mesh-count 'claylib/ll::mesh-count)
+                                     (unless material-count 'claylib/ll::material-count)
+                                     (unless bone-count 'claylib/ll::bone-count))
+                               (list (unless bones 'claylib/ll::bones)
+                                     (unless bind-pose 'claylib/ll::bind-pose)))
                        args))
          (c-meshes (field-value c-model 'model 'meshes))
          (c-bones (cffi:mem-aref (field-value c-model 'model 'bones) 'claylib/ll:bone-info))
@@ -151,7 +151,7 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
     (when bone-count (setf (bone-count model) bone-count))
     (setf (meshes model)
           (or meshes (make-instance 'rl-meshes
-                                    :cl-array (make-rl-*-array
+                                    :cl-array (make-rl-mesh-array
                                                (if instance-meshes-p
                                                    (cffi:mem-aref c-meshes 'claylib/ll:mesh)
                                                    (copy-c-array 'claylib/ll:mesh
@@ -162,19 +162,19 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
           (materials model)
           (or materials
               (make-instance 'rl-materials
-                             :cl-array (make-rl-*-array
+                             :cl-array (make-rl-material-array
                                         (if instance-materials-p
                                             (cffi:mem-aref c-materials 'claylib/ll:material)
                                             (let ((c-array
                                                     (calloc 'claylib/ll:material
                                                             (material-count model))))
                                               (dotimes (i (material-count model))
-                                                (full-copy (cffi:mem-aref c-materials
-                                                                          'claylib/ll:material
-                                                                          i)
-                                                           (cffi:mem-aref c-array
-                                                                          'claylib/ll:material
-                                                                          i)))
+                                                (full-copy-material (cffi:mem-aref c-materials
+                                                                                   'claylib/ll:material
+                                                                                   i)
+                                                                    (cffi:mem-aref c-array
+                                                                                   'claylib/ll:material
+                                                                                   i)))
                                               c-array))
                                         (material-count model)))))
 
@@ -182,12 +182,12 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
       (setf (bones model)
             (or bones
                 (make-instance 'rl-bones
-                               :cl-array (make-rl-*-array c-bones (bone-count model))))
+                               :cl-array (make-rl-bone-info-array c-bones (bone-count model))))
 
             (bind-pose model)
             (or bind-pose
                 (make-instance 'rl-transforms
-                               :cl-array (make-rl-*-array c-poses (bone-count model))))))
+                               :cl-array (make-rl-transform-array c-poses (bone-count model))))))
     (cond
       (mesh-materials
        (setf (mesh-materials model) mesh-materials))
@@ -196,10 +196,10 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
       (t
        (let ((mm (calloc :int (mesh-count model))))
          (copy-c-array :int
-                       (model.mesh-material c-model)
+                       (field-value c-model 'model 'mesh-material)
                        (mesh-count model)
                        mm)
-         (setf (model.mesh-material (c-ptr model)) mm))))
+         (setf (field-value (c-ptr model) 'model 'mesh-material) mm))))
     (when animation-asset
       (setf (animations model) (asset animation-asset)))
     (unless (or instance-meshes-p meshes)

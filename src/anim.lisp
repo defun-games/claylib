@@ -51,9 +51,8 @@
 (definitializer rl-model-animation
   :lisp-slots (#|(%bones) (%frame-poses)|#) ; TODO investigate what to do with these
   :pt-accessors ((bone-count integer)
-                 (frame-count integer)))
-
-(default-unload rl-model-animation unload-model-animation t)
+                 (frame-count integer))
+  :unload (unload-model-animation t))
 
 
 
@@ -74,11 +73,11 @@
     ())
 
 (defun make-rl-bone-info-array (c-ptr num)
-  (let ((contents (loop for i below num
-                        for bone = (make-instance 'rl-bone-info)
-                        do (setf (slot-value bone '%c-ptr)
-                                 (cffi:mem-aref c-ptr 'claylib/ll:bone-info i))
-                        collect bone)))
+  (let ((contents
+          (loop for i below num
+                collect (make-instance 'rl-bone-info
+                                       :c-ptr (cffi:mem-aref c-ptr 'claylib/ll:bone-info i)
+                                       :finalize (= i 0)))))
     (make-array num
                 :element-type 'rl-bone-info
                 :initial-contents contents)))
@@ -108,19 +107,16 @@
    :element-type 'rl-model-animation
    :initial-contents
    (loop for i below num
-         for anim = (make-instance 'rl-model-animation)
          for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:model-animation i)
+         for anim = (make-instance 'rl-model-animation :c-ptr c-elt)
          for c-bones = (cffi:mem-aref (field-ptr c-elt 'model-animation 'bones)
                                       'claylib/ll:bone-info)
-         for bone-count = (model-animation.bone-count c-elt)
-         for frame-count = (model-animation.frame-count c-elt)
+         for bone-count = (field-value c-elt 'model-animation 'bone-count)
+         for frame-count = (field-value c-elt 'model-animation 'frame-count)
          do (setf
-             (slot-value anim '%c-ptr)
-             c-elt
-
              (slot-value anim '%bones)
              (make-instance 'rl-bones
-                            :cl-array (make-rl-*-array c-bones bone-count))
+                            :cl-array (make-rl-bone-info-array c-bones bone-count))
 
              ;; Sadly, this is a 1D lisp array of rl-transforms arrays (not proper 2D array) so
              ;; we don't get to take advantage of aref. But this is probably not a user-facing
@@ -130,14 +126,12 @@
                          :element-type 'rl-transforms
                          :initial-contents
                          (loop
+                           with fp = (cffi:mem-ref
+                                      (field-ptr c-elt 'model-animation 'frame-poses)
+                                      :pointer)
                            for i below frame-count
                            ;; Dereference the Transform double pointer
-                           for p = (cffi:mem-aref
-                                    (cffi:mem-aref
-                                     (field-ptr c-elt 'model-animation 'frame-poses)
-                                     :pointer
-                                     i)
-                                    'claylib/ll:transform)
+                           for p = (cffi:mem-aref fp :pointer i)
                            collect (make-instance 'rl-transforms
                                                   :cl-array (make-rl-transform-array p bone-count)))))
          collect anim)))

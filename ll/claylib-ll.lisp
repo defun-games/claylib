@@ -20,30 +20,61 @@
 
 (defun field-ptr (ptr type field-name)
   (cffi:foreign-slot-pointer ptr
-                             (intern (format nil "~A" type) :claylib/ll)
-                             (intern (format nil "~A" field-name) :claylib/ll)))
+                             (intern (format nil "~A" type) :claylib/wrap)
+                             (intern (format nil "~A" field-name) :claylib/wrap)))
 
 (defun field-value (ptr type field-name)
   (cffi:foreign-slot-value ptr
-                           (intern (format nil "~A" type) :claylib/ll)
-                           (intern (format nil "~A" field-name) :claylib/ll)))
+                           (intern (format nil "~A" type) :claylib/wrap)
+                           (intern (format nil "~A" field-name) :claylib/wrap)))
 
 (defun set-field-value (ptr type field-name value)
   (setf (cffi:foreign-slot-value ptr
-                                 (intern (format nil "~A" type) :claylib/ll)
-                                 (intern (format nil "~A" field-name) :claylib/ll))
+                                 (intern (format nil "~A" type) :claylib/wrap)
+                                 (intern (format nil "~A" field-name) :claylib/wrap))
         value))
 
 (defsetf field-value set-field-value)
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defmacro expand-enum (enum prefix)
+    `(progn
+       ,@(loop for keyword in (cffi:foreign-enum-keyword-list enum)
+               collect (let ((sym (alexandria:symbolicate "+" prefix "-" keyword "+")))
+                         `(progn
+                            (alexandria:define-constant ,sym ,(cffi:foreign-enum-value enum keyword))
+                            (export ',sym))))))
+
+  (expand-enum config-flags "FLAG")
+  (expand-enum trace-log-level "LOG")
+  (expand-enum keyboard-key "KEY")
+  (expand-enum mouse-button "MOUSE-BUTTON")
+  (expand-enum mouse-cursor "MOUSE-CURSOR")
+  (expand-enum gamepad-button "GAMEPAD-BUTTON")
+  (expand-enum gamepad-axis "GAMEPAD-AXIS")
+  (expand-enum material-map-index "MATERIAL-MAP")
+  (expand-enum shader-location-index "SHADER-LOC-MAP")
+  (expand-enum shader-uniform-data-type "SHADER-UNIFORM")
+  (expand-enum shader-attribute-data-type "SHADER-ATTRIB")
+  (expand-enum pixel-format "PIXELFORMAT")
+  (expand-enum texture-filter "TEXTURE-FILTER")
+  (expand-enum texture-wrap "TEXTURE-WRAP")
+  (expand-enum cubemap-layout "CUBEMAP-LAYOUT")
+  (expand-enum font-type "FONT")
+  (expand-enum blend-mode "BLEND")
+  (expand-enum gesture "GESTURE")
+  (expand-enum camera-mode "CAMERA")
+  (expand-enum camera-projection "CAMERA")
+  (expand-enum n-patch-layout "NPATCH"))
+
 (defmacro lisp-bool (name &rest args)
+  "In ancient times, this macro converted between 1/0 and T/NIL. But the newfangled wrapper
+does that for us, so now it just changes the function name."
   (let ((c-fun (intern (remove #\' (format nil "~:@a" name)))) 
         (lisp-fun (intern (remove #\' (format nil "~:@a-P" name)))))
     `(defun ,lisp-fun (,@args)
        (declare (inline))
-       (,c-fun ,@args)
-;       (= (,c-fun ,@args) 1)
-       )))
+       (,c-fun ,@args))))
 
 (lisp-bool window-should-close)
 (lisp-bool is-window-ready)
@@ -203,10 +234,8 @@
                                  ((listp (cadr field)) ; Field is a pointer
                                   `(setf (field-value struct ',name ',(car field))
                                          ,(car field)))
-                                 ((eql (cadr field) :bool)
-                                  `(setf (field-value struct ',name ',(car field))
-                                         (if ,(car field) 1 0)))
-                                 ((eql (cadr field) :string)
+                                 ((or (eql (cadr field) :bool)
+                                      (eql (cadr field) :string))
                                   `(setf (field-value struct ',name ',(car field))
                                          ,(car field)))
                                  (t (let ((ftype (case (cadr field)
