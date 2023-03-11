@@ -11,63 +11,13 @@
                    :asd-path "claylib-shim.asd"
                    :bindings-path "bindings/shim/")
                   (:include-definitions ".*")
-                  (:exclude-definitions "^__"
-                                        #|"LIGHTGRAY"
-                                        "GRAY"
-                                        "DARKGRAY"
-                                        "YELLOW"
-                                        "GOLD"
-                                        "ORANGE"
-                                        "PINK"
-                                        "RED"
-                                        "MAROON"
-                                        "GREEN"
-                                        "LIME"
-                                        "DARKGREEN"
-                                        "SKYBLUE"
-                                        "BLUE"
-                                        "DARKBLUE"
-                                        "PURPLE"
-                                        "VIOLET"
-                                        "DARKPURPLE"
-                                        "BEIGE"
-                                        "BROWN"
-                                        "DARKBROWN"
-                                        "WHITE"
-                                        "BLACK"
-                                        "BLANK"
-                                        "MAGENTA"
-                                        "RAYWHITE"|#))
+                  (:exclude-definitions "^__"))
   :in-package :claylib/wrap
   :trim-enum-prefix t
   :recognize-bitfields t
   :recognize-strings t
   :recognize-arrays t
-  :with-adapter (:dynamic :path "lib/adapter.c")
-#|  :symbolicate-names (:in-pipeline
-                      (:by-changing "asin" "C-ASIN")
-                      (:by-changing "stream" "C-STREAM")
-                      (:by-changing "log" "C-LOG")
-                      (:by-changing "count" "C-COUNT")
-                      (:by-changing "tan" "C-TAN")
-                      (:by-changing "max" "C-MAX")
-                      (:by-changing "asinh" "C-ASINH")
-                      (:by-changing "cos" "C-COS")
-                      (:by-changing "format" "C-FORMAT")
-                      (:by-changing "acosh" "C-ACOSH")
-                      (:by-changing "sqrt" "C-SQRT")
-                      (:by-changing "cosh" "C-COSH")
-                      (:by-changing "floor" "C-FLOOR")
-                      (:by-changing "sin" "C-SIN")
-                      (:by-changing "atanh" "C-ATANH")
-                      (:by-changing "atan" "C-ATAN")
-                      (:by-changing "position" "C-POSITION")
-                      (:by-changing "round" "C-ROUND")
-                      (:by-changing "exp" "C-EXP")
-                      (:by-changing "min" "C-MIN")
-                      (:by-changing "sinh" "C-SINH")
-                      (:by-changing "tanh" "C-TANH")
-                      (:by-changing "acos" "C-ACOS"))|#)
+  :with-adapter (:dynamic :path "lib/adapter.c"))
 
 (claw:defwrapper (:claylib/makewrap
                   (:headers "adapter.x86_64-pc-linux-gnu.c")
@@ -135,7 +85,4 @@
                       (:by-changing "exp" "C-EXP")
                       (:by-changing "sinh" "C-SINH")
                       (:by-changing "tanh" "C-TANH")
-                      (:by-changing "acos" "C-ACOS"))
-  #|
-  :ignore-entities #'(lambda (sym)
-                       (cl-ppcre:scan "^__(?!claw)" (slot-value sym 'claw.spec::name)))|#)
+                      (:by-changing "acos" "C-ACOS")))

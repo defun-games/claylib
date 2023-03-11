@@ -169,12 +169,7 @@
   "Make a shader asset from files VSPATH and FSPATH. This does not load the model unless LOAD-NOW is
 non-nil."
   (declare (ignorable vspath fspath load-now))
-  (apply #'make-instance 'shader-asset initargs)
-  #|
-  (make-instance 'shader-asset
-                 :vspath vspath
-                 :fspath fspath
-                 :load-now load-now)|#)
+  (apply #'make-instance 'shader-asset initargs))
 
 
 

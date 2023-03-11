@@ -47,8 +47,6 @@
 #ifndef RAYMATH_H
 #define RAYMATH_H
 
-#define RAYMATH_IMPLEMENTATION
-
 #if defined(RAYMATH_IMPLEMENTATION) && defined(RAYMATH_STATIC_INLINE)
     #error "Specifying both RAYMATH_IMPLEMENTATION and RAYMATH_STATIC_INLINE is contradictory"
 #endif
@@ -56,11 +54,11 @@
 // Function specifiers definition
 #if defined(RAYMATH_IMPLEMENTATION)
     #if defined(_WIN32) && defined(BUILD_LIBTYPE_SHARED)
-        #define RMAPI __declspec(dllexport) extern // We are building raylib as a Win32 shared library (.dll).
+        #define RMAPI __declspec(dllexport) extern inline // We are building raylib as a Win32 shared library (.dll).
     #elif defined(_WIN32) && defined(USE_LIBTYPE_SHARED)
         #define RMAPI __declspec(dllimport)         // We are using raylib as a Win32 shared library (.dll)
     #else
-        #define RMAPI extern // Provide external definition
+        #define RMAPI extern inline // Provide external definition
     #endif
 #elif defined(RAYMATH_STATIC_INLINE)
     #define RMAPI static inline // Functions may be inlined, no external out-of-line definition

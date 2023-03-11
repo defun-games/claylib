@@ -202,8 +202,6 @@
     #include "raylib.h"
 #endif
 
-#define RAYGUI_IMPLEMENTATION
-
 // Function specifiers in case library is build/used as a shared library (Windows)
 // NOTE: Microsoft specifiers to tell compiler that symbols are imported/exported from a .dll
 #if defined(_WIN32)

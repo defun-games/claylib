@@ -207,10 +207,10 @@ typedef struct Vector4 {
     float y;                // Vector y component
     float z;                // Vector z component
     float w;                // Vector w component
-} Quaternion;
+} Vector4;
 
 // Quaternion, 4 components (Vector4 alias)
-typedef Quaternion Vector4;
+typedef Vector4 Quaternion;
 
 // Matrix, 4x4 components, column major, OpenGL style, right handed
 typedef struct Matrix {
@@ -252,10 +252,10 @@ typedef struct Texture {
     int height;             // Texture base height
     int mipmaps;            // Mipmap levels, 1 by default
     int format;             // Data format (PixelFormat type)
-} Texture2D;
+} Texture;
 
 // Texture2D, same as Texture
-typedef Texture2D Texture;
+typedef Texture Texture2D;
 
 // TextureCubemap, same as Texture
 typedef Texture TextureCubemap;
@@ -265,10 +265,10 @@ typedef struct RenderTexture {
     unsigned int id;        // OpenGL framebuffer object id
     Texture texture;        // Color buffer attachment texture
     Texture depth;          // Depth buffer attachment texture
-} RenderTexture2D;
+} RenderTexture;
 
 // RenderTexture2D, same as RenderTexture
-typedef RenderTexture2D RenderTexture;
+typedef RenderTexture RenderTexture2D;
 
 // NPatchInfo, n-patch layout info
 typedef struct NPatchInfo {
@@ -399,8 +399,6 @@ typedef struct ModelAnimation {
     BoneInfo *bones;        // Bones information (skeleton)
     Transform **framePoses; // Poses array by frame
 } ModelAnimation;
-
-typedef Transform* TransformPtr;
 
 // Ray, ray for raycasting
 typedef struct Ray {
