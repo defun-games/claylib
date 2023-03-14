@@ -37,10 +37,12 @@
 (defsetf field-value set-field-value)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defmacro expand-enum (enum prefix)
+  (defmacro expand-enum (enum &optional prefix)
     `(progn
        ,@(loop for keyword in (cffi:foreign-enum-keyword-list enum)
-               collect (let ((sym (alexandria:symbolicate "+" prefix "-" keyword "+")))
+               collect (let ((sym (if prefix
+                                      (alexandria:symbolicate "+" prefix "-" keyword "+")
+                                      (alexandria:symbolicate "+" keyword "+"))))
                          `(progn
                             (alexandria:define-constant ,sym ,(cffi:foreign-enum-value enum keyword))
                             (export ',sym))))))
@@ -65,7 +67,25 @@
   (expand-enum gesture "GESTURE")
   (expand-enum camera-mode "CAMERA")
   (expand-enum camera-projection "CAMERA")
-  (expand-enum n-patch-layout "NPATCH"))
+  (expand-enum n-patch-layout "NPATCH")
+  (expand-enum gui-state "STATE")
+  (expand-enum gui-text-alignment "TEXT-ALIGN")
+  (expand-enum gui-control)
+  (expand-enum gui-control-property)
+  (expand-enum gui-default-property)
+  (expand-enum gui-toggle-property)
+  (expand-enum gui-slider-property "SLIDER")
+  (expand-enum gui-progress-bar-property)
+  (expand-enum gui-scroll-bar-property)
+  (expand-enum gui-check-box-property)
+  (expand-enum gui-combo-box-property "COMBO-BUTTON")
+  (expand-enum gui-dropdown-box-property)
+  (expand-enum gui-text-box-property "TEXT")
+  (expand-enum gui-spinner-property "SPIN-BUTTON")
+  (expand-enum gui-list-view-property)
+  (expand-enum gui-color-picker-property)
+  (expand-enum gui-icon-name "ICON")
+  (expand-enum gui-property-element))
 
 (defmacro lisp-bool (name &rest args)
   "In ancient times, this macro converted between 1/0 and T/NIL. But the newfangled wrapper

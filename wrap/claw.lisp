@@ -21,6 +21,7 @@
 
 (claw:defwrapper (:claylib/makewrap
                   (:headers "adapter.x86_64-pc-linux-gnu.c")
+                  (:defines "RAYGUI_IMPLEMENTATION" 1)
                   (:includes :raylib-includes)
                   (:targets ((:and :x86-64 :linux) "x86_64-pc-linux-gnu")
                             ((:and :x86 :linux) "i686-pc-linux-gnu")
@@ -85,4 +86,9 @@
                       (:by-changing "exp" "C-EXP")
                       (:by-changing "sinh" "C-SINH")
                       (:by-changing "tanh" "C-TANH")
-                      (:by-changing "acos" "C-ACOS")))
+                      (:by-changing "acos" "C-ACOS")
+                      (:by-changing "rem" "C-REM")
+                      (:by-changing "random" "C-RANDOM")
+                      (:by-changing "abs" "C-ABS")
+                      (:by-changing "remove" "C-REMOVE")
+                      (:by-changing "abort" "C-ABORT")))

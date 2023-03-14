@@ -108,7 +108,7 @@ sense to set this in your own code.")))
   (set-linked-children 'max-value obj value))
 
 (defmethod text ((text-box text-box))
-  (cffi:mem-ref (slot-value text-box '%text) :string))
+  (cffi:foreign-string-to-lisp (slot-value text-box '%text)))
 
 (defmethod (setf text) ((value string) (text-box text-box))
   (let ((oldptr (slot-value text-box '%text)))
