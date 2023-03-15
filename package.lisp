@@ -532,9 +532,10 @@
    :rl-vector2 :rl-vector3 :rl-vector4
 
    ;; Claylib classes
-   :animation-asset :camera-3d :circle :cube :font-asset :game-scene :glyph-info :grid :image :image-asset
-   :line-2d :material :material-map :mesh :model :model-asset :music :pixel :plane :ray :rectangle
-   :render-texture :shader-asset :sound :sphere :text :texture :texture-asset :transform :triangle
+   :2d-object :2d-shape :3d-object :3d-shape :animation-asset :camera-3d :circle :cube :font-asset
+   :game-scene :glyph-info :grid :image :image-asset :line-2d :material :material-map :mesh :model
+   :model-asset :music :pixel :plane :ray :rectangle :render-texture :shader-asset :sound :sphere :text
+   :texture :texture-asset :transform :triangle
 
    ;; Constructors
    :make-animation-asset :make-billboard :make-camera-2d :make-camera-2d-from-vecs :make-camera-3d
