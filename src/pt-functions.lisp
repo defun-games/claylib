@@ -40,6 +40,14 @@ unless ALLOCATE-P is T."
   "Get the current mouse position as a RL-VECTOR2. Allocates a new RL-VECTOR2 unless you pass one."
   (vec rl-vector2 nil (make-vector2 0 0)))
 
+(defun-pt get-mouse-delta claylib/ll:get-mouse-delta
+  "Get difference in mouse position between frames. Allocates a new RL-VECTOR2 unless you pass one."
+  (vec rl-vector2 nil (make-vector2 0 0)))
+
+(defun-pt get-mouse-wheel-move-v claylib/ll:get-mouse-wheel-move-v
+  "Get mouse wheel movement as a RL-VECTOR2. Allocates a new RL-VECTOR2 unless you pass one."
+  (vec rl-vector2 nil (make-vector2 0 0)))
+
 ;;; Camera System Functions (Module: rcamera)
 
 (defun update-camera (camera)

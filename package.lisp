@@ -44,7 +44,8 @@
    :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex
    :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere
    :gen-mesh-cubicmap :get-color :check-collision-circles :check-collision-circle-rec
-   :check-collision-point-triangle :check-collision-lines :check-collision-point-line :get-glyph-index)
+   :check-collision-point-triangle :check-collision-lines :check-collision-point-line :get-glyph-index
+   :get-mouse-delta :get-mouse-wheel-move-v)
 
 
 
@@ -113,8 +114,8 @@
 
    ;; Input-related functions: mouse
    :is-mouse-button-pressed-p :is-mouse-button-down-p :is-mouse-button-released-p :is-mouse-button-up-p
-   :get-mouse-x :get-mouse-y :get-mouse-position :set-mouse-position :set-mouse-offset
-   :set-mouse-scale :get-mouse-wheel-move :set-mouse-cursor
+   :get-mouse-x :get-mouse-y :get-mouse-position :get-mouse-delta :set-mouse-position :set-mouse-offset
+   :set-mouse-scale :get-mouse-wheel-move :get-mouse-wheel-move-v :set-mouse-cursor
 
    ;; Input-related functions: touch
    :get-touch-x :get-touch-y :get-touch-point-id :get-touch-point-count
