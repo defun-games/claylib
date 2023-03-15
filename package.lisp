@@ -45,7 +45,7 @@
    :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere
    :gen-mesh-cubicmap :get-color :check-collision-circles :check-collision-circle-rec
    :check-collision-point-triangle :check-collision-lines :check-collision-point-line :get-glyph-index
-   :get-mouse-delta :get-mouse-wheel-move-v)
+   :get-mouse-delta :get-mouse-wheel-move-v :get-model-bounding-box)
 
 
 
@@ -197,7 +197,7 @@
    :draw-grid
 
    ;; Model loading/unloading functions
-   :load-model-from-mesh
+   :load-model-from-mesh :get-model-bounding-box
 
    ;; Model drawing functions
 
@@ -585,7 +585,7 @@
    :v1 :v2 :v3
    :r :g :b :a
    :x-scale :y-scale
-   :color :filled :height :len :pos :radius :rot :size :width
+   :color :filled :height :len :pos :radius :rot :size :width :bbox
    :target :offset :up :zoom
    :low :high
    :start :end

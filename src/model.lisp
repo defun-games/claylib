@@ -105,22 +105,27 @@
               :accessor filled)
      (%asset :initarg :asset
              :type model-asset
-             :accessor asset))
+             :accessor asset)
+     (%bbox
+      :initform nil
+      :type (or rl-bounding-box null)
+      :reader bbox))
     (:default-initargs
      :scale (make-vector3 1 1 1)
      :tint +white+
      :filled t)))
 
 (define-print-object model
-    (scale tint filled asset))
+    (scale tint filled asset bbox))
 
 (definitializer model
-  :lisp-slots ((%scale) (%tint) (%filled) (%asset)))
+  :lisp-slots ((%scale) (%tint) (%filled) (%asset) (%bbox)))
 
 (defun make-model (model-asset x y z
                    &rest args &key scale tint rot-angle rot-axis filled transform mesh-count
                                 meshes material-count materials mesh-materials bone-count bones
-                                bind-pose animation-asset instance-meshes-p instance-materials-p)
+                                bind-pose animation-asset instance-meshes-p instance-materials-p
+                                bounding-box-p)
   "Make a Claylib model.
 
 Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASSET."
@@ -134,10 +139,12 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                        :pos (make-vector3 x y z)
                        :c-ptr (partial-copy-model
                                c-model
+                               ;; Copy transforms and counts from the underlying asset
                                (list (unless transform 'claylib/ll::transform)
                                      (unless mesh-count 'claylib/ll::mesh-count)
                                      (unless material-count 'claylib/ll::material-count)
                                      (unless bone-count 'claylib/ll::bone-count))
+                               ;; Reuse the asset's bones and bind pose
                                (list (unless bones 'claylib/ll::bones)
                                      (unless bind-pose 'claylib/ll::bind-pose)))
                        args))
@@ -149,6 +156,8 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
     (when mesh-count (setf (mesh-count model) mesh-count))
     (when material-count (setf (material-count model) material-count))
     (when bone-count (setf (bone-count model) bone-count))
+
+    ;; Create meshes and materials Lisp arrays based on the C data
     (setf (meshes model)
           (or meshes (make-instance 'rl-meshes
                                     :cl-array (make-rl-mesh-array
@@ -178,6 +187,7 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                                               c-array))
                                         (material-count model)))))
 
+    ;; Same story with animation data, if relevant
     (unless (= 0 (bone-count model))
       (setf (bones model)
             (or bones
@@ -188,6 +198,8 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
             (or bind-pose
                 (make-instance 'rl-transforms
                                :cl-array (make-rl-transform-array c-poses (bone-count model))))))
+
+    ;; Same with mesh-material mappings, if materials are not instanced
     (cond
       (mesh-materials
        (setf (mesh-materials model) mesh-materials))
@@ -200,14 +212,33 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
                        (mesh-count model)
                        mm)
          (setf (field-value (c-ptr model) 'model 'mesh-material) mm))))
+
     (when animation-asset
       (setf (animations model) (asset animation-asset)))
+
+    ;; For instanced meshes we must reset the VAO and VBO ID's or GL gets very upset.
     (unless (or instance-meshes-p meshes)
       (dotimes (i (length (meshes model)))
         (let ((c-mesh (c-ptr (elt (meshes model) i))))
           (setf (field-value c-mesh 'mesh 'vao-id) 0
                 (field-value c-mesh 'mesh 'vbo-id) (calloc :unsigned-int 7))
           (upload-mesh c-mesh 0))))
+
+    ;; Calculate a bounding box and keep it updated along with the model
+    (when bounding-box-p
+      (setf (slot-value model '%bbox) (get-model-bounding-box model))
+      (let ((new-bbox #'(lambda (pwriter pobj value cwriter cobj)
+                          (declare (ignore pwriter value cwriter))
+                          (get-model-bounding-box pobj :bounding-box cobj))))
+        (dolist (writer '(x y z))
+          (link-objects model writer
+                        (list (low (bbox model)) writer :incf)
+                        (list (high (bbox model)) writer :incf))
+          (link-objects (scale model) writer
+                        (list (low (bbox model)) writer :scale)
+                        (list (high (bbox model)) writer :scale))
+          (link-objects (rot-axis model) writer (list (bbox model) nil new-bbox)))
+        (link-objects model 'rot-angle (list (bbox model) nil new-bbox))))
     model))
 
 (defmethod draw-object ((obj model))

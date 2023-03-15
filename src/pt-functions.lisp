@@ -301,6 +301,10 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
           (make-vector3 0 0 0))
     model))
 
+(defun-pt get-model-bounding-box claylib/ll:get-model-bounding-box
+  "Compute a bounding box for a model. Allocates a new RL-BOUNDING-BOX unless you pass one."
+  (bounding-box rl-bounding-box nil (make-instance 'rl-bounding-box))
+  (model rl-model))
 
 ;; Mesh generation functions
 
