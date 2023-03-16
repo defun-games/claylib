@@ -1,26 +1,5 @@
-(claw:defwrapper (:claylib/makeshim
-                  (:headers "raylib.h" "raymath.h" "raygui.h")
-                  (:includes :raylib-includes)
-                  (:targets ((:and :x86-64 :linux) "x86_64-pc-linux-gnu")
-                            ((:and :x86 :linux) "i686-pc-linux-gnu")
-                            ((:and :x86-64 :windows) "x86_64-pc-windows-msvc")
-                            ((:and :x86-64 :windows) "i686-pc-windows-msvc")
-                            ((:and :x86-64 :darwin) "x86_64-apple-darwin-gnu")
-                            ((:and :x86-64 :darwin) "i686-apple-darwin-gnu"))
-                  (:persistent :claylib/wrap
-                   :asd-path "claylib-shim.asd"
-                   :bindings-path "bindings/shim/")
-                  (:include-definitions ".*")
-                  (:exclude-definitions "^__"))
-  :in-package :claylib/wrap
-  :trim-enum-prefix t
-  :recognize-bitfields t
-  :recognize-strings t
-  :recognize-arrays t
-  :with-adapter (:dynamic :path "lib/adapter.c"))
-
 (claw:defwrapper (:claylib/makewrap
-                  (:headers "adapter.x86_64-pc-linux-gnu.c")
+                  (:headers "raylib.h" "raymath.h" "raygui.h")
                   (:defines "RAYGUI_IMPLEMENTATION" 1)
                   (:includes :raylib-includes)
                   (:targets ((:and :x86-64 :linux) "x86_64-pc-linux-gnu")
@@ -66,6 +45,7 @@
   :recognize-bitfields t
   :recognize-strings t
   :recognize-arrays t
+  :with-adapter (:dynamic :path "lib/adapter.c")
   :symbolicate-names (:in-pipeline
                       (:by-removing-prefixes "__claw_cE3AE40FE40" "__claw_")
                       (:by-removing-postfixes "_")

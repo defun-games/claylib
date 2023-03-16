@@ -33,15 +33,6 @@
 #-(:or (:and :x86-64 :darwin)(:and :x86-64 :darwin)(:and :x86-64 :windows)(:and :x86-64 :windows)(:and :x86 :linux)(:and :x86-64 :linux))
 (warn "Current platform unrecognized or unsupported by claylib/wrap system")
 
-(asdf:defsystem #:claylib/makeshim
-  :description "Used only for (re)generating the bindings. Not needed for most users.
-See https://github.com/borodust/claw for documentation."
-  :depends-on (:alexandria :uiop :cffi :claw-utils :claw)
-  :serial t
-  :pathname "wrap/"
-  :components ((:file "claw")
-               (:module :raylib-includes :pathname "lib/")))
-
 (asdf:defsystem #:claylib/makewrap
   :description "Used only for (re)generating the bindings. Not needed for most users.
 See https://github.com/borodust/claw for documentation."
