@@ -1,5 +1,5 @@
 (claw:defwrapper (:claylib/makewrap
-                  (:headers "raylib.h" "raymath.h" "raygui.h")
+                  (:headers "raylib.h" "raymath.h" "rcamera.h" "raygui.h")
                   (:defines "RAYGUI_IMPLEMENTATION" 1)
                   (:includes :raylib-includes)
                   (:targets ((:and :x86-64 :linux) "x86_64-pc-linux-gnu")

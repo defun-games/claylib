@@ -400,6 +400,38 @@ Allocates a new RAY-COLLISION unless you pass one."
 (defun vector2-length (vec)
   (claylib/ll:vector2-length (c-ptr vec)))
 
+;; Vector3
+
+(defun-pt-arg0 vector3-add claylib/ll:vector3-add (make-vector3 0 0 0)
+  "Add two RL-VECTOR3s. Destructively modifies the first arg unless ALLOCATE-P is T."
+  (v1 rl-vector3)
+  (v2 rl-vector3))
+
+(defun-pt-arg0 vector3-subtract claylib/ll:vector3-subtract (make-vector3 0 0 0)
+  "Subtract two RL-VECTOR3s. Destructively modifies the first arg unless ALLOCATE-P is T."
+  (v1 rl-vector3)
+  (v2 rl-vector3))
+
+(defun-pt-num vector3-angle claylib/ll:vector3-angle
+  "Calculate the angle between two RL-VECTOR3s."
+  (v1 rl-vector3)
+  (v2 rl-vector3))
+
+(defun-pt-arg0 vector3-negate claylib/ll:vector3-negate (make-vector3 0 0 0)
+  "Negate a RL-VECTOR3. Destructively modifies the passed vector unless ALLOCATE-P is T."
+  (vec rl-vector3))
+
+(defun-pt-arg0 vector3-normalize claylib/ll:vector3-normalize (make-vector3 0 0 0)
+  "Normalize a RL-VECTOR3. Destructively modifies the passed vector unless ALLOCATE-P is T."
+  (vec rl-vector3))
+
+(defun-pt-arg0 vector3-rotate-by-axis-angle claylib/ll:vector3-rotate-by-axis-angle (make-vector3 0 0 0)
+  "Rotate a RL-VECTOR3 around a given axis (RL-VECTOR3) by ANGLE. Destructively modifies the first
+arg unless ALLOCATE-P is T."
+  (vec rl-vector3)
+  (axis rl-vector3)
+  (angle number float))
+
 ;; Quaternion
 
 (defun-pt quaternion-to-matrix claylib/ll:quaternion-to-matrix
@@ -430,6 +462,81 @@ Allocates a new RAY-COLLISION unless you pass one."
   "Get ZYX rotation matrix from a RL-VECTOR3. Allocates a new RL-MATRIX unless you pass one."
   (matrix rl-matrix nil (make-zero-matrix))
   (ang rl-vector3))
+
+
+
+;;; rcamera
+
+(defun-pt get-camera-forward claylib/ll:get-camera-forward
+  "Get camera's forward vector (normalized). Allocates a new RL-VECTOR3 unless you pass one."
+  (vec rl-vector3 nil (make-vector3 0 0 0))
+  (camera rl-camera-3d))
+
+(defun-pt get-camera-up claylib/ll:get-camera-up
+  "Get camera's up vector (normalized). Allocates a new RL-VECTOR3 unless you pass one."
+  (vec rl-vector3 nil (make-vector3 0 0 0))
+  (camera rl-camera-3d))
+
+(defun-pt get-camera-right claylib/ll:get-camera-right
+  "Get camera's right vector (normalized). Allocates a new RL-VECTOR3 unless you pass one."
+  (vec rl-vector3 nil (make-vector3 0 0 0))
+  (camera rl-camera-3d))
+
+(defun-pt-void camera-move-forward claylib/ll:camera-move-forward
+  "Move camera along its forward axis."
+  (camera rl-camera-3d)
+  (distance number single-float)
+  (move-in-world-plane boolean))
+
+(defun-pt-void camera-move-up claylib/ll:camera-move-up
+  "Move camera along its up axis."
+  (camera rl-camera-3d)
+  (distance number single-float))
+
+(defun-pt-void camera-move-right claylib/ll:camera-move-right
+  "Move camera along its right axis."
+  (camera rl-camera-3d)
+  (distance number single-float)
+  (move-in-world-plane boolean))
+
+(defun-pt-void camera-move-to-target claylib/ll:camera-move-to-target
+  "Move camera closer to or farther from its target."
+  (camera rl-camera-3d)
+  (delta number single-float))
+
+(defun-pt-void camera-yaw claylib/ll:camera-yaw
+  "Rotate the camera around its up vector (looking left/right), or around the target.
+Angle is in radians."
+  (camera rl-camera-3d)
+  (angle number single-float)
+  (rotate-around-target boolean))
+
+(defun-pt-void camera-pitch claylib/ll:camera-pitch
+  "Rotate the camera around its right vector (looking up/down), or around the target.
+lock-view prevents overrotation ('somersaults'), rotate-up adjusts up vector. Angle in radians."
+  (camera rl-camera-3d)
+  (angle number single-float)
+  (lock-view boolean nil t)
+  (rotate-around-target boolean)
+  (rotate-up boolean))
+
+(defun-pt-void camera-roll claylib/ll:camera-roll
+  "Rotate the camera around its forward vector (do a barrel roll!). Angle is in radians."
+  (camera rl-camera-3d)
+  (angle number single-float))
+
+(defun-pt get-camera-view-matrix claylib/ll:get-camera-view-matrix
+  "Get the camera view matrix. Allocates a new RL-MATRIX unless you pass one."
+  (matrix rl-matrix nil (make-zero-matrix))
+  (camera rl-camera-3d))
+
+(defun-pt get-camera-projection-matrix claylib/ll:get-camera-projection-matrix
+  "Get the camera projection matrix. Allocates a new RL-MATRIX unless you pass one."
+  (matrix rl-matrix nil (make-zero-matrix))
+  (camera rl-camera-3d)
+  (aspect number single-float))
+
+
 
 ;; Music management
 

@@ -19,7 +19,8 @@
 
    ;; Math
    :quaternion-from-euler :quaternion-to-euler :vector2-subtract :vector2-add :vector2-scale :vector2-length
-   :matrix-rotate-zyx :quaternion-to-matrix :quaternion-from-matrix :wrap
+   :matrix-rotate-zyx :quaternion-to-matrix :quaternion-from-matrix :wrap :vector3-subtract
+   :vector3-rotate-by-axis-angle :vector3-add :vector3-angle :vector3-negate :vector3-normalize
 
    ;; Globals
    :*claylib-background*
@@ -31,6 +32,11 @@
    :gui-slider-bar :gui-progress-bar :gui-status-bar :gui-dummy-rec :gui-scroll-bar :gui-grid
    :gui-list-view :gui-list-view-ex :gui-message-box :gui-text-input-box :gui-color-picker :gui-color-panel
    :gui-color-bar-alpha :gui-color-bar-hue :gui-draw-icon :gui-check-icon-pixel :gui-load-style
+
+   ;; rcamera
+   :get-camera-forward :get-camera-up :get-camera-right :camera-move-forward :camera-move-up
+   :camera-move-right :camera-move-to-target :camera-yaw :camera-pitch :camera-roll
+   :get-camera-view-matrix :get-camera-projection-matrix
 
    ;; Music management
    :is-music-stream-playing-p :seek-music-stream :get-music-time-length :get-music-time-played
@@ -347,7 +353,7 @@
 
    ;; Camera
    :+camera-custom+ :+camera-perspective+ :+camera-free+ :+camera-orthographic+ :+camera-orbital+
-   :+camera-first-person+ :+camera-third-person+
+   :+camera-first-person+ :+camera-third-person+ :+camera-pro+
 
    ;; Window flags
    :+flag-fullscreen-mode+ :+flag-window-resizable+ :+flag-window-undecorated+ :+flag-window-transparent+
@@ -369,12 +375,21 @@
    :vector2-add :vector2-length :vector2-scale :vector2-subtract
 
    ;; Vector3
+   :vector3-add :vector3-subtract :vector3-angle :vector3-negate :vector3-normalize
+   :vector3-rotate-by-axis-angle
 
    ;; Quaternion
    :quaternion-from-euler :quaternion-from-matrix :quaternion-to-euler :quaternion-to-matrix
 
    ;; Matrix
    :matrix-rotate-zyx
+
+
+
+   ;;; Camera (pass-throughs to rcamera)
+   :get-camera-forward :get-camera-up :get-camera-right :camera-move-forward :camera-move-up
+   :camera-move-right :camera-move-to-target :camera-yaw :camera-pitch :camera-roll
+   :get-camera-view-matrix :get-camera-projection-matrix
 
 
 
@@ -586,7 +601,7 @@
    :r :g :b :a
    :x-scale :y-scale
    :color :filled :height :len :pos :radius :rot :size :width :bbox
-   :target :offset :up :zoom
+   :target :offset :up :zoom :mode :movement :fovy :projection
    :low :high
    :start :end
    :animations :bones :frame-count :frame-poses :maps :materials :trans

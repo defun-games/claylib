@@ -606,6 +606,14 @@
 
 
 
+   ;;; rcamera
+
+   :get-camera-forward :get-camera-up :get-camera-right :camera-move-forward :camera-move-up
+   :camera-move-right :camera-move-to-target :camera-yaw :camera-pitch :camera-roll
+   :get-camera-view-matrix :get-camera-projection-matrix
+
+
+
    ;;; claylib/ll extras
 
    ;; Convenience wrappers
