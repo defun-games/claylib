@@ -21,7 +21,7 @@
      (%rot-angle :documentation "The counter-clockwise rotation of the billboard (as it appears to the
 camera).")
      (%origin :initarg :origin
-              :type rl-vector3
+              :type rl-vector2
               :accessor origin)
      (%tint :initarg :tint
             :type rl-color
@@ -29,7 +29,7 @@ camera).")
     (:default-initargs
      :size (make-vector2 1 1)
      :rot-axis (make-vector3 0 1 0)
-     :origin (make-vector3 0 0 0)
+     :origin (make-vector2 0 0)
      :tint +white+)))
 
 (defreader c-asset billboard c-asset asset)

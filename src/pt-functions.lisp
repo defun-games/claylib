@@ -432,6 +432,11 @@ arg unless ALLOCATE-P is T."
   (axis rl-vector3)
   (angle number float))
 
+(defun-pt-num vector3-distance claylib/ll:vector3-distance
+  "Compute the distance between two RL-VECTOR3s."
+  (v1 rl-vector3)
+  (v2 rl-vector3))
+
 ;; Quaternion
 
 (defun-pt quaternion-to-matrix claylib/ll:quaternion-to-matrix

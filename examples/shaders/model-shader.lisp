@@ -13,7 +13,7 @@
         (cam (make-camera-3d 4 4 4
                              0 1 -1
                              0 1 0
-                             :mode +camera-free+)))
+                             :mode +camera-first-person+)))
        (:assets
         (modass (make-model-asset
                  (claylib/examples:claylib-path "examples/shaders/resources/models/watermill.obj")))

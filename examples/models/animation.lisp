@@ -19,7 +19,7 @@
               ((camera (make-camera-3d 10 10 10
                                        0 0 0
                                        0 1 0
-                                       :mode +camera-free+))
+                                       :mode +camera-first-person+))
                (model (let ((m (make-model model-asset
                                            0 0 0
                                            :animation-asset model-anims
@@ -42,6 +42,7 @@
 
 (defun main ()
   (with-window (:title "raylib [models] example - model animation")
+    (disable-cursor)
     (with-scenes *scene* ()
       (with-scene-objects (camera model) *scene*
         (do-game-loop (:livesupport t
