@@ -87,8 +87,7 @@
    :get-gesture-drag-vector :get-gesture-drag-angle :get-gesture-pinch-vector :get-gesture-pinch-angle
 
    ;; Camera System Functions (Module: rcamera)
-   :set-camera-mode :update-camera :set-camera-pan-control :set-camera-alt-control
-   :set-camera-smooth-zoom-control :set-camera-move-controls
+   :update-camera :update-camera-pro
 
 
 

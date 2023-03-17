@@ -51,7 +51,12 @@ unless ALLOCATE-P is T."
 ;;; Camera System Functions (Module: rcamera)
 
 (defun update-camera (camera)
-  (claylib/ll:update-camera (c-ptr camera)))
+  (if (= (mode camera) +camera-pro+)
+      (claylib/ll:update-camera-pro (c-ptr camera)
+                                    (c-ptr (movement camera))
+                                    (c-ptr (rot camera))
+                                    (zoom camera))
+      (claylib/ll:update-camera (c-ptr camera) (mode camera))))
 
 
 

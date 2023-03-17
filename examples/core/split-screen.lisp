@@ -6,10 +6,7 @@
 
 (defun main ()
   (with-window (:title "raylib [core] example - split screen")
-    (let* ((texture-grid (make-empty-texture
-                          :filter +texture-filter-anisotropic-16x+
-                          :wrap +texture-wrap-clamp+))
-           (camera-player1 (make-camera-3d 0 1 -3
+    (let* ((camera-player1 (make-camera-3d 0 1 -3
                                            0 1 0
                                            0 1 0))
            (camera-player2 (make-camera-3d -3 3 0
@@ -38,22 +35,16 @@
                                                         :size 20 :color +blue+))
                                (texture-player1 (texture screen-player1))
                                (texture-player2 (texture screen-player2))))))
-      (load-texture-from-image (gen-image-checked 256 256
-                                                  32 32
-                                                  +darkgray+ +white+)
-                               :texture texture-grid)
       (loop for x from -20 to 20 by 4
             do (loop for z from -20 to 20 by 4
                      do (setf (gethash (gensym "TREE") (objects scene))
                               (make-cube x 1.5 z
                                          1 1 1
-                                         +green+
-                                         :texture texture-grid)
+                                         +lime+)
                               (gethash (gensym "TREE") (objects scene))
                               (make-cube x 0.5 z
                                          0.25 1 0.25
-                                         +brown+
-                                         :texture texture-grid))))
+                                         +brown+))))
       (with-scenes scene ()
         (let ((tex1 (scene-object scene 'texture-player1))
               (tex2 (scene-object scene 'texture-player2)))

@@ -215,8 +215,7 @@ See https://github.com/borodust/claw for documentation."
                  (:module "audio"
                   :components
                   ((:file "module-playing")
-                   (:file "music-stream")
-                   (:file "multichannel-sound")))
+                   (:file "music-stream")))
                  (:module "shaders"
                   :components
                   ((:file "model-shader")))))))
