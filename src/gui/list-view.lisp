@@ -22,8 +22,7 @@
 (define-print-object gui-list-view
     (active))
 
-(defmethod (setf active) :before (value (obj gui-list-view))
-  (set-linked-children 'active obj value))
+(child-setter gui-list-view active scroll-index focus)
 
 (defmethod scroll-index ((list-view gui-list-view))
   (cffi:mem-ref (slot-value list-view '%scroll-index) :int))
@@ -32,11 +31,9 @@
   (cffi:mem-ref (slot-value list-view '%focus) :int))
 
 (defmethod (setf scroll-index) (value (list-view gui-list-view))
-  (set-linked-children 'scroll-index list-view value)
   (setf (cffi:mem-ref (slot-value list-view '%scroll-index) :int) value))
 
 (defmethod (setf focus) (value (list-view gui-list-view))
-  (set-linked-children 'focus list-view value)
   (setf (cffi:mem-ref (slot-value list-view '%focus) :int) value))
 
 (defmethod initialize-instance :after ((list-view gui-list-view)

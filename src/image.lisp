@@ -44,6 +44,8 @@
     (:default-initargs
      :tint +white+)))
 
+(child-setter image source dest tint)
+
 (define-print-object image
     (source dest tint))
 

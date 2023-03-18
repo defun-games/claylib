@@ -23,6 +23,8 @@
      :spacing 1.0
      :color +gray+)))
 
+(child-setter text text font color)
+
 (define-print-object text
     (text font size spacing color))
 

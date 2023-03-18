@@ -9,6 +9,8 @@
      :checked nil)
     (:documentation "Checkbox control, sets CHECKED when active")))
 
+(child-setter gui-checkbox checked)
+
 (define-print-object gui-checkbox
     (checked))
 

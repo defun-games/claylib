@@ -37,8 +37,7 @@ DEFCWRITER-VEC."
                                    `(,value ,value-type)
                                    value)
                               (,obj ,type))
-       (when (numberp ,value)
-         (set-linked-children ',slot ,obj ,value))
+       (set-linked-children ',slot ,obj ,value)
        (setf (,sub-writer (,sub-slot ,obj)) ,value))))
 
 (defmacro defcwriter (lisp-slot lisp-type c-slot c-type &optional value-type coerce-type)
@@ -55,8 +54,7 @@ Oh yeah, and make sure it's a float.' If CAMERA2D is a CLOS object, you need DEF
                                         `(,value ,value-type)
                                         value)
                                    (,obj ,lisp-type))
-       (when (numberp ,value)
-         (set-linked-children ',lisp-slot ,obj ,value))
+       (set-linked-children ',lisp-slot ,obj ,value)
        (setf (field-value (c-ptr ,obj) ',c-type ',c-slot)
              ,(if coerce-type
                   `(coerce ,value ',coerce-type)
@@ -98,6 +96,7 @@ backing it.'"
     `(defmethod set-slot ((,slot (eql ,(alexandria:make-keyword lisp-slot)))
                           (,obj ,lisp-type)
                           (,value ,(intern (format nil "RL-~:@a" struct-type))))
+       (set-linked-children ',lisp-slot ,obj ,value)
        (,struct-setter (field-value (c-ptr ,obj) ',c-type ',c-slot)
                        ,@(loop for reader in readers
                                collect (if (listp reader)
@@ -246,6 +245,14 @@ be run in the finalizer."
                                        `(when (is-window-ready-p) (,(car unload) ,obj))
                                        `(,(car unload) ,obj)))))))
            ,obj)))))
+
+(defmacro child-setter (type &rest slots)
+  "Define :before methods on writers for the purpose of running triggers on children that have them.
+Use this on slots with :accessor."
+  `(progn
+     ,@(loop for slot in slots
+             collect `(defmethod (setf ,slot) :before (value (obj ,type))
+                        (set-linked-children ',slot obj value)))))
 
 (defmacro default-unload (type fn &optional window-required-p)
   "Define an initializer for a C wrapper type which will add a UNLOAD-* function to its finalizer."

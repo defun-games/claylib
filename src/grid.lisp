@@ -14,8 +14,7 @@
 
 (defwriter-float spacing grid)
 
-(defmethod (setf slices) :before (value (obj grid))
-  (set-linked-children 'slices obj value))
+(child-setter grid slices)
 
 (definitializer grid
   :lisp-slots ((%slices)

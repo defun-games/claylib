@@ -29,7 +29,7 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-model-animation (c-struct)
+  (defclass rl-model-animation (c-struct linkable)
     ((%bones :initarg :bones
              :type rl-bones
              :reader bones)

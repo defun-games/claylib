@@ -20,6 +20,8 @@
 (define-print-object line
     (start end color))
 
+(child-setter line start end color)
+
 (defwriter x1 line x start number)
 (defwriter y1 line y start number)
 (defwriter x2 line x end number)
@@ -49,6 +51,8 @@
     (:default-initargs
      :thickness 1.0
      :bezier nil)))
+
+(child-setter line-2d bezier control-pt control-pt2)
 
 (define-print-object line-2d
     (thickness bezier control-pt control-pt2))

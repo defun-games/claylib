@@ -63,6 +63,8 @@
      :rot (make-vector3 0 0 0)
      :zoom 0.0)))
 
+(child-setter camera-3d mode movement rotation zoom)
+
 (define-print-object camera-3d
     (mode movement rot zoom))
 

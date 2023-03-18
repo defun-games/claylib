@@ -23,6 +23,8 @@ sense to set this in your own code."))
      :buttons "")
     (:documentation "Message Box control, displays a message, sets SELECTED to clicked button from list")))
 
+(child-setter gui-message-box title message buttons)
+
 (define-print-object gui-message-box
     (title message buttons selected))
 

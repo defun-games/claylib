@@ -32,7 +32,7 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass tex ()
+  (defclass tex (linkable)
     ((%source :initarg :source
               :type rl-rectangle
               :accessor source)
@@ -52,6 +52,8 @@
      :origin (make-vector2 0 0)
      :rot 0.0
      :tint +white+)))
+
+(child-setter tex source dest origin tint)
 
 (define-print-object tex
     (source dest origin rot tint))
@@ -79,8 +81,10 @@
      :filter +texture-filter-point+
      :wrap +texture-wrap-repeat+)))
 
+(child-setter texture filter wrap)
+
 (define-print-object texture
-  (filter wrap))
+    (filter wrap))
 
 (defmethod (setf filter) ((value integer) (texture texture))
   (claylib/ll:set-texture-filter (c-ptr texture) value)
@@ -118,7 +122,7 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass texture-object (tex linkable)
+  (defclass texture-object (tex)
     ((%asset :initarg :asset
              :type texture-asset
              :accessor asset))))
@@ -132,6 +136,8 @@
 
 (define-print-object texture-object
     (asset c-asset x y width height))
+
+(child-setter texture-object asset)
 
 (defwriter x texture-object x dest)
 (defwriter y texture-object y dest)
@@ -196,7 +202,7 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-render-texture (c-struct)
+  (defclass rl-render-texture (c-struct linkable)
     ((%texture :initarg :texture
                :type texture
                :reader texture)

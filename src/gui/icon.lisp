@@ -15,17 +15,10 @@
                   :type integer
                   :accessor pixel-size))))
 
+(child-setter gui-icon icon-id x y pixel-size)
+
 (define-print-object gui-icon
     (icon-id x y pixel-size))
-
-(defmethod (setf icon-id) :before (value (obj gui-icon))
-  (set-linked-children 'icon-id obj value))
-(defmethod (setf x) :before (value (obj gui-icon))
-  (set-linked-children 'x obj value))
-(defmethod (setf y) :before (value (obj gui-icon))
-  (set-linked-children 'y obj value))
-(defmethod (setf pixel-size) :before (value (obj gui-icon))
-  (set-linked-children 'pixel-size obj value))
 
 (defun-pt-void gui-draw-icon claylib/ll:gui-draw-icon
   "Draw a gui icon"

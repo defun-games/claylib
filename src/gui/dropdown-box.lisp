@@ -8,6 +8,8 @@
      :active 0)
     (:documentation "Dropdown Box control, sets PRESSED when clicked")))
 
+(child-setter gui-dropdown-box active)
+
 (define-print-object gui-dropdown-box
     ())
 
@@ -15,7 +17,6 @@
   (cffi:mem-ref (slot-value dropdown '%active) :int))
 
 (defmethod (setf active) (value (dropdown gui-dropdown-box))
-  (set-linked-children 'active dropdown value)
   (setf (cffi:mem-ref (slot-value dropdown '%active) :int) value))
 
 (defmethod initialize-instance :after ((dropdown gui-dropdown-box)

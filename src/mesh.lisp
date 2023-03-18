@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-mesh (c-struct)
+  (defclass rl-mesh (c-struct linkable)
     ()
     (:default-initargs
      :c-ptr (calloc 'claylib/ll:mesh))))

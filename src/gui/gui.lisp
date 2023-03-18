@@ -8,14 +8,14 @@
               :type rl-rectangle
               :accessor bounds)))
 
-  (defclass text-label ()
+  (defclass text-label (linkable)
     ((%text :initarg :text
             :type string
             :accessor text))
     (:default-initargs
      :text ""))
 
-  (defclass text-box ()
+  (defclass text-box (linkable)
     ((%text-size :initarg :text-size
                  :type integer
                  :reader text-size)
@@ -33,14 +33,14 @@
       :documentation "The 'pressed' slot is a return value of the drawing function. It rarely makes
 sense to set this in your own code.")))
 
-  (defclass editable ()
+  (defclass editable (linkable)
     ((%edit-mode :initarg :edit-mode
                  :type boolean
                  :accessor edit-mode))
     (:default-initargs
      :edit-mode nil))
 
-  (defclass int-values ()
+  (defclass int-values (linkable)
     ((%value :initarg :value
              :type cffi:foreign-pointer)
      (%min-value :initarg :min-value
@@ -50,7 +50,7 @@ sense to set this in your own code.")))
                  :type integer
                  :accessor max-value)))
 
-  (defclass value-bar ()
+  (defclass value-bar (linkable)
     ((%text-left :initarg :text-left
                  :type string
                  :accessor text-left)
@@ -73,10 +73,18 @@ sense to set this in your own code.")))
   (defwriter-float min-value value-bar)
   (defwriter-float max-value value-bar)
 
-  (defclass gui-color ()
+  (defclass gui-color (linkable)
     ((%color :initarg :color
              :type rl-color
              :accessor color))))
+
+(child-setter gui-object bounds)
+(child-setter text-label text)
+(child-setter text-box text-size text)
+(child-setter editable edit-mode)
+(child-setter int-values value min-value max-value)
+(child-setter value-bar text-left text-right)
+(child-setter gui-color color)
 
 (define-print-object gui-object
     (bounds))
@@ -102,11 +110,6 @@ sense to set this in your own code.")))
 (define-print-object gui-color
     (color))
 
-(defmethod (setf min-value) :before (value (obj int-values))
-  (set-linked-children 'min-value obj value))
-(defmethod (setf max-value) :before (value (obj int-values))
-  (set-linked-children 'max-value obj value))
-
 (defmethod text ((text-box text-box))
   (cffi:foreign-string-to-lisp (slot-value text-box '%text)))
 
@@ -121,8 +124,7 @@ sense to set this in your own code.")))
                                      oldptr
                                      (text-size text-box)))))
 
-(defmethod (setf text-size) :before ((value integer) (text-box text-box))
-  (set-linked-children 'text-size text-box value))
+(child-setter text-box text-size)
 
 (defmethod (setf text-size) ((value integer) (text-box text-box))
   (when (/= value (text-size text-box))
@@ -152,7 +154,6 @@ sense to set this in your own code.")))
   (cffi:mem-ref (slot-value range '%value) :int))
 
 (defmethod (setf value) (value (range int-values))
-  (set-linked-children 'value range value)
   (setf (cffi:mem-ref (slot-value range '%value) :int) value))
 
 (defmethod initialize-instance :after ((range int-values)

@@ -13,6 +13,8 @@
 (define-print-object plane
     (size width len))
 
+(child-setter plane size)
+
 (defwriter width plane x size number)
 (defwriter len plane y size number)
 

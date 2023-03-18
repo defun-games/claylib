@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-transform (c-struct)
+  (defclass rl-transform (c-struct linkable)
     ((%translation :initarg :trans
                    :type rl-vector3
                    :reader trans)

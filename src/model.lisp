@@ -39,6 +39,8 @@
 (define-print-object rl-model
     (transform meshes materials bones bind-pose animations mesh-count material-count bone-count mesh-materials))
 
+(child-setter rl-model meshes materials bones bind-pose animations)
+
 (defcwriter mesh-count rl-model mesh-count model integer)
 (defcwriter material-count rl-model material-count model integer)
 (defcwriter bone-count rl-model bone-count model integer)
@@ -114,6 +116,8 @@
      :scale (make-vector3 1 1 1)
      :tint +white+
      :filled t)))
+
+(child-setter model scale tint filled asset)
 
 (define-print-object model
     (scale tint filled asset bbox))

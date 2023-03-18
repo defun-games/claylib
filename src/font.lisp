@@ -92,6 +92,8 @@
 (define-print-object rl-font
     (texture recs glyphs size glyph-count glyph-padding))
 
+(child-setter rl-font recs glyphs)
+
 (defcwriter size rl-font base-size font integer)
 (defcwriter glyph-count rl-font glyph-count font integer)
 (defcwriter glyph-padding rl-font glyph-padding font integer)

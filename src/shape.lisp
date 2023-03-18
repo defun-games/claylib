@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass shape ()
+  (defclass shape (linkable)
     ((%color :initarg :color
              :type rl-color
              :accessor color)
@@ -10,6 +10,8 @@
               :accessor filled))
     (:default-initargs
      :filled t)))
+
+(child-setter shape color filled)
 
 (define-print-object shape
     (color filled))
@@ -25,6 +27,8 @@
               :type rl-color
               :accessor color2
               :documentation "The 2nd color to use for a shape drawn with a gradient."))))
+
+(child-setter 2d-shape color2)
 
 (define-print-object 2d-shape
     (color2))

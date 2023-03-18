@@ -84,6 +84,8 @@
 (define-print-object rectangle
     (origin rot thickness gradient-style))
 
+(child-setter rectangle gradient-style)
+
 (defwriter-float rot rectangle %rotation)
 (defwriter-float thickness rectangle)
 

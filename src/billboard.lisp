@@ -39,6 +39,8 @@ camera).")
 (define-print-object billboard
     (asset camera size source up origin tint c-asset x-scale y-scale))
 
+(child-setter billboard asset camera size source origin tint)
+
 (defwriter x-scale billboard x size number)
 (defwriter y-scale billboard y size number)
 

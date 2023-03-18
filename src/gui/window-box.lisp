@@ -9,6 +9,8 @@
      :title "")
     (:documentation "Window Box control, shows a window that can be closed")))
 
+(child-setter gui-window-box title)
+
 (define-print-object gui-window-box
     (title))
 

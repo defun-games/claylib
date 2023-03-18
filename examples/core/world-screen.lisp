@@ -46,7 +46,7 @@
           (get-world-to-screen-3d invec camera :vec outvec)
           (setf (x (scene-object scene 'text1)) (- (x outvec) half-text)
                 (y (scene-object scene 'text1)) (y outvec)
-                (text (scene-object scene 'text3))
+                (text (scene-object scene 'text2))
                 (format nil
                         "Cube position in screen space coordinates: [~d, ~d]"
                         (x outvec) (y outvec)))

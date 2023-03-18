@@ -25,8 +25,7 @@
 (defwriter-float rot polygon %rotation)
 (defwriter-float thickness polygon)
 
-(defmethod (setf sides) :before (value (obj polygon))
-  (set-linked-children 'sides obj value))
+(child-setter polygon sides)
 
 (definitializer polygon
   :lisp-slots ((%sides)

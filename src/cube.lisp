@@ -13,6 +13,8 @@
 (define-print-object cube
     (size))
 
+(child-setter cube size)
+
 (defwriter width cube x size number)
 (defwriter height cube y size number)
 (defwriter len cube z size number)

@@ -22,6 +22,8 @@
 (define-print-object triangle
     (v1 v2 v3))
 
+(child-setter triangle v1 v2 v3)
+
 (defwriter x1 triangle x v1 number)
 (defwriter y1 triangle y v1 number)
 (defwriter x2 triangle x v2 number)
