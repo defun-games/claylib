@@ -8,14 +8,14 @@
               :type rl-rectangle
               :accessor bounds)))
 
-  (defclass text-label ()
+  (defclass text-label (linkable)
     ((%text :initarg :text
             :type string
             :accessor text))
     (:default-initargs
      :text ""))
 
-  (defclass text-box ()
+  (defclass text-box (linkable)
     ((%text-size :initarg :text-size
                  :type integer
                  :reader text-size)
@@ -33,14 +33,14 @@
       :documentation "The 'pressed' slot is a return value of the drawing function. It rarely makes
 sense to set this in your own code.")))
 
-  (defclass editable ()
+  (defclass editable (linkable)
     ((%edit-mode :initarg :edit-mode
                  :type boolean
                  :accessor edit-mode))
     (:default-initargs
      :edit-mode nil))
 
-  (defclass int-values ()
+  (defclass int-values (linkable)
     ((%value :initarg :value
              :type cffi:foreign-pointer)
      (%min-value :initarg :min-value
@@ -50,7 +50,7 @@ sense to set this in your own code.")))
                  :type integer
                  :accessor max-value)))
 
-  (defclass value-bar ()
+  (defclass value-bar (linkable)
     ((%text-left :initarg :text-left
                  :type string
                  :accessor text-left)
@@ -73,10 +73,18 @@ sense to set this in your own code.")))
   (defwriter-float min-value value-bar)
   (defwriter-float max-value value-bar)
 
-  (defclass gui-color ()
+  (defclass gui-color (linkable)
     ((%color :initarg :color
              :type rl-color
              :accessor color))))
+
+(child-setter gui-object bounds)
+(child-setter text-label text)
+(child-setter text-box text-size text)
+(child-setter editable edit-mode)
+(child-setter int-values value min-value max-value)
+(child-setter value-bar text-left text-right)
+(child-setter gui-color color)
 
 (define-print-object gui-object
     (bounds))
@@ -102,31 +110,25 @@ sense to set this in your own code.")))
 (define-print-object gui-color
     (color))
 
-(defmethod (setf min-value) :before (value (obj int-values))
-  (set-linked-children 'min-value obj value))
-(defmethod (setf max-value) :before (value (obj int-values))
-  (set-linked-children 'max-value obj value))
-
 (defmethod text ((text-box text-box))
-  (plus-c:c-ref (slot-value text-box '%text) :char string))
+  (cffi:foreign-string-to-lisp (slot-value text-box '%text)))
 
 (defmethod (setf text) ((value string) (text-box text-box))
   (let ((oldptr (slot-value text-box '%text)))
     (if (>= (length value) (text-size text-box))
-        (let ((ptr (autowrap:alloc-string value)))
+        (let ((ptr (cffi:foreign-string-alloc value)))
           (setf (slot-value text-box '%text) ptr
                 (slot-value text-box '%text-size) (1+ (length value)))
-          (autowrap:free oldptr))
+          (cffi:foreign-free oldptr))
         (cffi:lisp-string-to-foreign value
                                      oldptr
                                      (text-size text-box)))))
 
-(defmethod (setf text-size) :before ((value integer) (text-box text-box))
-  (set-linked-children 'text-size text-box value))
+(child-setter text-box text-size)
 
 (defmethod (setf text-size) ((value integer) (text-box text-box))
   (when (/= value (text-size text-box))
-    (let ((ptr (autowrap:calloc :char value))
+    (let ((ptr (calloc :char value))
           (old (slot-value text-box '%text)))
       (cffi:lisp-string-to-foreign (if (<= value (length (text text-box)))
                                        (subseq (text text-box) 0 (1- value))
@@ -135,30 +137,29 @@ sense to set this in your own code.")))
                                    value)
       (setf (slot-value text-box '%text-size) value
             (slot-value text-box '%text) ptr)
-      (autowrap:free old))
+      (cffi:foreign-free old))
     value))
 
 (defmethod initialize-instance :after ((text-box text-box)
                                        &key text-size text &allow-other-keys)
   (let* ((len (max (1+ (length text))
                    text-size))
-         (ptr (autowrap:calloc :char len)))
+         (ptr (calloc :char len)))
     (cffi:lisp-string-to-foreign text ptr len)
     (setf (slot-value text-box '%text) ptr
           (slot-value text-box '%text-size) len))
   text-box)
 
 (defmethod value ((range int-values))
-  (plus-c:c-ref (slot-value range '%value) :int))
+  (cffi:mem-ref (slot-value range '%value) :int))
 
 (defmethod (setf value) (value (range int-values))
-  (set-linked-children 'value range value)
-  (setf (plus-c:c-ref (slot-value range '%value) :int) value))
+  (setf (cffi:mem-ref (slot-value range '%value) :int) value))
 
 (defmethod initialize-instance :after ((range int-values)
                                        &key value &allow-other-keys)
-  (let ((ptr (autowrap:calloc :int)))
-    (setf (plus-c:c-ref ptr :int) value
+  (let ((ptr (calloc :int)))
+    (setf (cffi:mem-ref ptr :int) value
           (slot-value range '%value) ptr)
     range))
 

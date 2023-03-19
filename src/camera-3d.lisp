@@ -1,7 +1,7 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-camera-3d (linkable)
+  (defclass rl-camera-3d (c-struct linkable)
     ((%position :initarg :pos
                 :type rl-vector3
                 :reader pos)
@@ -10,12 +10,9 @@
               :reader target)
      (%up :initarg :up
           :type rl-vector3
-          :reader up)
-     (%c-struct
-      :type claylib/ll:camera3d
-      :accessor c-struct))
+          :reader up))
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:camera3d)
+     :c-ptr (calloc 'claylib/ll:camera3d)
      :fovy 45.0
      :projection +camera-perspective+)))
 
@@ -44,29 +41,41 @@
 
 
 
+(alexandria:define-constant +camera-pro+ -1)
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass camera-3d (rl-camera-3d)
     ((%mode :initarg :mode
             :type integer
-            :reader mode))
+            :accessor mode)
+     (%movement :initarg :movement
+                :type rl-vector3
+                :accessor movement)
+     (%rotation :initarg :rot
+                :type rl-vector3
+                :accessor rot)
+     (%zoom :initarg :zoom
+            :type float
+            :accessor zoom))
     (:default-initargs
-     :mode +camera-custom+)))
+     :mode +camera-custom+
+     :movement (make-vector3 0 0 0)
+     :rot (make-vector3 0 0 0)
+     :zoom 0.0)))
+
+(child-setter camera-3d mode movement rotation zoom)
 
 (define-print-object camera-3d
-    (mode))
-
-(defmethod (setf mode) ((value integer) (camera camera-3d))
-  (claylib/ll:set-camera-mode (c-struct camera) value)
-  (setf (slot-value camera '%mode) value))
+    (mode movement rot zoom))
 
 (definitializer camera-3d
-  :lisp-slots ((%mode t)))
+  :lisp-slots ((%mode) (%movement) (%rotation) (%zoom)))
 
 (defun make-camera-3d (pos-x pos-y pos-z
                        target-x target-y target-z
                        up-x up-y up-z
-                       &rest args &key fovy projection mode)
-  (declare (ignorable fovy projection mode))
+                       &rest args &key fovy projection mode movement rot zoom)
+  (declare (ignorable fovy projection mode movement rot zoom))
   (apply #'make-instance 'camera-3d
          :pos (make-vector3 pos-x pos-y pos-z)
          :target (make-vector3 target-x target-y target-z)
@@ -74,8 +83,8 @@
          args))
 
 (defun make-camera-3d-from-vecs (pos target up
-                                 &rest args &key fovy projection mode)
-  (declare (ignorable fovy projection mode))
+                                 &rest args &key fovy projection mode movement rot zoom)
+  (declare (ignorable fovy projection mode movement rot zoom))
   (apply #'make-instance 'camera-3d
          :pos pos
          :target target

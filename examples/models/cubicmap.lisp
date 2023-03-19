@@ -29,9 +29,9 @@
                     (model (let ((m (load-model-from-mesh (gen-mesh-cubicmap (asset image-ass)
                                                                              (make-vector3 1 1 1)))))
                              ;; Change the texture of the diffuse map of 0th material in the model
-                             (set-slot :texture
-                                       (elt (maps (elt (materials m) 0)) +material-map-diffuse+)
-                                       (asset texture))
+                             (set-material-texture (elt (materials m) 0)
+                                                   +material-map-diffuse+
+                                                   (asset texture))
 
                              (setf (x m) -16
                                    (y m) 0

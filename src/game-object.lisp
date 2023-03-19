@@ -12,6 +12,8 @@
 (define-print-object 2d-object
     (pos))
 
+(child-setter 2d-object pos)
+
 (defwriter x 2d-object x pos number)
 (defwriter y 2d-object y pos number)
 
@@ -41,6 +43,8 @@
 
 (define-print-object 3d-object
     (pos rot-axis rot-angle))
+
+(child-setter 3d-object pos rot-axis)
 
 (defwriter x 3d-object x pos number)
 (defwriter y 3d-object y pos number)

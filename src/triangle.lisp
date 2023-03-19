@@ -22,6 +22,8 @@
 (define-print-object triangle
     (v1 v2 v3))
 
+(child-setter triangle v1 v2 v3)
+
 (defwriter x1 triangle x v1 number)
 (defwriter y1 triangle y v1 number)
 (defwriter x2 triangle x v2 number)
@@ -53,10 +55,10 @@
          args))
 
 (defmethod draw-object ((obj triangle))
-  (let ((v1 (c-struct (v1 obj)))
-        (v2 (c-struct (v2 obj)))
-        (v3 (c-struct (v3 obj)))
-        (color (c-struct (color obj))))
+  (let ((v1 (c-ptr (v1 obj)))
+        (v2 (c-ptr (v2 obj)))
+        (v3 (c-ptr (v3 obj)))
+        (color (c-ptr (color obj))))
     (if (filled obj)
         (claylib/ll:draw-triangle v1 v2 v3 color)
         (claylib/ll:draw-triangle-lines v1 v2 v3 color))))

@@ -1,5 +1,8 @@
 (defpackage #:claylib/ll
-  (:use #:cl #:plus-c #:claylib/wrap)
+  (:use #:cl #:claylib/wrap)
+  (:shadowing-import-from :cl
+   ;; These are field names which are needed in claylib/wrap yet conflict with CL symbols.
+   :stream :count :format :max :position :min)
   (:export
 
    ;;; Core
@@ -84,8 +87,7 @@
    :get-gesture-drag-vector :get-gesture-drag-angle :get-gesture-pinch-vector :get-gesture-pinch-angle
 
    ;; Camera System Functions (Module: rcamera)
-   :set-camera-mode :update-camera :set-camera-pan-control :set-camera-alt-control
-   :set-camera-smooth-zoom-control :set-camera-move-controls
+   :update-camera :update-camera-pro
 
 
 
@@ -604,6 +606,14 @@
 
 
 
+   ;;; rcamera
+
+   :get-camera-forward :get-camera-up :get-camera-right :camera-move-forward :camera-move-up
+   :camera-move-right :camera-move-to-target :camera-yaw :camera-pitch :camera-roll
+   :get-camera-view-matrix :get-camera-projection-matrix
+
+
+
    ;;; claylib/ll extras
 
    ;; Convenience wrappers
@@ -613,7 +623,14 @@
    :set-glyph-info :set-font :set-camera3d :set-camera2d :set-mesh :set-shader :set-material-map
    :set-material :set-transform :set-bone-info :set-model :set-model-animation :set-ray :set-ray-collision
    :set-bounding-box :set-wave :set-audio-stream :set-sound :set-music :data-valid-p :array-valid-p
-   :full-copy :partial-copy :copy-c-array
+   :full-copy-shader :full-copy-material :partial-copy-vector2 :partial-copy-vector3 :partial-copy-vector4
+   :partial-copy-matrix :partial-copy-color :partial-copy-rectangle :partial-copy-texture
+   :partial-copy-render-texture :partial-copy-n-patch-info :partial-copy-glyph-info :partial-copy-font
+   :partial-copy-camera3d :partial-copy-camera2d :partial-copy-mesh :partial-copy-shader
+   :partial-copy-material-map :partial-copy-material :partial-copy-transform :partial-copy-bone-info
+   :partial-copy-model :partial-copy-model-animation :partial-copy-ray :partial-copy-ray-collision
+   :partial-copy-bounding-box :partial-copy-vr-device-info :partial-copy-vr-stereo-config :copy-c-array
+   :calloc :field-ptr :field-value
 
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps*))

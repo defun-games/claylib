@@ -1,14 +1,10 @@
 (in-package #:claylib)
 
-(default-unload claylib/ll:texture unload-texture t)
-
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-texture (linkable)
-    ((%c-struct
-      :type claylib/ll:texture
-      :accessor c-struct))
+  (defclass rl-texture (c-struct linkable)
+    ()
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:texture))))
+     :c-ptr (calloc 'claylib/ll:texture))))
 
 (defcreader id rl-texture id texture)
 (defcreader width rl-texture width texture)
@@ -30,12 +26,13 @@
                  (width integer)
                  (height integer)
                  (mipmaps integer)
-                 (data-format integer)))
+                 (data-format integer))
+  :unload (unload-texture t))
 
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass tex ()
+  (defclass tex (linkable)
     ((%source :initarg :source
               :type rl-rectangle
               :accessor source)
@@ -55,6 +52,8 @@
      :origin (make-vector2 0 0)
      :rot 0.0
      :tint +white+)))
+
+(child-setter tex source dest origin tint)
 
 (define-print-object tex
     (source dest origin rot tint))
@@ -82,15 +81,17 @@
      :filter +texture-filter-point+
      :wrap +texture-wrap-repeat+)))
 
+(child-setter texture filter wrap)
+
 (define-print-object texture
-  (filter wrap))
+    (filter wrap))
 
 (defmethod (setf filter) ((value integer) (texture texture))
-  (claylib/ll:set-texture-filter (c-struct texture) value)
+  (claylib/ll:set-texture-filter (c-ptr texture) value)
   (setf (slot-value texture '%filter) value))
 
 (defmethod (setf wrap) ((value integer) (texture texture))
-  (claylib/ll:set-texture-wrap (c-struct texture) value)
+  (claylib/ll:set-texture-wrap (c-ptr texture) value)
   (setf (slot-value texture '%wrap) value))
 
 (definitializer texture
@@ -109,19 +110,19 @@
          args))
 
 (defmethod draw-object ((obj texture))
-  (claylib/ll:draw-texture-pro (c-struct obj)
-                               (c-struct (source obj))
-                               (c-struct (dest obj))
-                               (c-struct (origin obj))
+  (claylib/ll:draw-texture-pro (c-ptr obj)
+                               (c-ptr (source obj))
+                               (c-ptr (dest obj))
+                               (c-ptr (origin obj))
                                (rot obj)
-                               (c-struct (tint obj))))
+                               (c-ptr (tint obj))))
 
 (static-draw draw-texture-non-object texture)
 
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass texture-object (tex linkable)
+  (defclass texture-object (tex)
     ((%asset :initarg :asset
              :type texture-asset
              :accessor asset))))
@@ -135,6 +136,8 @@
 
 (define-print-object texture-object
     (asset c-asset x y width height))
+
+(child-setter texture-object asset)
 
 (defwriter x texture-object x dest)
 (defwriter y texture-object y dest)
@@ -188,31 +191,26 @@
 
 (defmethod draw-object ((obj texture-object))
   (claylib/ll:draw-texture-pro (c-asset obj)
-                               (c-struct (source obj))
-                               (c-struct (dest obj))
-                               (c-struct (origin obj))
+                               (c-ptr (source obj))
+                               (c-ptr (dest obj))
+                               (c-ptr (origin obj))
                                (rot obj)
-                               (c-struct (tint obj))))
+                               (c-ptr (tint obj))))
 
 (static-draw draw-texture-object texture-object)
 
 
 
-(default-unload claylib/ll:render-texture unload-render-texture t)
-
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-render-texture ()
+  (defclass rl-render-texture (c-struct linkable)
     ((%texture :initarg :texture
                :type texture
                :reader texture)
      (%depth :initarg :depth
              :type texture
-             :reader depth)
-     (%c-struct
-      :type claylib/ll:render-texture
-      :accessor c-struct))
+             :reader depth))
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:render-texture))))
+     :c-ptr (calloc 'claylib/ll:render-texture))))
 
 (defcreader id rl-render-texture id render-texture)
 
@@ -227,7 +225,8 @@
 
 (definitializer rl-render-texture
   :struct-slots ((%texture) (%depth))
-  :pt-accessors ((id integer)))
+  :pt-accessors ((id integer))
+  :unload (unload-render-texture t))
 
 
 

@@ -1,12 +1,10 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-color (linkable)
-    ((%c-struct
-      :type claylib/ll:color
-      :reader c-struct))
+  (defclass rl-color (c-struct linkable)
+    ()
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:color))))
+     :c-ptr (calloc 'claylib/ll:color))))
 
 (defcreader r rl-color r color)
 (defcreader g rl-color g color)
@@ -21,9 +19,7 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass color (rl-color)
-    ((%c-struct
-      :accessor c-struct))))
+  (defclass color (rl-color linkable) ()))
 
 (define-print-object color
     ())
@@ -52,13 +48,13 @@
             (a into) (a color))
       (if (typep color 'rl-color)
           (make-color (r color) (g color) (b color) (a color))
-          (make-color (claylib/ll:color.r color)
-                      (claylib/ll:color.g color)
-                      (claylib/ll:color.b color)
-                      (claylib/ll:color.a color)))))
+          (make-color (field-value color 'color 'r)
+                      (field-value color 'color 'g)
+                      (field-value color 'color 'b)
+                      (field-value color 'color 'a)))))
 
 (defun copy-color-constant (color)
-  (make-instance 'rl-color :c-struct color))
+  (make-instance 'rl-color :c-ptr color))
 
 ;; TODO: This is required due to WITH-TEXTURE-MODE/CLEAR-BACKGROUND
 ;; but feels kind of hackish and I'd rather not need it.

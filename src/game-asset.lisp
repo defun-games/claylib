@@ -9,12 +9,12 @@
       :initform nil
       :accessor asset))))
 
-(defreader c-asset game-asset c-struct asset)
+(defreader c-asset game-asset c-ptr asset)
 
 (define-print-object game-asset
     (path asset))
 
-(defwriter c-asset game-asset c-struct asset)
+;(defwriter c-asset game-asset c-ptr asset)
 
 (defmethod initialize-instance :after ((asset game-asset) &key load-now)
   (when load-now (load-asset asset)))
@@ -38,7 +38,7 @@
   (cond
     ((null (asset asset))
      (let ((img (make-instance 'rl-image)))
-       (claylib/ll:load-image (c-struct img) (namestring (path asset)))
+       (claylib/ll:load-image (c-ptr img) (namestring (path asset)))
        (setf (asset asset) img)))
     (force-reload
      (claylib/ll:load-image (c-asset asset) (namestring (path asset)))))
@@ -50,7 +50,7 @@
 (defmethod copy-asset-to-object ((asset image-asset))
   (load-asset asset)
   (let* ((image (make-instance 'rl-image)))
-    (claylib/ll:image-copy (c-struct image) (c-asset asset))
+    (claylib/ll:image-copy (c-ptr image) (c-asset asset))
     image))
 
 
@@ -72,7 +72,7 @@
   (cond
     ((null (asset asset))
      (let ((tex (make-instance 'rl-texture)))
-       (claylib/ll:load-texture (c-struct tex) (namestring (path asset)))
+       (claylib/ll:load-texture (c-ptr tex) (namestring (path asset)))
        (setf (asset asset) tex)))
     (force-reload
      (claylib/ll:load-texture (c-asset asset) (namestring (path asset)))))
@@ -120,7 +120,7 @@
   (cond
     ((null (asset asset))
      (let ((model (make-instance 'rl-model)))
-       (claylib/ll:load-model (c-struct model) (namestring (path asset)))
+       (claylib/ll:load-model (c-ptr model) (namestring (path asset)))
        (setf (asset asset) model)))
     (force-reload
      (claylib/ll:load-model (c-asset asset) (namestring (path asset)))))
@@ -142,8 +142,8 @@
               :accessor fspath)
      (%asset :type (or rl-shader null)))
     (:default-initargs
-     :vspath nil
-     :fspath nil)))
+     :vspath ""
+     :fspath "")))
 
 (defreader id shader-asset id asset)
 (defreader locs shader-asset locs asset)
@@ -159,16 +159,17 @@
     (cond
       ((null (asset asset))
        (let ((shader (make-instance 'rl-shader)))
-         (claylib/ll:load-shader (c-struct shader) vpath fpath)
+         (claylib/ll:load-shader (c-ptr shader) vpath fpath)
          (setf (asset asset) shader)))
       (force-reload
        (claylib/ll:load-shader (c-asset asset) vpath fpath))))
   asset)
 
-(defun make-shader-asset (&key vspath fspath (load-now nil))
+(defun make-shader-asset (&rest initargs &key vspath fspath (load-now nil))
   "Make a shader asset from files VSPATH and FSPATH. This does not load the model unless LOAD-NOW is
 non-nil."
-  (make-instance 'shader-asset :vspath vspath :fspath fspath :load-now load-now))
+  (declare (ignorable vspath fspath load-now))
+  (apply #'make-instance 'shader-asset initargs))
 
 
 
@@ -212,9 +213,9 @@ non-nil."
            (if (or (slot-boundp asset '%font-size)
                    (slot-boundp asset '%font-chars)
                    (slot-boundp asset '%glyph-count))
-               (c-with ((c-array :int :count (glyph-count asset) :calloc t))
+               (cffi:with-foreign-object (c-array :int (glyph-count asset))
                  (flet ((c-char (char i)
-                          (setf (autowrap:c-aref c-array i :int) (char-int char))))
+                          (setf (cffi:mem-aref c-array :int i) (char-int char))))
                    (claylib/ll:load-font-ex font
                                             (namestring (path asset))
                                             (size asset)
@@ -233,7 +234,7 @@ non-nil."
     (cond
       ((null (asset asset))
        (let ((font (make-instance 'rl-font)))
-         (load-it (c-struct font) asset)
+         (load-it (c-ptr font) asset)
          (setf (asset asset) font)))
       (force-reload
        (load-it (c-asset asset) asset))))
@@ -260,17 +261,19 @@ non-nil."
 (defmethod load-asset ((asset animation-asset) &key force-reload)
   (cond
     ((null (asset asset))
-       (c-let ((i :int))
-         (let* ((0th-anim (load-model-animations (namestring (path asset)) (i &)))
-                (anims (make-instance 'rl-animations
-                                      :cl-array (make-rl-*-array 0th-anim i))))
-           (setf (asset asset) anims))))
+     (let* ((i (calloc :int))
+            (0th-anim (load-model-animations (namestring (path asset)) i))
+            (anims (make-instance 'rl-animations
+                                  :cl-array (make-rl-model-animation-array
+                                             0th-anim (cffi:mem-ref i :int)))))
+       (setf (asset asset) anims)))
     ;; TODO how best to force-reload?
     (force-reload
-     (c-let ((i :int))
-       (setf (c-asset asset)
-             (load-model-animations (namestring (path asset)) (i &))
-             (num asset) i))))
+     (let ((i (calloc :int)))
+       (setf (slot-value asset '%c-asset)
+             (load-model-animations (namestring (path asset)) i)
+                                        ;(num asset) (cffi:mem-ref i :int)
+             ))))
   asset)
 
 (defun make-animation-asset (path &key (load-now nil))
@@ -292,7 +295,7 @@ non-nil."
   (cond
     ((null (asset asset))
      (let ((music (make-instance 'music)))
-       (claylib/ll:load-music-stream (c-struct music) (namestring (path asset)))
+       (claylib/ll:load-music-stream (c-ptr music) (namestring (path asset)))
        (setf (asset asset) music)))
     (force-reload
      (claylib/ll:load-music-stream (c-asset asset) (namestring (path asset)))))
@@ -310,7 +313,7 @@ non-nil."
   (cond
     ((null (asset asset))
      (let ((sound (make-instance 'sound)))
-       (claylib/ll:load-sound (c-struct sound) (namestring (path asset)))
+       (claylib/ll:load-sound (c-ptr sound) (namestring (path asset)))
        (setf (asset asset) sound)))
     (force-reload
      (claylib/ll:load-sound (c-asset asset) (namestring (path asset)))))

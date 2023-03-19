@@ -4,27 +4,21 @@
 
 (defparameter +claylib-directory+ (asdf:system-source-directory :claylib))
 
-(defmethod initialize-instance :after ((wrapper autowrap:wrapper) &key)
-  (when (eql (slot-value wrapper 'autowrap::validity) t)
-    (tg:finalize wrapper
-                 (let ((ptr (autowrap:ptr wrapper)))
-                   (lambda () (autowrap:free ptr))))))
-
 (defmacro with-2d-mode (camera &body body)
   `(progn
-     (begin-mode2d (c-struct ,camera))
+     (begin-mode2d (c-ptr ,camera))
      ,@body
      (end-mode2d)))
 
 (defmacro with-3d-mode (camera &body body)
   `(progn
-     (begin-mode3d (c-struct ,camera))
+     (begin-mode3d (c-ptr ,camera))
      ,@body
      (end-mode3d)))
 
 (defun clear-background (&key (color *claylib-background*))
   "Set background to COLOR or *CLAYLIB-BACKGROUND* by default."
-  (claylib/ll:clear-background (c-struct color)))
+  (claylib/ll:clear-background (c-ptr color)))
 
 (defmacro with-drawing ((&key (bgcolor *claylib-background*)) &body body)
   "Convenience macro around double-buffer drawing."
@@ -38,7 +32,7 @@
   "Execute BODY while drawing to the given RENDER-TEXTURE. CLEAR is the RL-COLOR to set the initial
 background of the render texture, or NIL to skip clearing."
   `(progn
-     (begin-texture-mode (c-struct ,render-texture))
+     (begin-texture-mode (c-ptr ,render-texture))
      ,(when clear
        `(clear-background :color ,clear))
      ,@body

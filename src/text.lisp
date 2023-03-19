@@ -23,6 +23,8 @@
      :spacing 1.0
      :color +gray+)))
 
+(child-setter text text font color)
+
 (define-print-object text
     (text font size spacing color))
 
@@ -44,20 +46,20 @@
          args))
 
 (defmethod draw-object ((obj text))
-  (claylib/ll:draw-text-ex (c-struct (font obj))
+  (claylib/ll:draw-text-ex (c-ptr (font obj))
                            (text obj)
-                           (c-struct (pos obj))
+                           (c-ptr (pos obj))
                            (size obj)
                            (spacing obj)
-                           (c-struct (color obj))))
+                           (c-ptr (color obj))))
 
 (static-draw draw-text-object text)
 
 (defmethod image-draw (image (obj text))
-  (claylib/ll:image-draw-text-ex (c-struct image)
-                                 (c-struct (font obj))
+  (claylib/ll:image-draw-text-ex (c-ptr image)
+                                 (c-ptr (font obj))
                                  (text obj)
-                                 (c-struct (pos obj))
+                                 (c-ptr (pos obj))
                                  (size obj)
                                  (spacing obj)
-                                 (c-struct (color obj))))
+                                 (c-ptr (color obj))))

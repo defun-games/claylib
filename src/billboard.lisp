@@ -21,7 +21,7 @@
      (%rot-angle :documentation "The counter-clockwise rotation of the billboard (as it appears to the
 camera).")
      (%origin :initarg :origin
-              :type rl-vector3
+              :type rl-vector2
               :accessor origin)
      (%tint :initarg :tint
             :type rl-color
@@ -29,7 +29,7 @@ camera).")
     (:default-initargs
      :size (make-vector2 1 1)
      :rot-axis (make-vector3 0 1 0)
-     :origin (make-vector3 0 0 0)
+     :origin (make-vector2 0 0)
      :tint +white+)))
 
 (defreader c-asset billboard c-asset asset)
@@ -38,6 +38,8 @@ camera).")
 
 (define-print-object billboard
     (asset camera size source up origin tint c-asset x-scale y-scale))
+
+(child-setter billboard asset camera size source origin tint)
 
 (defwriter x-scale billboard x size number)
 (defwriter y-scale billboard y size number)
@@ -59,14 +61,14 @@ camera).")
          args))
 
 (defmethod draw-object ((obj billboard))
-  (claylib/ll:draw-billboard-pro (c-struct (camera obj))
+  (claylib/ll:draw-billboard-pro (c-ptr (camera obj))
                                  (c-asset obj)
-                                 (c-struct (source obj))
-                                 (c-struct (pos obj))
-                                 (c-struct (rot-axis obj))
-                                 (c-struct (size obj))
-                                 (c-struct (origin obj))
+                                 (c-ptr (source obj))
+                                 (c-ptr (pos obj))
+                                 (c-ptr (rot-axis obj))
+                                 (c-ptr (size obj))
+                                 (c-ptr (origin obj))
                                  (rot-angle obj)
-                                 (c-struct (tint obj))))
+                                 (c-ptr (tint obj))))
 
 (static-draw draw-billboard-object billboard)

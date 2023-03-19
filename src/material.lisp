@@ -1,14 +1,10 @@
 (in-package #:claylib)
 
-(default-unload claylib/ll:shader unload-shader t)
-
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-shader (linkable)
-    ((%c-struct
-      :type claylib/ll:shader
-      :accessor c-struct))
+  (defclass rl-shader (c-struct linkable)
+    ()
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:shader))))
+     :c-ptr (calloc 'claylib/ll:shader))))
 
 (defcreader id rl-shader id shader)
 
@@ -17,7 +13,7 @@
 
 (defmethod loc ((shader rl-shader) (index integer))
   (when (and (< index 32) (>= index 0))
-    (autowrap:c-aref (shader.locs (c-struct shader)) index :int)))
+    (cffi:mem-aref (field-ptr (c-ptr shader) 'shader 'locs) :int index)))
 (defmethod locs ((shader rl-shader))
   (loop for i below 32
         collect (loc shader i)))
@@ -25,7 +21,10 @@
 (defcwriter id rl-shader id shader integer)
 (defmethod (setf loc) ((value integer) (shader rl-shader) (index integer))
   (when (and (< index 32) (>= index 0))
-    (setf (autowrap:c-aref (shader.locs (c-struct shader)) index :int) value)))
+    (setf (cffi:mem-aref (field-ptr (c-ptr shader) 'shader 'locs)
+                         :int
+                         index)
+          value)))
 (defmethod (setf locs) ((value sequence) (shader rl-shader))
   (dotimes (i 32)
     (setf (loc shader i) (if (< i (length value))
@@ -34,7 +33,8 @@
 
 (definitializer rl-shader
   :pt-accessors ((id integer)
-                 (locs sequence)))
+                 (locs sequence))
+  :unload (unload-shader t))
 
 
 
@@ -46,18 +46,15 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-material-map (linkable)
+  (defclass rl-material-map (c-struct linkable)
     ((%texture :initarg :texture
                :type rl-texture
                :reader texture)
      (%color :initarg :color
              :type rl-color
-             :reader color)
-     (%c-struct
-      :type claylib/ll:material-map
-      :accessor c-struct))
+             :reader color))
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:material-map))))
+     :c-ptr (calloc 'claylib/ll:material-map))))
 
 (defcreader value rl-material-map value material-map)
 
@@ -84,7 +81,7 @@
     ())
 
 
-(defconstant +foreign-material-map-size+ (autowrap:sizeof 'claylib/ll:material-map))
+(defconstant +foreign-material-map-size+ (cffi:foreign-type-size 'claylib/ll:material-map))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-material-maps (rl-sequence)
@@ -93,22 +90,19 @@
 (define-print-object rl-material-maps
     ())
 
-(defmethod make-rl-*-array ((c-struct claylib/wrap:material-map) num)
+(defun make-rl-material-map-array (c-ptr num)
   (let ((contents (loop for i below num
-                        for map = (make-instance 'rl-material-map)
-                        for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:material-map)
-                        do (setf (slot-value map '%c-struct)
-                                 c-elt
-
-                                 (slot-value map '%texture)
-                                 (let ((tex (make-instance 'rl-texture)))
-                                   (setf (c-struct tex) (material-map.texture c-elt))
-                                   tex)
+                        for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:material-map i)
+                        for map = (make-instance 'rl-material-map :c-ptr c-elt)
+                        do (setf (slot-value map '%texture)
+                                 (make-instance 'rl-texture
+                                                :c-ptr (field-value c-elt 'material-map 'texture)
+                                                :finalize (= i 0))
 
                                  (slot-value map '%color)
-                                 (let ((col (make-instance 'color)))
-                                   (setf (c-struct col) (material-map.color c-elt))
-                                   col))
+                                 (make-instance 'color
+                                                :c-ptr (field-value c-elt 'material-map 'color)
+                                                :finalize (= i 0)))
                         collect map)))
     (make-array num
                 :element-type 'rl-material-map
@@ -117,61 +111,61 @@
 (defmethod (setf sequences:elt) (value (sequence rl-material-maps) index)
   (check-type value rl-material-map)
   (cffi:foreign-funcall "memcpy"
-                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
-                        :pointer (autowrap:ptr (c-struct value))
+                        :pointer (c-ptr (elt sequence index))
+                        :pointer (c-ptr value)
                         :int +foreign-material-map-size+
                         :void))
 
 
 
-(default-unload claylib/ll:material unload-material t)
-
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-material (linkable)
+  (defclass rl-material (c-struct linkable)
     ((%shader :initarg :shader
               :type rl-shader
               :reader shader)
      (%maps :initarg :maps
             :type rl-material-maps
-            :reader maps)
-     (%c-struct
-      :type claylib/ll:material
-      :accessor c-struct))
+            :reader maps))
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:material))))
+     :c-ptr (calloc 'claylib/ll:material))))
 
 (define-print-object rl-material
     (shader maps))
 
 (defmethod param ((material rl-material) (index integer))
   (when (and (< index 4) (>= index 0))
-    (material.params[] (c-struct material) index)))
+    (cffi:mem-aref (field-ptr (c-ptr material) 'material 'params)
+                   :float
+                   index)))
 (defmethod params ((material rl-material))
   (loop for i below 4
         collect (param material i)))
 
 (defcwriter-struct shader rl-material shader material shader
-  id shader.locs)
+  id (shader locs))
 (defcwriter-struct maps rl-material maps material material-map ; Array/pointer
   texture color value)
 (defmethod (setf matmap) ((value rl-material-map) (material rl-material) (index integer))
   (when (and (< index 11) (>= index 0))
     (cffi:foreign-funcall "memcpy"
-                          :pointer (autowrap:c-aptr (material.maps (c-struct material))
-                                                    index
-                                                    'claylib/ll:material-map)
-                          :pointer (autowrap:ptr (c-struct value))
+                          :pointer (cffi:mem-aptr (field-ptr (c-ptr material) 'material 'maps)
+                                                  'claylib/ll:material-map
+                                                  index)
+                          :pointer (c-ptr value)
                           :int +foreign-material-map-size+
                           :void)))
 (defmethod (setf maps) ((value rl-material-maps) (material rl-material))
-  (when (cffi-sys:null-pointer-p (material.maps (c-struct material)))
-    (setf (material.maps (c-struct material))
-          (autowrap:ptr (autowrap:calloc 'claylib/ll:material-map (length value)))))
+  (when (cffi-sys:null-pointer-p (field-ptr (c-ptr material) 'material 'maps))
+    (setf (field-value (c-ptr material) 'material 'maps)
+          (calloc 'claylib/ll:material-map (length value))))
   (dotimes (i 11)
     (setf (matmap material i) (elt value i))))
 (defmethod (setf param) ((value number) (material rl-material) (index integer))
   (when (and (< index 4) (>= index 0))
-    (setf (material.params[] (c-struct material) index) (coerce value 'float))))
+    (setf (cffi:mem-aref (field-ptr (c-ptr material) 'material 'params)
+                         :float
+                         index)
+          (coerce value 'float))))
 (defmethod (setf params) ((value sequence) (material rl-material))
   (dotimes (i 4)
     (setf (param material i) (if (< i (length value))
@@ -181,7 +175,8 @@
 (definitializer rl-material
   :lisp-slots ((%maps))
   :struct-slots ((%shader))
-  :pt-accessors ((params sequence)))
+  :pt-accessors ((params sequence))
+  :unload (unload-material t))
 
 
 
@@ -192,7 +187,7 @@
     ())
 
 
-(defconstant +foreign-material-size+ (autowrap:sizeof 'claylib/ll:material))
+(defconstant +foreign-material-size+ (cffi:foreign-type-size 'claylib/ll:material))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass rl-materials (rl-sequence)
@@ -201,26 +196,23 @@
 (define-print-object rl-materials
     ())
 
-(defmethod make-rl-*-array ((c-struct claylib/wrap:material) num)
+(defun make-rl-material-array (c-ptr num)
   (let ((contents
           (loop
             for i below num
-            for mat = (make-instance 'rl-material)
-            for c-elt = (autowrap:c-aref c-struct i 'claylib/wrap:material)
-            do (setf (slot-value mat '%c-struct)
-                     c-elt
-
-                     (slot-value mat '%shader)
-                     (let ((shader (make-instance 'rl-shader)))
-                       (setf (c-struct shader)
-                             (material.shader c-elt))
-                       shader)
+            for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:material i)
+            for mat = (make-instance 'rl-material :c-ptr c-elt)
+            do (setf (slot-value mat '%shader)
+                     (make-instance 'rl-shader
+                                    :c-ptr (field-value c-elt 'material 'shader)
+                                    :finalize (= i 0))
 
                      (slot-value mat '%maps)
                      (let ((maps (make-instance 'rl-material-maps)))
                        (setf (slot-value maps '%cl-array)
-                             (make-rl-*-array
-                              (autowrap:c-aref (material.maps c-elt) 0 'claylib/wrap:material-map)
+                             (make-rl-material-map-array
+                              (cffi:mem-aref (field-ptr c-elt 'material 'maps)
+                                             'claylib/ll:material-map)
                               11)) ; TODO 11 entries in MaterialMapIndex, is this the correct num?
                        maps))
             collect mat)))
@@ -231,7 +223,7 @@
 (defmethod (setf sequences:elt) (value (sequence rl-materials) index)
   (check-type value rl-material)
   (cffi:foreign-funcall "memcpy"
-                        :pointer (autowrap:ptr (c-struct (elt sequence index)))
-                        :pointer (autowrap:ptr (c-struct value))
+                        :pointer (c-ptr (elt sequence index))
+                        :pointer (c-ptr value)
                         :int +foreign-material-size+
                         :void))

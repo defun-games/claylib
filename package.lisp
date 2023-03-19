@@ -1,6 +1,6 @@
 ;;;; package.lisp
 (defpackage #:claylib
-  (:use #:static-dispatch-cl #:plus-c #:claylib/ll)
+  (:use #:static-dispatch-cl #:claylib/ll)
   (:local-nicknames (#:sequences #:org.shirakumo.trivial-extensible-sequences))
   (:shadow
 
@@ -19,7 +19,9 @@
 
    ;; Math
    :quaternion-from-euler :quaternion-to-euler :vector2-subtract :vector2-add :vector2-scale :vector2-length
-   :matrix-rotate-zyx :quaternion-to-matrix :quaternion-from-matrix :wrap
+   :matrix-rotate-zyx :quaternion-to-matrix :quaternion-from-matrix :wrap :vector3-subtract
+   :vector3-rotate-by-axis-angle :vector3-add :vector3-angle :vector3-negate :vector3-normalize
+   :vector3-distance
 
    ;; Globals
    :*claylib-background*
@@ -31,6 +33,11 @@
    :gui-slider-bar :gui-progress-bar :gui-status-bar :gui-dummy-rec :gui-scroll-bar :gui-grid
    :gui-list-view :gui-list-view-ex :gui-message-box :gui-text-input-box :gui-color-picker :gui-color-panel
    :gui-color-bar-alpha :gui-color-bar-hue :gui-draw-icon :gui-check-icon-pixel :gui-load-style
+
+   ;; rcamera
+   :get-camera-forward :get-camera-up :get-camera-right :camera-move-forward :camera-move-up
+   :camera-move-right :camera-move-to-target :camera-yaw :camera-pitch :camera-roll
+   :get-camera-view-matrix :get-camera-projection-matrix
 
    ;; Music management
    :is-music-stream-playing-p :seek-music-stream :get-music-time-length :get-music-time-played
@@ -44,7 +51,8 @@
    :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex
    :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere
    :gen-mesh-cubicmap :get-color :check-collision-circles :check-collision-circle-rec
-   :check-collision-point-triangle :check-collision-lines :check-collision-point-line :get-glyph-index)
+   :check-collision-point-triangle :check-collision-lines :check-collision-point-line :get-glyph-index
+   :get-mouse-delta :get-mouse-wheel-move-v :get-model-bounding-box :update-camera-pro)
 
 
 
@@ -113,8 +121,8 @@
 
    ;; Input-related functions: mouse
    :is-mouse-button-pressed-p :is-mouse-button-down-p :is-mouse-button-released-p :is-mouse-button-up-p
-   :get-mouse-x :get-mouse-y :get-mouse-position :set-mouse-position :set-mouse-offset
-   :set-mouse-scale :get-mouse-wheel-move :set-mouse-cursor
+   :get-mouse-x :get-mouse-y :get-mouse-position :get-mouse-delta :set-mouse-position :set-mouse-offset
+   :set-mouse-scale :get-mouse-wheel-move :get-mouse-wheel-move-v :set-mouse-cursor
 
    ;; Input-related functions: touch
    :get-touch-x :get-touch-y :get-touch-point-id :get-touch-point-count
@@ -196,7 +204,7 @@
    :draw-grid
 
    ;; Model loading/unloading functions
-   :load-model-from-mesh
+   :load-model-from-mesh :get-model-bounding-box
 
    ;; Model drawing functions
 
@@ -346,7 +354,7 @@
 
    ;; Camera
    :+camera-custom+ :+camera-perspective+ :+camera-free+ :+camera-orthographic+ :+camera-orbital+
-   :+camera-first-person+ :+camera-third-person+
+   :+camera-first-person+ :+camera-third-person+ :+camera-pro+
 
    ;; Window flags
    :+flag-fullscreen-mode+ :+flag-window-resizable+ :+flag-window-undecorated+ :+flag-window-transparent+
@@ -368,12 +376,21 @@
    :vector2-add :vector2-length :vector2-scale :vector2-subtract
 
    ;; Vector3
+   :vector3-add :vector3-subtract :vector3-angle :vector3-negate :vector3-normalize
+   :vector3-rotate-by-axis-angle :vector3-distance
 
    ;; Quaternion
    :quaternion-from-euler :quaternion-from-matrix :quaternion-to-euler :quaternion-to-matrix
 
    ;; Matrix
    :matrix-rotate-zyx
+
+
+
+   ;;; Camera (pass-throughs to rcamera)
+   :get-camera-forward :get-camera-up :get-camera-right :camera-move-forward :camera-move-up
+   :camera-move-right :camera-move-to-target :camera-yaw :camera-pitch :camera-roll
+   :get-camera-view-matrix :get-camera-projection-matrix
 
 
 
@@ -584,14 +601,14 @@
    :v1 :v2 :v3
    :r :g :b :a
    :x-scale :y-scale
-   :color :filled :height :len :pos :radius :rot :size :width
-   :target :offset :up :zoom
+   :color :filled :height :len :pos :radius :rot :size :width :bbox :rot-axis :rot-angle
+   :target :offset :up :zoom :mode :movement :fovy :projection
    :low :high
    :start :end
    :animations :bones :frame-count :frame-poses :maps :materials :trans
    :dest :filter :origin :source :tint
    :font :spacing
-   :hit
+   :hit :distance
    :bezier
    :asset :load-asset
    :draw-object
