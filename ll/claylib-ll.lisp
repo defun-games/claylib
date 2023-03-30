@@ -92,9 +92,11 @@
 does that for us, so now it just changes the function name."
   (let ((c-fun (intern (remove #\' (format nil "~:@a" name)))) 
         (lisp-fun (intern (remove #\' (format nil "~:@a-P" name)))))
-    `(defun ,lisp-fun (,@args)
-       (declare (inline))
-       (,c-fun ,@args))))
+    `(progn
+       (declaim (inline ,lisp-fun))
+       (defun ,lisp-fun (,@args)
+         (declare (inline))
+         (,c-fun ,@args)))))
 
 (lisp-bool window-should-close)
 (lisp-bool is-window-ready)

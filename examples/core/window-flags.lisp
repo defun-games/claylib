@@ -9,15 +9,15 @@
            :type rl-vector2
            :accessor spd)))
 
+(declaim (inline toggle-flag))
 (defun toggle-flag (key flag)
-  (declare (inline))
   (when (is-key-pressed-p key)
     (if (is-window-state-p flag)
         (clear-window-state flag)
         (set-window-state flag))))
 
+(declaim (inline adjust-text))
 (defun adjust-text (flag obj text)
-  (declare (inline))
   (if (is-window-state-p flag)
       (setf (text obj) (format nil "~A: on" text)
             (color obj) +lime+)
