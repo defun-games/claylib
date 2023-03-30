@@ -135,7 +135,7 @@ with 'RL-' and always have a direct or inherited '%C-PTR slot."
                                                 `(or ,type null)
                                                 type))))))
 
-(defmacro definitializer (class &key lisp-slots struct-slots pt-accessors unload)
+(defmacro definitializer (class &key lisp-slots struct-slots pt-accessors unload fn)
   "Define an initialize-instance :after method for a passed class name.
 
 :lisp-slots is a list of CLOS slots that are *not* tied to a backing C struct. Expected format:
@@ -156,7 +156,9 @@ slots, but they will have custom readers and probably writers. Expected format:
 COERCE-TYPE will usually be float, when applicable.
 
 :unload is a two-element list: (FN WINDOW-REQUIRED-P). Pass this when an unload function should
-be run in the finalizer."
+be run in the finalizer.
+
+:fn is a function that takes one argument, the object. Will be called at the end."
   (let ((obj (gensym))
         (class-slots (closer-mop:class-direct-slots
                       (find-class class))))
@@ -244,6 +246,8 @@ be run in the finalizer."
                                   ,(if (cadr unload)
                                        `(when (is-window-ready-p) (,(car unload) ,obj))
                                        `(,(car unload) ,obj)))))))
+           ,(when fn
+              `(funcall ,fn ,obj))
            ,obj)))))
 
 (defmacro child-setter (type &rest slots)
