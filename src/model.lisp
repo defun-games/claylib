@@ -29,7 +29,7 @@
 (defmethod mesh-material ((model rl-model) (index integer))
   (when (and (< index (mesh-count model))
              (>= index 0))
-    (cffi:mem-aref (field-ptr (c-ptr model) 'model 'mesh-material)
+    (cffi:mem-aref (field-value (c-ptr model) 'model 'mesh-material)
                    :int
                    index)))
 (defmethod mesh-materials ((model rl-model))
@@ -54,7 +54,7 @@
              (>= value 0))
     (claylib/ll:set-model-mesh-material (c-ptr model) index value)))
 (defmethod (setf mesh-materials) ((value sequence) (model rl-model))
-  (when (cffi:null-pointer-p (field-ptr (c-ptr model) 'model 'mesh-material))
+  (when (cffi:null-pointer-p (field-value (c-ptr model) 'model 'mesh-material))
     (setf (field-value (c-ptr model) 'model 'mesh-material)
           (calloc :int (length value))))
   (dotimes (i (mesh-count model))
@@ -220,7 +220,7 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
     (when animation-asset
       (setf (animations model) (asset animation-asset)))
 
-    ;; For instanced meshes we must reset the VAO and VBO ID's or GL gets very upset.
+    ;; For non-instanced meshes we must reset the VAO and VBO ID's or GL gets very upset.
     (unless (or instance-meshes-p meshes)
       (dotimes (i (length (meshes model)))
         (let ((c-mesh (c-ptr (elt (meshes model) i))))
@@ -230,7 +230,8 @@ Models are backed by RL-MODELs which draw reusable data from the given MODEL-ASS
 
     ;; Calculate a bounding box and keep it updated along with the model
     (when bounding-box-p
-      (setf (slot-value model '%bbox) (get-model-bounding-box model))
+      (setf (slot-value model '%bbox)
+            (get-model-bounding-box model :bounding-box (make-instance 'bounding-box)))
       (let ((new-bbox #'(lambda (pwriter pobj value cwriter cobj)
                           (declare (ignore pwriter value cwriter))
                           (get-model-bounding-box pobj :bounding-box cobj))))
