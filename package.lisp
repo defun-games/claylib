@@ -21,7 +21,7 @@
    :quaternion-from-euler :quaternion-to-euler :vector2-subtract :vector2-add :vector2-scale :vector2-length
    :matrix-rotate-zyx :quaternion-to-matrix :quaternion-from-matrix :wrap :vector3-subtract
    :vector3-rotate-by-axis-angle :vector3-add :vector3-angle :vector3-negate :vector3-normalize
-   :vector3-distance
+   :vector3-distance :matrix-multiply :quaternion-multiply :vector3-transform
 
    ;; Globals
    :*claylib-background*
@@ -376,14 +376,15 @@
    :vector2-add :vector2-length :vector2-scale :vector2-subtract
 
    ;; Vector3
-   :vector3-add :vector3-subtract :vector3-angle :vector3-negate :vector3-normalize
+   :vector3-add :vector3-subtract :vector3-angle :vector3-negate :vector3-normalize :vector3-transform
    :vector3-rotate-by-axis-angle :vector3-distance
 
    ;; Quaternion
-   :quaternion-from-euler :quaternion-from-matrix :quaternion-to-euler :quaternion-to-matrix
+   :quaternion-multiply :quaternion-from-euler :quaternion-from-matrix :quaternion-to-euler
+   :quaternion-to-matrix
 
    ;; Matrix
-   :matrix-rotate-zyx
+   :matrix-multiply :matrix-rotate-zyx
 
 
 

@@ -425,6 +425,12 @@ Allocates a new RAY-COLLISION unless you pass one."
   "Normalize a RL-VECTOR3. Destructively modifies the passed vector unless ALLOCATE-P is T."
   (vec rl-vector3))
 
+(defun-pt-arg0 vector3-transform claylib/ll:vector3-transform (make-vector3 0 0 0)
+  "Transform a RL-VECTOR3 by a RL-MATRIX. Destructively modifies the passed vector unless
+ALLOCATE-P is T."
+  (vec rl-vector3)
+  (mat rl-matrix))
+
 (defun-pt-arg0 vector3-rotate-by-axis-angle claylib/ll:vector3-rotate-by-axis-angle (make-vector3 0 0 0)
   "Rotate a RL-VECTOR3 around a given axis (RL-VECTOR3) by ANGLE. Destructively modifies the first
 arg unless ALLOCATE-P is T."
@@ -438,6 +444,11 @@ arg unless ALLOCATE-P is T."
   (v2 rl-vector3))
 
 ;; Quaternion
+
+(defun-pt-arg0 quaternion-multiply claylib/ll:quaternion-multiply (make-vector4 0 0 0 0)
+  "Multiply two RL-VECTOR4s. Destructively modifies the first arg unless ALLOCATE-P is T."
+  (q1 rl-vector4)
+  (q2 rl-vector4))
 
 (defun-pt quaternion-to-matrix claylib/ll:quaternion-to-matrix
   "Convert a quaternion (RL-VECTOR4) to a matrix. Allocates a new RL-MATRIX unless you pass one."
@@ -462,6 +473,11 @@ arg unless ALLOCATE-P is T."
   (quat rl-vector4))
 
 ;; Matrix
+
+(defun-pt-arg0 matrix-multiply claylib/ll:matrix-multiply (make-zero-matrix)
+  "Multiply two matrices. Destructively modifies the first arg unless ALLOCATE-P is T."
+  (m1 rl-matrix)
+  (m2 rl-matrix))
 
 (defun-pt matrix-rotate-zyx claylib/ll:matrix-rotate-zyx
   "Get ZYX rotation matrix from a RL-VECTOR3. Allocates a new RL-MATRIX unless you pass one."
