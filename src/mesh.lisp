@@ -79,11 +79,11 @@
 (define-print-object rl-meshes
     ())
 
-(defun make-rl-mesh-array (c-ptr num)
+(defun make-rl-mesh-array (c-ptr num &optional finalize)
   (let ((contents (loop for i below num
                         collect (make-instance 'rl-mesh
                                                :c-ptr (cffi:mem-aref c-ptr 'claylib/ll:mesh i)
-                                               :finalize (= i 0)))))
+                                               :finalize (when finalize (= i 0))))))
     (make-array num
                 :element-type 'rl-mesh
                 :initial-contents contents)))

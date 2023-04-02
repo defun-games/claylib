@@ -72,12 +72,12 @@
 (define-print-object rl-bones
     ())
 
-(defun make-rl-bone-info-array (c-ptr num)
+(defun make-rl-bone-info-array (c-ptr num &optional finalize)
   (let ((contents
           (loop for i below num
                 collect (make-instance 'rl-bone-info
                                        :c-ptr (cffi:mem-aref c-ptr 'claylib/ll:bone-info i)
-                                       :finalize (= i 0)))))
+                                       :finalize (when finalize (= i 0))))))
     (make-array num
                 :element-type 'rl-bone-info
                 :initial-contents contents)))
@@ -101,16 +101,16 @@
 (define-print-object rl-animations
     ())
 
-(defun make-rl-model-animation-array (c-ptr num)
+(defun make-rl-model-animation-array (c-ptr num &optional finalize)
   (make-array
    num
    :element-type 'rl-model-animation
    :initial-contents
    (loop for i below num
          for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:model-animation i)
-         for anim = (make-instance 'rl-model-animation :c-ptr c-elt :finalize (= i 0))
-         for c-bones = (cffi:mem-aref (field-ptr c-elt 'model-animation 'bones)
-                                      'claylib/ll:bone-info)
+         for anim = (make-instance 'rl-model-animation :c-ptr c-elt
+                                                       :finalize (when finalize (= i 0)))
+         for c-bones = (cffi:mem-ref (field-ptr c-elt 'model-animation 'bones) :pointer)
          for bone-count = (field-value c-elt 'model-animation 'bone-count)
          for frame-count = (field-value c-elt 'model-animation 'frame-count)
          do (setf

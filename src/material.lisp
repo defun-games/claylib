@@ -90,12 +90,12 @@
 (define-print-object rl-material-maps
     ())
 
-(defun make-rl-material-map-array (c-ptr num)
+(defun make-rl-material-map-array (c-ptr num &optional finalize)
   (let ((contents (loop for i below num
                         for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:material-map i)
                         for map = (make-instance 'rl-material-map
                                                  :c-ptr c-elt
-                                                 :finalize (= i 0)
+                                                 :finalize (when finalize (= i 0))
                                                  :texture (make-instance
                                                            'rl-texture
                                                            :finalize nil
@@ -201,13 +201,13 @@
 (define-print-object rl-materials
     ())
 
-(defun make-rl-material-array (c-ptr num)
+(defun make-rl-material-array (c-ptr num &optional finalize)
   (let ((contents
           (loop
             for i below num
             for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:material i)
             for mat = (make-instance 'rl-material
-                                     :finalize (= i 0)
+                                     :finalize (when finalize (= i 0))
                                      :c-ptr c-elt
                                      :shader (make-instance 'rl-shader
                                                             :finalize nil
