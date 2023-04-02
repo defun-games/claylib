@@ -19,7 +19,7 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass color (rl-color linkable) ()))
+  (defclass color (rl-color) ()))
 
 (define-print-object color
     ())

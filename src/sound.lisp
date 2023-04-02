@@ -13,7 +13,7 @@
 
 (definitializer rl-sound
   :pt-accessors ((frame-count integer))
-  :unload (unload-sound t))
+  :unload (safe-unload-sound t))
 
 (defmethod play ((audio rl-sound))
   (claylib/ll:play-sound-multi (c-ptr audio)))

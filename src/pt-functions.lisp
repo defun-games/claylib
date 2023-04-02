@@ -290,10 +290,9 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   (check-type mesh rl-mesh)
   (check-type model rl-model)
   (claylib/ll:load-model-from-mesh (c-ptr model) (c-ptr mesh))
-  (let ((c-meshes (cffi:mem-aref (field-value (c-ptr model) 'model 'meshes) 'claylib/ll:mesh))
-        (c-materials (cffi:mem-aref
-                      (field-value (c-ptr model) 'model 'materials)
-                      'claylib/ll:material)))
+  (tg:cancel-finalization (slot-value mesh '%c-ptr))  ; Avoid double free -- mesh is now part of model.
+  (let ((c-meshes (cffi:mem-ref (field-ptr (c-ptr model) 'model 'meshes) :pointer))
+        (c-materials (cffi:mem-ref (field-ptr (c-ptr model) 'model 'materials) :pointer)))
     (set-slot :transform model (transform model))
     (setf (meshes model)
           (make-instance 'rl-meshes :cl-array (make-rl-mesh-array c-meshes (mesh-count model)))

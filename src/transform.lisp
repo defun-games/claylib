@@ -45,21 +45,21 @@
 (defun make-rl-transform-array (c-ptr num)
   (let ((contents (loop for i below num
                         for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:transform i)
-                        for trans = (make-instance 'rl-transform :c-ptr c-elt)
+                        for trans = (make-instance 'rl-transform :c-ptr c-elt :finalize (= i 0))
                         do (setf (slot-value trans '%translation)
                                  (make-instance 'rl-vector3
                                                 :c-ptr (field-value c-elt 'transform 'translation)
-                                                :finalize (= i 0))
+                                                :finalize nil)
 
                                  (slot-value trans '%rotation)
                                  (make-instance 'rl-vector4
                                                 :c-ptr (field-value c-elt 'transform 'rotation)
-                                                :finalize (= i 0))
+                                                :finalize nil)
 
                                  (slot-value trans '%scale)
                                  (make-instance 'rl-vector3
                                                 :c-ptr (field-value c-elt 'transform 'scale)
-                                                :finalize (= i 0)))
+                                                :finalize nil))
                         collect trans)))
     (make-array num
                 :element-type 'rl-transform

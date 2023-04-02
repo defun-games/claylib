@@ -25,9 +25,7 @@ This is an analogue of cl-autowrap's wrapper objects."))
 
 (defmethod initialize-instance :after ((obj c-struct) &rest initargs &key &allow-other-keys)
   (unless (slot-boundp obj '%c-ptr)
-    (setf (slot-value obj '%c-ptr) (make-instance 'c-ptr
-                                                  :c-ptr (getf initargs :c-ptr)
-                                                  :finalize (getf initargs :finalize)))))
+    (setf (slot-value obj '%c-ptr) (apply #'make-instance 'c-ptr initargs))))
 
 (defun c-ptr (c-struct)
   (check-type c-struct c-struct)

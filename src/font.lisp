@@ -51,11 +51,11 @@
 (defun make-rl-glyph-info-array (c-ptr num)
   (let ((contents (loop for i below num
                         for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:glyph-info i)
-                        for glyph = (make-instance 'rl-glyph-info :c-ptr c-elt)
+                        for glyph = (make-instance 'rl-glyph-info :c-ptr c-elt :finalize (= i 0))
                         do (setf (slot-value glyph '%image)
                                  (make-instance 'rl-image
                                                 :c-ptr (field-value c-elt 'glyph-info 'image)
-                                                :finalize (= i 0)))
+                                                :finalize nil))
                         collect glyph)))
     (make-array num
                 :element-type 'rl-glyph-info
@@ -106,7 +106,7 @@
   :pt-accessors ((size integer)
                  (glyph-count integer)
                  (glyph-padding integer))
-  :unload (unload-font t))
+  :unload (safe-unload-font t))
 
 
 

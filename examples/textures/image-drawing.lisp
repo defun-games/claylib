@@ -32,9 +32,8 @@
                (font-asset (caddr *assets*)))
               ((image (let* ((cat-image (make-image cat-asset
                                                     (make-rectangle 0 0 150 200 +white+)
-                                                    (make-rectangle 30 40 225 300 +white+)
-                                                    :copy-asset t))
-                             (parrots-image (copy-asset-to-object parrots-asset))
+                                                    (make-rectangle 30 40 225 300 +white+)))
+                             (parrots-image (make-simple-image parrots-asset))
                              (cat-crop (make-rectangle 100 10 280 380 +white+))
                              (parrot-crop (make-rectangle 0 50
                                                           (width parrots-image)

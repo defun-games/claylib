@@ -219,6 +219,7 @@ be run in the finalizer.
                                   (set-slot ,(alexandria:make-keyword arg) ,obj ,arg)
                                   (setf (slot-value ,obj ',name)
                                         (make-instance ',(or subclass type)
+                                                       :finalize nil
                                                        :c-ptr (field-value
                                                                (c-ptr ,obj)
                                                                ',(alexandria:symbolicate
@@ -238,14 +239,15 @@ be run in the finalizer.
                                    `(when ,name (setf (,name ,obj) ,val))))))
            ,(when unload
               (let ((ptr (gensym)))
-                `(tg:finalize ,obj
-                              (let ((,ptr (c-ptr ,obj)))
-                                ;; TODO: This is holding a reference to obj
-                                ;; and thus will not unload a damn thing.
-                                (lambda ()
-                                  ,(if (cadr unload)
-                                       `(when (is-window-ready-p) (,(car unload) ,obj))
-                                       `(,(car unload) ,obj)))))))
+                `(when (getf initargs :finalize)
+                   (tg:cancel-finalization (slot-value ,obj '%c-ptr))
+                   (tg:finalize (slot-value ,obj '%c-ptr)
+                                (let ((,ptr (c-ptr ,obj)))
+                                  (lambda ()
+                                    ,(if (cadr unload)
+                                         `(when (is-window-ready-p) (,(car unload) ,ptr))
+                                         `(,(car unload) ,ptr))
+                                    (cffi:foreign-free ,ptr)))))))
            ,(when fn
               `(funcall ,fn ,obj))
            ,obj)))))

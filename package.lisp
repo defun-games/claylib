@@ -569,12 +569,12 @@
    :make-plane :make-polygon :make-ray :make-ray-collision :make-rectangle :make-rectangle-from-vecs
    :make-shader-asset :make-simple-rec :make-sphere :make-sphere-from-vec :make-sound-asset :make-text
    :make-texture :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs
-   :make-vector2 :make-vector3 :make-vector4 :make-zero-matrix
+   :make-vector2 :make-vector3 :make-vector4 :make-zero-matrix :make-simple-image
 
    ;; Scenes/assets
    :add-to-scene :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex
    :load-scene-all :make-scene :make-scene-pro :objects :params :remove-from-scene :scene-asset
-   :scene-object :scene-param :set-up-scene :tear-down-scene :unload-scene-all :with-scenes
+   :scene-object :scene-param :set-up-scene :tear-down-scene :unbind-scene :with-scenes
 
    ;; Static dispatch draw functions
    :draw-billboard-object :draw-circle-object :draw-cube-object :draw-grid-object :draw-gui-button-object
@@ -594,7 +594,7 @@
    :link-objects :unlink-objects
 
    ;; Copy functions
-   :copy-color :copy-asset-to-object
+   :copy-color
 
    ;; Generic functions/methods
    :x :y :z

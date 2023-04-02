@@ -244,6 +244,16 @@ instead. If the second limitation is undesirable, you're welcome to add that fea
   (let ((what (or what '(:assets :objects :params))))
     `(dynamic-bindings ,scene ',what ',body)))
 
+(defun unbind-scene (scene)
+  ;; TODO: Seems like a waste but ultimately what needs to happen is to unbind the scene object
+  ;; from its symbol. I couldn't find a robust way to do that without knowing the symbol name.
+  (dolist (ht (list (assets scene) (objects scene) (params scene)))
+    (when ht
+      (maphash #'(lambda (k v)
+                   (declare (ignore v))
+                   (remhash k ht))
+               ht))))
+
 (defmacro with-scenes (scenes (&key (gc nil gc-supplied-p)) &body body)
   "Execute BODY after loading & initializing SCENES, tearing them down afterwards.
 Pass :GC (T or NIL) to force/unforce garbage collection, overriding what the scenes request.
@@ -257,7 +267,9 @@ Note: additional scenes can be loaded/GC'd at any point using {SET-UP,TEAR-DOWN}
        ,@body
        (mapcar #'(lambda (,sym) (setf (active ,sym) nil)) ,scenes)
        ,(cond
-          ((and gc-supplied-p gc) `(tg:gc :full t))
+          ((and gc-supplied-p gc)
+           `(mapc #'unbind-scene ,scenes)
+           `(tg:gc :full t))
           ((not gc-supplied-p) `(mapcar #'tear-down-scene ,scenes))
           (t nil)))))
 
@@ -276,6 +288,7 @@ Note: additional scenes can be loaded/GC'd at any point using {SET-UP,TEAR-DOWN}
 (defmethod set-up-scene ((scene null)) ())
 
 (defmethod tear-down-scene ((scene game-scene))
+  (unbind-scene scene)
   (when (gc scene) (tg:gc :full t)))
 
 (defmethod tear-down-scene ((scene null)) ())

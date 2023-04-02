@@ -90,7 +90,7 @@
                  (material-count integer)
                  (mesh-materials sequence)
                  (bone-count integer))
-  :unload (unload-model t))
+  :unload (safe-unload-model t))
 
 
 

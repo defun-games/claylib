@@ -47,12 +47,6 @@
 (defun make-image-asset (path &key (load-now nil))
   (make-instance 'image-asset :path path :load-now load-now))
 
-(defmethod copy-asset-to-object ((asset image-asset))
-  (load-asset asset)
-  (let* ((image (make-instance 'rl-image)))
-    (claylib/ll:image-copy (c-ptr image) (c-asset asset))
-    image))
-
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)

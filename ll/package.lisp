@@ -35,9 +35,9 @@
    :load-vr-stereo-config :unload-vr-stereo-config
 
    ;; Shader management functions
-   :load-shader :load-shader-from-memory :get-shader-location :get-shader-location-attrib
-   :set-shader-value :set-shader-value-v :set-shader-value-matrix :set-shader-value-texture
-   :unload-shader
+   :load-shader :load-shader-from-memory :is-shader-ready-p :get-shader-location
+   :get-shader-location-attrib :set-shader-value :set-shader-value-v :set-shader-value-matrix
+   :set-shader-value-texture :unload-shader
 
    ;; Screen-space-related functions
    :get-mouse-ray :get-camera-matrix :get-camera-matrix-2d :get-world-to-screen :get-screen-to-world2d
@@ -117,7 +117,7 @@
 
    ;; Image loading functions
    :load-image :load-image-raw :load-image-anim :load-image-from-memory :load-image-from-texture
-   :load-image-from-screen :unload-image :export-image :export-image-as-code
+   :load-image-from-screen :is-image-ready-p :unload-image :export-image :export-image-as-code
 
    ;; Image generation functions
    :gen-image-color :gen-image-gradient-v :gen-image-gradient-h :gen-image-gradient-radial
@@ -139,8 +139,8 @@
    :image-draw-text-ex
 
    ;; Texture loading functions
-   :load-texture :load-texture-from-image :load-texture-cubemap :load-render-texture :unload-texture
-   :unload-render-texture :update-texture :update-texture-rec
+   :load-texture :load-texture-from-image :load-texture-cubemap :load-render-texture :is-texture-ready-p
+   :unload-texture :is-render-texture-ready-p :unload-render-texture :update-texture :update-texture-rec
 
    ;; Texture configuration functions
    :gen-texture-mipmaps :set-texture-filter :set-texture-wrap
@@ -159,7 +159,8 @@
 
    ;; Font loading/unloading functions
    :get-font-default :load-font :load-font-ex :load-font-from-image :load-font-from-memory
-   :load-font-data :gen-image-font-atlas :unload-font-data :unload-font :export-font-as-code
+   :is-font-ready-p :load-font-data :gen-image-font-atlas :unload-font-data :unload-font
+   :export-font-as-code
 
    ;; Text-drawing functions
    :draw-fps :draw-text :draw-text-ex :draw-text-pro :draw-text-codepoint :draw-text-codepoints
@@ -187,7 +188,8 @@
    :draw-cylinder-wires-ex :draw-plane :draw-ray :draw-grid
 
    ;; Model loading/unloading functions
-   :load-model :load-model-from-mesh :unload-model :unload-model-keep-meshes :get-model-bounding-box
+   :load-model :load-model-from-mesh :is-model-ready-p :unload-model :unload-model-keep-meshes
+   :get-model-bounding-box
 
    ;; Model drawing functions
    :draw-model :draw-model-ex :draw-model-wires :draw-model-wires-ex :draw-bounding-box
@@ -203,7 +205,8 @@
    :gen-mesh-cubicmap
 
    ;; Material loading/unloading functions
-   :load-materials :load-material-default :unload-material :set-material-texture :set-model-mesh-material
+   :load-materials :load-material-default :is-material-ready-p :unload-material :set-material-texture
+   :set-model-mesh-material
 
    ;; Model animations loading/unloading functions
    :load-model-animations :update-model-animation :unload-model-animation :unload-model-animations
@@ -221,8 +224,8 @@
    :init-audio-device :close-audio-device :is-audio-device-ready-p :set-master-volume
 
    ;; Wave/Sound loading/unloading functions
-   :load-wave :load-wave-from-memory :load-sound :load-sound-from-wave :update-sound :unload-wave
-   :unload-sound :export-wave :export-wave-as-code
+   :load-wave :load-wave-from-memory :is-wave-ready-p :load-sound :load-sound-from-wave
+   :is-sound-ready-p :update-sound :unload-wave :unload-sound :export-wave :export-wave-as-code
 
    ;; Wave/Sound management functions
    :play-sound :stop-sound :pause-sound :resume-sound :play-sound-multi :stop-sound-multi
@@ -230,17 +233,17 @@
    :wave-copy :wave-crop :wave-format :load-wave-samples :unload-wave-samples
 
    ;; Music management functions
-   :load-music-stream :load-music-stream-from-memory :unload-music-stream :play-music-stream
-   :is-music-stream-playing-p :update-music-stream :stop-music-stream :pause-music-stream
-   :resume-music-stream :seek-music-stream :set-music-volume :set-music-pitch :set-music-pan
-   :get-music-time-length :get-music-time-played
+   :load-music-stream :load-music-stream-from-memory :is-music-ready-p :unload-music-stream
+   :play-music-stream :is-music-stream-playing-p :update-music-stream :stop-music-stream
+   :pause-music-stream :resume-music-stream :seek-music-stream :set-music-volume :set-music-pitch
+   :set-music-pan :get-music-time-length :get-music-time-played
 
    ;; AudioStream management functions
-   :load-audio-stream :unload-audio-stream :update-audio-stream :is-audio-stream-processed-p
-   :play-audio-stream :pause-audio-stream :resume-audio-stream :is-audio-stream-playing-p
-   :stop-audio-stream :set-audio-stream-volume :set-audio-stream-pitch :set-audio-stream-pan
-   :set-audio-stream-buffer-size-default :set-audio-stream-callback :attach-audio-stream-processor
-   :detach-audio-stream-processor
+   :load-audio-stream :is-audio-stream-ready-p :unload-audio-stream :update-audio-stream
+   :is-audio-stream-processed-p :play-audio-stream :pause-audio-stream :resume-audio-stream
+   :is-audio-stream-playing-p :stop-audio-stream :set-audio-stream-volume :set-audio-stream-pitch
+   :set-audio-stream-pan :set-audio-stream-buffer-size-default :set-audio-stream-callback
+   :attach-audio-stream-processor :detach-audio-stream-processor
 
 
 
@@ -623,14 +626,22 @@
    :set-glyph-info :set-font :set-camera3d :set-camera2d :set-mesh :set-shader :set-material-map
    :set-material :set-transform :set-bone-info :set-model :set-model-animation :set-ray :set-ray-collision
    :set-bounding-box :set-wave :set-audio-stream :set-sound :set-music :data-valid-p :array-valid-p
-   :full-copy-shader :full-copy-material :partial-copy-vector2 :partial-copy-vector3 :partial-copy-vector4
-   :partial-copy-matrix :partial-copy-color :partial-copy-rectangle :partial-copy-texture
-   :partial-copy-render-texture :partial-copy-n-patch-info :partial-copy-glyph-info :partial-copy-font
-   :partial-copy-camera3d :partial-copy-camera2d :partial-copy-mesh :partial-copy-shader
-   :partial-copy-material-map :partial-copy-material :partial-copy-transform :partial-copy-bone-info
-   :partial-copy-model :partial-copy-model-animation :partial-copy-ray :partial-copy-ray-collision
-   :partial-copy-bounding-box :partial-copy-vr-device-info :partial-copy-vr-stereo-config :copy-c-array
-   :calloc :field-ptr :field-value
+   :full-copy-image :full-copy-glyph-info :full-copy-font :full-copy-mesh :full-copy-shader
+   :full-copy-material :full-copy-model :full-copy-model-animation :full-copy-wave :full-copy-vector2
+   :full-copy-vector3 :full-copy-vector4 :full-copy-matrix :full-copy-color :full-copy-rectangle
+   :full-copy-texture :full-copy-render-texture :full-copy-n-patch-info :full-copy-camera3d
+   :full-copy-camera2d :full-copy-material-map :full-copy-transform :full-copy-bone-info :full-copy-ray
+   :full-copy-ray-collision :full-copy-bounding-box :full-copy-vr-device-info :full-copy-vr-stereo-config
+   :partial-copy-vector2 :partial-copy-vector3 :partial-copy-vector4 :partial-copy-matrix
+   :partial-copy-color :partial-copy-rectangle :partial-copy-texture :partial-copy-render-texture
+   :partial-copy-n-patch-info :partial-copy-glyph-info :partial-copy-font :partial-copy-camera3d
+   :partial-copy-camera2d :partial-copy-mesh :partial-copy-shader :partial-copy-material-map
+   :partial-copy-material :partial-copy-transform :partial-copy-bone-info :partial-copy-model
+   :partial-copy-model-animation :partial-copy-ray :partial-copy-ray-collision :partial-copy-bounding-box
+   :partial-copy-vr-device-info :partial-copy-vr-stereo-config :copy-c-array :calloc :field-ptr
+   :field-value :safe-unload-audio-stream :safe-unload-font :safe-unload-image :safe-unload-material
+   :safe-unload-model :safe-unload-render-texture :safe-unload-shader :safe-unload-sound
+   :safe-unload-texture :safe-unload-wave :safe-unload-music
 
    ;; Globals
    :*claylib-background* :*screen-width* :*screen-height* :*target-fps*))

@@ -51,18 +51,21 @@
 
 (definitializer image
   :lisp-slots ((%source) (%dest) (%tint))
-  :unload (unload-image nil))
+  :unload (safe-unload-image nil))
+
+(defun make-simple-image (asset &rest args)
+  (apply #'make-instance 'image
+         :c-ptr (full-copy-image (c-asset asset))
+         args))
 
 (defun make-image (asset source dest
-                   &rest args &key tint (copy-asset nil))
+                   &rest args &key tint)
   (declare (ignorable tint))
   (apply #'make-instance 'image
          :allow-other-keys t
          :source source
          :dest dest
-         :c-ptr (if copy-asset
-                    (c-ptr (copy-asset-to-object asset))
-                    (c-asset asset))
+         :c-ptr (full-copy-image (c-asset asset))
          args))
 
 (defmethod image-draw (image (obj image))

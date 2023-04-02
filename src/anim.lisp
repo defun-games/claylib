@@ -108,7 +108,7 @@
    :initial-contents
    (loop for i below num
          for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:model-animation i)
-         for anim = (make-instance 'rl-model-animation :c-ptr c-elt)
+         for anim = (make-instance 'rl-model-animation :c-ptr c-elt :finalize (= i 0))
          for c-bones = (cffi:mem-aref (field-ptr c-elt 'model-animation 'bones)
                                       'claylib/ll:bone-info)
          for bone-count = (field-value c-elt 'model-animation 'bone-count)

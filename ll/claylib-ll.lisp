@@ -95,7 +95,6 @@ does that for us, so now it just changes the function name."
     `(progn
        (declaim (inline ,lisp-fun))
        (defun ,lisp-fun (,@args)
-         (declare (inline))
          (,c-fun ,@args)))))
 
 (lisp-bool window-should-close)
@@ -149,6 +148,18 @@ does that for us, so now it just changes the function name."
 (lisp-bool is-audio-stream-playing stream)
 
 (lisp-bool gui-is-locked)
+
+(lisp-bool is-audio-stream-ready)
+(lisp-bool is-font-ready)
+(lisp-bool is-image-ready)
+(lisp-bool is-material-ready)
+(lisp-bool is-model-ready)
+(lisp-bool is-music-ready)
+(lisp-bool is-render-texture-ready)
+(lisp-bool is-shader-ready)
+(lisp-bool is-sound-ready)
+(lisp-bool is-texture-ready)
+(lisp-bool is-wave-ready)
 
 (declaim (inline run-window-p))
 (defun run-window-p ()
@@ -310,3 +321,23 @@ does that for us, so now it just changes the function name."
 (struct-setter vr-device-info chroma-ab-correction lens-distortion-values)
 ;(struct-setter vr-stereo-config left-lens-center left-screen-center projection right-lens-center right-screen-center scale scale-in view-offset)
 (struct-setter file-path-list)
+
+(defmacro safe-unload (type)
+  (let ((fn (alexandria:symbolicate "SAFE-UNLOAD-" type)))
+    `(defun ,fn (ptr)
+       (when (,(alexandria:symbolicate "IS-" type "-READY-P") ptr)
+         (,(alexandria:symbolicate "UNLOAD-" type) ptr)))))
+
+(safe-unload audio-stream)
+(safe-unload font)
+(safe-unload image)
+(safe-unload material)
+(safe-unload model)
+(safe-unload render-texture)
+(safe-unload shader)
+(safe-unload sound)
+(safe-unload texture)
+(safe-unload wave)
+(defun safe-unload-music (ptr)
+  (when (is-music-ready-p ptr)
+    (unload-music-stream ptr)))

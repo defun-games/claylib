@@ -27,7 +27,7 @@
                  (height integer)
                  (mipmaps integer)
                  (data-format integer))
-  :unload (unload-texture t))
+  :unload (safe-unload-texture t))
 
 
 
@@ -70,7 +70,7 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass texture (rl-texture tex)
+  (defclass texture (tex rl-texture)
     ((%filter :initarg :filter
               :type integer
               :reader filter)
@@ -104,7 +104,7 @@
                                              :width (width obj)
                                              :height (height obj))))
 
-(defun make-empty-texture (&rest args &key filter wrap origin rot tint source dest)
+(defun make-empty-texture (&rest args &key filter wrap origin rot tint source dest &allow-other-keys)
   (declare (ignore filter wrap origin rot tint source dest))
   (apply #'make-instance 'texture
          args))
@@ -226,7 +226,7 @@
 (definitializer rl-render-texture
   :struct-slots ((%texture) (%depth))
   :pt-accessors ((id integer))
-  :unload (unload-render-texture t))
+  :unload (safe-unload-render-texture t))
 
 
 

@@ -13,7 +13,7 @@
 
 (defmethod loc ((shader rl-shader) (index integer))
   (when (and (< index 32) (>= index 0))
-    (cffi:mem-aref (field-ptr (c-ptr shader) 'shader 'locs) :int index)))
+    (cffi:mem-aref (cffi:mem-ref (field-ptr (c-ptr shader) 'shader 'locs) :pointer) :int index)))
 (defmethod locs ((shader rl-shader))
   (loop for i below 32
         collect (loc shader i)))
@@ -21,7 +21,7 @@
 (defcwriter id rl-shader id shader integer)
 (defmethod (setf loc) ((value integer) (shader rl-shader) (index integer))
   (when (and (< index 32) (>= index 0))
-    (setf (cffi:mem-aref (field-ptr (c-ptr shader) 'shader 'locs)
+    (setf (cffi:mem-aref (cffi:mem-ref (field-ptr (c-ptr shader) 'shader 'locs) :pointer)
                          :int
                          index)
           value)))
@@ -34,7 +34,7 @@
 (definitializer rl-shader
   :pt-accessors ((id integer)
                  (locs sequence))
-  :unload (unload-shader t))
+  :unload (safe-unload-shader t))
 
 
 
@@ -93,16 +93,21 @@
 (defun make-rl-material-map-array (c-ptr num)
   (let ((contents (loop for i below num
                         for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:material-map i)
-                        for map = (make-instance 'rl-material-map :c-ptr c-elt)
-                        do (setf (slot-value map '%texture)
-                                 (make-instance 'rl-texture
-                                                :c-ptr (field-value c-elt 'material-map 'texture)
-                                                :finalize (= i 0))
-
-                                 (slot-value map '%color)
-                                 (make-instance 'color
-                                                :c-ptr (field-value c-elt 'material-map 'color)
-                                                :finalize (= i 0)))
+                        for map = (make-instance 'rl-material-map
+                                                 :c-ptr c-elt
+                                                 :finalize (= i 0)
+                                                 :texture (make-instance
+                                                           'rl-texture
+                                                           :finalize nil
+                                                           :c-ptr (field-value c-elt
+                                                                               'material-map
+                                                                               'texture))
+                                                 :color (make-instance
+                                                         'color
+                                                         :finalize nil
+                                                         :c-ptr (field-value c-elt
+                                                                             'material-map
+                                                                             'color)))
                         collect map)))
     (make-array num
                 :element-type 'rl-material-map
@@ -176,7 +181,7 @@
   :lisp-slots ((%maps))
   :struct-slots ((%shader))
   :pt-accessors ((params sequence))
-  :unload (unload-material t))
+  :unload (safe-unload-material t))
 
 
 
@@ -201,18 +206,19 @@
           (loop
             for i below num
             for c-elt = (cffi:mem-aref c-ptr 'claylib/ll:material i)
-            for mat = (make-instance 'rl-material :c-ptr c-elt)
-            do (setf (slot-value mat '%shader)
-                     (make-instance 'rl-shader
-                                    :c-ptr (field-value c-elt 'material 'shader)
-                                    :finalize (= i 0))
-
-                     (slot-value mat '%maps)
+            for mat = (make-instance 'rl-material
+                                     :finalize (= i 0)
+                                     :c-ptr c-elt
+                                     :shader (make-instance 'rl-shader
+                                                            :finalize nil
+                                                            :c-ptr (field-value c-elt
+                                                                                'material
+                                                                                'shader)))
+            do (setf (slot-value mat '%maps)
                      (let ((maps (make-instance 'rl-material-maps)))
                        (setf (slot-value maps '%cl-array)
                              (make-rl-material-map-array
-                              (cffi:mem-aref (field-ptr c-elt 'material 'maps)
-                                             'claylib/ll:material-map)
+                              (cffi:mem-ref (field-ptr c-elt 'material 'maps) :pointer)
                               11)) ; TODO 11 entries in MaterialMapIndex, is this the correct num?
                        maps))
             collect mat)))

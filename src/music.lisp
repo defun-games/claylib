@@ -24,7 +24,7 @@
   :pt-accessors ((frame-count integer)
                  (looping boolean)
                  (ctx-type integer))
-  :unload (unload-music-stream t))
+  :unload (safe-unload-music t))
 
 (defmethod update ((object rl-music))
   (claylib/ll:update-music-stream (c-ptr object)))
