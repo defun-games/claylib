@@ -368,15 +368,18 @@ appropriate when you are expecting a number (or string). Each ARG is expected to
 
 (defmacro defun-pt-arg0 (name c-fn allocate-form docstring &rest args)
   "Define a special 'pass-through' function in which the first argument is destructively modified
-unless ALLOCATE-P is T. ALLOCATE-FORM is the form that is evaluated in the latter case. Each ARG is
-expected to have the following format:
+unless ALLOCATE-OR-INTO is passed. ALLOCATE-FORM is the form that is evaluated in the latter case.
+Each ARG is expected to have the following format:
 
 (ACCESSOR TYPE &optional COERCE-TYPE DEFAULT-VALUE)"
-  `(defun ,name (,@(mapcar #'car args) &optional allocate-p)
+  `(defun ,name (,@(mapcar #'car args) &optional allocate-or-into)
      ,docstring
      ,@(expand-check-types args)
-     (check-type allocate-p boolean)
-     (let ((retval (if allocate-p ,allocate-form ,(caar args))))
+     (check-type allocate-or-into (or boolean ,(cadar args)))
+     (let ((retval (cond
+                     ((eql allocate-or-into t) ,allocate-form)
+                     ((not allocate-or-into) ,(caar args))
+                     (t allocate-or-into))))
        (,c-fn (c-ptr retval)
               ,@(expand-c-fun-args args))
        retval)))

@@ -10,13 +10,13 @@
 
 (defun-pt-arg0 get-world-to-screen-2d claylib/ll:get-world-to-screen2d (make-vector2 0 0)
   "Get world-to-screen transform, a RL-VECTOR2. Destructively modifies the first arg
-unless ALLOCATE-P is T."
+unless ALLOCATE-OR-INTO is passed."
   (vec rl-vector2)
   (camera rl-camera-2d))
 
 (defun-pt-arg0 get-screen-to-world-2d claylib/ll:get-screen-to-world2d (make-vector2 0 0)
   "Get screen-to-world transform, a RL-VECTOR2. Destructively modifies the first arg
-unless ALLOCATE-P is T."
+unless ALLOCATE-OR-INTO is passed."
   (vec rl-vector2)
   (camera rl-camera-2d))
 
@@ -232,8 +232,7 @@ postion and dimensions to the reflect the result."
 ;; Color/pixel related functions
 
 (defun-pt-arg0 fade claylib/ll:fade (make-color 0 0 0)
-  "Destructively fade a color in/out to a specified alpha value, unless ALLOCATE-P is T,
-in which case create a new COLOR object as the return value."
+  "Destructively fade a color in/out to a specified alpha value, unless ALLOCATE-OR-INTO is passed."
   (color rl-color)
   (alpha number float))
 
@@ -382,17 +381,17 @@ Allocates a new RAY-COLLISION unless you pass one."
 ;; Vector2
 
 (defun-pt-arg0 vector2-subtract claylib/ll:vector2-subtract (make-vector2 0 0)
-  "Subtract two RL-VECTOR2s. Destructively modifies the first arg unless ALLOCATE-P is T."
+  "Subtract two RL-VECTOR2s. Destructively modifies the first arg unless ALLOCATE-OR-INTO is passed."
   (v1 rl-vector2)
   (v2 rl-vector2))
 
 (defun-pt-arg0 vector2-add claylib/ll:vector2-add (make-vector2 0 0)
-  "Add two RL-VECTOR2s. Destructively modifies the first arg unless ALLOCATE-P is T."
+  "Add two RL-VECTOR2s. Destructively modifies the first arg unless ALLOCATE-OR-INTO is passed."
   (v1 rl-vector2)
   (v2 rl-vector2))
 
 (defun-pt-arg0 vector2-scale claylib/ll:vector2-scale (make-vector2 0 0)
-  "Scale a RL-VECTOR2. Destructively modifies the first arg unless ALLOCATE-P is T."
+  "Scale a RL-VECTOR2. Destructively modifies the first arg unless ALLOCATE-OR-INTO is passed."
   (vec rl-vector2)
   (scale number float))
 
@@ -402,12 +401,12 @@ Allocates a new RAY-COLLISION unless you pass one."
 ;; Vector3
 
 (defun-pt-arg0 vector3-add claylib/ll:vector3-add (make-vector3 0 0 0)
-  "Add two RL-VECTOR3s. Destructively modifies the first arg unless ALLOCATE-P is T."
+  "Add two RL-VECTOR3s. Destructively modifies the first arg unless ALLOCATE-OR-INTO is passed."
   (v1 rl-vector3)
   (v2 rl-vector3))
 
 (defun-pt-arg0 vector3-subtract claylib/ll:vector3-subtract (make-vector3 0 0 0)
-  "Subtract two RL-VECTOR3s. Destructively modifies the first arg unless ALLOCATE-P is T."
+  "Subtract two RL-VECTOR3s. Destructively modifies the first arg unless ALLOCATE-OR-INTO is passed."
   (v1 rl-vector3)
   (v2 rl-vector3))
 
@@ -417,22 +416,22 @@ Allocates a new RAY-COLLISION unless you pass one."
   (v2 rl-vector3))
 
 (defun-pt-arg0 vector3-negate claylib/ll:vector3-negate (make-vector3 0 0 0)
-  "Negate a RL-VECTOR3. Destructively modifies the passed vector unless ALLOCATE-P is T."
+  "Negate a RL-VECTOR3. Destructively modifies the passed vector unless ALLOCATE-OR-INTO is passed."
   (vec rl-vector3))
 
 (defun-pt-arg0 vector3-normalize claylib/ll:vector3-normalize (make-vector3 0 0 0)
-  "Normalize a RL-VECTOR3. Destructively modifies the passed vector unless ALLOCATE-P is T."
+  "Normalize a RL-VECTOR3. Destructively modifies the passed vector unless ALLOCATE-OR-INTO is passed."
   (vec rl-vector3))
 
 (defun-pt-arg0 vector3-transform claylib/ll:vector3-transform (make-vector3 0 0 0)
   "Transform a RL-VECTOR3 by a RL-MATRIX. Destructively modifies the passed vector unless
-ALLOCATE-P is T."
+ALLOCATE-OR-INTO is passed."
   (vec rl-vector3)
   (mat rl-matrix))
 
 (defun-pt-arg0 vector3-rotate-by-axis-angle claylib/ll:vector3-rotate-by-axis-angle (make-vector3 0 0 0)
   "Rotate a RL-VECTOR3 around a given axis (RL-VECTOR3) by ANGLE. Destructively modifies the first
-arg unless ALLOCATE-P is T."
+arg unless ALLOCATE-OR-INTO is passed."
   (vec rl-vector3)
   (axis rl-vector3)
   (angle number float))
@@ -445,7 +444,7 @@ arg unless ALLOCATE-P is T."
 ;; Quaternion
 
 (defun-pt-arg0 quaternion-multiply claylib/ll:quaternion-multiply (make-vector4 0 0 0 0)
-  "Multiply two RL-VECTOR4s. Destructively modifies the first arg unless ALLOCATE-P is T."
+  "Multiply two RL-VECTOR4s. Destructively modifies the first arg unless ALLOCATE-OR-INTO is passed."
   (q1 rl-vector4)
   (q2 rl-vector4))
 
@@ -474,7 +473,7 @@ arg unless ALLOCATE-P is T."
 ;; Matrix
 
 (defun-pt-arg0 matrix-multiply claylib/ll:matrix-multiply (make-zero-matrix)
-  "Multiply two matrices. Destructively modifies the first arg unless ALLOCATE-P is T."
+  "Multiply two matrices. Destructively modifies the first arg unless ALLOCATE-OR-INTO is passed."
   (m1 rl-matrix)
   (m2 rl-matrix))
 
