@@ -593,6 +593,9 @@
    ;; Linking
    :link-objects :unlink-objects
 
+   ;; Allocation pools
+   :alloc-pool :get-alloc :make-alloc-pool :rem-alloc :set-alloc
+
    ;; Copy functions
    :copy-color
 

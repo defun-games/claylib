@@ -14,6 +14,9 @@
                    :type hash-table
                    :initform (make-hash-table :test #'equalp)
                    :accessor assets)
+     (%alloc-pool :initarg :alloc-pool
+                  :type (or alloc-pool null)
+                  :initform nil)
      (%gc :initarg :gc
           :type boolean
           :accessor gc)

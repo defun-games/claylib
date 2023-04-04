@@ -12,7 +12,10 @@ This is an analogue of cl-autowrap's wrapper objects."))
 
   (defclass c-struct ()
     ((%c-ptr
-      :type c-ptr))
+      :type c-ptr)
+     (%alloc-pool :initarg alloc-pool
+                  :type (or alloc-pool null)
+                  :initform nil))
     (:documentation "Parent class of RL-* mirror classes.")))
 
 (defmethod initialize-instance :after ((obj c-ptr) &rest initargs &key &allow-other-keys)
@@ -37,9 +40,6 @@ This is an analogue of cl-autowrap's wrapper objects."))
   (setf (slot-value c-struct '%c-ptr) value))
 
 (defsetf c-ptr set-c-ptr)
-
-(define-print-object c-ptr
-    (c-ptr))
 
 (define-print-object c-struct
     (c-ptr))

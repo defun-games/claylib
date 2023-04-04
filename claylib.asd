@@ -68,6 +68,7 @@ See https://github.com/borodust/claw for documentation."
                (:module "src"
                 :components ((:file "generic")
                              (:file "helpers")
+                             (:file "alloc-pool")
                              (:file "c-struct")
                              (:file "sequence")
                              (:file "linking")
