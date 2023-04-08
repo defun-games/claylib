@@ -15,10 +15,10 @@ another CLOS object, in this case a vector3. If SIZE is a C struct, you need DEF
   "Define a pass-through slot reader for a Claylib CLOS object backed by a C struct.
 Example usage:
 
-(defcreader rot rl-camera-2d rotation camera2d)
+(defcreader rot rl-camera-2d rotation camera-2d)
 
-'To read the ROT value of an RL-CAMERA-2D, read the ROTATION value of the CAMERA2D struct backing it.'
-If CAMERA2D is a CLOS object, you need DEFREADER."
+'To read the ROT value of an RL-CAMERA-2D, read the ROTATION value of the CAMERA-2D struct backing it.'
+If CAMERA-2D is a CLOS object, you need DEFREADER."
   (let ((obj (gensym)))
     `(defmethod ,lisp-slot ((,obj ,lisp-type))
        (field-value (c-ptr ,obj) ',c-type ',c-slot))))
@@ -44,10 +44,10 @@ DEFCWRITER-VEC."
   "Define a pass-through slot writer for a Claylib CLOS object backed by a C struct.
 Example usage:
 
-(defcwriter rot rl-camera-2d rotation camera2d number float)
+(defcwriter rot rl-camera-2d rotation camera-2d number float)
 
-'To set the ROT value of an RL-CAMERA-2D, set the ROTATION value of the CAMERA2D struct backing it.
-Oh yeah, and make sure it's a float.' If CAMERA2D is a CLOS object, you need DEFWRITER."
+'To set the ROT value of an RL-CAMERA-2D, set the ROTATION value of the CAMERA-2D struct backing it.
+Oh yeah, and make sure it's a float.' If CAMERA-2D is a CLOS object, you need DEFWRITER."
   (let ((value (gensym))
         (obj (gensym)))
     `(defmethod (setf ,lisp-slot) (,(if value-type
@@ -85,9 +85,9 @@ DEFCWRITER-STRUCT defines a writer that basically does three things:
 
 Example usage:
 
-(defcwriter-struct pos camera-3d position camera3d vector3)
+(defcwriter-struct pos camera-3d position camera-3d vector3)
 
-'To set the POS value of a CAMERA-3D, set the POSITION value (a vector3) of the CAMERA3D struct
+'To set the POS value of a CAMERA-3D, set the POSITION value (a vector3) of the CAMERA-3D struct
 backing it.'"
   (let ((value (gensym))
         (obj (gensym))

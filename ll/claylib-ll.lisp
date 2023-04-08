@@ -215,19 +215,19 @@ does that for us, so now it just changes the function name."
      (end-drawing)))
 
 
-(defmacro with-mode2d (cam &body body)
+(defmacro with-mode-2d (cam &body body)
   "Provides a simple Raylib-ready construct for 2D camera mode."
   `(progn
-     (begin-mode2d ,cam)
+     (begin-mode-2d ,cam)
      ,@body
-     (end-mode2d)))
+     (end-mode-2d)))
 
-(defmacro with-mode3d (cam &body body)
+(defmacro with-mode-3d (cam &body body)
   "Provides a simple Raylib-ready construct for 3D camera mode."
   `(progn
-     (begin-mode3d ,cam)
+     (begin-mode-3d ,cam)
      ,@body
-     (end-mode3d)))
+     (end-mode-3d)))
 
 (defmacro with-texture-mode ((texture &key (bgcolor *claylib-background*)) &body body)
   "Provides a simple Raylib-ready construct for texture mode."
@@ -272,7 +272,7 @@ does that for us, so now it just changes the function name."
                                   `(setf (field-value struct ',name ',(car field))
                                          ,(car field)))
                                  (t (let ((ftype (case (cadr field)
-                                                   (texture2d 'texture)
+                                                   (texture-2d 'texture)
                                                    (quaternion 'vector4)
                                                    (t (cadr field)))))
                                       `(,(setter ftype) (field-value struct ',name ',(car field))
@@ -291,8 +291,8 @@ does that for us, so now it just changes the function name."
 (struct-setter n-patch-info)
 (struct-setter glyph-info)
 (struct-setter font)
-(struct-setter camera3d)
-(struct-setter camera2d)
+(struct-setter camera-3d)
+(struct-setter camera-2d)
 (struct-setter mesh)
 (struct-setter shader)
 (struct-setter material-map)

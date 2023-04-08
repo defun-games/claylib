@@ -12,15 +12,15 @@
           :type rl-vector3
           :reader up))
     (:default-initargs
-     :c-ptr (calloc 'claylib/ll:camera3d)
+     :c-ptr (calloc 'claylib/ll:camera-3d)
      :fovy 45.0
      :projection +camera-perspective+)))
 
 (defreader x rl-camera-3d x pos)
 (defreader y rl-camera-3d y pos)
 (defreader z rl-camera-3d z pos)
-(defcreader fovy rl-camera-3d fovy camera3d)
-(defcreader projection rl-camera-3d projection camera3d)
+(defcreader fovy rl-camera-3d fovy camera-3d)
+(defcreader projection rl-camera-3d projection camera-3d)
 
 (define-print-object rl-camera-3d
     (pos target up fovy projection))
@@ -28,11 +28,11 @@
 (defwriter x rl-camera-3d x pos number)
 (defwriter y rl-camera-3d y pos number)
 (defwriter z rl-camera-3d z pos number)
-(defcwriter fovy rl-camera-3d fovy camera3d number float)
-(defcwriter projection rl-camera-3d projection camera3d integer)
-(defcwriter-struct pos rl-camera-3d position camera3d vector3 x y z)
-(defcwriter-struct target rl-camera-3d target camera3d vector3 x y z)
-(defcwriter-struct up rl-camera-3d up camera3d vector3 x y z)
+(defcwriter fovy rl-camera-3d fovy camera-3d number float)
+(defcwriter projection rl-camera-3d projection camera-3d integer)
+(defcwriter-struct pos rl-camera-3d position camera-3d vector3 x y z)
+(defcwriter-struct target rl-camera-3d target camera-3d vector3 x y z)
+(defcwriter-struct up rl-camera-3d up camera-3d vector3 x y z)
 
 (definitializer rl-camera-3d
   :struct-slots ((%position) (%target) (%up))

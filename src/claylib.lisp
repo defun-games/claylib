@@ -6,15 +6,15 @@
 
 (defmacro with-2d-mode (camera &body body)
   `(progn
-     (begin-mode2d (c-ptr ,camera))
+     (begin-mode-2d (c-ptr ,camera))
      ,@body
-     (end-mode2d)))
+     (end-mode-2d)))
 
 (defmacro with-3d-mode (camera &body body)
   `(progn
-     (begin-mode3d (c-ptr ,camera))
+     (begin-mode-3d (c-ptr ,camera))
      ,@body
-     (end-mode3d)))
+     (end-mode-3d)))
 
 (defun clear-background (&key (color *claylib-background*))
   "Set background to COLOR or *CLAYLIB-BACKGROUND* by default."

@@ -50,6 +50,7 @@
                       (:by-removing-prefixes "__claw_cE3AE40FE40" "__claw_")
                       (:by-removing-postfixes "_")
                       (:by-replacing "^(Vector[23])([A-Z])" "\\1-\\2")
+                      (:by-replacing "([a-z])([23]D)$" "\\1-\\2")
                       (:by-changing "asin" "C-ASIN")
                       (:by-changing "log" "C-LOG")
                       (:by-changing "tan" "C-TAN")

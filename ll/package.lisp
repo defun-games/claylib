@@ -27,7 +27,7 @@
    :show-cursor :hide-cursor :is-cursor-hidden-p :enable-cursor :disable-cursor :is-cursor-on-screen-p
 
    ;; Drawing-related functions
-   :clear-background :begin-drawing :end-drawing :begin-mode2d :end-mode2d :begin-mode3d :end-mode3d
+   :clear-background :begin-drawing :end-drawing :begin-mode-2d :end-mode-2d :begin-mode-3d :end-mode-3d
    :begin-texture-mode :end-texture-mode :begin-shader-mode :end-shader-mode :begin-blend-mode
    :end-blend-mode :begin-scissor-mode :end-scissor-mode :begin-vr-stereo-mode :end-vr-stereo-mode
 
@@ -40,8 +40,8 @@
    :set-shader-value-texture :unload-shader
 
    ;; Screen-space-related functions
-   :get-mouse-ray :get-camera-matrix :get-camera-matrix-2d :get-world-to-screen :get-screen-to-world2d
-   :get-world-to-screen-ex :get-world-to-screen2d
+   :get-mouse-ray :get-camera-matrix :get-camera-matrix-2d :get-world-to-screen :get-screen-to-world-2d
+   :get-world-to-screen-ex :get-world-to-screen-2d
 
    ;; Timing-related functions
    :set-target-fps :get-fps :get-frame-time :get-time
@@ -249,57 +249,10 @@
 
    ;;; Structs
 
-   :vector2 :vector2.x :vector2.y
-   :vector3 :vector3.x :vector3.y :vector3.z
-   :vector4 :vector4.x :vector4.y :vector4.z :vector4.w :quaternion
-   :matrix :matrix.m0 :matrix.m4 :matrix.m8 :matrix.m12 :matrix.m1 :matrix.m5 :matrix.m9 :matrix.m13
-   :matrix.m2 :matrix.m6 :matrix.m10 :matrix.m14 :matrix.m3 :matrix.m7 :matrix.m11 :matrix.m15
-   :color :color.r :color.g :color.b :color.a
-   :rectangle :rectangle.x :rectangle.y :rectangle.width :rectangle.height
-
-   :image :image.data :image.width :image.height :image.mipmaps :image.format
-   :texture :texture.id :texture.width :texture.height :texture.mipmaps :texture.format :texture2d
-   :texture-cubemap
-   :render-texture :render-texture.id :render-texture.texture :render-texture.depth :render-texture2d
-   :n-patch-info :n-patch-info.source :n-patch-info.left :n-patch-info.top :n-patch-info.right
-   :n-patch-info.bottom :n-patch-info.layout
-   :glyph-info :glyph-info.value :glyph-info.offset-x :glyph-info.offset-y :glyph-info.advance-x
-   :glyph-info.image
-   :font :font.base-size :font.glyph-count :font.glyph-padding :font.texture :font.recs :font.glyphs
-
-   :camera3d :camera3d.position :camera3d.target :camera3d.up :camera3d.fovy :camera3d.projection
-   :camera2d :camera2d.offset :camera2d.target :camera2d.rotation :camera2d.zoom
-   :mesh :mesh.vertex-count :mesh.triangle-count :mesh.vertices :mesh.texcoords :mesh.texcoords2
-   :mesh.normals :mesh.tangents :mesh.colors :mesh.indices :mesh.anim-vertices :mesh.anim-normals
-   :mesh.bone-ids :mesh.bone-weights :mesh.vao-id :mesh.vbo-id
-   :shader :shader.id :shader.locs
-   :material-map :material-map.texture :material-map.color :material-map.value
-   :material :material.shader :material.maps :material.params[]
-   :model :model.transform :model.mesh-count :model.material-count :model.meshes :model.materials
-   :model.mesh-material :model.bone-count :model.bones :model.bind-pose
-   :transform :transform.translation :transform.rotation :transform.scale
-   :bone-info :bone-info.name :bone-info.parent
-   :model-animation :model-animation.bone-count :model-animation.frame-count :model-animation.bones
-   :model-animation.frame-poses
-   :ray :ray.position :ray.direction
-   :ray-collision :ray-collision.hit :ray-collision.distance :ray-collision.point :ray-collision.normal
-   :bounding-box :bounding-box.min :bounding-box.max
-
-   :wave :wave.frame-count :wave.sample-rate :wave.sample-size :wave.channels :wave.data
-   :sound :sound.stream :sound.frame-count
-   :music :music.stream :music.frame-count :music.looping :music.ctx-type :music.ctx-data
-   :audio-stream :audio-stream.buffer :audio-stream.sample-rate :audio-stream.sample-size
-   :audio-stream.channels
-
-   :vr-device-info :vr-device-info.h-resolution :vr-device-info.v-resolution
-   :vr-device-info.h-screen-size :vr-device-info.v-screen-size :vr-device-info.v-screen-center
-   :vr-device-info.eye-to-screen-distance :vr-device-info.lens-separation-distance
-   :vr-device-info.interpupillary-distance :vr-device-info.lens-distortion-values
-   :vr-device-info.chroma-ab-correction
-   :vr-stereo-config :vr-stereo-config.projection :vr-stereo-config.view-offset
-   :vr-stereo-config.left-lens-center :vr-stereo-config.right-lens-center
-   :vr-stereo-config.left-screen-center :vr-stereo-config.right-screen-center :vr-stereo-config.scale
-   :vr-stereo-config.scale-in
+   :vector2 :vector3 :vector4 :quaternion :matrix :color :rectangle :image :texture :texture-2d
+   :texture-cubemap :render-texture :render-texture-2d :n-patch-info :glyph-info :font :camera-3d
+   :camera-2d :mesh :shader :material-map :material :model :transform :bone-info :model-animation
+   :ray :ray-collision :bounding-box :wave :sound :music :audio-stream :vr-device-info :vr-stereo-config
 
 
 
@@ -620,22 +573,22 @@
    ;;; claylib/ll extras
 
    ;; Convenience wrappers
-   :close-window-p :run-window-p :with-window :loop-drawing :do-drawing :with-drawing :with-mode2d
-   :with-mode3d :set-vector2 :set-vector3 :set-vector4 :with-texture-mode :with-scissor-mode
+   :close-window-p :run-window-p :with-window :loop-drawing :do-drawing :with-drawing :with-mode-2d
+   :with-mode-3d :set-vector2 :set-vector3 :set-vector4 :with-texture-mode :with-scissor-mode
    :set-matrix :set-color :set-rectangle :set-image :set-texture :set-render-texture :set-n-patch-info
-   :set-glyph-info :set-font :set-camera3d :set-camera2d :set-mesh :set-shader :set-material-map
+   :set-glyph-info :set-font :set-camera-3d :set-camera-2d :set-mesh :set-shader :set-material-map
    :set-material :set-transform :set-bone-info :set-model :set-model-animation :set-ray :set-ray-collision
    :set-bounding-box :set-wave :set-audio-stream :set-sound :set-music :data-valid-p :array-valid-p
    :full-copy-image :full-copy-glyph-info :full-copy-font :full-copy-mesh :full-copy-shader
    :full-copy-material :full-copy-model :full-copy-model-animation :full-copy-wave :full-copy-vector2
    :full-copy-vector3 :full-copy-vector4 :full-copy-matrix :full-copy-color :full-copy-rectangle
-   :full-copy-texture :full-copy-render-texture :full-copy-n-patch-info :full-copy-camera3d
-   :full-copy-camera2d :full-copy-material-map :full-copy-transform :full-copy-bone-info :full-copy-ray
+   :full-copy-texture :full-copy-render-texture :full-copy-n-patch-info :full-copy-camera-3d
+   :full-copy-camera-2d :full-copy-material-map :full-copy-transform :full-copy-bone-info :full-copy-ray
    :full-copy-ray-collision :full-copy-bounding-box :full-copy-vr-device-info :full-copy-vr-stereo-config
    :partial-copy-vector2 :partial-copy-vector3 :partial-copy-vector4 :partial-copy-matrix
    :partial-copy-color :partial-copy-rectangle :partial-copy-texture :partial-copy-render-texture
-   :partial-copy-n-patch-info :partial-copy-glyph-info :partial-copy-font :partial-copy-camera3d
-   :partial-copy-camera2d :partial-copy-mesh :partial-copy-shader :partial-copy-material-map
+   :partial-copy-n-patch-info :partial-copy-glyph-info :partial-copy-font :partial-copy-camera-3d
+   :partial-copy-camera-2d :partial-copy-mesh :partial-copy-shader :partial-copy-material-map
    :partial-copy-material :partial-copy-transform :partial-copy-bone-info :partial-copy-model
    :partial-copy-model-animation :partial-copy-ray :partial-copy-ray-collision :partial-copy-bounding-box
    :partial-copy-vr-device-info :partial-copy-vr-stereo-config :copy-c-array :calloc :field-ptr
