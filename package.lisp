@@ -53,7 +53,8 @@
    :gen-mesh-cubicmap :get-color :check-collision-circles :check-collision-circle-rec
    :check-collision-point-triangle :check-collision-lines :check-collision-point-line :get-glyph-index
    :get-mouse-delta :get-mouse-wheel-move-v :get-model-bounding-box :update-camera-pro
-   :get-world-to-screen-2d :get-screen-to-world-2d :get-world-to-screen-3d)
+   :get-world-to-screen-2d :get-screen-to-world-2d :get-world-to-screen-3d :gen-mesh-poly :gen-mesh-plane
+   :gen-mesh-sphere :gen-mesh-hemi-sphere :gen-mesh-cone :gen-mesh-torus :gen-mesh-knot :gen-mesh-heightmap)
 
 
 
@@ -212,7 +213,9 @@
    ;; Mesh management functions
 
    ;; Mesh generation functions
-   :gen-mesh-cube :gen-mesh-cylinder :gen-mesh-cubicmap
+   :gen-mesh-poly :gen-mesh-plane :gen-mesh-cube :gen-mesh-sphere :gen-mesh-hemisphere
+   :gen-mesh-cylinder :gen-mesh-cone :gen-mesh-torus :gen-mesh-knot :gen-mesh-heightmap
+   :gen-mesh-cubicmap
 
    ;; Material loading/unloading functions
    :set-material-texture

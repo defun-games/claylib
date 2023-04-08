@@ -311,12 +311,19 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
 
 ;; Mesh generation functions
 
-(defun-pt gen-mesh-cylinder claylib/ll:gen-mesh-cylinder
-  "Generate a mesh cylinder. Allocates a new RL-MESH unless you pass one."
+(defun-pt gen-mesh-poly claylib/ll:gen-mesh-poly
+  "Generate a polygonal mesh. Allocates a new RL-MESH unless you pass one."
   (mesh rl-mesh nil (make-instance 'rl-mesh))
-  (radius number float)
-  (height number float)
-  (slices integer))
+  (sides integer)
+  (radius number float))
+
+(defun-pt gen-mesh-plane claylib/ll:gen-mesh-plane
+  "Generate plane mesh (with subdivisions). Allocates a new RL-MESH unless you pass one."
+  (mesh rl-mesh nil (make-instance 'rl-mesh))
+  (width number float)
+  (length number float)
+  (res-x integer)
+  (res-z integer))
 
 (defun-pt gen-mesh-cube claylib/ll:gen-mesh-cube
   "Generate a mesh rectangular prism, a.k.a. 'cube.' Allocates a new RL-MESH unless you pass one."
@@ -324,6 +331,56 @@ font, size and spacing. Allocates a new RL-VECTOR2 unless you pass one."
   (width number float)
   (height number float)
   (length number float))
+
+(defun-pt gen-mesh-sphere claylib/ll:gen-mesh-sphere
+  "Generate a standard sphere mesh. Allocates a new RL-MESH unless you pass one."
+  (mesh rl-mesh nil (make-instance 'rl-mesh))
+  (radius number float)
+  (rings integer)
+  (slices integer))
+
+(defun-pt gen-mesh-hemisphere claylib/ll:gen-mesh-hemi-sphere
+  "Generate a half-sphere mesh (no bottom cap). Allocates a new RL-MESH unless you pass one."
+  (mesh rl-mesh nil (make-instance 'rl-mesh))
+  (radius number float)
+  (rings integer)
+  (slices integer))
+
+(defun-pt gen-mesh-cylinder claylib/ll:gen-mesh-cylinder
+  "Generate a mesh cylinder. Allocates a new RL-MESH unless you pass one."
+  (mesh rl-mesh nil (make-instance 'rl-mesh))
+  (radius number float)
+  (height number float)
+  (slices integer))
+
+(defun-pt gen-mesh-cone claylib/ll:gen-mesh-cone
+  "Generate a cone/pyramid mesh. Allocates a new RL-MESH unless you pass one."
+  (mesh rl-mesh nil (make-instance 'rl-mesh))
+  (radius number float)
+  (height number float)
+  (slices integer))
+
+(defun-pt gen-mesh-torus claylib/ll:gen-mesh-torus
+  "Generate a torus mesh. Allocates a new RL-MESH unless you pass one."
+  (mesh rl-mesh nil (make-instance 'rl-mesh))
+  (radius number float)
+  (size number float)
+  (rad-seg integer)
+  (sides integer))
+
+(defun-pt gen-mesh-knot claylib/ll:gen-mesh-knot
+  "Generate a trefoil knot mesh. Allocates a new RL-MESH unless you pass one."
+  (mesh rl-mesh nil (make-instance 'rl-mesh))
+  (radius number float)
+  (size number float)
+  (rad-seg integer)
+  (sides integer))
+
+(defun-pt gen-mesh-heightmap claylib/ll:gen-mesh-heightmap
+  "Generate heightmap mesh from image data. Allocates a new RL-MESH unless you pass one."
+  (mesh rl-mesh nil (make-instance 'rl-mesh))
+  (heightmap rl-image)
+  (size rl-vector3))
 
 (defun-pt gen-mesh-cubicmap claylib/ll:gen-mesh-cubicmap
   "Generate cubes-based map mesh from image data. Allocates a new RL-MESH unless you pass one."

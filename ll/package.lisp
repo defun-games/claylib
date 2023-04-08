@@ -200,7 +200,7 @@
    :get-mesh-bounding-box :gen-mesh-tangents
 
    ;; Mesh generation functions
-   :gen-mesh-poly :gen-mesh-plane :gen-mesh-cube :gen-mesh-sphere :gen-mesh-hemisphere
+   :gen-mesh-poly :gen-mesh-plane :gen-mesh-cube :gen-mesh-sphere :gen-mesh-hemi-sphere
    :gen-mesh-cylinder :gen-mesh-cone :gen-mesh-torus :gen-mesh-knot :gen-mesh-heightmap
    :gen-mesh-cubicmap
 
