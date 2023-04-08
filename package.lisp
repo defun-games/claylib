@@ -553,7 +553,7 @@
    :2d-object :2d-shape :3d-object :3d-shape :animation-asset :camera-3d :circle :cube :font-asset
    :game-scene :glyph-info :grid :image :image-asset :line-2d :material :material-map :mesh :model
    :model-asset :music :pixel :plane :ray :rectangle :render-texture :shader-asset :sound :sphere :text
-   :texture :texture-asset :transform :triangle
+   :texture :texture-asset :transform :triangle :triangle-3d
 
    ;; Constructors
    :make-animation-asset :make-billboard :make-camera-2d :make-camera-2d-from-vecs :make-camera-3d
@@ -568,9 +568,10 @@
    :make-gui-toggle :make-gui-toggle-group :make-gui-value-box :make-gui-window-box :make-image
    :make-image-asset :make-line-2d :make-model :make-model-asset :make-music-asset :make-pixel
    :make-plane :make-polygon :make-ray :make-ray-collision :make-rectangle :make-rectangle-from-vecs
-   :make-shader-asset :make-simple-rec :make-sphere :make-sphere-from-vec :make-sound-asset :make-text
-   :make-texture :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs
-   :make-vector2 :make-vector3 :make-vector4 :make-zero-matrix :make-simple-image
+   :make-shader-asset :make-simple-image :make-simple-rec :make-sphere :make-sphere-from-vec
+   :make-sound-asset :make-text :make-texture :make-texture-asset :make-texture-from-rec :make-triangle
+   :make-triangle-3d :make-triangle-3d-from-vecs :make-triangle-from-vecs :make-vector2 :make-vector3
+   :make-vector4 :make-zero-matrix
 
    ;; Scenes/assets
    :add-to-scene :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex
@@ -589,7 +590,7 @@
    :draw-gui-toggle-group-object :draw-gui-toggle-object :draw-gui-value-box-object
    :draw-gui-window-box-object :draw-line-object :draw-model-object :draw-pixel-object :draw-plane-object
    :draw-polygon-object :draw-ray-object :draw-rectangle-object :draw-sphere-object :draw-text-object
-   :draw-texture-non-object :draw-texture-object :draw-triangle-object
+   :draw-texture-non-object :draw-texture-object :draw-triangle-3d-object :draw-triangle-object
 
    ;; Linking
    :link-objects :unlink-objects
