@@ -6,7 +6,7 @@ Disclaimer: Raylib has many configuration options and ways to build it. What fol
 1. See [Raylib build instructions](https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux).
 2. `cmake` is recommended:
 ```
-cmake -DCUSTOMIZE_BUILD=ON -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SHARED_LIBS=ON -DUSE_EXTERNAL_GLFW=ON -DUSE_WAYLAND=ON -DWITH_PIC=ON -DOpenGL_GL_PREFERENCE=GLVND
+cmake -DCUSTOMIZE_BUILD=ON -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SHARED_LIBS=ON -DUSE_EXTERNAL_GLFW=ON -DUSE_WAYLAND=ON -DWITH_PIC=ON -DOpenGL_GL_PREFERENCE=GLVND ..
 ```
 3. Follow the rest of the instructions, i.e. `make`.
 
