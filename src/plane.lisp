@@ -13,6 +13,8 @@
 (define-print-object plane
     (size width len))
 
+(child-setter plane size)
+
 (defwriter width plane x size number)
 (defwriter len plane y size number)
 
@@ -32,8 +34,8 @@
                  :color color))
 
 (defmethod draw-object ((obj plane))
-  (claylib/ll:draw-plane (c-struct (pos obj))
-                         (c-struct (size obj))
-                         (c-struct (color obj))))
+  (claylib/ll:draw-plane (c-ptr (pos obj))
+                         (c-ptr (size obj))
+                         (c-ptr (color obj))))
 
 (static-draw draw-plane-object plane)

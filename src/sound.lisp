@@ -1,14 +1,10 @@
 (in-package #:claylib)
 
-(default-unload claylib/ll:sound unload-sound t)
-
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-sound (linkable)
-    ((%c-struct
-      :type claylib/ll:sound
-      :accessor c-struct))
+  (defclass rl-sound (c-struct linkable)
+    ()
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:sound))))
+     :c-ptr (calloc 'claylib/ll:sound))))
 
 (defcreader astream rl-sound stream sound)
 (defcreader frame-count rl-sound frame-count sound)
@@ -16,19 +12,20 @@
 (defcwriter frame-count rl-sound frame-count sound integer)
 
 (definitializer rl-sound
-  :pt-accessors ((frame-count integer)))
+  :pt-accessors ((frame-count integer))
+  :unload (safe-unload-sound t))
 
 (defmethod play ((audio rl-sound))
-  (claylib/ll:play-sound-multi (c-struct audio)))
+  (claylib/ll:play-sound-multi (c-ptr audio)))
 
 (defmethod stop ((audio rl-sound))
-  (claylib/ll:stop-sound (c-struct audio)))
+  (claylib/ll:stop-sound (c-ptr audio)))
 
 (defmethod pause ((audio rl-sound))
-  (claylib/ll:pause-sound (c-struct audio)))
+  (claylib/ll:pause-sound (c-ptr audio)))
 
 (defmethod resume ((audio rl-sound))
-  (claylib/ll:resume-sound (c-struct audio)))
+  (claylib/ll:resume-sound (c-ptr audio)))
 
 
 
@@ -53,15 +50,15 @@
 (defwriter-float pan sound)
 
 (defmethod (setf pitch) :after (new-value (class sound))
-  (claylib/ll:set-sound-pitch (c-struct class)
+  (claylib/ll:set-sound-pitch (c-ptr class)
                               (coerce new-value 'single-float)))
 
 (defmethod (setf volume) :after (new-value (class sound))
-  (claylib/ll:set-sound-volume (c-struct class)
+  (claylib/ll:set-sound-volume (c-ptr class)
                                (coerce new-value 'single-float)))
 
 (defmethod (setf pan) :after (new-value (class sound))
-  (claylib/ll:set-sound-pan (c-struct class)
+  (claylib/ll:set-sound-pan (c-ptr class)
                             (coerce new-value 'single-float)))
 
 (definitializer sound

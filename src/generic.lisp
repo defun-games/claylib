@@ -124,9 +124,6 @@ Don't use this if SLOT contains an atom or string -- use normal SETF instead."))
   (:documentation "Load a game-asset's backing C object from a file.
 Force a reload & free old memory when FORCE-RELOAD is T."))
 
-(defgeneric copy-asset-to-object (asset)
-  (:documentation "Return a copy of the object in the given ASSET's %ASSET slot."))
-
 (defgeneric image-draw (image obj)
   (:documentation "Draw an object OBJ onto the the rl-image IMAGE."))
 
@@ -138,13 +135,6 @@ Force a reload & free old memory when FORCE-RELOAD is T."))
 
 (defgeneric switch-scene (scene)
   (:documentation "Switch *SCENE* to SCENE, loading the new & unloading the old scene."))
-
-(defgeneric make-rl-*-array (c-struct num)
-  (:documentation "Make an array of appropriate rl-* objects using NUM elements of the C array
-referenced by C-STRUCT.
-
-Warning: if NUM is greater than or equal to the number of elements in the C array, you will get
-bogus data."))
 
 (defgeneric update (object)
   (:documentation "Call the appropriate Raylib 'Update*' function on OBJECT."))

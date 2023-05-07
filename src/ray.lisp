@@ -1,18 +1,15 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-ray (linkable)
+  (defclass rl-ray (c-struct linkable)
     ((%position :initarg :pos
                 :type rl-vector3
                 :reader pos)
      (%direction :initarg :dir
                  :type rl-vector3
-                 :reader dir)
-     (%c-struct
-      :type claylib/ll:ray
-      :accessor c-struct))
+                 :reader dir))
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:ray))))
+     :c-ptr (calloc 'claylib/ll:ray))))
 
 (defreader x rl-ray x pos)
 (defreader y rl-ray y pos)
@@ -57,6 +54,6 @@
                  :color color))
 
 (defmethod draw-object ((obj ray))
-  (claylib/ll:draw-ray (c-struct obj) (c-struct (color obj))))
+  (claylib/ll:draw-ray (c-ptr obj) (c-ptr (color obj))))
 
 (static-draw draw-ray-object ray)

@@ -12,8 +12,7 @@
 (define-print-object gui-combo-box
     (active))
 
-(defmethod (setf active) :before (value (obj gui-combo-box))
-  (set-linked-children 'active obj value))
+(child-setter gui-combo-box active)
 
 (defun-pt-num gui-combo-box claylib/ll:gui-combo-box
   "Combo Box control, returns selected item index"

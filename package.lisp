@@ -1,6 +1,6 @@
 ;;;; package.lisp
 (defpackage #:claylib
-  (:use #:static-dispatch-cl #:plus-c #:claylib/ll)
+  (:use #:static-dispatch-cl #:claylib/ll)
   (:local-nicknames (#:sequences #:org.shirakumo.trivial-extensible-sequences))
   (:shadow
 
@@ -19,7 +19,9 @@
 
    ;; Math
    :quaternion-from-euler :quaternion-to-euler :vector2-subtract :vector2-add :vector2-scale :vector2-length
-   :matrix-rotate-zyx :quaternion-to-matrix :quaternion-from-matrix :wrap
+   :matrix-rotate-zyx :quaternion-to-matrix :quaternion-from-matrix :wrap :vector3-subtract
+   :vector3-rotate-by-axis-angle :vector3-add :vector3-angle :vector3-negate :vector3-normalize
+   :vector3-distance :matrix-multiply :quaternion-multiply :vector3-transform
 
    ;; Globals
    :*claylib-background*
@@ -31,6 +33,11 @@
    :gui-slider-bar :gui-progress-bar :gui-status-bar :gui-dummy-rec :gui-scroll-bar :gui-grid
    :gui-list-view :gui-list-view-ex :gui-message-box :gui-text-input-box :gui-color-picker :gui-color-panel
    :gui-color-bar-alpha :gui-color-bar-hue :gui-draw-icon :gui-check-icon-pixel :gui-load-style
+
+   ;; rcamera
+   :get-camera-forward :get-camera-up :get-camera-right :camera-move-forward :camera-move-up
+   :camera-move-right :camera-move-to-target :camera-yaw :camera-pitch :camera-roll
+   :get-camera-view-matrix :get-camera-projection-matrix
 
    ;; Music management
    :is-music-stream-playing-p :seek-music-stream :get-music-time-length :get-music-time-played
@@ -44,7 +51,10 @@
    :check-collision-recs :get-collision-rec :check-collision-point-circle :measure-text-ex
    :update-model-animation :set-material-texture :check-collision-boxes :check-collision-box-sphere
    :gen-mesh-cubicmap :get-color :check-collision-circles :check-collision-circle-rec
-   :check-collision-point-triangle :check-collision-lines :check-collision-point-line :get-glyph-index)
+   :check-collision-point-triangle :check-collision-lines :check-collision-point-line :get-glyph-index
+   :get-mouse-delta :get-mouse-wheel-move-v :get-model-bounding-box :update-camera-pro
+   :get-world-to-screen-2d :get-screen-to-world-2d :get-world-to-screen-3d :gen-mesh-poly :gen-mesh-plane
+   :gen-mesh-sphere :gen-mesh-hemi-sphere :gen-mesh-cone :gen-mesh-torus :gen-mesh-knot :gen-mesh-heightmap)
 
 
 
@@ -113,8 +123,8 @@
 
    ;; Input-related functions: mouse
    :is-mouse-button-pressed-p :is-mouse-button-down-p :is-mouse-button-released-p :is-mouse-button-up-p
-   :get-mouse-x :get-mouse-y :get-mouse-position :set-mouse-position :set-mouse-offset
-   :set-mouse-scale :get-mouse-wheel-move :set-mouse-cursor
+   :get-mouse-x :get-mouse-y :get-mouse-position :get-mouse-delta :set-mouse-position :set-mouse-offset
+   :set-mouse-scale :get-mouse-wheel-move :get-mouse-wheel-move-v :set-mouse-cursor
 
    ;; Input-related functions: touch
    :get-touch-x :get-touch-y :get-touch-point-id :get-touch-point-count
@@ -196,14 +206,16 @@
    :draw-grid
 
    ;; Model loading/unloading functions
-   :load-model-from-mesh
+   :load-model-from-mesh :get-model-bounding-box
 
    ;; Model drawing functions
 
    ;; Mesh management functions
 
    ;; Mesh generation functions
-   :gen-mesh-cube :gen-mesh-cylinder :gen-mesh-cubicmap
+   :gen-mesh-poly :gen-mesh-plane :gen-mesh-cube :gen-mesh-sphere :gen-mesh-hemisphere
+   :gen-mesh-cylinder :gen-mesh-cone :gen-mesh-torus :gen-mesh-knot :gen-mesh-heightmap
+   :gen-mesh-cubicmap
 
    ;; Material loading/unloading functions
    :set-material-texture
@@ -346,7 +358,7 @@
 
    ;; Camera
    :+camera-custom+ :+camera-perspective+ :+camera-free+ :+camera-orthographic+ :+camera-orbital+
-   :+camera-first-person+ :+camera-third-person+
+   :+camera-first-person+ :+camera-third-person+ :+camera-pro+
 
    ;; Window flags
    :+flag-fullscreen-mode+ :+flag-window-resizable+ :+flag-window-undecorated+ :+flag-window-transparent+
@@ -368,12 +380,22 @@
    :vector2-add :vector2-length :vector2-scale :vector2-subtract
 
    ;; Vector3
+   :vector3-add :vector3-subtract :vector3-angle :vector3-negate :vector3-normalize :vector3-transform
+   :vector3-rotate-by-axis-angle :vector3-distance
 
    ;; Quaternion
-   :quaternion-from-euler :quaternion-from-matrix :quaternion-to-euler :quaternion-to-matrix
+   :quaternion-multiply :quaternion-from-euler :quaternion-from-matrix :quaternion-to-euler
+   :quaternion-to-matrix
 
    ;; Matrix
-   :matrix-rotate-zyx
+   :matrix-multiply :matrix-rotate-zyx
+
+
+
+   ;;; Camera (pass-throughs to rcamera)
+   :get-camera-forward :get-camera-up :get-camera-right :camera-move-forward :camera-move-up
+   :camera-move-right :camera-move-to-target :camera-yaw :camera-pitch :camera-roll
+   :get-camera-view-matrix :get-camera-projection-matrix
 
 
 
@@ -534,7 +556,7 @@
    :2d-object :2d-shape :3d-object :3d-shape :animation-asset :camera-3d :circle :cube :font-asset
    :game-scene :glyph-info :grid :image :image-asset :line-2d :material :material-map :mesh :model
    :model-asset :music :pixel :plane :ray :rectangle :render-texture :shader-asset :sound :sphere :text
-   :texture :texture-asset :transform :triangle
+   :texture :texture-asset :transform :triangle :triangle-3d
 
    ;; Constructors
    :make-animation-asset :make-billboard :make-camera-2d :make-camera-2d-from-vecs :make-camera-3d
@@ -549,14 +571,15 @@
    :make-gui-toggle :make-gui-toggle-group :make-gui-value-box :make-gui-window-box :make-image
    :make-image-asset :make-line-2d :make-model :make-model-asset :make-music-asset :make-pixel
    :make-plane :make-polygon :make-ray :make-ray-collision :make-rectangle :make-rectangle-from-vecs
-   :make-shader-asset :make-simple-rec :make-sphere :make-sphere-from-vec :make-sound-asset :make-text
-   :make-texture :make-texture-asset :make-texture-from-rec :make-triangle :make-triangle-from-vecs
-   :make-vector2 :make-vector3 :make-vector4 :make-zero-matrix
+   :make-shader-asset :make-simple-image :make-simple-rec :make-sphere :make-sphere-from-vec
+   :make-sound-asset :make-text :make-texture :make-texture-asset :make-texture-from-rec :make-triangle
+   :make-triangle-3d :make-triangle-3d-from-vecs :make-triangle-from-vecs :make-vector2 :make-vector3
+   :make-vector4 :make-zero-matrix
 
    ;; Scenes/assets
    :add-to-scene :assets :draw-objects :draw-scene :draw-scene-all :draw-scene-except :draw-scene-regex
    :load-scene-all :make-scene :make-scene-pro :objects :params :remove-from-scene :scene-asset
-   :scene-object :scene-param :set-up-scene :tear-down-scene :unload-scene-all :with-scenes
+   :scene-object :scene-param :set-up-scene :tear-down-scene :unbind-scene :with-scenes
 
    ;; Static dispatch draw functions
    :draw-billboard-object :draw-circle-object :draw-cube-object :draw-grid-object :draw-gui-button-object
@@ -570,13 +593,16 @@
    :draw-gui-toggle-group-object :draw-gui-toggle-object :draw-gui-value-box-object
    :draw-gui-window-box-object :draw-line-object :draw-model-object :draw-pixel-object :draw-plane-object
    :draw-polygon-object :draw-ray-object :draw-rectangle-object :draw-sphere-object :draw-text-object
-   :draw-texture-non-object :draw-texture-object :draw-triangle-object
+   :draw-texture-non-object :draw-texture-object :draw-triangle-3d-object :draw-triangle-object
 
    ;; Linking
    :link-objects :unlink-objects
 
+   ;; Allocation pools
+   :alloc-pool :get-alloc :make-alloc-pool :rem-alloc :set-alloc
+
    ;; Copy functions
-   :copy-color :copy-asset-to-object
+   :copy-color
 
    ;; Generic functions/methods
    :x :y :z
@@ -584,14 +610,14 @@
    :v1 :v2 :v3
    :r :g :b :a
    :x-scale :y-scale
-   :color :filled :height :len :pos :radius :rot :size :width
-   :target :offset :up :zoom
+   :color :filled :height :len :pos :radius :rot :size :width :bbox :rot-axis :rot-angle
+   :target :offset :up :zoom :mode :movement :fovy :projection
    :low :high
    :start :end
    :animations :bones :frame-count :frame-poses :maps :materials :trans
    :dest :filter :origin :source :tint
    :font :spacing
-   :hit
+   :hit :distance
    :bezier
    :asset :load-asset
    :draw-object

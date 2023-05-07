@@ -8,20 +8,21 @@
      :active 0)
     (:documentation "Dropdown Box control, sets PRESSED when clicked")))
 
+(child-setter gui-dropdown-box active)
+
 (define-print-object gui-dropdown-box
     ())
 
 (defmethod active ((dropdown gui-dropdown-box))
-  (plus-c:c-ref (slot-value dropdown '%active) :int))
+  (cffi:mem-ref (slot-value dropdown '%active) :int))
 
 (defmethod (setf active) (value (dropdown gui-dropdown-box))
-  (set-linked-children 'active dropdown value)
-  (setf (plus-c:c-ref (slot-value dropdown '%active) :int) value))
+  (setf (cffi:mem-ref (slot-value dropdown '%active) :int) value))
 
 (defmethod initialize-instance :after ((dropdown gui-dropdown-box)
                                        &key active &allow-other-keys)
-  (let ((ptr (autowrap:calloc :int)))
-    (setf (plus-c:c-ref ptr :int) active
+  (let ((ptr (calloc :int)))
+    (setf (cffi:mem-ref ptr :int) active
           (slot-value dropdown '%active) ptr)
     dropdown))
 

@@ -1,14 +1,10 @@
 (in-package #:claylib/wrap)
 
-(unless (uiop:getenv "CLAYLIB_USE_SYSTEM_RAYLIB_LIBRARIES")
-  (dolist (dir '(#p"./lib/"
-                 #p"./lib-patched/"))
-    (pushnew dir cffi:*foreign-library-directories* :test #'equal))
-
-  (pushnew (uiop:unix-namestring
-            (uiop:with-current-directory ((asdf:system-source-directory :claylib/wrap))
-              (uiop:merge-pathnames* "wrap/lib/")))
-           cffi:*foreign-library-directories* :test #'equal))
+(cl:unless (uiop:getenv "CLAYLIB_USE_SYSTEM_RAYLIB_LIBRARIES")
+  (cl:pushnew (uiop:unix-namestring
+               (uiop:with-current-directory ((asdf:system-source-directory :claylib/wrap))
+                 (uiop:merge-pathnames* "wrap/lib/")))
+              cffi:*foreign-library-directories* :test #'cl:equal))
 
 (cffi:define-foreign-library libraylib
   (:unix "libraylib.so")
@@ -22,93 +18,20 @@
 
 (cffi:use-foreign-library libraygui)
 
-(autowrap:c-include '(claylib/wrap wrap lib "raygui.h")
-                    :release-p t
-                    :spec-path '(claylib/wrap wrap spec)
-                    ;; NOTE: We are currently excluding features where autowrap is having difficulties.
-                    :exclude-definitions (;; stdarg.h: only needed for TraceLogCallback
-                                          "va_list" "__gnuc_va_list"
-                                          ;; colors: not detected correctly and set to NIL
-                                          "LIGHTGRAY" "GRAY" "DARKGRAY" "YELLOW" "GOLD" "ORANGE" "PINK"
-                                          "RED" "MAROON" "GREEN" "LIME" "DARKGREEN" "SKYBLUE" "BLUE"
-                                          "DARKBLUE" "PURPLE" "VIOLET" "DARKPURPLE" "BEIGE" "BROWN"
-                                          "DARKBROWN" "WHITE" "BLACK" "BLANK" "MAGENTA" "RAYWHITE")
-                    ;; Some function names collide with CL
-                    :symbol-exceptions (("remove" . "C-REMOVE")
-                                        ("random" . "C-RANDOM")
-                                        ("abort" . "C-ABORT")
-                                        ("abs" . "C-ABS")
-                                        ("acos" . "C-ACOS")
-                                        ("asin" . "C-ASIN")
-                                        ("atan" . "C-ATAN")
-                                        ("cos" . "C-COS")
-                                        ("sin" . "C-SIN")
-                                        ("tan" . "C-TAN")
-                                        ("cosh" . "C-COSH")
-                                        ("sinh" . "C-SINH")
-                                        ("tanh" . "C-TANH")
-                                        ("acosh" . "C-ACOSH")
-                                        ("asinh" . "C-ASINH")
-                                        ("atanh" . "C-ATANH")
-                                        ("exp" . "C-EXP")
-                                        ("log" . "C-LOG")
-                                        ("sqrt" . "C-SQRT")
-                                        ("floor" . "C-FLOOR")
-                                        ("round" . "C-ROUND")
-                                        ;; Some of them just goofed.
-                                        ("GuiCheckBox" . "GUI-CHECKBOX")
-                                        ("PROGRESSBAR" . "+PROGRESS-BAR+")
-                                        ("COMBOBOX" . "+COMBO-BOX+")
-                                        ("DROPDOWNBOX" . "+DROPDOWN-BOX+")
-                                        ("TEXTBOX" . "+TEXT-BOX+")
-                                        ("VALUEBOX" . "+VALUE-BOX+")
-                                        ("LISTVIEW" . "+LIST-VIEW+")
-                                        ("COLORPICKER" . "+COLOR-PICKER+")
-                                        ("STATUSBAR" . "+STATUS-BAR+")))
+(cffi:define-foreign-library librayshim
+  ((:and :x86-64 :unix) "librayshim.x86_64-pc-linux-gnu.so")
+  (t (:default "librayshim")))
 
-(autowrap:c-include '(claylib/wrap wrap lib "raymath.h")
-                    :release-p t
-                    :spec-path '(claylib/wrap wrap spec)
-                    ;; Duplicate definitions from above
-                    :exclude-definitions ("^Vector2$" "^Vector3$" "^Vector4$" "^Matrix$")
-                    ;; Some function names collide with CL
-                    :symbol-exceptions (("acos" . "C-ACOS")
-                                        ("asin" . "C-ASIN")
-                                        ("atan" . "C-ATAN")
-                                        ("cos" . "C-COS")
-                                        ("sin" . "C-SIN")
-                                        ("tan" . "C-TAN")
-                                        ("cosh" . "C-COSH")
-                                        ("sinh" . "C-SINH")
-                                        ("tanh" . "C-TANH")
-                                        ("acosh" . "C-ACOSH")
-                                        ("asinh" . "C-ASINH")
-                                        ("atanh" . "C-ATANH")
-                                        ("exp" . "C-EXP")
-                                        ("log" . "C-LOG")
-                                        ("sqrt" . "C-SQRT")
-                                        ("floor" . "C-FLOOR")
-                                        ("round" . "C-ROUND"))
-                    ;; Some names just aren't pretty enough
-                    :symbol-regex (("Vector2[A-Z]" ()
-                                                      (lambda (string matches regex)
-                                                        (ppcre:regex-replace "Vector2(?!$)"
-                                                                             string
-                                                                             "Vector2-")))
-                                   ("Vector3[A-Z]" ()
-                                                      (lambda (string matches regex)
-                                                        (ppcre:regex-replace "Vector3(?!$)"
-                                                                             string
-                                                                             "Vector3-")))))
+(cffi:use-foreign-library librayshim)
 
-;;; Workaround for the color issue described above
-(defmacro setcolor (name &rest coords)
-  `(progn
-     (defvar ,name (autowrap:alloc 'color))
-     ,(append (list 'progn)
-	      (loop for k in '(:r :g :b :a)
+;;; Workaround for CLITERAL colors not being detected correctly by claw
+(cl:defmacro setcolor (name cl:&rest coords)
+  `(cl:progn
+     (cl:defvar ,name (cffi:foreign-alloc 'color))
+     ,(cl:append (cl:list 'cl:progn)
+	         (cl:loop for k in '(r g b a)
 		    for v in coords
-                    collect `(setf (plus-c:c-ref ,name color ,k) ,v)))))
+                    collect `(cl:setf (cffi:foreign-slot-value ,name 'color ',k) ,v)))))
 
 (setcolor +lightgray+ 200 200 200 255)
 (setcolor +gray+ 130 130 130 255)
@@ -136,3 +59,8 @@
 (setcolor +blank+ 0 0 0 0)
 (setcolor +magenta+ 255 0 255 255)
 (setcolor +raywhite+ 245 245 245 255)
+
+(cl:eval-when (:compile-toplevel :load-toplevel :execute)
+  (cl:export '(+lightgray+ +gray+ +darkgray+ +yellow+ +gold+ +orange+ +pink+ +red+ +maroon+
+               +green+ +lime+ +darkgreen+ +skyblue+ +blue+ +darkblue+ +purple+ +violet+
+               +darkpurple+ +beige+ +brown+ +darkbrown+ +white+ +black+ +blank+ +magenta+ +raywhite+)))

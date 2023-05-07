@@ -1,31 +1,28 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-camera-2d (linkable)
+  (defclass rl-camera-2d (c-struct linkable)
     ((%offset :initarg :offset
               :type rl-vector2
               :reader offset)
      (%target :initarg :target
               :type rl-vector2
-              :reader target)
-     (%c-struct
-      :type claylib/ll:camera2d
-      :accessor c-struct))
+              :reader target))
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:camera2d)
+     :c-ptr (calloc 'claylib/ll:camera-2d)
      :rot 0.0
      :zoom 1.0)))
 
-(defcreader rot rl-camera-2d rotation camera2d)
-(defcreader zoom rl-camera-2d zoom camera2d)
+(defcreader rot rl-camera-2d rotation camera-2d)
+(defcreader zoom rl-camera-2d zoom camera-2d)
 
 (define-print-object rl-camera-2d
     (offset target rot zoom))
 
-(defcwriter rot rl-camera-2d rotation camera2d number float)
-(defcwriter zoom rl-camera-2d zoom camera2d number float)
-(defcwriter-struct offset rl-camera-2d offset camera2d vector2 x y)
-(defcwriter-struct target rl-camera-2d target camera2d vector2 x y)
+(defcwriter rot rl-camera-2d rotation camera-2d number float)
+(defcwriter zoom rl-camera-2d zoom camera-2d number float)
+(defcwriter-struct offset rl-camera-2d offset camera-2d vector2 x y)
+(defcwriter-struct target rl-camera-2d target camera-2d vector2 x y)
 
 (definitializer rl-camera-2d
   :struct-slots ((%offset) (%target))

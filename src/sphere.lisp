@@ -15,15 +15,10 @@
      :rings 16
      :slices 16)))
 
+(child-setter sphere radius rings slices)
+
 (define-print-object sphere
     (radius rings slices))
-
-(defmethod (setf radius) :before (value (obj sphere))
-  (set-linked-children 'radius obj value))
-(defmethod (setf rings) :before (value (obj sphere))
-  (set-linked-children 'rings obj value))
-(defmethod (setf slices) :before (value (obj sphere))
-  (set-linked-children 'slices obj value))
 
 (definitializer cube
   :lisp-slots ((%radius) (%rings) (%slices)))
@@ -46,15 +41,15 @@
 
 (defmethod draw-object ((obj sphere))
   (if (filled obj)
-      (claylib/ll:draw-sphere-ex (c-struct (pos obj))
+      (claylib/ll:draw-sphere-ex (c-ptr (pos obj))
                                  (radius obj)
                                  (rings obj)
                                  (slices obj)
-                                 (c-struct (color obj)))
-      (claylib/ll:draw-sphere-wires (c-struct (pos obj))
+                                 (c-ptr (color obj)))
+      (claylib/ll:draw-sphere-wires (c-ptr (pos obj))
                                     (radius obj)
                                     (rings obj)
                                     (slices obj)
-                                    (c-struct (color obj)))))
+                                    (c-ptr (color obj)))))
 
 (static-draw draw-sphere-object sphere)

@@ -1,12 +1,10 @@
 (in-package #:claylib)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass rl-matrix (linkable)
-    ((%c-struct
-      :type claylib/ll:matrix
-      :accessor c-struct))
+  (defclass rl-matrix (c-struct linkable)
+    ()
     (:default-initargs
-     :c-struct (autowrap:calloc 'claylib/ll:matrix))))
+     :c-ptr (calloc 'claylib/ll:matrix))))
 
 (defcreader m0 rl-matrix m0 matrix)
 (defcreader m1 rl-matrix m1 matrix)
