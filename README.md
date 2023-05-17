@@ -1,5 +1,5 @@
 # claylib
-A Common Lisp 2D/3D game toolkit built on top of [Raylib](https://www.raylib.com/) 4.2.
+A Common Lisp 2D/3D game toolkit built on top of [Raylib](https://www.raylib.com/) 4.5 and [Raygui](https://github.com/raysan5/raygui) 3.6.
 
 ## Quick Start
 Claylib is not yet in Quicklisp. Load claylib.asd and run `(ql:quickload :claylib/examples)` or similar to load all of the available packages. See the next section for what those packages are and how you might use them.
@@ -8,19 +8,19 @@ To see the [examples](/examples) in action, just run e.g. `(claylib/examples/bas
 
 Tested only on Linux, so far. There's no obvious reason it can't work on other platforms, but you might need to build Raylib and Raygui yourself.
 
-## Packages
-This repo contains four separate ASDF systems:
-- `claylib/wrap` wraps Raylib, Raymath, and Raygui via [cl-autowrap](https://github.com/rpav/cl-autowrap), along with a few small fixes. There's probably no reason to use it directly.
-- `claylib/ll` is a thin layer on top of `claylib/wrap` that adds some convenience features but mostly keeps the C semantics. If you have a lot of experience with Raylib in C or you just really like manual memory management, then `claylib/ll` is for you.
+## Systems
+- `claylib/ll` is a thin layer on top of the wrappers that adds some convenience features but mostly keeps the C semantics. If you have a lot of experience with Raylib in C or you just really like manual memory management, then `claylib/ll` is for you.
 - `claylib` sits atop `claylib/ll` and does a lot of work to try to smooth out and abstract the C semantics away from the user. It's not perfect, nor _can_ it be (more on that later). Its goal is to feel as Lispy as possible, and no Lispier!
 - `claylib/examples` contains a number of -- you guessed it -- examples, remixed from [Raylib's own](https://www.raylib.com/examples.html).
 
+There's also `claylib/wrap` and `claylib/makewrap` if you're interested in digging into the [claw](https://github.com/borodust/claw) wrappers. Otherwise, there's no reason to touch them.
+
 ## Current Status
-The project should be considered **beta**. Development is active and API's are subject to change.
+The project should be considered **beta**. While the API is mostly stable at this point, the possibility of changes still exists.
 
-`claylib/ll` should be highly usable, as a thin wrapper over Raylib and Raymath. Raygui is sparsely tested but probably usable if you know what you're doing; Lispification and examples are in progress.
+`claylib/ll` should be highly usable, as a thin wrapper over Raylib and Raymath. Raygui is sparsely tested but usable if you know what you're doing; examples are in progress.
 
-For `claylib`, you're best off reviewing the examples as a survey of what's done and what's not. 2D support is largely complete; 3D support is a bit more iffy. If any piece is particularly important to you, please file an [issue](https://github.com/defun-games/claylib/issues) and we will prioritize it!
+For `claylib`, you're best off reviewing the examples as a survey of what's done and what's not. 2D support is largely complete; 3D support, a bit less complete. If any piece is particularly important to you, please file an [issue](https://github.com/defun-games/claylib/issues) and we will prioritize it!
 
 ## Using `claylib`
 Walking through the [first texture example](/examples/textures/logo-raylib-texture.lisp) will give a "boilerplate" of how you might make a game with `claylib`. (This is certainly not the only way, just _a_ way.)
@@ -109,3 +109,55 @@ Draw every game object in the passed scene, _in the order those objects were put
 - `draw-scene`
 - `draw-scene-except`
 - `draw-scene-regex`
+
+## Claylib-only Features
+In addition to scenes, we've added a few other niceties to Claylib that don't exist in Raylib.
+
+### Allocation Pools
+Repeatedly allocating new objects within the game loop is a Bad Thing™. Ideally you will use scenes to define and allocate objects upfront as much as possible, but it's not always feasible to do that. Sometimes you just need to access a pool of pre-allocated objects, either globally, or tied to something that isn't a scene. Claylib handles this in a simple but effective way:
+
+```
+(defvar *my-pool* (make-alloc-pool))
+
+(get-alloc 'foo *my-pool* 'vector2)
+(get-alloc 'bar *my-pool* 'vector3)
+(get-alloc 'foo *my-pool*) ; Same vector2 you previously created
+```
+
+You could use allocation pools just like this, but a more probable use case is attaching a pool to some object for vector and matrix calculations -- a lot of Raymath functions want single-use vectors/matrices and it can be a pain to set these up outside the game loop. Call `(alloc-pool my-object)` to get or create a pool for a given object.
+
+Use `make-alloc-pool`, `alloc-pool`, `set-alloc`, `get-alloc`, and `rem-alloc`. See the docstrings for more details.
+
+### Linking and Triggers
+You can **link** a parent object and a child object with a **trigger** to update the child object when the parent object is changed. This is similar to how you might use a scene graph in mainstream game engines, but arguably more flexible. Consider the following highly contrived example:
+
+```
+(defvar *circle-1* (make-circle 20 20 5 +blue+))
+(defvar *circle-2* (make-circle 50 50 8 +red+))
+
+(defun move-circles (x y)
+  (incf (x *circle-1*) x)
+  (incf (y *circle-1*) y)
+  (incf (x *circle-2*) x)
+  (incf (y *circle-2*) y))
+```
+
+The two circles are meant to move together, but when you have many objects tied together like this, it can be annoying to keep them all in sync. Fortunately, there's a more scalable way:
+
+```
+(defvar *circle-1* (make-circle 20 20 5 +blue+))
+(defvar *circle-2* (make-circle 50 50 8 +red+))
+
+(dolist (writer '(x y))
+  (link-objects (pos *circle-1*) writer (list (pos *circle-2*) writer :incf)))
+
+(defun move-circles (x y)
+  (incf (x *circle-1*) x)
+  (incf (y *circle-1*) y))
+```
+
+What we're doing here is linking the `x` and `y` slots of `*circle-1*`'s position vector with the corresponding slots of `*circle-2*`'s position vector. `:incf` is the trigger: The child circle's position is incremented by the same amount as the parent's. Supported triggers are `:incf`, `:setf`, `:scale`, and an arbitrary function that takes five arguments (parent writer, parent object, value, child writer, and child object).
+
+While this is admittedly more verbose than something like `(link-objects *circle-1* *circle-2*)`, that's made up for with flexibility. It's just as easy to have `x` tied to `y`, or have the parent's position tied to the child's radius, or have a function that changes the child's color, etc.
+
+Use `link-objects` and `unlink-objects`. See the docstrings for more details.
