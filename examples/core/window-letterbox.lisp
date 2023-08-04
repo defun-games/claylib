@@ -19,7 +19,7 @@
 
 (defun main ()
   (with-window (:title "raylib [core] example - window scale letterbox"
-                :flags `(,+flag-window-resizable+ ,+flag-vsync-hint+)
+                :flags (:resizable :vsync-hint)
                 :min-size (320 240))
     (let* ((game-screen-width 640)
            (game-screen-height 480)
