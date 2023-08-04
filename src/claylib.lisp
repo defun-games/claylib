@@ -4,6 +4,22 @@
 
 (defparameter +claylib-directory+ (asdf:system-source-directory :claylib))
 
+(defparameter +keyword-flag+ (list :hidden            +flag-window-hidden+
+                                   :topmost           +flag-window-topmost+
+                                   :highdpi           +flag-window-highdpi+
+                                   :minimized         +flag-window-minimized+
+                                   :maximized         +flag-window-maximized+
+                                   :unfocused         +flag-window-unfocused+
+                                   :resizable         +flag-window-resizable+
+                                   :always-run        +flag-window-always-run+
+                                   :undecorated       +flag-window-undecorated+
+                                   :transparent       +flag-window-transparent+
+                                   :mouse-passthrough +flag-window-mouse-passthrough+
+                                   :vsync-hint        +flag-vsync-hint+
+                                   :msaa-4x-hint      +flag-msaa-4x-hint+
+                                   :fullscreen-mode   +flag-fullscreen-mode+
+                                   :interlaced-hint   +flag-interlaced-hint+))
+
 (defmacro with-2d-mode (camera &body body)
   `(progn
      (begin-mode-2d (c-ptr ,camera))
@@ -57,6 +73,17 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
              (livesupport:update-repl-link))
           `(progn ,@body))))
 
+(defun flag->code (flag)
+    (let ((code (getf +keyword-flag+
+                      flag)))
+        (if code
+            code
+            (error "The ~A flag is unknown." flag))))
+
+(defun flags->codes (flags)
+    (loop for flag in flags
+          collect (flag->code flag)
+
 (defmacro with-window ((&key
                           (width *screen-width*)
                           (height *screen-height*)
@@ -69,7 +96,7 @@ to the loop BODY, stop the loop when END is non-nil, and return RESULT."
                        &body body)
   `(progn
      ,(when flags
-        `(claylib/ll:set-config-flags (reduce #'+ ,flags)))
+        `(claylib/ll:set-config-flags (reduce #'+ `,(flags->codes ,flags))))
      (claylib/ll:init-window ,width ,height ,title)
      (unless (is-audio-device-ready-p) (claylib/ll:init-audio-device))
      (claylib/ll:set-target-fps ,fps)
